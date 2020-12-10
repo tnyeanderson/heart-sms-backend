@@ -1,3 +1,7 @@
+# Heart specific
+db/connect.js
+
+
 # Logs
 logs
 *.log
