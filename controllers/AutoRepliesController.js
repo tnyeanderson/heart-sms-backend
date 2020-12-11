@@ -1,28 +1,15 @@
 var express = require('express');
 var router = express.Router();
 var mysql = require('mysql');
-var conn = require('../db/connect');
+var db = require('../db/query.js');
 
-var routes = function () {
-    router.route('/').get(function (req, res) {
-        conn.connect().then(function (err) {]
-            if (err) {
-                res.status(400).json({
-                    error: "Could not connect to database"
-                });
-            }
-            var sql = "SQLQUERY"
-            conn.query(sql, function (err, result) {
-                if (err) {
-                    res.status(400).json({
-                        error: "Could not query database"
-                    });
-                }
-                res.json(result);
-            }
-        }
-    }
-}
+router.route('/').get(function (req, res) {
+    var sql = "SELECT 1";
+    console.log(sql);
+    db.query(sql, res, function (result) {
+        res.json(result);
+    });
+});
 
-module.exports = routes;
+module.exports = router;
  

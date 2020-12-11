@@ -1,6 +1,8 @@
 var express = require('express');
 var app = express();
+var router = express.Router();
 var port = process.env.port || 5000
+var wsPort = process.env.wsPort || 5050
 
 var apiBaseUrl = '/api/v1';
 
@@ -8,8 +10,13 @@ function getUrl (path) {
     return apiBaseUrl + path;
 }
 
+
 // Import Controllers
 var controllers = require('require-all')(__dirname + '/controllers');
+
+
+// Set up websockets
+controllers.StreamController.init(wsPort);
 
 // Define routes to controllers
 app.use(getUrl('/accounts'),           controllers.AccountsController);
@@ -25,10 +32,10 @@ app.use(getUrl('/media'),              controllers.MediaController);
 app.use(getUrl('/messages'),           controllers.MessagesController);
 app.use(getUrl('/purchases'),          controllers.PurchasesController);
 app.use(getUrl('/scheduled_messages'), controllers.ScheduledMessagesController);
-app.use(getUrl('/stream'),             controllers.StreamController);
+//app.use(getUrl('/stream'),             controllers.StreamController);
 app.use(getUrl('/templates'),          controllers.TemplatesController);
 
 
 app.listen(port, function () {
-    console.log("Server running on port " + port + "");
-}
+    console.log("Server running on port " + port);
+});
