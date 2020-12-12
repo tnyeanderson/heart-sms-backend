@@ -5,12 +5,12 @@ TChilderhose implemented nearly all of this backend before giving me his code to
 Checked means "tested working", hash means not needed, and a tilde means the code is present but I haven't tested it yet.
 
 - [ ] # accounts/ (original api fails on this request)
-- [ ] accounts/login
-- [ ] accounts/signup
-- [ ] accounts/remove_account
+- [ ] ~ accounts/login
+- [ ] ~ accounts/signup
+- [ ] ~ accounts/remove_account
 - [ ] accounts/clean_account
-- [ ] accounts/count
-- [ ] accounts/settings
+- [ ] ~ accounts/count
+- [ ] ~ accounts/settings
 - [ ] accounts/update_setting
 - [ ] accounts/dismissed_notification
 - [ ] accounts/view_subscription

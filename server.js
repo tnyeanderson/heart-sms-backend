@@ -18,6 +18,9 @@ var controllers = require('require-all')(__dirname + '/controllers');
 // Set up websockets
 controllers.StreamController.init(wsPort);
 
+// Parse JSON in request body
+app.use(express.json())
+
 // Define routes to controllers
 app.use(getUrl('/accounts'),           controllers.AccountsController);
 app.use(getUrl('/activate'),           controllers.ActivateController);

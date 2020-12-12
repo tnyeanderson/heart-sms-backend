@@ -1,6 +1,7 @@
 BEGIN TRANSACTION;
 CREATE TABLE IF NOT EXISTS "Accounts" (
     "account_id" TEXT NOT NULL CONSTRAINT "PK_Accounts" PRIMARY KEY,
+    "username" TEXT NOT NULL,
     "password_hash" TEXT NULL,
     "real_name" TEXT NULL,
     "salt1" TEXT NULL,
