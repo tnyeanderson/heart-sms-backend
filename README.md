@@ -1,6 +1,6 @@
-# pulse-sms-backend
+# heart-sms-backend
 
-This project provides a database and API backend for Heart SMS, a fork of Pulse SMS. Written in NodeJS.
+This project provides a database and API backend for HeartSMS, a fork of PulseSMS. Written in NodeJS.
 
 None of this would be possible without the work of Luke Klinker and TChilderhose.
 
