@@ -2,6 +2,11 @@ var mysql = require('mysql');
 var conn = require('../db/connect');
 
 var out = {
+    
+    whereAccount: function (accountId) {
+        return "account_id = '" + mysql.escape(accountId) + "'";
+    },
+    
     query: function (sql, res, callback) {
         conn().connect(function (err) {
             if (err) {
@@ -21,6 +26,7 @@ var out = {
             });
         });
     }
+    
 }
 
 module.exports = out;

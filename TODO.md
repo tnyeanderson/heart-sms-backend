@@ -16,15 +16,15 @@ Checked means "tested working", hash means not needed, and a tilde means the cod
 - [ ] accounts/view_subscription
 - [ ] # accounts/update_subscription
 - [ ] activate
-- [ ] auto_replies/
+- [ ] ~ auto_replies/
 - [ ] auto_replies/add
-- [ ] auto_replies/remove/{device_id}
+- [ ] ~ auto_replies/remove/{device_id}
 - [ ] auto_replies/update/{device_id}
 - [ ] # beta/register
 - [ ] # beta/remove
-- [ ] blacklists/
+- [ ] ~ blacklists/
 - [ ] blacklists/add
-- [ ] blacklists/remove/{device_id}
+- [ ] ~ blacklists/remove/{device_id}
 - [ ] contacts/
 - [ ] contacts/add
 - [ ] contacts/update_device_id
@@ -47,19 +47,19 @@ Checked means "tested working", hash means not needed, and a tilde means the cod
 - [ ] conversations/remove_from_folder/{device_id}
 - [ ] # conversations/clean (included in Android app, but this endpoint is never called from any clients)
 - [ ] converstaions/cleanup_messages
-- [ ] devices/
+- [ ] ~ devices/
 - [ ] devices/add
 - [ ] devices/update/{id}
-- [ ] devices/remove/{id}
+- [ ] ~ devices/remove/{id}
 - [ ] devices/update_primary
-- [ ] drafts/
+- [ ] ~ drafts/
 - [ ] drafts/add
 - [ ] drafts/update/{device_id}
-- [ ] drafts/remove/{device_conversation_id}
+- [ ] ~ drafts/remove/{device_conversation_id}
 - [ ] drafts/replace/{device_conversation_id} (different clients use replace vs update)
-- [ ] folders/
+- [ ] ~ folders/
 - [ ] folders/add
-- [ ] folders/remove/{device_id}
+- [ ] ~ folders/remove/{device_id}
 - [ ] folders/update/{device_id}
 - [ ] media/
 - [ ] messages/
@@ -70,14 +70,14 @@ Checked means "tested working", hash means not needed, and a tilde means the cod
 - [ ] messages/cleanup
 - [ ] messages/forward_to_phone
 - [ ] purchases/record
-- [ ] scheduled_messages/
+- [ ] ~ scheduled_messages/
 - [ ] scheduled_messages/add
 - [ ] scheduled_messages/update/{device_id}
-- [ ] scheduled_messages/remove/{device_id}
+- [ ] ~ scheduled_messages/remove/{device_id}
 - [ ] stream (websockets)
-- [ ] templates/
+- [ ] ~ templates/
 - [ ] templates/add
-- [ ] templates/remove/{device_id}
+- [ ] ~ templates/remove/{device_id}
 - [ ] templates/update/{device_id}
 
 

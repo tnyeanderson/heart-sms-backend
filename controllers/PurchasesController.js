@@ -1,7 +1,7 @@
 var express = require('express');
 var router = express.Router();
 var mysql = require('mysql');
-var db = require('../db/query.js');
+var db = require('../db/query');
 
 router.route('/').get(function (req, res) {
     var sql = "SELECT 1";
