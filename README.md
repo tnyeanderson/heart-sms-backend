@@ -29,8 +29,6 @@ node server.js
 
 At the moment, the database is not fully implemented. You can run the `docker-compose up -d` to start a mysql server (be sure to change the root password in `docker-compose.yml`). Then you can create the tables using `db/create_schema.sql`.
 
-**THIS DATABASE WILL BE DELETED WHEN YOU REMOVE THE CONTAINER WITH `docker-compose down`**
-
 Then configure the database connection by editing a copy of `db/connect.example.js`:
 ```
 cp db/connect.example.js db/connect.js
