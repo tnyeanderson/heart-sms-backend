@@ -20,7 +20,7 @@ router.route('/').get(function (req, res) {
 });
 
 
-router.route('/remove/:deviceId').get(function (req, res) {
+router.route('/remove/:deviceId').post(function (req, res) {
     if (!req.query.account_id) {
         res.json(errors.invalidAccount);
         return;
@@ -30,7 +30,7 @@ router.route('/remove/:deviceId').get(function (req, res) {
     console.log(sql);
 
     db.query(sql, res, function (result) {
-        res.json(result);
+        res.json({});
     });
 });
 

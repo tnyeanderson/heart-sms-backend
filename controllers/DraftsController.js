@@ -20,17 +20,17 @@ router.route('/').get(function (req, res) {
 });
 
 
-router.route('/remove/:deviceConversationId').get(function (req, res) {
+router.route('/remove/:deviceId').post(function (req, res) {
     if (!req.query.account_id) {
         res.json(errors.invalidAccount);
         return;
     }
     
-    var sql = "DELETE FROM " + table + "WHERE device_conversation_id = '" + mysql.escape(req.params.deviceConversationId) + "' AND " + query.whereAccount(req.query.account_id);
+    var sql = "DELETE FROM " + table + "WHERE device_id = '" + mysql.escape(req.params.deviceId) + "' AND " + query.whereAccount(req.query.account_id);
     console.log(sql);
 
     db.query(sql, res, function (result) {
-        res.json(result);
+        res.json({});
     });
 });
 
