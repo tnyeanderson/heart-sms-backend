@@ -32,14 +32,22 @@ router.route('/signup').post(function (req, res) {
     var salt2 = crypto.randomBytes(256).toString();
     var password_hash = crypto.pbkdf2Sync(req.body.password, salt1, 100000, 64, 'sha512');
     
-    var values = [account_id, mysql.escape(req.body.name), password_hash, salt1, salt2, mysql.escape(req.body.realName), mysql.escape(req.body.phoneNumber)];
+    var values = [
+        query.quote(account_id),
+        query.quote(mysql.escape(req.body.name)), 
+        query.quote(password_hash), 
+        query.quote(salt1), 
+        query.quote(salt2), 
+        query.quote(mysql.escape(req.body.realName)), 
+        mysql.escape(req.body.phoneNumber)
+    ];
     
     var sql = "INSERT INTO Accounts (account_id, username, password_hash, salt1, salt2, name, phone_number) "
     sql += "VALUES (" + values.join(", ") + ")";
     
     console.log(sql);
     db.query(sql, res, function (result) {
-        res.json(result);
+        res.json({});
     });
 });
 
@@ -90,6 +98,8 @@ router.route('/clean_account').post(function (req, res) {
     
     var tables = ["Messages", "Conversations", "Contacts", "Drafts", "ScheduledMessages", "Blacklists", "Folders", "AutoReplies", "Templates"];
     
+    
+    // TODO: This won't work, change to a transaction
     var sql = "DELETE FROM " + tables.join(" ") + " WHERE " + query.whereAccount(req.query.account_id);
     
     db.query(sql, res, function (result) {
