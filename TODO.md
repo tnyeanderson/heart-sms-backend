@@ -23,7 +23,7 @@ Checked means "tested working", hash means not needed, and a tilde means the cod
 - [ ] # beta/register
 - [ ] # beta/remove
 - [ ] ~ blacklists/
-- [ ] blacklists/add
+- [ ] ~ blacklists/add
 - [ ] ~ blacklists/remove/{device_id}
 - [ ] contacts/
 - [ ] contacts/add
@@ -48,17 +48,17 @@ Checked means "tested working", hash means not needed, and a tilde means the cod
 - [ ] # conversations/clean (included in Android app, but this endpoint is never called from any clients)
 - [ ] conversations/cleanup_messages
 - [ ] ~ devices/
-- [ ] devices/add
+- [ ] ~ devices/add
 - [ ] devices/update/{id}
 - [ ] ~ devices/remove/{id}
 - [ ] devices/update_primary
 - [ ] ~ drafts/
-- [ ] drafts/add
+- [ ] ~ drafts/add
 - [ ] drafts/update/{device_id}
 - [ ] ~ drafts/remove/{device_conversation_id}
 - [ ] drafts/replace/{device_conversation_id} (different clients use replace vs update)
 - [ ] ~ folders/
-- [ ] folders/add
+- [ ] ~ folders/add
 - [ ] ~ folders/remove/{device_id}
 - [ ] folders/update/{device_id}
 - [ ] media/
@@ -71,12 +71,12 @@ Checked means "tested working", hash means not needed, and a tilde means the cod
 - [ ] messages/forward_to_phone
 - [ ] purchases/record
 - [ ] ~ scheduled_messages/
-- [ ] scheduled_messages/add
+- [ ] ~ scheduled_messages/add
 - [ ] scheduled_messages/update/{device_id}
 - [ ] ~ scheduled_messages/remove/{device_id}
 - [ ] stream (websockets)
 - [ ] ~ templates/
-- [ ] templates/add
+- [ ] ~ templates/add
 - [ ] ~ templates/remove/{device_id}
 - [ ] templates/update/{device_id}
 

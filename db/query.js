@@ -25,6 +25,30 @@ var out = {
                     res.status(400).json({
                         error: "Could not query database"
                     });
+                    return
+                }
+                callback(result);
+            });
+        });
+    },
+    
+    queries: function (sqls, res, callback) {
+        var sql = sqls.join('; ');
+        
+        conn({multipleStatements: true}).connect(function (err) {
+            if (err) {
+                res.status(400).json({
+                    error: "Could not connect to database"
+                });
+                
+                return
+            }
+            conn({multipleStatements: true}).query(sql, function (err, result) {
+                if (err) {
+                    res.status(400).json({
+                        error: "Could not query database"
+                    });
+                    return
                 }
                 callback(result);
             });
