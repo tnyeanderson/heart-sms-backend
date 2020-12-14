@@ -7,6 +7,10 @@ var out = {
         return "account_id = '" + mysql.escape(accountId) + "'";
     },
     
+    quote: function (str) {
+        return "'" + str + "'";
+    },
+    
     query: function (sql, res, callback) {
         conn().connect(function (err) {
             if (err) {

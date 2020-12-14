@@ -24,8 +24,8 @@ Parameters: None
 Request body:
 ```
 {
-    username: STRING,
-    password: STRING
+    "username": STRING,
+    "password": STRING
 }
 ```
 
@@ -94,7 +94,7 @@ Response:
 
 Method: POST
 
-Parameters: `account_id`
+Parameters: `account_id=STRING`
 
 Request body: None
 
@@ -116,7 +116,7 @@ Error:
 
 Method: POST
 
-Parameters: `account_id`
+Parameters: `account_id=STRING`
 
 Request body: None
 
@@ -138,7 +138,7 @@ Error:
 
 Method: GET
 
-Parameters: `account_id`
+Parameters: `account_id=STRING`
 
 Request body: None
 
@@ -171,7 +171,7 @@ Error:
 
 Method: GET
 
-Parameters: `account_id`
+Parameters: `account_id=STRING`
 
 Request body: None
 
@@ -207,9 +207,9 @@ Error:
 
 Method: POST
 
-Parameters: `account_id`
+Parameters: `account_id=STRING`
 
-Request body: <UNKNOWN>
+Request body: UNKNOWN
 
 Response:
 ```
@@ -229,9 +229,9 @@ Error:
 
 Method: POST
 
-Parameters: `account_id`
+Parameters: `account_id=STRING`
 
-Request body: <UNKNOWN>
+Request body: UNKNOWN
 
 Response:
 ```
@@ -249,21 +249,7 @@ Error:
 
 ### `/accounts/view_subscription`
 
-Method: GET
-
-Parameters: `account_id`
-
-Request body: <UNKNOWN>
-
-Response:
-```
-<UNKNOWN>
-```
-
-Error:
-```
-<UNKNOWN>
-```
+Not Implemented (original API returns 404)
 
 
 ---
@@ -278,9 +264,9 @@ Not Implemented
 
 Method: POST
 
-Parameters: `account_id`
+Parameters: `account_id=STRING`
 
-Request body: <UNKNOWN>
+Request body: UNKNOWN
 
 Response:
 ```
@@ -300,7 +286,7 @@ Error:
 
 Method: GET
 
-Parameters: `account_id`
+Parameters: `account_id=STRING`
 
 Request body: None
 
@@ -332,13 +318,27 @@ Error:
 
 Method: POST
 
-Parameters: `account_id`
+Parameters: None
 
-Request body: <UNKNOWN>
+Request body: 
+```
+{
+    "account_id": STRING,
+    "auto_replies": [
+        {
+            "device_id": INT,
+            "reply_type": STRING,
+            "pattern": STRING,
+            "response": STRING
+        }
+        ...
+    ]
+}
+```
 
 Response:
 ```
-<UNKNOWN>
+{}
 ```
 
 Error:
@@ -354,13 +354,13 @@ Error:
 
 Method: POST
 
-Parameters: `account_id`
+Parameters: `account_id=STRING`
 
-Request body: <UNKNOWN>
+Request body: None
 
 Response:
 ```
-<UNKNOWN>
+{}
 ```
 
 Error:
@@ -376,13 +376,20 @@ Error:
 
 Method: POST
 
-Parameters: `account_id`
+Parameters: `account_id=STRING`
 
-Request body: <UNKNOWN>
+Request body: 
+```
+{
+    "type": STRING,
+    "pattern": STRING,
+    "response": STRING
+}
+```
 
 Response:
 ```
-<UNKNOWN>
+{}
 ```
 
 Error:
@@ -414,7 +421,7 @@ Not Implemented
 
 Method: GET
 
-Parameters: `account_id`
+Parameters: `account_id=STRING`
 
 Request body: None
 
@@ -445,13 +452,26 @@ Error:
 
 Method: POST
 
-Parameters: `account_id`
+Parameters: None
 
-Request body: <UNKNOWN>
+Request body: 
+```
+{
+    "account_id": STRING,
+    "blacklists": [
+        {
+            "device_id": INT,
+            "phone_number": STRING,
+            "phrase": STRING
+        }
+        ...
+    ]
+}
+```
 
 Response:
 ```
-<UNKNOWN>
+{}
 ```
 
 Error:
@@ -467,13 +487,13 @@ Error:
 
 Method: POST
 
-Parameters: `account_id`
+Parameters: `account_id=STRING`
 
-Request body: <UNKNOWN>
+Request body: None
 
 Response:
 ```
-<UNKNOWN>
+{}
 ```
 
 Error:
@@ -489,7 +509,7 @@ Error:
 
 Method: GET
 
-Parameters: `account_id`
+Parameters: `account_id=STRING`, `limit=INT?`, `OFFSET=INT?`
 
 Request body: None
 
@@ -525,13 +545,32 @@ Error:
 
 Method: POST
 
-Parameters: `account_id`
+Parameters: None
 
-Request body: <UNKNOWN>
+Request body: 
+```
+{
+    "account_id": STRING,
+    "contacts": [
+        {
+            "device_id": INT,
+            "phone_number": STRING,
+            "id_matcher": STRING,
+            "name": STRING,
+            "color": INT,
+            "color_dark": INT,
+            "color_light": INT,
+            "color_accent": INT,
+            "contact_type": INT
+        }
+        ...
+    ]
+}
+```
 
 Response:
 ```
-<UNKNOWN>
+{}
 ```
 
 Error:
@@ -547,13 +586,23 @@ Error:
 
 Method: POST
 
-Parameters: `account_id`
+Parameters: `account_id=STRING`
 
-Request body: <UNKNOWN>
+Request body: 
+```
+{
+    "phone_number": STRING?,
+    "name": STRING?,
+    "color": INT?,
+    "color_dark": INT?,
+    "color_light": INT?,
+    "color_accent": INT?
+}
+```
 
 Response:
 ```
-<UNKNOWN>
+{}
 ```
 
 Error:
@@ -569,13 +618,13 @@ Error:
 
 Method: POST
 
-Parameters: `account_id`
+Parameters: `account_id=STRING`, `phone_number=STRING`, `device_id=INT`
 
-Request body: <UNKNOWN>
+Request body: None
 
 Response:
 ```
-<UNKNOWN>
+{}
 ```
 
 Error:
@@ -591,13 +640,13 @@ Error:
 
 Method: POST
 
-Parameters: `account_id`
+Parameters: `account_id=STRING`
 
-Request body: <UNKNOWN>
+Request body: None
 
 Response:
 ```
-<UNKNOWN>
+{}
 ```
 
 Error:
@@ -613,9 +662,9 @@ Error:
 
 Method: GET
 
-Parameters: `account_id`
+Parameters: `account_id=STRING`
 
-Request body: <UNKNOWN>
+Request body: None
 
 Response:
 ```
@@ -642,17 +691,19 @@ Error:
 ---
 
 
-### `/contacts/remove_ids`
+### `/contacts/remove_ids/:id`
+
+*ids is a single id or a comma separated list of contact ids (NOT device_ids)*
 
 Method: POST
 
-Parameters: `account_id`
+Parameters: `account_id=STRING`
 
-Request body: <UNKNOWN>
+Request body: None
 
 Response:
 ```
-<UNKNOWN>
+{}
 ```
 
 Error:
@@ -668,7 +719,7 @@ Error:
 
 Method: GET
 
-Parameters: `account_id`
+Parameters: `account_id=STRING`, `limit=INT`, `offset=INT`
 
 Request body: None
 
@@ -687,11 +738,11 @@ Response:
         "led_color": INT,
         "pinned": BOOL,
         "read": BOOL,
-        "timestamp": INT,
+        "timestamp": TIMESTAMP,
         "title": STRING,
         "phone_numbers": STRING,
         "snippet": STRING,
-        "ringtone": UNKNOWN,
+        "ringtone": STRING,
         "image_uri": STRING,
         "id_matcher": STRING,
         "mute": BOOL,
@@ -715,13 +766,43 @@ Error:
 
 Method: POST
 
-Parameters: `account_id`
+Parameters: None
 
-Request body: <UNKNOWN>
+Request body: 
+```
+{
+    "account_id": STRING,
+    "conversations": [
+        {
+            "account_id": STRING,
+            "device_id": INT,
+            "folder_id": INT,
+            "color": INT,
+            "color_dark": INT,
+            "color_light": INT,
+            "color_accent": INT,
+            "led_color": INT,
+            "pinned": BOOL,
+            "read": BOOL,
+            "timestamp": TIMESTAMP,
+            "title": STRING,
+            "phone_numbers": STRING,
+            "snippet": STRING,
+            "ringtone": STRING?,
+            "image_uri": STRING?,
+            "id_matcher": STRING,
+            "mute": BOOL,
+            "archive": BOOL,
+            "private_notifications": BOOL
+        }
+        ...
+    ]
+}
+```
 
 Response:
 ```
-<UNKNOWN>
+{}
 ```
 
 Error:
@@ -737,13 +818,31 @@ Error:
 
 Method: POST
 
-Parameters: `account_id`
+Parameters: `account_id=STRING`
 
-Request body: <UNKNOWN>
+Request body: 
+```
+{
+    "color": INT?,
+    "color_dark": INT?,
+    "color_light": INT?,
+    "color_accent": INT?,
+    "led_color": INT?,
+    "pinned": BOOL?,
+    "read": BOOL?,
+    "timestamp": TIMESTAMP?,
+    "title": STRING?,
+    "snippet": STRING?,
+    "ringtone": STRING?,
+    "mute": BOOL?,
+    "archive": BOOL?,
+    "private_notifications": BOOL?
+}
+```
 
 Response:
 ```
-<UNKNOWN>
+{}
 ```
 
 Error:
@@ -759,13 +858,21 @@ Error:
 
 Method: POST
 
-Parameters: `account_id`
+Parameters: `account_id=STRING`
 
-Request body: <UNKNOWN>
+Request body: 
+```
+{
+    "read": BOOL?,
+    "timestamp": TIMESTAMP?,
+    "snippet": STRING?,
+    "archive": BOOL?
+}
+```
 
 Response:
 ```
-<UNKNOWN>
+{}
 ```
 
 Error:
@@ -781,13 +888,13 @@ Error:
 
 Method: POST
 
-Parameters: `account_id`
+Parameters: `account_id=STRING`, `title=STRING`
 
-Request body: <UNKNOWN>
+Request body: None
 
 Response:
 ```
-<UNKNOWN>
+{}
 ```
 
 Error:
@@ -803,13 +910,13 @@ Error:
 
 Method: POST
 
-Parameters: `account_id`
+Parameters: `account_id=STRING`
 
-Request body: <UNKNOWN>
+Request body: None
 
 Response:
 ```
-<UNKNOWN>
+{}
 ```
 
 Error:
@@ -825,13 +932,13 @@ Error:
 
 Method: POST
 
-Parameters: `account_id`
+Parameters: `account_id=STRING`, `android_device=STRING?`
 
-Request body: <UNKNOWN>
+Request body: None
 
 Response:
 ```
-<UNKNOWN>
+{}
 ```
 
 Error:
@@ -845,15 +952,17 @@ Error:
 
 ### `/conversations/seen`
 
+*Mark all conversations as seen*
+
 Method: POST
 
-Parameters: `account_id`
+Parameters: `account_id=STRING`
 
-Request body: <UNKNOWN>
+Request body: None
 
 Response:
 ```
-<UNKNOWN>
+{}
 ```
 
 Error:
@@ -869,13 +978,13 @@ Error:
 
 Method: POST
 
-Parameters: `account_id`
+Parameters: `account_id=STRING`
 
-Request body: <UNKNOWN>
+Request body: None
 
 Response:
 ```
-<UNKNOWN>
+{}
 ```
 
 Error:
@@ -891,13 +1000,13 @@ Error:
 
 Method: POST
 
-Parameters: `account_id`
+Parameters: `account_id=STRING`
 
-Request body: <UNKNOWN>
+Request body: None
 
 Response:
 ```
-<UNKNOWN>
+{}
 ```
 
 Error:
@@ -913,13 +1022,13 @@ Error:
 
 Method: POST
 
-Parameters: `account_id`
+Parameters: `account_id=STRING`
 
-Request body: <UNKNOWN>
+Request body: None
 
 Response:
 ```
-<UNKNOWN>
+{}
 ```
 
 Error:
@@ -935,13 +1044,13 @@ Error:
 
 Method: POST
 
-Parameters: `account_id`
+Parameters: `account_id=STRING`, `folder_id=STRING`
 
-Request body: <UNKNOWN>
+Request body: None
 
 Response:
 ```
-<UNKNOWN>
+{}
 ```
 
 Error:
@@ -957,13 +1066,13 @@ Error:
 
 Method: POST
 
-Parameters: `account_id`
+Parameters: `account_id=STRING`
 
-Request body: <UNKNOWN>
+Request body: None
 
 Response:
 ```
-<UNKNOWN>
+{}
 ```
 
 Error:
@@ -983,17 +1092,19 @@ Not Implemented (included in Android app, but this endpoint is never called from
 ---
 
 
-### `/converstaions/cleanup_messages`
+### `/conversations/cleanup_messages`
+
+*Deletes messages older than timestamp*
 
 Method: POST
 
-Parameters: `account_id`
+Parameters: `account_id=STRING`, `conversation_id=INT`, `timestamp=TIMESTAMP`
 
-Request body: <UNKNOWN>
+Request body: None
 
 Response:
 ```
-<UNKNOWN>
+{}
 ```
 
 Error:
@@ -1009,9 +1120,9 @@ Error:
 
 Method: GET
 
-Parameters: `account_id`
+Parameters: `account_id=STRING`
 
-Request body: <UNKNOWN>
+Request body: None
 
 Response:
 ```
@@ -1042,13 +1153,25 @@ Error:
 
 Method: POST
 
-Parameters: `account_id`
+Parameters: None
 
-Request body: <UNKNOWN>
+Request body:
+```
+{
+    "account_id": STRING,
+    "device": {
+        "id": INT,
+        "info": STRING,
+        "name": STRING,
+        "primary": BOOL,
+        "fcm_token": STRING
+    }
+}
+```
 
 Response:
 ```
-<UNKNOWN>
+{}
 ```
 
 Error:
@@ -1064,13 +1187,13 @@ Error:
 
 Method: POST
 
-Parameters: `account_id`
+Parameters: `account_id=STRING`, `fcm_token=STRING?`, `name=STRING?`
 
-Request body: <UNKNOWN>
+Request body: None
 
 Response:
 ```
-<UNKNOWN>
+{}
 ```
 
 Error:
@@ -1086,13 +1209,13 @@ Error:
 
 Method: POST
 
-Parameters: `account_id`
+Parameters: `account_id=STRING`
 
-Request body: <UNKNOWN>
+Request body: None
 
 Response:
 ```
-<UNKNOWN>
+{}
 ```
 
 Error:
@@ -1108,13 +1231,13 @@ Error:
 
 Method: POST
 
-Parameters: `account_id`
+Parameters: `account_id=STRING`, `new_primary_device_id=STRING`
 
-Request body: <UNKNOWN>
+Request body: None
 
 Response:
 ```
-<UNKNOWN>
+{}
 ```
 
 Error:
@@ -1130,7 +1253,7 @@ Error:
 
 Method: GET
 
-Parameters: `account_id`
+Parameters: `account_id=STRING`
 
 Request body: None
 
@@ -1162,13 +1285,27 @@ Error:
 
 Method: POST
 
-Parameters: `account_id`
+Parameters: None
 
-Request body: <UNKNOWN>
+Request body: 
+```
+{
+    "account_id": STRING,
+    "drafts": [
+        {
+            "device_id": INT,
+            "device_conversation_id": INT,
+            "mime_type": STRING,
+            "data": STRING,
+        }
+        ...
+    ]
+}
+```
 
 Response:
 ```
-<UNKNOWN>
+{}
 ```
 
 Error:
@@ -1186,13 +1323,19 @@ Error:
 
 Method: POST
 
-Parameters: `account_id`
+Parameters: `account_id=STRING`
 
-Request body: <UNKNOWN>
+Request body:
+```
+{
+    "data": STRING,
+    "mime_type": STRING?
+}
+```
 
 Response:
 ```
-<UNKNOWN>
+{}
 ```
 
 Error:
@@ -1208,9 +1351,10 @@ Error:
 
 Method: POST
 
-Parameters: `account_id`
+Parameters: `account_id=STRING`, `android_device=STRING?`
+*INVESTIGATE: What is android_device? Looks like it is translated to device_id in FirebaseHandler.kt*
 
-Request body: <UNKNOWN>
+Request body: None
 
 Response:
 ```
@@ -1232,18 +1376,34 @@ Error:
 
 Method: POST
 
-Parameters: `account_id`
+Parameters: `account_id=STRING`
 
-Request body: <UNKNOWN>
+Request body: 
+```
+{
+    "account_id": STRING,
+    "drafts": [
+        {
+            "device_id": INT,
+            "device_conversation_id": INT,
+            "mime_type": STRING,
+            "data": STRING,
+        }
+        ...
+    ]
+}
+```
 
 Response:
 ```
-<UNKNOWN>
+{}
 ```
 
 Error:
 ```
-<UNKNOWN>
+{
+    "error": "undefined method `each' for nil:NilClass"
+}
 ```
 
 
@@ -1254,7 +1414,7 @@ Error:
 
 Method: GET
 
-Parameters: `account_id`
+Parameters: `account_id=STRING`
 
 Request body: None
 
@@ -1288,13 +1448,29 @@ Error:
 
 Method: POST
 
-Parameters: `account_id`
+Parameters: None
 
-Request body: <UNKNOWN>
+Request body:
+```
+{
+    "account_id": STRING,
+    "folders": [
+        {
+            "device_id": INT,
+            "name": STRING,
+            "color": INT,
+            "color_dark": INT,
+            "color_light": INT,
+            "color_accent": INT
+        }
+        ...
+    ]
+}
+```
 
 Response:
 ```
-<UNKNOWN>
+{}
 ```
 
 Error:
@@ -1310,13 +1486,13 @@ Error:
 
 Method: POST
 
-Parameters: `account_id`
+Parameters: `account_id=STRING`
 
-Request body: <UNKNOWN>
+Request body: None
 
 Response:
 ```
-<UNKNOWN>
+{}
 ```
 
 Error:
@@ -1332,13 +1508,22 @@ Error:
 
 Method: POST
 
-Parameters: `account_id`
+Parameters: `account_id=STRING`
 
-Request body: <UNKNOWN>
+Request body: 
+```
+{
+    "name": STRING,
+    "color": INT,
+    "color_dark": INT,
+    "color_light": INT,
+    "color_accent": INT
+}
+```
 
 Response:
 ```
-<UNKNOWN>
+{}
 ```
 
 Error:
@@ -1354,9 +1539,9 @@ Error:
 
 Method: GET
 
-Parameters: `account_id`
+Parameters: `account_id=STRING`
 
-Request body: <UNKNOWN>
+Request body: UNKNOWN
 
 Response:
 ```
@@ -1376,7 +1561,7 @@ Error:
 
 Method: GET
 
-Parameters: `account_id`
+Parameters: `account_id=STRING`, `conversation_id=INT?`, `limit=INT?`, `offset=INT?`
 
 Request body: None
 
@@ -1390,14 +1575,14 @@ Response:
         "device_conversation_id": INT,
         "message_type": INT,
         "data": STRING,
-        "timestamp": INT,
+        "timestamp": TIMESTAMP,
         "mime_type": STRING,
         "read": BOOL,
         "seen": BOOL,
         "message_from": STRING,
         "color": INT,
         "sent_device": INT,
-        "sim_stamp": UNKNOWN
+        "sim_stamp": STRING
     }
     ...
 ]
@@ -1416,13 +1601,13 @@ Error:
 
 Method: POST
 
-Parameters: `account_id`
+Parameters: `account_id=STRING`
 
-Request body: <UNKNOWN>
+Request body: None
 
 Response:
 ```
-<UNKNOWN>
+{}
 ```
 
 Error:
@@ -1438,13 +1623,35 @@ Error:
 
 Method: POST
 
-Parameters: `account_id`
+Parameters: None
 
-Request body: <UNKNOWN>
+Request body: 
+```
+{
+    "account_id": STRING,
+    "messages": [
+        {
+            "device_id": INT,
+            "device_conversation_id": INT,
+            "message_type": INT,
+            "data": STRING,
+            "timestamp": TIMESTAMP,
+            "mime_type": STRING,
+            "read": BOOL,
+            "seen": BOOL,
+            "message_from": STRING?,
+            "color": INT?,
+            "sent_device": INT?,
+            "sim_stamp": STRING?
+        }
+        ...
+    ]
+}
+```
 
 Response:
 ```
-<UNKNOWN>
+{}
 ```
 
 Error:
@@ -1460,13 +1667,22 @@ Error:
 
 Method: POST
 
-Parameters: `account_id`
+Parameters: `account_id=STRING`
 
-Request body: <UNKNOWN>
+Request body: 
+```
+{
+    "type": INT?,
+    "timestamp": TIMESTAMP?,
+    "read": BOOL?,
+    "seen": BOOL?
+}
+```
+*type refers to message_type*
 
 Response:
 ```
-<UNKNOWN>
+{}
 ```
 
 Error:
@@ -1482,13 +1698,13 @@ Error:
 
 Method: POST
 
-Parameters: `account_id`
+Parameters: `account_id=STRING`, `message_type=INT`
 
-Request body: <UNKNOWN>
+Request body: None
 
 Response:
 ```
-<UNKNOWN>
+{}
 ```
 
 Error:
@@ -1504,13 +1720,13 @@ Error:
 
 Method: POST
 
-Parameters: `account_id`
+Parameters: `account_id=STRING`, `timestamp=TIMESTAMP`
 
-Request body: <UNKNOWN>
+Request body: None
 
 Response:
 ```
-<UNKNOWN>
+{}
 ```
 
 Error:
@@ -1526,9 +1742,20 @@ Error:
 
 Method: POST
 
-Parameters: `account_id`
+Parameters: `account_id=STRING`
 
-Request body: <UNKNOWN>
+Request body: 
+```
+{
+    "account_id": store.state.account_id,
+    "to": STRING,
+    "message": STRING,
+    "mime_type": STRING?,
+    "message_id": INT?,
+    "sent_device": INT
+}
+```
+** `to` refers to a string of concatenated phone numbers **
 
 Response:
 ```
@@ -1546,11 +1773,11 @@ Error:
 
 ### `/purchases/record`
 
-Method: <UNKNOWN>
+Method: UNKNOWN
 
-Parameters: `account_id`
+Parameters: `account_id=STRING`
 
-Request body: <UNKNOWN>
+Request body: UNKNOWN
 
 Response:
 ```
@@ -1570,7 +1797,7 @@ Error:
 
 Method: GET
 
-Parameters: `account_id`
+Parameters: `account_id=STRING`
 
 Request body: None
 
@@ -1584,7 +1811,7 @@ Response:
         "to": STRING,
         "data": STRING,
         "mime_type": STRING,
-        "timestamp": INT,
+        "timestamp": TIMESTAMP,
         "title": STRING,
         "repeat": INT
     }
@@ -1605,13 +1832,30 @@ Error:
 
 Method: POST
 
-Parameters: `account_id`
+Parameters: None
 
-Request body: <UNKNOWN>
+Request body: 
+```
+{
+    "account_id": STRING,
+    "scheduled_messages": [
+        {
+            "device_id": INT,
+            "to": STRING,
+            "data": STRING,
+            "mime_type": STRING,
+            "timestamp": TIMESTAMP,
+            "title": STRING,
+            "repeat": INT
+        }
+        ...
+    ]
+}
+```
 
 Response:
 ```
-<UNKNOWN>
+{}
 ```
 
 Error:
@@ -1627,13 +1871,23 @@ Error:
 
 Method: POST
 
-Parameters: `account_id`
+Parameters: `account_id=STRING`
 
-Request body: <UNKNOWN>
+Request body: 
+```
+{
+    "to": STRING?,
+    "data": STRING?,
+    "mime_type": STRING?,
+    "timestamp": TIMESTAMP?,
+    "title": STRING?,
+    "repeat": INT?
+}
+```
 
 Response:
 ```
-<UNKNOWN>
+{}
 ```
 
 Error:
@@ -1649,13 +1903,13 @@ Error:
 
 Method: POST
 
-Parameters: `account_id`
+Parameters: `account_id=STRING`
 
-Request body: <UNKNOWN>
+Request body: None
 
 Response:
 ```
-<UNKNOWN>
+{}
 ```
 
 Error:
@@ -1671,7 +1925,7 @@ Error:
 
 Websockets
 
-Parameters: `account_id`
+Parameters: `account_id=STRING`
 
 
 ---
@@ -1681,9 +1935,9 @@ Parameters: `account_id`
 
 Method: GET
 
-Parameters: `account_id`
+Parameters: `account_id=STRING`
 
-Request body: <UNKNOWN>
+Request body: UNKNOWN
 
 Response:
 ```
@@ -1703,13 +1957,25 @@ Error:
 
 Method: POST
 
-Parameters: `account_id`
+Parameters: None
 
-Request body: <UNKNOWN>
+Request body: 
+```
+{
+    "account_id": STRING,
+    "templates": [
+        {
+            "device_id": INT,
+            "text": STRING
+        }
+        ...
+    ]
+}
+```
 
 Response:
 ```
-<UNKNOWN>
+{}
 ```
 
 Error:
@@ -1725,13 +1991,13 @@ Error:
 
 Method: POST
 
-Parameters: `account_id`
+Parameters: `account_id=STRING`
 
-Request body: <UNKNOWN>
+Request body: None
 
 Response:
 ```
-<UNKNOWN>
+{}
 ```
 
 Error:
@@ -1747,13 +2013,13 @@ Error:
 
 Method: POST
 
-Parameters: `account_id`
+Parameters: `account_id=STRING`
 
-Request body: <UNKNOWN>
+Request body: None
 
 Response:
 ```
-<UNKNOWN>
+{}
 ```
 
 Error:
