@@ -33,12 +33,12 @@ router.route('/signup').post(function (req, res) {
     var password_hash = crypto.pbkdf2Sync(req.body.password, salt1, 100000, 64, 'sha512');
     
     var values = [
-        query.quote(account_id),
-        query.quote(mysql.escape(req.body.name)), 
-        query.quote(password_hash), 
-        query.quote(salt1), 
-        query.quote(salt2), 
-        query.quote(mysql.escape(req.body.realName)), 
+        db.quote(account_id),
+        db.quote(mysql.escape(req.body.name)), 
+        db.quote(password_hash), 
+        db.quote(salt1), 
+        db.quote(salt2), 
+        db.quote(mysql.escape(req.body.realName)), 
         mysql.escape(req.body.phoneNumber)
     ];
     
@@ -99,10 +99,13 @@ router.route('/clean_account').post(function (req, res) {
     var tables = ["Messages", "Conversations", "Contacts", "Drafts", "ScheduledMessages", "Blacklists", "Folders", "AutoReplies", "Templates"];
     
     
-    // TODO: This won't work, change to a transaction
-    var sql = "DELETE FROM " + tables.join(" ") + " WHERE " + query.whereAccount(req.query.account_id);
+    var sqls = []
     
-    db.query(sql, res, function (result) {
+    tables.forEach(table => {
+        sqls.push("DELETE FROM " + table + " WHERE " + query.whereAccount(req.query.account_id));
+    });
+    
+    db.queries(sqls, res, function (result) {
         res.json({
             "success": "account cleaned"
         });

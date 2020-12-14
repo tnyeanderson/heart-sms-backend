@@ -8,7 +8,7 @@ Checked means "tested working", hash means not needed, and a tilde means the cod
 - [ ] ~ accounts/login
 - [ ] ~ accounts/signup
 - [ ] ~ accounts/remove_account
-- [ ] accounts/clean_account
+- [ ] ~ accounts/clean_account
 - [ ] ~ accounts/count
 - [ ] ~ accounts/settings
 - [ ] accounts/update_setting
@@ -17,9 +17,9 @@ Checked means "tested working", hash means not needed, and a tilde means the cod
 - [ ] # accounts/update_subscription
 - [ ] activate
 - [ ] ~ auto_replies/
-- [ ] auto_replies/add
+- [ ] ~ auto_replies/add
 - [ ] ~ auto_replies/remove/{device_id}
-- [ ] auto_replies/update/{device_id}
+- [ ] ~ auto_replies/update/{device_id}
 - [ ] # beta/register
 - [ ] # beta/remove
 - [ ] ~ blacklists/
@@ -49,18 +49,18 @@ Checked means "tested working", hash means not needed, and a tilde means the cod
 - [ ] conversations/cleanup_messages
 - [ ] ~ devices/
 - [ ] ~ devices/add
-- [ ] devices/update/{id}
+- [ ] ~ devices/update/{id}
 - [ ] ~ devices/remove/{id}
 - [ ] devices/update_primary
 - [ ] ~ drafts/
 - [ ] ~ drafts/add
-- [ ] drafts/update/{device_id}
+- [ ] ~ drafts/update/{device_id}
 - [ ] ~ drafts/remove/{device_conversation_id}
 - [ ] drafts/replace/{device_conversation_id} (different clients use replace vs update)
 - [ ] ~ folders/
 - [ ] ~ folders/add
 - [ ] ~ folders/remove/{device_id}
-- [ ] folders/update/{device_id}
+- [ ] ~ folders/update/{device_id}
 - [ ] media/
 - [ ] messages/
 - [ ] messages/remove/{device_id}
@@ -72,13 +72,13 @@ Checked means "tested working", hash means not needed, and a tilde means the cod
 - [ ] purchases/record
 - [ ] ~ scheduled_messages/
 - [ ] ~ scheduled_messages/add
-- [ ] scheduled_messages/update/{device_id}
+- [ ] ~ scheduled_messages/update/{device_id}
 - [ ] ~ scheduled_messages/remove/{device_id}
 - [ ] stream (websockets)
 - [ ] ~ templates/
 - [ ] ~ templates/add
 - [ ] ~ templates/remove/{device_id}
-- [ ] templates/update/{device_id}
+- [ ] ~ templates/update/{device_id}
 
 
 ## Firebase

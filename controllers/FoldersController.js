@@ -31,9 +31,9 @@ router.route('/add').post(function (req, res) {
     
     req.body.folders.forEach(function (item) {
         var values = [
-            query.quote(mysql.escape(item.account_id)),
+            db.quote(mysql.escape(item.account_id)),
             mysql.escape(item.device_id),
-            query.quote(mysql.escape(item.name)),
+            db.quote(mysql.escape(item.name)),
             mysql.escape(item.color),
             mysql.escape(item.color_dark),
             mysql.escape(item.color_light),
@@ -56,6 +56,29 @@ router.route('/remove/:deviceId').post(function (req, res) {
     
     var sql = "DELETE FROM " + table + " WHERE device_id = " + mysql.escape(req.params.deviceId) + " AND " + query.whereAccount(req.query.account_id);
     console.log(sql);
+
+    db.query(sql, res, function (result) {
+        res.json({});
+    });
+});
+
+
+router.route('/update/:deviceId').post(function (req, res) {
+    if (!req.query.account_id) {
+        res.json(errors.invalidAccount);
+        return;
+    }
+    
+    var cols = ['name', 'color', 'color_dark', 'color_light', 'color_accent'];
+    var values = [
+        db.quote(mysql.escape(req.body.name)),
+        mysql.escape(req.body.color),
+        mysql.escape(req.body.color_dark),
+        mysql.escape(req.body.color_light),
+        mysql.escape(req.body.color_accent)
+    ];
+    
+    var sql = "UPDATE " + table + " SET " + db.updateStr(cols, values) + " WHERE device_id = " + mysql.escape(req.params.deviceId) + " AND " + query.whereAccount(req.query.account_id);
 
     db.query(sql, res, function (result) {
         res.json({});

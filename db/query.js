@@ -53,8 +53,20 @@ var out = {
                 callback(result);
             });
         });
-    }
+    },
     
+    updateStr: function (cols, values) {
+        var out = [];
+        
+        for (var i=0, len=cols.length; i<len; i++) {
+            if (values[i] || values[i] != "''") {
+                out.push(cols[i] + " = " + values[i]);
+            }
+        }
+        
+        return out.join(", ");
+    }
+
 }
 
 module.exports = out;

@@ -31,11 +31,11 @@ router.route('/add').post(function (req, res) {
     
     req.body.auto_replies.forEach(function (item) {
         var values = [
-            query.quote(mysql.escape(item.account_id)),
+            db.quote(mysql.escape(item.account_id)),
             mysql.escape(item.device_id),
-            query.quote(mysql.escape(item.reply_type)),
-            query.quote(mysql.escape(item.pattern)),
-            query.quote(mysql.escape(item.response))
+            db.quote(mysql.escape(item.reply_type)),
+            db.quote(mysql.escape(item.pattern)),
+            db.quote(mysql.escape(item.response))
         ];
         sqls.push("INSERT INTO " + table + " (" + cols.join(", ") + ") VALUES (" + values.join(", ") + ")");
     });
@@ -53,6 +53,28 @@ router.route('/remove/:deviceId').post(function (req, res) {
     }
     
     var sql = "DELETE FROM " + table + " WHERE device_id = " + mysql.escape(req.params.deviceId) + " AND " + query.whereAccount(req.query.account_id);
+    console.log(sql);
+
+    db.query(sql, res, function (result) {
+        res.json({});
+    });
+});
+
+
+router.route('/update/:deviceId').post(function (req, res) {
+    if (!req.query.account_id) {
+        res.json(errors.invalidAccount);
+        return;
+    }
+    
+    var cols = ['type', 'pattern', 'response'];
+    var values = [
+        db.quote(mysql.escape(req.body.type)),
+        db.quote(mysql.escape(req.body.pattern)),
+        db.quote(mysql.escape(req.body.response))
+    ];
+    
+    var sql = "UPDATE " + table + " SET " + db.updateStr(cols, values) + " WHERE device_id = " + mysql.escape(req.params.deviceId) + " AND " + query.whereAccount(req.query.account_id);
     console.log(sql);
 
     db.query(sql, res, function (result) {

@@ -32,10 +32,10 @@ router.route('/add').post(function (req, res) {
     
     req.body.blacklists.forEach(function (item) {
         var values = [
-            query.quote(mysql.escape(item.account_id)),
+            db.quote(mysql.escape(item.account_id)),
             mysql.escape(item.device_id),
-            query.quote(mysql.escape(item.phone_number)),
-            query.quote(mysql.escape(item.phrase))
+            db.quote(mysql.escape(item.phone_number)),
+            db.quote(mysql.escape(item.phrase))
         ];
         sqls.push("INSERT INTO " + table + " (" + cols.join(", ") + ") VALUES (" + values.join(", ") + ")");
     });
