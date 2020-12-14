@@ -1,8 +1,8 @@
 var express = require('express');
 var app = express();
 var router = express.Router();
-var port = process.env.port || 5000
-var wsPort = process.env.wsPort || 5050
+var port = process.env.port || 5000;
+var wsPort = process.env.wsPort || 5050;
 
 var apiBaseUrl = '/api/v1';
 

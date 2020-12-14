@@ -5,7 +5,8 @@ var connect = function () {
         host: 'localhost',
         port: 8000,
         user: 'test',
-        password: 'testpassword'
+        password: 'testpassword',
+        database: 'heartsms'
     });
     
     return con;

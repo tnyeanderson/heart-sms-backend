@@ -3,7 +3,7 @@ var router = express.Router();
 var mysql = require('mysql');
 var db = require('../db/query');
 var errors = require('../utils/errors');
-const { v4: uuidv4 } = require('uuid');
+var util = require('../utils/util');
 const crypto = require('crypto');
 
 router.route('/').get(function (req, res) {
@@ -27,7 +27,7 @@ router.route('/login').post(function (req, res) {
 
 
 router.route('/signup').post(function (req, res) {
-    var account_id = uuidv4().replace(/-/g, '');
+    var account_id = util.createAccountId();
     var salt1 = crypto.randomBytes(256).toString();
     var salt2 = crypto.randomBytes(256).toString();
     var password_hash = crypto.pbkdf2Sync(req.body.password, salt1, 100000, 64, 'sha512');
