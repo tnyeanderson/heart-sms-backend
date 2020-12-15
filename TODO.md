@@ -47,10 +47,10 @@ Checked means "tested working", hash means not needed, and a tilde means the cod
 - [ ] ~ conversations/remove_from_folder/{device_id}
 - [ ] # conversations/clean (included in Android app, but this endpoint is never called from any clients)
 - [ ] ~ conversations/cleanup_messages
-- [ ] ~ devices/
-- [ ] ~ devices/add
-- [ ] ~ devices/update/{id}
-- [ ] ~ devices/remove/{id}
+- [x] ~ devices/
+- [x] ~ devices/add
+- [x] ~ devices/update/{id}
+- [x] ~ devices/remove/{id}
 - [ ] ~ devices/update_primary
 - [ ] ~ drafts/
 - [ ] ~ drafts/add
