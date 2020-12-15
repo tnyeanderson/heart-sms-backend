@@ -6,7 +6,7 @@ USE heartsms;
 
 CREATE TABLE IF NOT EXISTS Accounts (
     `account_id` CHAR(64) NOT NULL PRIMARY KEY,
-    `username` TEXT NOT NULL,
+    `username` VARCHAR(64) NOT NULL UNIQUE,
     `password_hash` TEXT NOT NULL,
     `real_name` TEXT NULL,
     `salt1` TEXT NOT NULL,
@@ -101,7 +101,7 @@ CREATE TABLE IF NOT EXISTS Devices (
     `primary` BOOLEAN NOT NULL,
     `fcm_token` TEXT NULL,
     `account_id` CHAR(64) NOT NULL,
-    `ios` BOOLEAN NOT NULL,
+    `ios` BOOLEAN NOT NULL DEFAULT false,
     CONSTRAINT FK_Devices_Accounts_account_id FOREIGN KEY (account_id) REFERENCES Accounts (account_id) ON DELETE CASCADE
 );
 CREATE TABLE IF NOT EXISTS ScheduledMessages (

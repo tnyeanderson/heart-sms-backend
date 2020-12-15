@@ -77,7 +77,7 @@ router.route('/count').get(function (req, res) {
     }
     
     var tables = ["Devices", "Messages", "Conversations", "Drafts", "ScheduledMessages", "Blacklists", "Contacts", "Templates", "Folders", "AutoReplies"];
-    var colNames = ["device_count", "message_count", "conversation_count", "draft_count", "scheduled_count", "blacklist_count", "contact_count", "template_count", "template_count", "folder_count", "auto_reply_count"];
+    var colNames = ["device_count", "message_count", "conversation_count", "draft_count", "scheduled_count", "blacklist_count", "contact_count", "template_count", "folder_count", "auto_reply_count"];
     
     // Use subqueries to count from each table
     var sql = "SELECT ";
@@ -88,7 +88,7 @@ router.route('/count').get(function (req, res) {
     sql = sql.substring(0, sql.lastIndexOf(","));
     
     db.query(sql, res, function (result) {
-        res.json(result);
+        res.json(result[0]);
     });
 });
 

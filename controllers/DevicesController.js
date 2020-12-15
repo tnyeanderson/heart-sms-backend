@@ -27,34 +27,32 @@ router.route('/add').post(function (req, res) {
         return;
     }
     
-    var cols = ['account_id', 'id', 'info', 'name', 'primary', 'fcm_token'];
-    var sqls = [];
+    var cols = ['account_id', 'id', 'info', 'name', '`primary`', 'fcm_token'];
+
+    var values = [
+        mysql.escape(req.body.account_id),
+        mysql.escape(req.body.device.id),
+        mysql.escape(req.body.device.info),
+        mysql.escape(req.body.device.name),
+        mysql.escape(req.body.device.primary),
+        mysql.escape(req.body.device.fcm_token)
+    ];
     
-    req.body.devices.forEach(function (item) {
-        var values = [
-            mysql.escape(req.body.account_id),
-            mysql.escape(item.id),
-            mysql.escape(item.info),
-            mysql.escape(item.name),
-            mysql.escape(item.primary),
-            mysql.escape(item.fcm_token)
-        ];
-        sqls.push("INSERT INTO " + table + " (" + cols.join(", ") + ") VALUES (" + values.join(", ") + ")");
-    });
+    sql = "INSERT INTO " + table + " (" + cols.join(", ") + ") VALUES (" + values.join(", ") + ")";
         
-    db.queries(sqls, res, function (result) {
+    db.query(sql, res, function (result) {
         res.json({});
     });
 });
 
 
-router.route('/remove/:deviceId').post(function (req, res) {
+router.route('/remove/:id').post(function (req, res) {
     if (!req.query.account_id) {
         res.json(errors.invalidAccount);
         return;
     }
     
-    var sql = "DELETE FROM " + table + " WHERE device_id = " + mysql.escape(req.params.deviceId) + " AND " + db.whereAccount(req.query.account_id);
+    var sql = "DELETE FROM " + table + " WHERE id = " + mysql.escape(Number(req.params.id)) + " AND " + db.whereAccount(req.query.account_id);
     
 
     db.query(sql, res, function (result) {
@@ -98,10 +96,10 @@ router.route('/update_primary').post(function (req, res) {
     var sqls = [];
     
     // Set all devices to primary = false
-    sqls.push("UPDATE " + table + " SET primary = false WHERE " + db.whereAccount(req.query.account_id));
+    sqls.push("UPDATE " + table + " SET `primary` = false WHERE " + db.whereAccount(req.query.account_id));
     
     // Set new primary to primary = true
-    sqls.push("UPDATE " + table + " SET primary = true WHERE id = " + mysql.escape(req.query.new_primary_device_id) + " AND " + db.whereAccount(req.query.account_id));
+    sqls.push("UPDATE " + table + " SET `primary` = true WHERE id = " + mysql.escape(req.query.new_primary_device_id) + " AND " + db.whereAccount(req.query.account_id));
 
     db.query(sql, res, function (result) {
         res.json({});
