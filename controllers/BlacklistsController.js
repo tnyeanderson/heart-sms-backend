@@ -12,7 +12,7 @@ router.route('/').get(function (req, res) {
         return;
     }
     
-    var sql = "SELECT * FROM " + table + " WHERE " + query.whereAccount(req.query.account_id);
+    var sql = "SELECT * FROM " + table + " WHERE " + db.whereAccount(req.query.account_id);
     console.log(sql);
 
     db.query(sql, res, function (result) {
@@ -32,10 +32,10 @@ router.route('/add').post(function (req, res) {
     
     req.body.blacklists.forEach(function (item) {
         var values = [
-            db.quote(mysql.escape(item.account_id)),
+            mysql.escape(item.account_id),
             mysql.escape(item.device_id),
-            db.quote(mysql.escape(item.phone_number)),
-            db.quote(mysql.escape(item.phrase))
+            mysql.escape(item.phone_number),
+            mysql.escape(item.phrase)
         ];
         sqls.push("INSERT INTO " + table + " (" + cols.join(", ") + ") VALUES (" + values.join(", ") + ")");
     });
@@ -52,7 +52,7 @@ router.route('/remove/:deviceId').post(function (req, res) {
         return;
     }
     
-    var sql = "DELETE FROM " + table + " WHERE device_id = " + mysql.escape(req.params.deviceId) + " AND " + query.whereAccount(req.query.account_id);
+    var sql = "DELETE FROM " + table + " WHERE device_id = " + mysql.escape(req.params.deviceId) + " AND " + db.whereAccount(req.query.account_id);
     console.log(sql);
 
     db.query(sql, res, function (result) {

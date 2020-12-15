@@ -122,7 +122,7 @@ Request body: None
 
 Response:
 ```
-<UNKNOWN>
+{}
 ```
 
 Error:
@@ -207,13 +207,74 @@ Error:
 
 Method: POST
 
-Parameters: `account_id=STRING`
+Parameters: `account_id=STRING`, `pref=STRING`, `type=STRING`, `value=OBJECT`
 
-Request body: UNKNOWN
+```
+Possible pref strings, with related type (OBJECT is of type):
+
+snooze LONG
+vibrate_pattern_identifier STRING
+repeat_notifications_interval STRING
+wake_screen STRING
+heads_up STRING
+delivery_reports BOOLEAN
+giffgaff_delivery BOOLEAN
+strip_unicode BOOLEAN BOOLEAN
+history_in_notifications BOOLEAN
+hide_message_content BOOLEAN
+dismiss_notifications_on_reply_android_p BOOLEAN
+bubble_style STRING
+notification_actions SET
+left_to_right_swipe STRING
+right_to_left_swipe STRING
+sms_to_mms_message_conversion_count STRING
+mms_size_limit STRING
+group_sms BOOLEAN
+mms_read_receipts BOOLEAN
+auto_save_media BOOLEAN
+mms_override BOOLEAN
+mmsc_url STRING
+mms_proxy STRING
+mms_port STRING
+user_agent STRING
+user_agent_profile_url STRING
+user_agent_profile_tag_name STRING
+private_conversations_passcode STRING
+smart_reply BOOLEAN
+smart_reply_timeout BOOLEAN
+internal_browser BOOLEAN
+quick_compose BOOLEAN
+signature STRING
+delayed_sending STRING
+cleanup_old_messages STRING
+unknown_number_reception STRING
+sound_effects BOOLEAN
+mobile_only BOOLEAN
+font_size STRING
+emoji_style STRING
+keyboard_layout STRING
+global_primary_color INT
+global_primary_dark_color INT
+global_accent_color INT
+apply_theme_globally BOOLEAN
+apply_primary_color_to_toolbar BOOLEAN
+conversation_categories BOOLEAN
+message_timestamp BOOLEAN
+base_theme STRING
+quick_compose_favorites STRING
+notification_actions_selection STRING
+driving_mode BOOLEAN
+driving_mode_edit STRING
+vacation_mode BOOLEAN
+vacation_mode_edit STRING
+blacklist_phrase_regex BOOLEAN
+```
+
+Request body: None
 
 Response:
 ```
-<UNKNOWN>
+{}
 ```
 
 Error:
@@ -229,13 +290,15 @@ Error:
 
 Method: POST
 
-Parameters: `account_id=STRING`
+Parameters: `account_id=STRING`, `device_id=STRING?`, `id=STRING`
 
-Request body: UNKNOWN
+*id refers to device_conversation_id. device_id is always null in apps...*
+
+Request body: None
 
 Response:
 ```
-<UNKNOWN>
+{}
 ```
 
 Error:
@@ -1381,7 +1444,6 @@ Parameters: `account_id=STRING`
 Request body: 
 ```
 {
-    "account_id": STRING,
     "drafts": [
         {
             "device_id": INT,

@@ -4,7 +4,7 @@ var conn = require('../db/connect');
 var out = {
     
     whereAccount: function (accountId) {
-        return "account_id = '" + mysql.escape(accountId) + "'";
+        return "account_id = " + mysql.escape(accountId);
     },
     
     quote: function (str) {

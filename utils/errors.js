@@ -10,6 +10,10 @@ var errors = {
     
     notImplemented: {
         "error": "Not implemented"
+    },
+    
+    missingParam: {
+        "error": "missing required parameter"
     }
     
 }

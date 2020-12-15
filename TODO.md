@@ -51,12 +51,12 @@ Checked means "tested working", hash means not needed, and a tilde means the cod
 - [ ] ~ devices/add
 - [ ] ~ devices/update/{id}
 - [ ] ~ devices/remove/{id}
-- [ ] devices/update_primary
+- [ ] ~ devices/update_primary
 - [ ] ~ drafts/
 - [ ] ~ drafts/add
 - [ ] ~ drafts/update/{device_id}
 - [ ] ~ drafts/remove/{device_conversation_id}
-- [ ] drafts/replace/{device_conversation_id} (different clients use replace vs update)
+- [ ] ~ drafts/replace/{device_conversation_id} (different clients use replace vs update)
 - [ ] ~ folders/
 - [ ] ~ folders/add
 - [ ] ~ folders/remove/{device_id}

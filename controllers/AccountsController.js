@@ -34,11 +34,11 @@ router.route('/signup').post(function (req, res) {
     
     var values = [
         db.quote(account_id),
-        db.quote(mysql.escape(req.body.name)), 
+        mysql.escape(req.body.name), 
         db.quote(password_hash), 
         db.quote(salt1), 
         db.quote(salt2), 
-        db.quote(mysql.escape(req.body.realName)), 
+        mysql.escape(req.body.realName), 
         mysql.escape(req.body.phoneNumber)
     ];
     
@@ -58,7 +58,7 @@ router.route('/remove_account').post(function (req, res) {
         return;
     }
     
-    var sql = "DELETE FROM Accounts WHERE " + query.whereAccount(req.query.account_id) + " LIMIT 1";
+    var sql = "DELETE FROM Accounts WHERE " + db.whereAccount(req.query.account_id) + " LIMIT 1";
     
     db.query(sql, res, function (result) {
         res.json({
@@ -80,7 +80,7 @@ router.route('/count').get(function (req, res) {
     // Use subqueries to count from each table
     var sql = "SELECT ";
     for (var i=0, len=tables.length; i<len; i++) {
-        sql += "(SELECT COUNT(*) FROM " + tables[i] + " WHERE " + query.whereAccount(req.query.account_id) + ") AS " + colNames[i] + ", ";
+        sql += "(SELECT COUNT(*) FROM " + tables[i] + " WHERE " + db.whereAccount(req.query.account_id) + ") AS " + colNames[i] + ", ";
     }
     // Remove last comma
     sql = sql.substring(0, sql.lastIndexOf(","));
@@ -102,7 +102,7 @@ router.route('/clean_account').post(function (req, res) {
     var sqls = []
     
     tables.forEach(table => {
-        sqls.push("DELETE FROM " + table + " WHERE " + query.whereAccount(req.query.account_id));
+        sqls.push("DELETE FROM " + table + " WHERE " + db.whereAccount(req.query.account_id));
     });
     
     db.queries(sqls, res, function (result) {
@@ -120,7 +120,7 @@ router.route('/settings').get(function (req, res) {
     
     var fields = ["base_theme", "global_color_theme", "rounder_bubbles", "color", "color_dark", "color_light", "color_accent", "use_global_theme", "apply_primary_color_to_toolbar", "passcode", "subscription_type", "message_timestamp", "conversation_categories"];
     
-    var sql = "SELECT " + fields.join(", ") + " FROM Accounts WHERE " + query.whereAccount(req.query.account_id) + " LIMIT 1";
+    var sql = "SELECT " + fields.join(", ") + " FROM Accounts WHERE " + db.whereAccount(req.query.account_id) + " LIMIT 1";
     
     db.query(sql, res, function (result) {
         res.json(result[0]);
