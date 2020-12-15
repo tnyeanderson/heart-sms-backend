@@ -67,13 +67,12 @@ router.route('/update/:deviceId').post(function (req, res) {
         return;
     }
     
-    var cols = ['data', 'mime_type'];
-    var values = [
-        mysql.escape(req.body.data),
-        mysql.escape(req.body.mime_type)
-    ];
+    var toUpdate = {
+        data: mysql.escape(req.body.data),
+        mime_type: mysql.escape(req.body.mime_type)
+    };
     
-    var sql = "UPDATE " + table + " SET " + db.updateStr(cols, values) + " WHERE device_id = " + mysql.escape(req.params.deviceId) + " AND " + db.whereAccount(req.query.account_id);
+    var sql = "UPDATE " + table + " SET " + db.updateStr(toUpdate) + " WHERE device_id = " + mysql.escape(req.params.deviceId) + " AND " + db.whereAccount(req.query.account_id);
 
     db.query(sql, res, function (result) {
         res.json({});
@@ -87,18 +86,17 @@ router.route('/replace/:deviceConversationId').post(function (req, res) {
         return;
     }
     
-    var cols = ['device_id', 'device_conversation_id', 'mime_type', 'data'];
-    
     var sqls = [];
     
     req.body.drafts.forEach(item => {
-        var values = [
-            mysql.escape(item.device_id),
-            mysql.esacap(item.device_conversation_id),
-            mysql.escape(item.mime_type),
-            mysql.escape(item.data)
-        ];
-        sqls.push("UPDATE " + table + " SET " + db.updateStr(cols, values) + " WHERE device_conversation_id = " + mysql.escape(req.params.deviceConversationId) + " AND " + db.whereAccount(req.query.account_id));
+        var toUpdate = {
+            device_id: mysql.escape(item.device_id),
+            device_conversation_id: mysql.escape(item.device_conversation_id),
+            mime_type: mysql.escape(item.mime_type),
+            data: mysql.escape(item.data)
+        };
+        
+        sqls.push("UPDATE " + table + " SET " + db.updateStr(toUpdate) + " WHERE device_conversation_id = " + mysql.escape(req.params.deviceConversationId) + " AND " + db.whereAccount(req.query.account_id));
     });
 
     db.queries(sqls, res, function (result) {

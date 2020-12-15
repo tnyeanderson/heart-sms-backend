@@ -107,17 +107,16 @@ router.route('/update_device_id').post(function (req, res) {
         return;
     }
     
-    var cols = ['phone_number', 'name', 'color', 'color_dark', 'color_light', 'color_accent'];
-    var values = [
-        mysql.escape(req.body.phone_number),
-        mysql.escape(req.body.name),
-        mysql.escape(req.body.color),
-        mysql.escape(req.body.color_dark),
-        mysql.escape(req.body.color_light),
-        mysql.escape(req.body.color_accent)
-    ];
+    var toUpdate = {
+        phone_number: mysql.escape(req.body.phone_number),
+        name: mysql.escape(req.body.name),
+        color: mysql.escape(req.body.color),
+        color_dark: mysql.escape(req.body.color_dark),
+        color_light: mysql.escape(req.body.color_light),
+        color_accent: mysql.escape(req.body.color_accent)
+    };
     
-    var sql = "UPDATE " + table + " SET " + db.updateStr(cols, values) + " WHERE device_id = " + mysql.escape(req.query.device_id) + " AND " + db.whereAccount(req.query.account_id);
+    var sql = "UPDATE " + table + " SET " + db.updateStr(toUpdate) + " WHERE device_id = " + mysql.escape(req.query.device_id) + " AND " + db.whereAccount(req.query.account_id);
     
 
     db.query(sql, res, function (result) {

@@ -51,7 +51,7 @@ Checked means "tested working", hash means not needed, and a tilde means the cod
 - [x] ~ devices/add
 - [x] ~ devices/update/{id}
 - [x] ~ devices/remove/{id}
-- [ ] ~ devices/update_primary
+- [x] ~ devices/update_primary
 - [ ] ~ drafts/
 - [ ] ~ drafts/add
 - [ ] ~ drafts/update/{device_id}

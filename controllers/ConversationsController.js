@@ -78,25 +78,24 @@ router.route('/update/:deviceId').post(function (req, res) {
         return;
     }
     
-    var cols = ['color', 'color_dark', 'color_light', 'color_accent', 'led_color', 'pinned', 'read', 'timestamp', 'title', 'snippet', 'ringtone', 'mute', 'archive', 'private_notifications'];
-    var values = [
-        mysql.escape(req.body.color),
-        mysql.escape(req.body.color_dark),
-        mysql.escape(req.body.color_light),
-        mysql.escape(req.body.color_accent),
-        mysql.escape(req.body.led_color),
-        mysql.escape(req.body.pinned),
-        mysql.escape(req.body.read),
-        mysql.escape(req.body.timestamp),
-        mysql.escape(req.body.title),
-        mysql.escape(req.body.snippet),
-        mysql.escape(req.body.ringtone),
-        mysql.escape(req.body.mute),
-        mysql.escape(req.body.archive),
-        mysql.escape(req.body.private_notifications)
-    ];
+    var toUpdate = {
+        color: mysql.escape(req.body.color),
+        color_dark: mysql.escape(req.body.color_dark),
+        color_light: mysql.escape(req.body.color_light),
+        color_accent: mysql.escape(req.body.color_accent),
+        led_color: mysql.escape(req.body.led_color),
+        pinned: mysql.escape(req.body.pinned),
+        read: mysql.escape(req.body.read),
+        timestamp: mysql.escape(req.body.timestamp),
+        title: mysql.escape(req.body.title),
+        snippet: mysql.escape(req.body.snippet),
+        ringtone: mysql.escape(req.body.ringtone),
+        mute: mysql.escape(req.body.mute),
+        archive: mysql.escape(req.body.archive),
+        private_notifications: mysql.escape(req.body.private_notifications)
+    };
     
-    var sql = "UPDATE " + table + " SET " + db.updateStr(cols, values) + " WHERE device_id = " + mysql.escape(req.params.deviceId) + " AND " + db.whereAccount(req.query.account_id);
+    var sql = "UPDATE " + table + " SET " + db.updateStr(toUpdate) + " WHERE device_id = " + mysql.escape(req.params.deviceId) + " AND " + db.whereAccount(req.query.account_id);
 
     db.query(sql, res, function (result) {
         res.json({});
@@ -110,15 +109,14 @@ router.route('/update_snippet/:deviceId').post(function (req, res) {
         return;
     }
     
-    var cols = ['read', 'timestamp', 'snippet', 'archive'];
-    var values = [
-        mysql.escape(req.body.read),
-        mysql.escape(req.body.timestamp),
-        mysql.escape(req.body.snippet),
-        mysql.escape(req.body.archive)
-    ];
+    var toUpdate = {
+        read: mysql.escape(req.body.read),
+        timestamp: mysql.escape(req.body.timestamp),
+        snippet: mysql.escape(req.body.snippet),
+        archive: mysql.escape(req.body.archive)
+    };
     
-    var sql = "UPDATE " + table + " SET " + db.updateStr(cols, values) + " WHERE device_id = " + mysql.escape(req.params.deviceId) + " AND " + db.whereAccount(req.query.account_id);
+    var sql = "UPDATE " + table + " SET " + db.updateStr(toUpdate) + " WHERE device_id = " + mysql.escape(req.params.deviceId) + " AND " + db.whereAccount(req.query.account_id);
 
     db.query(sql, res, function (result) {
         res.json({});
@@ -137,12 +135,11 @@ router.route('/update_snippet/:deviceId').post(function (req, res) {
         return;
     }
     
-    var cols = ['title'];
-    var values = [
-        mysql.escape(req.query.title)
-    ];
+    var toUpdate = {
+        title: mysql.escape(req.query.title)
+    };
     
-    var sql = "UPDATE " + table + " SET " + db.updateStr(cols, values) + " WHERE device_id = " + mysql.escape(req.params.deviceId) + " AND " + db.whereAccount(req.query.account_id);
+    var sql = "UPDATE " + table + " SET " + db.updateStr(toUpdate) + " WHERE device_id = " + mysql.escape(req.params.deviceId) + " AND " + db.whereAccount(req.query.account_id);
 
     db.query(sql, res, function (result) {
         res.json({});

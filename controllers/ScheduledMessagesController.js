@@ -70,17 +70,16 @@ router.route('/update/:deviceId').post(function (req, res) {
         return;
     }
     
-    var cols = ['to', 'data', 'mime_type', 'timestamp', 'title', 'repeat'];
-    var values = [
-        mysql.escape(req.body.to),
-        mysql.escape(req.body.data),
-        mysql.escape(req.body.mime_type),
-        mysql.escape(req.body.timestamp),
-        mysql.escape(req.body.title),
-        mysql.escape(req.body.repeat)
-    ];
+    var toUpdate = {
+        to: mysql.escape(req.body.to),
+        data: mysql.escape(req.body.data),
+        mime_type: mysql.escape(req.body.mime_type),
+        timestamp: mysql.escape(req.body.timestamp),
+        title: mysql.escape(req.body.title),
+        repeat: mysql.escape(req.body.repeat)
+    };
     
-    var sql = "UPDATE " + table + " SET " + db.updateStr(cols, values) + " WHERE device_id = " + mysql.escape(req.params.deviceId) + " AND " + db.whereAccount(req.query.account_id);
+    var sql = "UPDATE " + table + " SET " + db.updateStr(toUpdate) + " WHERE device_id = " + mysql.escape(req.params.deviceId) + " AND " + db.whereAccount(req.query.account_id);
 
     db.query(sql, res, function (result) {
         res.json({});

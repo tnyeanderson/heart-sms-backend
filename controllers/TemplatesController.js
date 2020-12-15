@@ -66,12 +66,11 @@ router.route('/update/:deviceId').post(function (req, res) {
         return;
     }
     
-    var cols = ['text'];
-    var values = [
-        mysql.escape(req.body.text)
-    ];
+    var toUpdate = {
+        text: mysql.escape(req.body.text)
+    };
     
-    var sql = "UPDATE " + table + " SET " + db.updateStr(cols, values) + " WHERE device_id = " + mysql.escape(req.params.deviceId) + " AND " + db.whereAccount(req.query.account_id);
+    var sql = "UPDATE " + table + " SET " + db.updateStr(toUpdate) + " WHERE device_id = " + mysql.escape(req.params.deviceId) + " AND " + db.whereAccount(req.query.account_id);
 
     db.query(sql, res, function (result) {
         res.json({});

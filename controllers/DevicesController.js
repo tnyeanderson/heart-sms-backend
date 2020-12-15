@@ -67,13 +67,12 @@ router.route('/update/:id').post(function (req, res) {
         return;
     }
     
-    var cols = ['fcm_token', 'name'];
-    var values = [
-        mysql.escape(req.query.fcm_token),
-        mysql.escape(req.query.name)
-    ];
+    var toUpdate = {
+        fcm_token: mysql.escape(req.query.fcm_token),
+        name: mysql.escape(req.query.name)
+    };
     
-    var sql = "UPDATE " + table + " SET " + db.updateStr(cols, values) + " WHERE id = " + mysql.escape(req.params.id) + " AND " + db.whereAccount(req.query.account_id);
+    var sql = "UPDATE " + table + " SET " + db.updateStr(toUpdate) + " WHERE id = " + mysql.escape(req.params.id) + " AND " + db.whereAccount(req.query.account_id);
     
 
     db.query(sql, res, function (result) {

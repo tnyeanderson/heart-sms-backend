@@ -56,14 +56,14 @@ var out = {
         });
     },
     
-    updateStr: function (cols, values) {
+    updateStr: function (toUpdate) {
         var out = [];
         
-        for (var i=0, len=cols.length; i<len; i++) {
-            if (values[i] && values[i] != "''" && values[i] != 'NULL') {
-                out.push(cols[i] + " = " + values[i]);
+        Object.keys(toUpdate).forEach(key => {
+            if (toUpdate[key] && toUpdate[key] != "''" && toUpdate[key] != 'NULL') {
+                out.push(key + " = " + toUpdate[key]);
             }
-        }
+        });
         
         return out.join(", ");
     }
