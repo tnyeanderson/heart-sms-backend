@@ -572,7 +572,7 @@ Error:
 
 Method: GET
 
-Parameters: `account_id=STRING`, `limit=INT?`, `OFFSET=INT?`
+Parameters: `account_id=STRING`, `limit=INT?`, `offset=INT?`
 
 Request body: None
 
@@ -649,7 +649,9 @@ Error:
 
 Method: POST
 
-Parameters: `account_id=STRING`
+Parameters: `account_id=STRING`, `phone_number=STRING?`, `device_id=INT`
+
+*We do not use the phone_number parameter for matching. It is included for historical purposes*
 
 Request body: 
 ```
@@ -725,7 +727,7 @@ Error:
 
 Method: GET
 
-Parameters: `account_id=STRING`
+Parameters: `account_id=STRING`, `limit=INT?`, `offset=INT?`
 
 Request body: None
 
@@ -754,7 +756,7 @@ Error:
 ---
 
 
-### `/contacts/remove_ids/:id`
+### `/contacts/remove_ids/{ids}`
 
 *ids is a single id or a comma separated list of contact ids (NOT device_ids)*
 

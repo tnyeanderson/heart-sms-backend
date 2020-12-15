@@ -5,7 +5,7 @@ var db = require('../db/query');
 
 router.route('/').get(function (req, res) {
     var sql = "SELECT 1";
-    console.log(sql);
+    
     db.query(sql, res, function (result) {
         res.json(result);
     });

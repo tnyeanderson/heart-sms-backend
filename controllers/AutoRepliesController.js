@@ -2,6 +2,7 @@ var express = require('express');
 var router = express.Router();
 var mysql = require('mysql');
 var db = require('../db/query');
+var errors = require('../utils/errors');
 
 var table = "AutoReplies"
 
@@ -12,7 +13,7 @@ router.route('/').get(function (req, res) {
     }
     
     var sql = "SELECT * FROM " + table + " WHERE " + db.whereAccount(req.query.account_id);
-    console.log(sql);
+    
 
     db.query(sql, res, function (result) {
         res.json(result);
@@ -31,7 +32,7 @@ router.route('/add').post(function (req, res) {
     
     req.body.auto_replies.forEach(function (item) {
         var values = [
-            mysql.escape(item.account_id),
+            mysql.escape(req.body.account_id),
             mysql.escape(item.device_id),
             mysql.escape(item.reply_type),
             mysql.escape(item.pattern),
@@ -53,7 +54,7 @@ router.route('/remove/:deviceId').post(function (req, res) {
     }
     
     var sql = "DELETE FROM " + table + " WHERE device_id = " + mysql.escape(req.params.deviceId) + " AND " + db.whereAccount(req.query.account_id);
-    console.log(sql);
+    
 
     db.query(sql, res, function (result) {
         res.json({});
@@ -67,7 +68,7 @@ router.route('/update/:deviceId').post(function (req, res) {
         return;
     }
     
-    var cols = ['type', 'pattern', 'response'];
+    var cols = ['reply_type', 'pattern', 'response'];
     var values = [
         mysql.escape(req.body.type),
         mysql.escape(req.body.pattern),
@@ -75,7 +76,7 @@ router.route('/update/:deviceId').post(function (req, res) {
     ];
     
     var sql = "UPDATE " + table + " SET " + db.updateStr(cols, values) + " WHERE device_id = " + mysql.escape(req.params.deviceId) + " AND " + db.whereAccount(req.query.account_id);
-    console.log(sql);
+    
 
     db.query(sql, res, function (result) {
         res.json({});

@@ -1,6 +1,7 @@
 var express = require('express');
 var app = express();
 var router = express.Router();
+var cors = require('cors');
 var port = process.env.port || 5000;
 var wsPort = process.env.wsPort || 5050;
 
@@ -13,6 +14,9 @@ function getUrl (path) {
 
 // Import Controllers
 var controllers = require('require-all')(__dirname + '/controllers');
+
+// Allow cross-site requests
+app.use(cors());
 
 
 // Set up websockets

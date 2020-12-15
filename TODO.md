@@ -5,48 +5,48 @@ TChilderhose implemented nearly all of this backend before giving me his code to
 Checked means "tested working", hash means not needed, and a tilde means the code is present but I haven't tested it yet.
 
 - [ ] # accounts/ (original api fails on this request)
-- [ ] ~ accounts/login
-- [ ] ~ accounts/signup
-- [ ] ~ accounts/remove_account
+- [x] accounts/login
+- [x] accounts/signup
+- [x] accounts/remove_account
 - [ ] ~ accounts/clean_account
-- [ ] ~ accounts/count
-- [ ] ~ accounts/settings
+- [x] accounts/count
+- [x] accounts/settings
 - [ ] accounts/update_setting
 - [ ] accounts/dismissed_notification
 - [ ] accounts/view_subscription
 - [ ] # accounts/update_subscription
 - [ ] activate
-- [ ] ~ auto_replies/
-- [ ] ~ auto_replies/add
-- [ ] ~ auto_replies/remove/{device_id}
-- [ ] ~ auto_replies/update/{device_id}
+- [x] auto_replies/
+- [x] auto_replies/add
+- [x] auto_replies/remove/{device_id}
+- [x] auto_replies/update/{device_id}
 - [ ] # beta/register
 - [ ] # beta/remove
-- [ ] ~ blacklists/
-- [ ] ~ blacklists/add
-- [ ] ~ blacklists/remove/{device_id}
-- [ ] contacts/
-- [ ] contacts/add
-- [ ] contacts/update_device_id
-- [ ] contacts/remove_device_id
-- [ ] contacts/clear
-- [ ] contacts/simple
-- [ ] contacts/remove_ids
-- [ ] conversations/
-- [ ] conversations/add
-- [ ] conversations/update/{device_id}
-- [ ] conversations/update_snippet/{device_id}
-- [ ] conversations/update_title/{device_id}
-- [ ] conversations/remove/{device_id}
-- [ ] conversations/read/{device_id}
-- [ ] conversations/seen
-- [ ] conversations/seen/{device_id}
-- [ ] conversations/archive/{device_id}
-- [ ] conversations/unarchive/{device_id}
-- [ ] conversations/add_to_folder/{device_id}
-- [ ] conversations/remove_from_folder/{device_id}
+- [x] blacklists/
+- [x] blacklists/add
+- [x] blacklists/remove/{device_id}
+- [ ] ~ contacts/
+- [ ] ~ contacts/add
+- [ ] ~ contacts/update_device_id
+- [ ] ~ contacts/remove_device_id
+- [ ] ~ contacts/clear
+- [ ] ~ contacts/simple
+- [ ] ~ contacts/remove_ids
+- [ ] ~ conversations/
+- [ ] ~ conversations/add
+- [ ] ~ conversations/update/{device_id}
+- [ ] ~ conversations/update_snippet/{device_id}
+- [ ] ~ conversations/update_title/{device_id}
+- [ ] ~ conversations/remove/{device_id}
+- [ ] ~ conversations/read/{device_id}
+- [ ] ~ conversations/seen
+- [ ] ~ conversations/seen/{device_id}
+- [ ] ~ conversations/archive/{device_id}
+- [ ] ~ conversations/unarchive/{device_id}
+- [ ] ~ conversations/add_to_folder/{device_id}
+- [ ] ~ conversations/remove_from_folder/{device_id}
 - [ ] # conversations/clean (included in Android app, but this endpoint is never called from any clients)
-- [ ] conversations/cleanup_messages
+- [ ] ~ conversations/cleanup_messages
 - [ ] ~ devices/
 - [ ] ~ devices/add
 - [ ] ~ devices/update/{id}
@@ -62,12 +62,12 @@ Checked means "tested working", hash means not needed, and a tilde means the cod
 - [ ] ~ folders/remove/{device_id}
 - [ ] ~ folders/update/{device_id}
 - [ ] media/
-- [ ] messages/
-- [ ] messages/remove/{device_id}
-- [ ] messages/add/
-- [ ] messages/update/{device_id}
-- [ ] messages/update_type/{device_id}
-- [ ] messages/cleanup
+- [ ] ~ messages/
+- [ ] ~ messages/remove/{device_id}
+- [ ] ~ messages/add/
+- [ ] ~ messages/update/{device_id}
+- [ ] ~ messages/update_type/{device_id}
+- [ ] ~ messages/cleanup
 - [ ] messages/forward_to_phone
 - [ ] purchases/record
 - [ ] ~ scheduled_messages/

@@ -13,7 +13,7 @@ router.route('/').get(function (req, res) {
     }
     
     var sql = "SELECT * FROM " + table + " WHERE " + db.whereAccount(req.query.account_id);
-    console.log(sql);
+    
 
     db.query(sql, res, function (result) {
         res.json(result);
@@ -32,7 +32,7 @@ router.route('/add').post(function (req, res) {
     
     req.body.blacklists.forEach(function (item) {
         var values = [
-            mysql.escape(item.account_id),
+            mysql.escape(req.body.account_id),
             mysql.escape(item.device_id),
             mysql.escape(item.phone_number),
             mysql.escape(item.phrase)
@@ -53,7 +53,7 @@ router.route('/remove/:deviceId').post(function (req, res) {
     }
     
     var sql = "DELETE FROM " + table + " WHERE device_id = " + mysql.escape(req.params.deviceId) + " AND " + db.whereAccount(req.query.account_id);
-    console.log(sql);
+    
 
     db.query(sql, res, function (result) {
         res.json({});

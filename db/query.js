@@ -12,6 +12,7 @@ var out = {
     },
     
     query: function (sql, res, callback) {
+        console.log(sql);
         conn().connect(function (err) {
             if (err) {
                 res.status(400).json({
@@ -34,7 +35,7 @@ var out = {
     
     queries: function (sqls, res, callback) {
         var sql = sqls.join('; ');
-        
+        console.log(sql);
         conn({multipleStatements: true}).connect(function (err) {
             if (err) {
                 res.status(400).json({

@@ -2,6 +2,7 @@ var express = require('express');
 var router = express.Router();
 var mysql = require('mysql');
 var db = require('../db/query');
+var errors = require('../utils/errors');
 
 var table = "Drafts"
 
@@ -12,7 +13,7 @@ router.route('/').get(function (req, res) {
     }
     
     var sql = "SELECT * FROM " + table + " WHERE " + db.whereAccount(req.query.account_id);
-    console.log(sql);
+    
 
     db.query(sql, res, function (result) {
         res.json(result);
@@ -31,7 +32,7 @@ router.route('/add').post(function (req, res) {
     
     req.body.drafts.forEach(function (item) {
         var values = [
-            mysql.escape(item.account_id),
+            mysql.escape(req.body.account_id),
             mysql.escape(item.device_id),
             mysql.escape(item.device_conversation_id),
             mysql.escape(item.mime_type),

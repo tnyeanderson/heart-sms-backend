@@ -12,10 +12,12 @@ router.route('/').get(function (req, res) {
 
 
 router.route('/login').post(function (req, res) {
-    var sql = "SELECT * FROM Accounts WHERE username = '" + mysql.escape(req.body.username) + "' LIMIT 1";
+    var sql = "SELECT * FROM Accounts WHERE username = " + mysql.escape(req.body.username) + " LIMIT 1";
     
     db.query(sql, res, function (result) {
-        if (result[0].password_hash == crypto.pbkdf2Sync(req.body.password, result[0].salt1, 100000, 64, 'sha512')) {
+        var testhash = crypto.pbkdf2Sync(req.body.password, result[0].salt1, 100000, 64, 'sha512').toString('hex');
+        console.log(result[0].password_hash, testhash);
+        if (result[0].password_hash == testhash) {
             delete result[0].password_hash;
             delete result[0].username;
             res.json(result[0]);
@@ -28,9 +30,9 @@ router.route('/login').post(function (req, res) {
 
 router.route('/signup').post(function (req, res) {
     var account_id = util.createAccountId();
-    var salt1 = crypto.randomBytes(256).toString();
-    var salt2 = crypto.randomBytes(256).toString();
-    var password_hash = crypto.pbkdf2Sync(req.body.password, salt1, 100000, 64, 'sha512');
+    var salt1 = crypto.randomBytes(64).toString('hex');
+    var salt2 = crypto.randomBytes(64).toString('hex');
+    var password_hash = crypto.pbkdf2Sync(req.body.password, salt1, 100000, 64, 'sha512').toString('hex');
     
     var values = [
         db.quote(account_id),
@@ -38,14 +40,14 @@ router.route('/signup').post(function (req, res) {
         db.quote(password_hash), 
         db.quote(salt1), 
         db.quote(salt2), 
-        mysql.escape(req.body.realName), 
-        mysql.escape(req.body.phoneNumber)
+        mysql.escape(req.body.real_name), 
+        mysql.escape(req.body.phone_number)
     ];
     
-    var sql = "INSERT INTO Accounts (account_id, username, password_hash, salt1, salt2, name, phone_number) "
+    var sql = "INSERT INTO Accounts (account_id, username, password_hash, salt1, salt2, real_name, phone_number) "
     sql += "VALUES (" + values.join(", ") + ")";
     
-    console.log(sql);
+    
     db.query(sql, res, function (result) {
         res.json({});
     });
