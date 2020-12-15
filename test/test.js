@@ -217,12 +217,48 @@ describe("heart-sms-backend unit test", function () {
         });
     });
     
+    it("Add second device", function (done) {
+        server
+        .post('/devices/add')
+        .send({
+            "account_id": accountId,
+            "device": {
+                "id": 2,
+                "info": "testinfo2",
+                "name": "test2",
+                "primary": false,
+                "fcm_token": "token2"
+            }
+        })
+        .expect("Content-type",/json/)
+        .expect(200)
+        .end(function (err,res) {
+            res.status.should.equal(200);
+            done();
+        });
+    });
+    
     it("Update device", function (done) {
         server
         .post('/devices/update/1')
         .query({
             "account_id": accountId,
             "fcm_token": "newtoken"
+        })
+        .expect("Content-type",/json/)
+        .expect(200)
+        .end(function (err,res) {
+            res.status.should.equal(200);
+            done();
+        });
+    });
+    
+    it("Change primary device", function (done) {
+        server
+        .post('/devices/update_primary')
+        .query({
+            "account_id": accountId,
+            "new_primary_device_id": 2
         })
         .expect("Content-type",/json/)
         .expect(200)
@@ -242,9 +278,11 @@ describe("heart-sms-backend unit test", function () {
         .expect(200)
         .end(function (err,res) {
             res.status.should.equal(200);
-            res.body.should.have.lengthOf(1);
-            res.body[0].primary.should.equal(true);
+            res.body.should.have.lengthOf(2);
+            res.body[0].primary.should.equal(false);
+            res.body[0].name.should.equal("test");
             res.body[0].fcm_token.should.equal("newtoken");
+            res.body[1].primary.should.equal(true);
             done();
         });
     });
@@ -273,7 +311,7 @@ describe("heart-sms-backend unit test", function () {
         .expect(200)
         .end(function (err,res) {
             res.status.should.equal(200);
-            res.body.device_count.should.equal(0);
+            res.body.device_count.should.equal(1);
             res.body.message_count.should.equal(0);
             res.body.conversation_count.should.equal(0);
             res.body.draft_count.should.equal(0);
@@ -311,7 +349,7 @@ describe("heart-sms-backend unit test", function () {
         .expect(200)
         .end(function (err,res) {
             res.status.should.equal(200);
-            res.body.device_count.should.equal(0);
+            res.body.device_count.should.equal(1);
             res.body.message_count.should.equal(0);
             res.body.conversation_count.should.equal(0);
             res.body.draft_count.should.equal(0);

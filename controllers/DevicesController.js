@@ -99,9 +99,9 @@ router.route('/update_primary').post(function (req, res) {
     sqls.push("UPDATE " + table + " SET `primary` = false WHERE " + db.whereAccount(req.query.account_id));
     
     // Set new primary to primary = true
-    sqls.push("UPDATE " + table + " SET `primary` = true WHERE id = " + mysql.escape(req.query.new_primary_device_id) + " AND " + db.whereAccount(req.query.account_id));
+    sqls.push("UPDATE " + table + " SET `primary` = true WHERE id = " + mysql.escape(Number(req.query.new_primary_device_id)) + " AND " + db.whereAccount(req.query.account_id));
 
-    db.query(sql, res, function (result) {
+    db.queries(sqls, res, function (result) {
         res.json({});
     });
 });

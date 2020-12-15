@@ -60,7 +60,7 @@ var out = {
         var out = [];
         
         for (var i=0, len=cols.length; i<len; i++) {
-            if (values[i] || values[i] != "''") {
+            if (values[i] && values[i] != "''" && values[i] != 'NULL') {
                 out.push(cols[i] + " = " + values[i]);
             }
         }
