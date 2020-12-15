@@ -59,7 +59,7 @@ CREATE TABLE IF NOT EXISTS Contacts (
 );
 CREATE TABLE IF NOT EXISTS Folders (
     `id` INTEGER NOT NULL PRIMARY KEY AUTO_INCREMENT,
-    `device_id` BIGINT NOT NULL,
+    `device_id` BIGINT NOT NULL UNIQUE,
     `name` TEXT NULL,
     `account_id` CHAR(64) NOT NULL,
     `color` INTEGER NOT NULL,
@@ -74,25 +74,24 @@ CREATE TABLE IF NOT EXISTS Conversations (
     `phone_numbers` TEXT NULL,
     `image_uri` TEXT NULL,
     `id_matcher` TEXT NULL,
-    `folder_id` INTEGER NULL,
-    `seen` BOOLEAN NOT NULL,
+    `folder_id` BIGINT NULL,
     `account_id` CHAR(64) NOT NULL,
     `color` INTEGER NOT NULL,
     `color_dark` INTEGER NOT NULL,
     `color_light` INTEGER NOT NULL,
     `color_accent` INTEGER NOT NULL,
     `led_color` INTEGER NOT NULL,
-    `pinned` BOOLEAN NOT NULL,
-    `read` BOOLEAN NOT NULL,
+    `pinned` BOOLEAN NOT NULL DEFAULT false,
+    `read` BOOLEAN NOT NULL DEFAULT false,
     `timestamp` INTEGER NOT NULL,
     `title` TEXT NULL,
     `snippet` TEXT NULL,
     `ringtone` TEXT NULL,
-    `mute` BOOLEAN NOT NULL,
-    `archive` BOOLEAN NOT NULL,
-    `private_notifications` BOOLEAN NOT NULL,
+    `mute` BOOLEAN NOT NULL DEFAULT false,
+    `archive` BOOLEAN NOT NULL DEFAULT false,
+    `private_notifications` BOOLEAN NOT NULL DEFAULT false,
     CONSTRAINT FK_Conversations_Accounts_account_id FOREIGN KEY (account_id) REFERENCES Accounts (account_id) ON DELETE CASCADE,
-    CONSTRAINT FK_Conversations_Folders_folder_id FOREIGN KEY (folder_id) REFERENCES Folders (id) ON DELETE SET NULL
+    CONSTRAINT FK_Conversations_Folders_folder_id FOREIGN KEY (folder_id) REFERENCES Folders (device_id) ON DELETE SET NULL
 );
 CREATE TABLE IF NOT EXISTS Devices (
     `id` INTEGER NOT NULL PRIMARY KEY AUTO_INCREMENT,

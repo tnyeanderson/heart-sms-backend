@@ -30,7 +30,7 @@ router.route('/add').post(function (req, res) {
     var cols = ['account_id', 'device_id', 'text'];
     var sqls = [];
     
-    req.body.scheduled_messages.forEach(function (item) {
+    req.body.templates.forEach(function (item) {
         var values = [
             mysql.escape(req.body.account_id),
             mysql.escape(item.device_id),

@@ -2,13 +2,13 @@
 TChilderhose implemented nearly all of this backend before giving me his code to use as reference. Thank you!
 
 ### API Endpoints
-Checked means "tested working", hash means not needed, and a tilde means the code is present but I haven't tested it yet.
+Checked means "test written and passing", hash means not needed, and a tilde means the code is present but I haven't tested it yet.
 
 - [ ] # accounts/ (original api fails on this request)
 - [x] accounts/login
 - [x] accounts/signup
 - [x] accounts/remove_account
-- [ ] ~ accounts/clean_account
+- [x] accounts/clean_account
 - [x] accounts/count
 - [x] accounts/settings
 - [ ] accounts/update_setting
@@ -32,35 +32,36 @@ Checked means "tested working", hash means not needed, and a tilde means the cod
 - [ ] ~ contacts/clear
 - [ ] ~ contacts/simple
 - [ ] ~ contacts/remove_ids
-- [ ] ~ conversations/
-- [ ] ~ conversations/add
-- [ ] ~ conversations/update/{device_id}
-- [ ] ~ conversations/update_snippet/{device_id}
-- [ ] ~ conversations/update_title/{device_id}
-- [ ] ~ conversations/remove/{device_id}
-- [ ] ~ conversations/read/{device_id}
+- [x] conversations/
+- [x] conversations/add
+- [x] conversations/update/{device_id}
+- [x] conversations/update_snippet/{device_id}
+- [x] conversations/update_title/{device_id}
+- [x] conversations/remove/{device_id}
+- [x] conversations/read/{device_id}
 - [ ] ~ conversations/seen
 - [ ] ~ conversations/seen/{device_id}
-- [ ] ~ conversations/archive/{device_id}
-- [ ] ~ conversations/unarchive/{device_id}
-- [ ] ~ conversations/add_to_folder/{device_id}
-- [ ] ~ conversations/remove_from_folder/{device_id}
+- [x] conversations/archive/{device_id}
+- [x] conversations/unarchive/{device_id}
+- [x] conversations/add_to_folder/{device_id}
+- [x] conversations/remove_from_folder/{device_id}
 - [ ] # conversations/clean (included in Android app, but this endpoint is never called from any clients)
 - [ ] ~ conversations/cleanup_messages
-- [x] ~ devices/
-- [x] ~ devices/add
-- [x] ~ devices/update/{id}
-- [x] ~ devices/remove/{id}
-- [x] ~ devices/update_primary
-- [ ] ~ drafts/
-- [ ] ~ drafts/add
-- [ ] ~ drafts/update/{device_id}
-- [ ] ~ drafts/remove/{device_conversation_id}
-- [ ] ~ drafts/replace/{device_conversation_id} (different clients use replace vs update)
-- [ ] ~ folders/
-- [ ] ~ folders/add
-- [ ] ~ folders/remove/{device_id}
-- [ ] ~ folders/update/{device_id}
+- [x] devices/
+- [x] devices/add
+- [x] devices/update/{id}
+- [x] devices/remove/{id}
+- [x] devices/update_primary
+- [x] drafts
+- [ ] drafts/{device_conversation_id}
+- [x] drafts/add
+- [x] drafts/update/{device_id}
+- [x] drafts/remove/{device_conversation_id}
+- [x] drafts/replace/{device_conversation_id} (different clients use replace vs update)
+- [x] folders/
+- [x] folders/add
+- [x] folders/remove/{device_id}
+- [x] folders/update/{device_id}
 - [ ] media/
 - [ ] ~ messages/
 - [ ] ~ messages/remove/{device_id}
@@ -70,15 +71,15 @@ Checked means "tested working", hash means not needed, and a tilde means the cod
 - [ ] ~ messages/cleanup
 - [ ] messages/forward_to_phone
 - [ ] purchases/record
-- [ ] ~ scheduled_messages/
-- [ ] ~ scheduled_messages/add
-- [ ] ~ scheduled_messages/update/{device_id}
-- [ ] ~ scheduled_messages/remove/{device_id}
+- [x] scheduled_messages/
+- [x] scheduled_messages/add
+- [x] scheduled_messages/update/{device_id}
+- [x] scheduled_messages/remove/{device_id}
 - [ ] stream (websockets)
-- [ ] ~ templates/
-- [ ] ~ templates/add
-- [ ] ~ templates/remove/{device_id}
-- [ ] ~ templates/update/{device_id}
+- [x] templates/
+- [x] templates/add
+- [x] templates/remove/{device_id}
+- [x] templates/update/{device_id}
 
 
 ## Firebase

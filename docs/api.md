@@ -1109,7 +1109,7 @@ Error:
 
 Method: POST
 
-Parameters: `account_id=STRING`, `folder_id=STRING`
+Parameters: `account_id=STRING`, `folder_id=INT`
 
 Request body: None
 
@@ -1917,6 +1917,8 @@ Request body:
 }
 ```
 
+*Tentative: `to` refers to comma separated list of phone numbers*
+
 Response:
 ```
 {}
@@ -2079,7 +2081,12 @@ Method: POST
 
 Parameters: `account_id=STRING`
 
-Request body: None
+Request body: 
+```
+{
+    "text": STRING
+}
+```
 
 Response:
 ```

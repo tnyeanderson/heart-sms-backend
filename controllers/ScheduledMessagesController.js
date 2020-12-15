@@ -27,7 +27,7 @@ router.route('/add').post(function (req, res) {
         return;
     }
     
-    var cols = ['account_id', 'device_id', 'to', 'data', 'mime_type', 'timestamp', 'title', 'repeat'];
+    var cols = ['account_id', 'device_id', '`to`', '`data`', 'mime_type', '`timestamp`', 'title', '`repeat`'];
     var sqls = [];
     
     req.body.scheduled_messages.forEach(function (item) {
@@ -35,6 +35,7 @@ router.route('/add').post(function (req, res) {
             mysql.escape(req.body.account_id),
             mysql.escape(item.device_id),
             mysql.escape(item.to),
+            mysql.escape(item.data),
             mysql.escape(item.mime_type),
             mysql.escape(item.timestamp),
             mysql.escape(item.title),

@@ -4,6 +4,8 @@ var mysql = require('mysql');
 var db = require('../db/query');
 var errors = require('../utils/errors');
 
+var table = 'Conversations'
+
 router.route('/').get(function (req, res) {
     if (!req.query.account_id) {
         res.json(errors.invalidAccount);
@@ -20,7 +22,7 @@ router.route('/').get(function (req, res) {
     }
     
     var cols = ['id', 'account_id', 'device_id', 'folder_id', 'color', 'color_dark',
-'color_light', 'color_accent', 'led_color', 'pinned', 'read', 'timestamp', 'title', 'phone_numbers', 'snippet', 'ringtone', 'image_uri', 'id_matcher', 'mute', 'archive', 'private_notifications'];
+'color_light', 'color_accent', 'led_color', 'pinned', '`read`', '`timestamp`', 'title', 'phone_numbers', 'snippet', 'ringtone', 'image_uri', 'id_matcher', 'mute', 'archive', 'private_notifications'];
     
     var sql = "SELECT " + cols.join(', ') + " FROM " + table + " WHERE " + db.whereAccount(req.query.account_id) + limitStr;
 
@@ -36,10 +38,10 @@ router.route('/add').post(function (req, res) {
         return;
     }
     
-    var cols = ['account_id', 'device_id', 'folder_id', 'color', 'color_dark', 'color_light', 'color_accent', 'led_color', 'pinned', 'read', 'timestamp', 'title', 'phone_numbers', 'snippet', 'ringtone', 'image_uri', 'id_matcher', 'mute', 'archive', 'private_notifications'];
+    var cols = ['account_id', 'device_id', 'folder_id', 'color', 'color_dark', 'color_light', 'color_accent', 'led_color', 'pinned', '`read`', '`timestamp`', 'title', 'phone_numbers', 'snippet', 'ringtone', 'image_uri', 'id_matcher', 'mute', 'archive', 'private_notifications'];
     var sqls = [];
     
-    req.body.messages.forEach(function (item) {
+    req.body.conversations.forEach(function (item) {
         var values = [
             mysql.escape(req.body.account_id),
             mysql.escape(item.device_id),
@@ -95,7 +97,7 @@ router.route('/update/:deviceId').post(function (req, res) {
         private_notifications: mysql.escape(req.body.private_notifications)
     };
     
-    var sql = "UPDATE " + table + " SET " + db.updateStr(toUpdate) + " WHERE device_id = " + mysql.escape(req.params.deviceId) + " AND " + db.whereAccount(req.query.account_id);
+    var sql = "UPDATE " + table + " SET " + db.updateStr(toUpdate) + " WHERE device_id = " + mysql.escape(Number(req.params.deviceId)) + " AND " + db.whereAccount(req.query.account_id);
 
     db.query(sql, res, function (result) {
         res.json({});
@@ -116,7 +118,30 @@ router.route('/update_snippet/:deviceId').post(function (req, res) {
         archive: mysql.escape(req.body.archive)
     };
     
-    var sql = "UPDATE " + table + " SET " + db.updateStr(toUpdate) + " WHERE device_id = " + mysql.escape(req.params.deviceId) + " AND " + db.whereAccount(req.query.account_id);
+    var sql = "UPDATE " + table + " SET " + db.updateStr(toUpdate) + " WHERE device_id = " + mysql.escape(Number(req.params.deviceId)) + " AND " + db.whereAccount(req.query.account_id);
+
+    db.query(sql, res, function (result) {
+        res.json({});
+    });
+});
+
+
+router.route('/update_title/:deviceId').post(function (req, res) {
+    if (!req.query.account_id) {
+        res.json(errors.invalidAccount);
+        return;
+    }
+    
+    if (!req.query.title) {
+        res.json(errors.missingParam);
+        return;
+    }
+    
+    var toUpdate = {
+        title: mysql.escape(req.query.title)
+    };
+    
+    var sql = "UPDATE " + table + " SET " + db.updateStr(toUpdate) + " WHERE device_id = " + mysql.escape(Number(req.params.deviceId)) + " AND " + db.whereAccount(req.query.account_id);
 
     db.query(sql, res, function (result) {
         res.json({});
@@ -139,7 +164,7 @@ router.route('/update_snippet/:deviceId').post(function (req, res) {
         title: mysql.escape(req.query.title)
     };
     
-    var sql = "UPDATE " + table + " SET " + db.updateStr(toUpdate) + " WHERE device_id = " + mysql.escape(req.params.deviceId) + " AND " + db.whereAccount(req.query.account_id);
+    var sql = "UPDATE " + table + " SET " + db.updateStr(toUpdate) + " WHERE device_id = " + mysql.escape(Number(req.params.deviceId)) + " AND " + db.whereAccount(req.query.account_id);
 
     db.query(sql, res, function (result) {
         res.json({});
@@ -153,7 +178,7 @@ router.route('/remove/:deviceId').post(function (req, res) {
         return;
     }
     
-    var sql = "DELETE FROM " + table + " WHERE device_id = " + mysql.escape(req.params.deviceId) + " AND " + db.whereAccount(req.query.account_id);
+    var sql = "DELETE FROM " + table + " WHERE device_id = " + mysql.escape(Number(req.params.deviceId)) + " AND " + db.whereAccount(req.query.account_id);
 
     db.query(sql, res, function (result) {
         res.json({});
@@ -169,7 +194,7 @@ router.route('/read/:deviceId').post(function (req, res) {
     
     // TODO: Handle android_device query param
     
-    var sql = "UPDATE " + table + " SET read = true WHERE device_id = " + mysql.escape(req.params.deviceId) + " AND " + db.whereAccount(req.query.account_id);
+    var sql = "UPDATE " + table + " SET `read` = true WHERE device_id = " + mysql.escape(Number(req.params.deviceId)) + " AND " + db.whereAccount(req.query.account_id);
 
     db.query(sql, res, function (result) {
         res.json({});
@@ -177,13 +202,13 @@ router.route('/read/:deviceId').post(function (req, res) {
 });
 
 
-router.route('/seen/:deviceId').post(function (req, res) {
+router.route('/seen/:deviceConversationId').post(function (req, res) {
     if (!req.query.account_id) {
         res.json(errors.invalidAccount);
         return;
     }
     
-    var sql = "UPDATE " + table + " SET seen = true WHERE device_id = " + mysql.escape(req.params.deviceId) + " AND " + db.whereAccount(req.query.account_id);
+    var sql = "UPDATE Messages SET seen = true WHERE device_conversation_id = " + mysql.escape(Number(req.params.deviceConversationId)) + " AND " + db.whereAccount(req.query.account_id);
 
     db.query(sql, res, function (result) {
         res.json({});
@@ -197,7 +222,7 @@ router.route('/seen').post(function (req, res) {
         return;
     }
     
-    var sql = "UPDATE " + table + " SET seen = true WHERE " + db.whereAccount(req.query.account_id);
+    var sql = "UPDATE Messages SET seen = true WHERE " + db.whereAccount(req.query.account_id);
 
     db.query(sql, res, function (result) {
         res.json({});
@@ -211,7 +236,7 @@ router.route('/archive/:deviceId').post(function (req, res) {
         return;
     }
     
-    var sql = "UPDATE " + table + " SET archive = true WHERE device_id = " + mysql.escape(req.params.deviceId) + " AND " + db.whereAccount(req.query.account_id);
+    var sql = "UPDATE " + table + " SET archive = true WHERE device_id = " + mysql.escape(Number(req.params.deviceId)) + " AND " + db.whereAccount(req.query.account_id);
 
     db.query(sql, res, function (result) {
         res.json({});
@@ -225,7 +250,7 @@ router.route('/unarchive/:deviceId').post(function (req, res) {
         return;
     }
     
-    var sql = "UPDATE " + table + " SET archive = false WHERE device_id = " + mysql.escape(req.params.deviceId) + " AND " + db.whereAccount(req.query.account_id);
+    var sql = "UPDATE " + table + " SET archive = false WHERE device_id = " + mysql.escape(Number(req.params.deviceId)) + " AND " + db.whereAccount(req.query.account_id);
 
     db.query(sql, res, function (result) {
         res.json({});
@@ -244,7 +269,7 @@ router.route('/add_to_folder/:deviceId').post(function (req, res) {
         return;
     }
     
-    var sql = "UPDATE " + table + " SET folder_id = " + mysql.escape(req.query.folder_id) + " WHERE device_id = " + mysql.escape(req.params.deviceId) + " AND " + db.whereAccount(req.query.account_id);
+    var sql = "UPDATE " + table + " SET folder_id = " + mysql.escape(Number(req.query.folder_id)) + " WHERE device_id = " + mysql.escape(Number(req.params.deviceId)) + " AND " + db.whereAccount(req.query.account_id);
 
     db.query(sql, res, function (result) {
         res.json({});
@@ -258,7 +283,7 @@ router.route('/remove_from_folder/:deviceId').post(function (req, res) {
         return;
     }
     
-    var sql = "UPDATE " + table + " SET folder_id = NULL WHERE device_id = " + mysql.escape(req.params.deviceId) + " AND " + db.whereAccount(req.query.account_id);
+    var sql = "UPDATE " + table + " SET folder_id = NULL WHERE device_id = " + mysql.escape(Number(req.params.deviceId)) + " AND " + db.whereAccount(req.query.account_id);
 
     db.query(sql, res, function (result) {
         res.json({});

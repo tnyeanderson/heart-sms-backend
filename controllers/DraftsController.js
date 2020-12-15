@@ -47,13 +47,13 @@ router.route('/add').post(function (req, res) {
 });
 
 
-router.route('/remove/:deviceId').post(function (req, res) {
+router.route('/remove/:deviceConversationId').post(function (req, res) {
     if (!req.query.account_id) {
         res.json(errors.invalidAccount);
         return;
     }
     
-    var sql = "DELETE FROM " + table + " WHERE device_id = " + mysql.escape(req.params.deviceId) + " AND " + db.whereAccount(req.query.account_id);
+    var sql = "DELETE FROM " + table + " WHERE device_conversation_id = " + mysql.escape(req.params.deviceConversationId) + " AND " + db.whereAccount(req.query.account_id);
 
     db.query(sql, res, function (result) {
         res.json({});

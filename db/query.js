@@ -12,7 +12,7 @@ var out = {
     },
     
     query: function (sql, res, callback) {
-        console.log(sql);
+        console.log(sql, '\n');
         conn().connect(function (err) {
             if (err) {
                 res.status(400).json({
@@ -35,7 +35,7 @@ var out = {
     
     queries: function (sqls, res, callback) {
         var sql = sqls.join('; ');
-        console.log(sql);
+        console.log(sql, '\n');
         conn({multipleStatements: true}).connect(function (err) {
             if (err) {
                 res.status(400).json({
@@ -61,7 +61,7 @@ var out = {
         
         Object.keys(toUpdate).forEach(key => {
             if (toUpdate[key] && toUpdate[key] != "''" && toUpdate[key] != 'NULL') {
-                out.push(key + " = " + toUpdate[key]);
+                out.push("`" + key + "` = " + toUpdate[key]);
             }
         });
         
