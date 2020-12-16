@@ -64,7 +64,7 @@ router.route('/add').post(function (req, res) {
     var cols = ['account_id', 'device_id', 'phone_number', 'id_matcher', 'name', 'color', 'color_dark', 'color_light', 'color_accent', 'contact_type'];
     var sqls = [];
     
-    req.body.messages.forEach(function (item) {
+    req.body.contacts.forEach(function (item) {
         var values = [
             mysql.escape(req.body.account_id),
             mysql.escape(item.device_id),

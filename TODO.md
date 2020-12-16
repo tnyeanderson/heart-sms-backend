@@ -25,13 +25,13 @@ Checked means "test written and passing", hash means not needed, and a tilde mea
 - [x] blacklists/
 - [x] blacklists/add
 - [x] blacklists/remove/{device_id}
-- [ ] ~ contacts/
-- [ ] ~ contacts/add
-- [ ] ~ contacts/update_device_id
-- [ ] ~ contacts/remove_device_id
-- [ ] ~ contacts/clear
-- [ ] ~ contacts/simple
-- [ ] ~ contacts/remove_ids
+- [x] contacts/
+- [x] contacts/add
+- [x] contacts/update_device_id
+- [x] contacts/remove_device_id
+- [x] contacts/clear
+- [x] contacts/simple
+- [x] contacts/remove_ids
 - [x] conversations
 - [x] conversations/{device_id}
 - [x] conversations/folder/{folder_id}

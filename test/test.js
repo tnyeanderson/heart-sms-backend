@@ -459,8 +459,7 @@ describe("heart-sms-backend unit test", function () {
             "color": 456,
             "color_dark": 456,
             "color_light": 456,
-            "color_accent": 456,
-            "contact_type": 456
+            "color_accent": 456
         })
         .expect("Content-type",/json/)
         .expect(200)
@@ -495,7 +494,7 @@ describe("heart-sms-backend unit test", function () {
         .expect(200)
         .end(function (err,res) {
             res.status.should.equal(200);
-            res.body.should.have.lengthOf(4);
+            res.body.should.have.lengthOf(3);
             res.body[0].name.should.equal("newname");
             res.body[0].phone_number.should.equal("123");
             res.body[1].name.should.equal("name2");
@@ -532,7 +531,21 @@ describe("heart-sms-backend unit test", function () {
             res.body.should.have.lengthOf(1);
             res.body[0].device_id.should.equal(1);
             res.body[0].phone_number.should.equal("123");
-            res.body[0].contact_type.should.equal(456);
+            res.body[0].contact_type.should.equal(3);
+            done();
+        });
+    });
+    
+    it("Clear contacts", function (done) {
+        server
+        .post('/contacts/clear')
+        .query({
+            "account_id": accountId
+        })
+        .expect("Content-type",/json/)
+        .expect(200)
+        .end(function (err,res) {
+            res.status.should.equal(200);
             done();
         });
     });
