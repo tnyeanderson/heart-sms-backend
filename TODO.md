@@ -33,30 +33,32 @@ Checked means "test written and passing", hash means not needed, and a tilde mea
 - [ ] ~ contacts/simple
 - [ ] ~ contacts/remove_ids
 - [x] conversations
-- [ ] conversations/{device_id}
-- [ ] conversations/folder/{device_id}
-- [ ] conversations/index_public_unarchived
+- [x] conversations/{device_id}
+- [x] conversations/folder/{folder_id}
+- [x] conversations/index_archived
+- [x] conversations/index_private
+- [x] conversations/index_public_unarchived
 - [x] conversations/add
 - [x] conversations/update/{device_id}
 - [x] conversations/update_snippet/{device_id}
 - [x] conversations/update_title/{device_id}
 - [x] conversations/remove/{device_id}
 - [x] conversations/read/{device_id}
-- [ ] ~ conversations/seen
-- [ ] ~ conversations/seen/{device_id}
+- [x] conversations/seen
+- [x] conversations/seen/{device_id}
 - [x] conversations/archive/{device_id}
 - [x] conversations/unarchive/{device_id}
 - [x] conversations/add_to_folder/{device_id}
 - [x] conversations/remove_from_folder/{device_id}
 - [ ] # conversations/clean (included in Android app, but this endpoint is never called from any clients)
-- [ ] ~ conversations/cleanup_messages
+- [x] conversations/cleanup_messages
 - [x] devices/
 - [x] devices/add
 - [x] devices/update/{id}
 - [x] devices/remove/{id}
 - [x] devices/update_primary
 - [x] drafts
-- [ ] drafts/{device_conversation_id}
+- [x] drafts/{device_conversation_id}
 - [x] drafts/add
 - [x] drafts/update/{device_id}
 - [x] drafts/remove/{device_conversation_id}
@@ -66,12 +68,12 @@ Checked means "test written and passing", hash means not needed, and a tilde mea
 - [x] folders/remove/{device_id}
 - [x] folders/update/{device_id}
 - [ ] media/
-- [ ] ~ messages/
-- [ ] ~ messages/remove/{device_id}
-- [ ] ~ messages/add/
-- [ ] ~ messages/update/{device_id}
-- [ ] ~ messages/update_type/{device_id}
-- [ ] ~ messages/cleanup
+- [x] messages/
+- [x] messages/remove/{device_id}
+- [x] messages/add/
+- [x] messages/update/{device_id}
+- [x] messages/update_type/{device_id}
+- [x] messages/cleanup
 - [ ] messages/forward_to_phone
 - [ ] purchases/record
 - [x] scheduled_messages/

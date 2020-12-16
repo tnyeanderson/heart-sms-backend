@@ -1,5 +1,8 @@
 var mysql = require('mysql');
-var conn = require('../db/connect');
+var poolConf = require('../db/connect');
+
+var pool  = mysql.createPool(poolConf());
+var multiquerypool  = mysql.createPool(poolConf({multipleStatements: true}));
 
 var out = {
     
@@ -12,47 +15,35 @@ var out = {
     },
     
     query: function (sql, res, callback) {
-        console.log(sql, '\n');
-        conn().connect(function (err) {
+        console.log(sql, ';', '\n');
+        pool.query(sql, function (err, result) {
             if (err) {
+                console.log(err);
+                
                 res.status(400).json({
-                    error: "Could not connect to database"
+                    error: "Could not query database"
                 });
                 
                 return
             }
-            conn().query(sql, function (err, result) {
-                if (err) {
-                    res.status(400).json({
-                        error: "Could not query database"
-                    });
-                    return
-                }
-                callback(result);
-            });
+            callback(result);
         });
     },
     
     queries: function (sqls, res, callback) {
         var sql = sqls.join('; ');
-        console.log(sql, '\n');
-        conn({multipleStatements: true}).connect(function (err) {
+        console.log(sql, ';', '\n');
+        multiquerypool.query(sql, function (err, result) {
             if (err) {
+                console.log(err);
+                
                 res.status(400).json({
-                    error: "Could not connect to database"
+                    error: "Could not query database"
                 });
                 
                 return
             }
-            conn({multipleStatements: true}).query(sql, function (err, result) {
-                if (err) {
-                    res.status(400).json({
-                        error: "Could not query database"
-                    });
-                    return
-                }
-                callback(result);
-            });
+            callback(result);
         });
     },
     

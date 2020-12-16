@@ -21,10 +21,86 @@ router.route('/').get(function (req, res) {
         }
     }
     
-    var cols = ['id', 'account_id', 'device_id', 'folder_id', 'color', 'color_dark',
-'color_light', 'color_accent', 'led_color', 'pinned', '`read`', '`timestamp`', 'title', 'phone_numbers', 'snippet', 'ringtone', 'image_uri', 'id_matcher', 'mute', 'archive', 'private_notifications'];
+    var sql = "SELECT * FROM " + table + " WHERE " + db.whereAccount(req.query.account_id) + limitStr;
+
+    db.query(sql, res, function (result) {
+        res.json(result);
+    });
+});
+
+
+router.route('/index_archived').get(function (req, res) {
+    if (!req.query.account_id) {
+        res.json(errors.invalidAccount);
+        return;
+    }
     
-    var sql = "SELECT " + cols.join(', ') + " FROM " + table + " WHERE " + db.whereAccount(req.query.account_id) + limitStr;
+    var sql = "SELECT * FROM " + table + " WHERE archive = true AND " + db.whereAccount(req.query.account_id);
+
+    db.query(sql, res, function (result) {
+        res.json(result);
+    });
+});
+
+
+router.route('/index_private').get(function (req, res) {
+    if (!req.query.account_id) {
+        res.json(errors.invalidAccount);
+        return;
+    }
+    
+    var sql = "SELECT * FROM " + table + " WHERE private_notifications = true AND " + db.whereAccount(req.query.account_id);
+
+    db.query(sql, res, function (result) {
+        res.json(result);
+    });
+});
+
+
+router.route('/index_public_unarchived').get(function (req, res) {
+    if (!req.query.account_id) {
+        res.json(errors.invalidAccount);
+        return;
+    }
+    
+    var limitStr = '';
+    
+    if (req.query.limit) {
+        limitStr += ' LIMIT ' + req.query.limit;
+        if (req.query.offset) {
+            limitStr += ' OFFSET ' + req.query.offset;
+        }
+    }
+    
+    var sql = "SELECT * FROM " + table + " WHERE archive = false AND private_notifications = false AND " + db.whereAccount(req.query.account_id) + limitStr;
+
+    db.query(sql, res, function (result) {
+        res.json(result);
+    });
+});
+
+
+router.route('/:deviceId').get(function (req, res) {
+    if (!req.query.account_id) {
+        res.json(errors.invalidAccount);
+        return;
+    }
+    
+    var sql = "SELECT * FROM " + table + " WHERE device_id = " + mysql.escape(Number(req.params.deviceId)) + " AND " + db.whereAccount(req.query.account_id) + " LIMIT 1";
+
+    db.query(sql, res, function (result) {
+        res.json(result[0] || null);
+    });
+});
+
+
+router.route('/folder/:folderId').get(function (req, res) {
+    if (!req.query.account_id) {
+        res.json(errors.invalidAccount);
+        return;
+    }
+    
+    var sql = "SELECT * FROM " + table + " WHERE folder_id = " + mysql.escape(Number(req.params.folderId)) + " AND " + db.whereAccount(req.query.account_id);
 
     db.query(sql, res, function (result) {
         res.json(result);
@@ -302,7 +378,7 @@ router.route('/cleanup_messages').post(function (req, res) {
         return;
     }
     
-    var sql = "DELETE FROM " + table + " WHERE device_id = " + mysql.escape(req.query.conversation_id) + " AND timestamp < " + mysql.escape(req.query.timestamp) + " AND " + db.whereAccount(req.query.account_id);
+    var sql = "DELETE FROM Messages WHERE device_conversation_id = " + mysql.escape(req.query.conversation_id) + " AND timestamp < " + mysql.escape(req.query.timestamp) + " AND " + db.whereAccount(req.query.account_id);
 
     db.query(sql, res, function (result) {
         res.json({});

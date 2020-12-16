@@ -40,7 +40,7 @@ router.route('/remove/:deviceId').post(function (req, res) {
         return;
     }
     
-    var sql = "DELETE FROM " + table + " WHERE device_id = " + mysql.escape(req.params.deviceId) + " AND " + db.whereAccount(req.query.account_id);
+    var sql = "DELETE FROM " + table + " WHERE device_id = " + mysql.escape(Number(req.params.deviceId)) + " AND " + db.whereAccount(req.query.account_id);
 
     db.query(sql, res, function (result) {
         res.json({});
@@ -54,7 +54,7 @@ router.route('/add').post(function (req, res) {
         return;
     }
     
-    var cols = ['account_id', 'device_id', 'device_conversation_id', 'message_type', 'data', 'timestamp', 'mime_type', 'read', 'seen', 'message_from', 'color', 'sent_device', 'sim_stamp'];
+    var cols = ['account_id', 'device_id', 'device_conversation_id', 'message_type', '`data`', '`timestamp`', 'mime_type', '`read`', 'seen', 'message_from', 'color', 'sent_device', 'sim_stamp'];
     var sqls = [];
     
     req.body.messages.forEach(function (item) {
@@ -64,7 +64,7 @@ router.route('/add').post(function (req, res) {
             mysql.escape(item.device_conversation_id),
             mysql.escape(item.message_type),
             mysql.escape(item.data),
-            mysql.escape(item.timstamp),
+            mysql.escape(item.timestamp),
             mysql.escape(item.mime_type),
             mysql.escape(item.read),
             mysql.escape(item.seen),
@@ -96,7 +96,7 @@ router.route('/update/:deviceId').post(function (req, res) {
         seen: mysql.escape(req.body.seen)
     };
     
-    var sql = "UPDATE " + table + " SET " + db.updateStr(toUpdate) + " WHERE device_id = " + mysql.escape(req.params.deviceId) + " AND " + db.whereAccount(req.query.account_id);
+    var sql = "UPDATE " + table + " SET " + db.updateStr(toUpdate) + " WHERE device_id = " + mysql.escape(Number(req.params.deviceId)) + " AND " + db.whereAccount(req.query.account_id);
 
     db.query(sql, res, function (result) {
         res.json({});
@@ -119,7 +119,7 @@ router.route('/update_type/:deviceId').post(function (req, res) {
         message_type: mysql.escape(req.query.message_type)
     };
     
-    var sql = "UPDATE " + table + " SET " + db.updateStr(toUpdate) + " WHERE device_id = " + mysql.escape(req.params.deviceId) + " AND " + db.whereAccount(req.query.account_id);
+    var sql = "UPDATE " + table + " SET " + db.updateStr(toUpdate) + " WHERE device_id = " + mysql.escape(Number(req.params.deviceId)) + " AND " + db.whereAccount(req.query.account_id);
 
     db.query(sql, res, function (result) {
         res.json({});

@@ -78,7 +78,7 @@ router.route('/update/:id').post(function (req, res) {
         name: mysql.escape(req.query.name)
     };
     
-    var sql = "UPDATE " + table + " SET " + db.updateStr(toUpdate) + " WHERE id = " + mysql.escape(req.params.id) + " AND " + db.whereAccount(req.query.account_id);
+    var sql = "UPDATE " + table + " SET " + db.updateStr(toUpdate) + " WHERE id = " + mysql.escape(Number(req.params.id)) + " AND " + db.whereAccount(req.query.account_id);
     
 
     db.query(sql, res, function (result) {

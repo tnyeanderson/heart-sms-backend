@@ -533,34 +533,6 @@ describe("heart-sms-backend unit test", function () {
         });
     });
     
-    it("Update conversation seen", function (done) {
-        server
-        .post('/conversations/seen/30')
-        .query({
-            "account_id": accountId
-        })
-        .expect("Content-type",/json/)
-        .expect(200)
-        .end(function (err,res) {
-            res.status.should.equal(200);
-            done();
-        });
-    });
-    
-    it("Mark all conversations seen", function (done) {
-        server
-        .post('/conversations/seen')
-        .query({
-            "account_id": accountId
-        })
-        .expect("Content-type",/json/)
-        .expect(200)
-        .end(function (err,res) {
-            res.status.should.equal(200);
-            done();
-        });
-    });
-    
     it("Update conversation archive", function (done) {
         server
         .post('/conversations/archive/30')
@@ -658,6 +630,102 @@ describe("heart-sms-backend unit test", function () {
         });
     });
     
+    it("Get conversation by id", function (done) {
+        server
+        .get('/conversations/10')
+        .query({
+            "account_id": accountId
+        })
+        .expect("Content-type",/json/)
+        .expect(200)
+        .end(function (err,res) {
+            res.status.should.equal(200);
+            res.body.title.should.equal('newtitle');
+            res.body.ringtone.should.equal('newringer');
+            res.body.mute.should.equal(true);
+            res.body.folder_id.should.equal(2);
+            done();
+        });
+    });
+    
+    it("Get conversations by folder", function (done) {
+        server
+        .get('/conversations/folder/2')
+        .query({
+            "account_id": accountId
+        })
+        .expect("Content-type",/json/)
+        .expect(200)
+        .end(function (err,res) {
+            res.status.should.equal(200);
+            res.body.should.have.lengthOf(1);
+            res.body[0].title.should.equal('newtitle');
+            res.body[0].ringtone.should.equal('newringer');
+            res.body[0].mute.should.equal(true);
+            res.body[0].folder_id.should.equal(2);
+            done();
+        });
+    });
+    
+    it("Get archived conversations", function (done) {
+        server
+        .get('/conversations/index_archived')
+        .query({
+            "account_id": accountId
+        })
+        .expect("Content-type",/json/)
+        .expect(200)
+        .end(function (err,res) {
+            res.status.should.equal(200);
+            res.body.should.have.lengthOf(1);
+            res.body[0].archive.should.equal(true);
+            res.body[0].device_id.should.equal(30);
+            done();
+        });
+    });
+    
+    it("Get private conversations", function (done) {
+        server
+        .get('/conversations/index_private')
+        .query({
+            "account_id": accountId
+        })
+        .expect("Content-type",/json/)
+        .expect(200)
+        .end(function (err,res) {
+            res.status.should.equal(200);
+            res.body.should.have.lengthOf(1);
+            res.body[0].archive.should.equal(false);
+            res.body[0].private_notifications.should.equal(true);
+            res.body[0].folder_id.should.equal(-1);
+            res.body[0].snippet.should.equal('updatedsnippet');
+            res.body[0].timestamp.should.equal(1008);
+            res.body[0].title.should.equal('updatedtitle');
+            done();
+        });
+    });
+    
+    it("Get non-private and non-archived conversations", function (done) {
+        server
+        .get('/conversations/index_public_unarchived')
+        .query({
+            "account_id": accountId
+        })
+        .expect("Content-type",/json/)
+        .expect(200)
+        .end(function (err,res) {
+            res.status.should.equal(200);
+            res.body.should.have.lengthOf(1);
+            res.body[0].private_notifications.should.equal(false);
+            res.body[0].archive.should.equal(false);
+            res.body[0].title.should.equal('newtitle');
+            res.body[0].ringtone.should.equal('newringer');
+            res.body[0].mute.should.equal(true);
+            res.body[0].folder_id.should.equal(2);
+            done();
+        });
+    });
+    
     it("Add messages", function (done) {
         server
         .post('/messages/add')
@@ -670,7 +738,7 @@ describe("heart-sms-backend unit test", function () {
                     "message_type": 2,
                     "data": "testdata",
                     "timestamp": 1000,
-                    "mime_type": "testmime,
+                    "mime_type": "testmime",
                     "read": false,
                     "seen": false,
                     "message_from": "testfrom",
@@ -684,7 +752,7 @@ describe("heart-sms-backend unit test", function () {
                     "message_type": 2,
                     "data": "testdata2",
                     "timestamp": 2000,
-                    "mime_type": "testmime2,
+                    "mime_type": "testmime2",
                     "read": false,
                     "seen": false,
                     "message_from": "testfrom2",
@@ -698,7 +766,7 @@ describe("heart-sms-backend unit test", function () {
                     "message_type": 2,
                     "data": "testdata3",
                     "timestamp": 3000,
-                    "mime_type": "testmime3,
+                    "mime_type": "testmime3",
                     "read": false,
                     "seen": false,
                     "message_from": "testfrom3",
@@ -724,7 +792,7 @@ describe("heart-sms-backend unit test", function () {
         })
         .send({
             "type": 4,
-            "timestamp": 5000,
+            "timestamp": 500,
             "read": true,
             "seen": true
         })
@@ -738,10 +806,38 @@ describe("heart-sms-backend unit test", function () {
     
     it("Update message type", function (done) {
         server
-        .post('/messages/update/2')
+        .post('/messages/update_type/2')
         .query({
             "account_id": accountId,
             "message_type": 7
+        })
+        .expect("Content-type",/json/)
+        .expect(200)
+        .end(function (err,res) {
+            res.status.should.equal(200);
+            done();
+        });
+    });
+    
+    it("Update conversation seen", function (done) {
+        server
+        .post('/conversations/seen/30')
+        .query({
+            "account_id": accountId
+        })
+        .expect("Content-type",/json/)
+        .expect(200)
+        .end(function (err,res) {
+            res.status.should.equal(200);
+            done();
+        });
+    });
+    
+    it("Mark all conversations seen", function (done) {
+        server
+        .post('/conversations/seen')
+        .query({
+            "account_id": accountId
         })
         .expect("Content-type",/json/)
         .expect(200)
@@ -762,11 +858,28 @@ describe("heart-sms-backend unit test", function () {
         .end(function (err,res) {
             res.status.should.equal(200);
             res.body.should.have.lengthOf(3);
-            res.body[0].timestamp.should.equal(5000);
+            res.body[0].timestamp.should.equal(500);
             res.body[0].read.should.equal(true);
+            res.body[0].seen.should.equal(true);
             res.body[0].message_type.should.equal(4);
-            res.body[0].read.should.equal(false);
+            res.body[1].read.should.equal(false);
+            res.body[1].seen.should.equal(true);
             res.body[1].message_type.should.equal(7);
+            res.body[2].seen.should.equal(true);
+            done();
+        });
+    });
+    
+    it("Remove message", function (done) {
+        server
+        .post('/messages/remove/3')
+        .query({
+            "account_id": accountId
+        })
+        .expect("Content-type",/json/)
+        .expect(200)
+        .end(function (err,res) {
+            res.status.should.equal(200);
             done();
         });
     });
@@ -861,6 +974,23 @@ describe("heart-sms-backend unit test", function () {
             res.body[1].device_conversation_id.should.equal(30);
             res.body[1].mime_type.should.equal("newmime");
             res.body[2].data.should.equal("test3");
+            done();
+        });
+    });
+    
+    it("Get draft by conversation id", function (done) {
+        server
+        .get('/drafts/10')
+        .query({
+            "account_id": accountId
+        })
+        .expect("Content-type",/json/)
+        .expect(200)
+        .end(function (err,res) {
+            res.status.should.equal(200);
+            res.body.should.have.lengthOf(1);
+            res.body[0].data.should.equal('newtest');
+            res.body[0].device_conversation_id.should.equal(10);
             done();
         });
     });
@@ -1030,6 +1160,39 @@ describe("heart-sms-backend unit test", function () {
         .post('/templates/remove/1')
         .query({
             "account_id": accountId
+        })
+        .expect("Content-type",/json/)
+        .expect(200)
+        .end(function (err,res) {
+            res.status.should.equal(200);
+            done();
+        });
+    });
+    
+    it("Cleanup conversation messages", function (done) {
+        server
+        .post('/conversations/cleanup_messages')
+        .query({
+            "account_id": accountId,
+            "conversation_id": 20,
+            "timestamp": 3000
+            
+        })
+        .expect("Content-type",/json/)
+        .expect(200)
+        .end(function (err,res) {
+            res.status.should.equal(200);
+            done();
+        });
+    });
+    
+    it("Clean up messages", function (done) {
+        server
+        .post('/messages/cleanup')
+        .query({
+            "account_id": accountId,
+            "timestamp": 1000
+            
         })
         .expect("Content-type",/json/)
         .expect(200)

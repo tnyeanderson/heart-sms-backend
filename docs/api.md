@@ -782,6 +782,8 @@ Error:
 
 ### `/conversations`
 
+*TODO: Should we delete a conversation if it has no messages?*
+
 Method: GET
 
 Parameters: `account_id=STRING`, `limit=INT`, `offset=INT`
@@ -816,6 +818,235 @@ Response:
     }
     ...
 ]
+```
+
+Error:
+```
+<UNKNOWN>
+```
+
+
+---
+
+
+### `/conversations/folder/{folder_id}`
+
+*Get conversations in a given folder*
+
+Method: GET
+
+Parameters: `account_id=STRING`
+
+Request body: None
+
+Response:
+```
+[
+    {
+        "id": INT,
+        "account_id": STRING,
+        "device_id": INT,
+        "folder_id": INT,
+        "color": INT,
+        "color_dark": INT,
+        "color_light": INT,
+        "color_accent": INT,
+        "led_color": INT,
+        "pinned": BOOL,
+        "read": BOOL,
+        "timestamp": TIMESTAMP,
+        "title": STRING,
+        "phone_numbers": STRING,
+        "snippet": STRING,
+        "ringtone": STRING,
+        "image_uri": STRING,
+        "id_matcher": STRING,
+        "mute": BOOL,
+        "archive": BOOL,
+        "private_notifications": BOOL
+    }
+    ...
+]
+```
+
+Error:
+```
+<UNKNOWN>
+```
+
+
+---
+
+
+### `/conversations/{device_id}`
+
+Method: GET
+
+Parameters: `account_id=STRING`
+
+Request body: None
+
+Response:
+```
+{
+    "id": INT,
+    "account_id": STRING,
+    "device_id": INT,
+    "folder_id": INT,
+    "color": INT,
+    "color_dark": INT,
+    "color_light": INT,
+    "color_accent": INT,
+    "led_color": INT,
+    "pinned": BOOL,
+    "read": BOOL,
+    "timestamp": TIMESTAMP,
+    "title": STRING,
+    "phone_numbers": STRING,
+    "snippet": STRING,
+    "ringtone": STRING,
+    "image_uri": STRING,
+    "id_matcher": STRING,
+    "mute": BOOL,
+    "archive": BOOL,
+    "private_notifications": BOOL
+}
+```
+
+*Returns null if not found*
+
+Error:
+```
+<UNKNOWN>
+```
+
+
+---
+
+
+### `/conversations/index_archived`
+
+Method: GET
+
+Parameters: `account_id=STRING`
+
+Request body: None
+
+Response:
+```
+{
+    "id": INT,
+    "account_id": STRING,
+    "device_id": INT,
+    "folder_id": INT,
+    "color": INT,
+    "color_dark": INT,
+    "color_light": INT,
+    "color_accent": INT,
+    "led_color": INT,
+    "pinned": BOOL,
+    "read": BOOL,
+    "timestamp": TIMESTAMP,
+    "title": STRING,
+    "phone_numbers": STRING,
+    "snippet": STRING,
+    "ringtone": STRING,
+    "image_uri": STRING,
+    "id_matcher": STRING,
+    "mute": BOOL,
+    "archive": BOOL,
+    "private_notifications": BOOL
+}
+```
+
+Error:
+```
+<UNKNOWN>
+```
+
+
+---
+
+
+### `/conversations/index_private`
+
+Method: GET
+
+Parameters: `account_id=STRING`
+
+Request body: None
+
+Response:
+```
+{
+    "id": INT,
+    "account_id": STRING,
+    "device_id": INT,
+    "folder_id": INT,
+    "color": INT,
+    "color_dark": INT,
+    "color_light": INT,
+    "color_accent": INT,
+    "led_color": INT,
+    "pinned": BOOL,
+    "read": BOOL,
+    "timestamp": TIMESTAMP,
+    "title": STRING,
+    "phone_numbers": STRING,
+    "snippet": STRING,
+    "ringtone": STRING,
+    "image_uri": STRING,
+    "id_matcher": STRING,
+    "mute": BOOL,
+    "archive": BOOL,
+    "private_notifications": BOOL
+}
+```
+
+Error:
+```
+<UNKNOWN>
+```
+
+
+---
+
+
+### `/conversations/index_public_unarchived`
+
+*Returns conversations which are not private and not archived*
+
+Method: GET
+
+Parameters: `account_id=STRING`, `limit=INT`, `offset=INT`
+
+Request body: None
+
+Response:
+```
+{
+    "id": INT,
+    "account_id": STRING,
+    "device_id": INT,
+    "folder_id": INT,
+    "color": INT,
+    "color_dark": INT,
+    "color_light": INT,
+    "color_accent": INT,
+    "led_color": INT,
+    "pinned": BOOL,
+    "read": BOOL,
+    "timestamp": TIMESTAMP,
+    "title": STRING,
+    "phone_numbers": STRING,
+    "snippet": STRING,
+    "ringtone": STRING,
+    "image_uri": STRING,
+    "id_matcher": STRING,
+    "mute": BOOL,
+    "archive": BOOL,
+    "private_notifications": BOOL
+}
 ```
 
 Error:
@@ -1346,6 +1577,37 @@ Error:
 ---
 
 
+### `/drafts/{device_conversation_id}`
+
+Method: GET
+
+Parameters: `account_id=STRING`
+
+Request body: None
+
+Response:
+```
+[
+    {
+        "id": INT,
+        "account_id": STRING,
+        "device_id": INT,
+        "device_conversation_id": INT,
+        "data": STRING,
+        "mime_type": STRING
+    }
+]
+```
+
+Error:
+```
+<UNKNOWN>
+```
+
+
+---
+
+
 ### `/drafts/add`
 
 Method: POST
@@ -1781,6 +2043,8 @@ Error:
 
 
 ### `/messages/cleanup`
+
+*TODO: Should we delete a conversation if it has no messages?*
 
 Method: POST
 

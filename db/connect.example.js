@@ -1,6 +1,6 @@
 var mysql = require('mysql');
 
-var settings = {
+var base_settings = {
     host: 'localhost',
     port: 8000,
     user: 'test',
@@ -16,17 +16,17 @@ var settings = {
     }
 }
 
-var connect = function (extraSettings) {
+var config = function (extraSettings) {
+    var out = base_settings;
+    
     if (extraSettings) {
         Object.keys(extraSettings).forEach(key => {
-            settings[key] = extraSettings[key];
+            out[key] = extraSettings[key];
         });
     }
     
-    var con = mysql.createConnection(settings);
-    
-    return con;
+    return out;
 }
 
-module.exports = connect;
+module.exports = config;
     

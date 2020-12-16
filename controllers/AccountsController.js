@@ -15,8 +15,12 @@ router.route('/login').post(function (req, res) {
     var sql = "SELECT * FROM Accounts WHERE username = " + mysql.escape(req.body.username) + " LIMIT 1";
     
     db.query(sql, res, function (result) {
+        if (!result[0]) {
+            res.json(errors.auth);
+            return;
+        }
+        
         var testhash = crypto.pbkdf2Sync(req.body.password, result[0].salt1, 100000, 64, 'sha512').toString('hex');
-        console.log(result[0].password_hash, testhash);
         if (result[0].password_hash == testhash) {
             delete result[0].password_hash;
             delete result[0].username;
@@ -125,7 +129,7 @@ router.route('/settings').get(function (req, res) {
     var sql = "SELECT " + fields.join(", ") + " FROM Accounts WHERE " + db.whereAccount(req.query.account_id) + " LIMIT 1";
     
     db.query(sql, res, function (result) {
-        res.json(result[0]);
+        res.json(result[0] || null);
     });
 });
 
