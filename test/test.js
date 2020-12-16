@@ -658,6 +658,119 @@ describe("heart-sms-backend unit test", function () {
         });
     });
     
+    it("Add messages", function (done) {
+        server
+        .post('/messages/add')
+        .send({
+            "account_id": accountId,
+            "messages": [
+                {
+                    "device_id": 1,
+                    "device_conversation_id": 10,
+                    "message_type": 2,
+                    "data": "testdata",
+                    "timestamp": 1000,
+                    "mime_type": "testmime,
+                    "read": false,
+                    "seen": false,
+                    "message_from": "testfrom",
+                    "color": 6,
+                    "sent_device": 13,
+                    "sim_stamp": "teststamp"
+                },
+                {
+                    "device_id": 2,
+                    "device_conversation_id": 20,
+                    "message_type": 2,
+                    "data": "testdata2",
+                    "timestamp": 2000,
+                    "mime_type": "testmime2,
+                    "read": false,
+                    "seen": false,
+                    "message_from": "testfrom2",
+                    "color": 6,
+                    "sent_device": 14,
+                    "sim_stamp": "teststamp2"
+                },
+                {
+                    "device_id": 3,
+                    "device_conversation_id": 30,
+                    "message_type": 2,
+                    "data": "testdata3",
+                    "timestamp": 3000,
+                    "mime_type": "testmime3,
+                    "read": false,
+                    "seen": false,
+                    "message_from": "testfrom3",
+                    "color": 6,
+                    "sent_device": 15,
+                    "sim_stamp": "teststamp3"
+                }
+            ]
+        })
+        .expect("Content-type",/json/)
+        .expect(200)
+        .end(function (err,res) {
+            res.status.should.equal(200);
+            done();
+        });
+    });
+    
+    it("Update message", function (done) {
+        server
+        .post('/messages/update/1')
+        .query({
+            "account_id": accountId
+        })
+        .send({
+            "type": 4,
+            "timestamp": 5000,
+            "read": true,
+            "seen": true
+        })
+        .expect("Content-type",/json/)
+        .expect(200)
+        .end(function (err,res) {
+            res.status.should.equal(200);
+            done();
+        });
+    });
+    
+    it("Update message type", function (done) {
+        server
+        .post('/messages/update/2')
+        .query({
+            "account_id": accountId,
+            "message_type": 7
+        })
+        .expect("Content-type",/json/)
+        .expect(200)
+        .end(function (err,res) {
+            res.status.should.equal(200);
+            done();
+        });
+    });
+    
+    it("Get messages", function (done) {
+        server
+        .get('/messages')
+        .query({
+            "account_id": accountId
+        })
+        .expect("Content-type",/json/)
+        .expect(200)
+        .end(function (err,res) {
+            res.status.should.equal(200);
+            res.body.should.have.lengthOf(3);
+            res.body[0].timestamp.should.equal(5000);
+            res.body[0].read.should.equal(true);
+            res.body[0].message_type.should.equal(4);
+            res.body[0].read.should.equal(false);
+            res.body[1].message_type.should.equal(7);
+            done();
+        });
+    });
+    
     it("Add drafts", function (done) {
         server
         .post('/drafts/add')
