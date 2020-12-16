@@ -2,7 +2,7 @@
 TChilderhose implemented nearly all of this backend before giving me his code to use as reference. Thank you!
 
 ### API Endpoints
-Checked means "test written and passing"
+Checked means "test written and passing", tilde means the endpoint sends a websocket (untested)
 
 - [x] accounts/login
 - [x] accounts/signup
@@ -11,7 +11,7 @@ Checked means "test written and passing"
 - [x] accounts/count
 - [x] accounts/settings
 - [ ] accounts/update_setting
-- [ ] accounts/dismissed_notification
+- [ ] ~ accounts/dismissed_notification
 - [ ] activate
 - [x] auto_replies/
 - [x] auto_replies/add
@@ -68,7 +68,7 @@ Checked means "test written and passing"
 - [x] messages/update/{device_id}
 - [x] messages/update_type/{device_id}
 - [x] messages/cleanup
-- [ ] messages/forward_to_phone
+- [x] ~ messages/forward_to_phone
 - [x] scheduled_messages/
 - [x] scheduled_messages/add
 - [x] scheduled_messages/update/{device_id}
@@ -112,7 +112,9 @@ We should:
 - [ ] Have the `/media` endpoint lookup the Data column (blob) from the Media table by `DeviceId`
 - [ ] Change `downloadFileFromFirebase()` or equivalent functions in all clients to be queries to `/media`
 
-Some firebase messages are implemented here but commented out to prevent errors. Here are the firebase actions from the Android app:
+
+## Websockets
+Firebase messages are being scrapped for pure websockets. Here are the firebase actions from the Android app, and their websocket implementation status (untested):
 
 - [ ] removed_account
 - [ ] updated_account
@@ -156,9 +158,9 @@ Some firebase messages are implemented here but commented out to prevent errors.
 - [ ] updated_auto_reply
 - [ ] removed_auto_reply
 - [ ] update_setting
-- [ ] dismissed_notification
+- [x] dismissed_notification
 - [ ] update_subscription
 - [ ] update_primary_device
 - [ ] feature_flag
-- [ ] forward_to_phone
+- [x] forward_to_phone
 

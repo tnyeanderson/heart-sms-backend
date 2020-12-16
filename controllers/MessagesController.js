@@ -3,6 +3,7 @@ var router = express.Router();
 var mysql = require('mysql');
 var db = require('../db/query');
 var errors = require('../utils/errors');
+var stream = require('./StreamController');
 
 var table = 'Messages';
 
@@ -143,6 +144,22 @@ router.route('/cleanup').post(function (req, res) {
     db.query(sql, res, function (result) {
         res.json({});
     });
+});
+
+
+router.route('/forward_to_phone').post(function (req, res) {
+    if (!req.body.account_id) {
+        res.json(errors.invalidAccount);
+        return;
+    }
+    
+    var accountId = req.body.account_id;
+    
+    delete req.body.account_id;
+    
+    stream.sendMessage(accountId, 'forward_to_phone', req.body);
+    
+    res.json({});
 });
 
 module.exports = router;

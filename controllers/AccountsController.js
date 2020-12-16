@@ -5,6 +5,7 @@ var db = require('../db/query');
 var errors = require('../utils/errors');
 var util = require('../utils/util');
 const crypto = require('crypto');
+var stream = require('./StreamController');
 
 router.route('/').get(function (req, res) {
     res.json(errors.notImplemented);
@@ -131,6 +132,23 @@ router.route('/settings').get(function (req, res) {
     db.query(sql, res, function (result) {
         res.json(result[0] || null);
     });
+});
+
+
+router.route('/dismissed_notification').post(function (req, res) {
+    if (!req.query.account_id) {
+        res.json(errors.invalidAccount);
+        return;
+    }
+    
+    var msg = {
+        id: req.query.id,
+        device_id: req.query.device_id
+    }
+    
+    stream.sendMessage(req.query.account_id, 'dismissed_notification', msg);
+    
+    res.json({});
 });
 
 

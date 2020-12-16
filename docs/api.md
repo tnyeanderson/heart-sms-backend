@@ -290,11 +290,13 @@ Error:
 
 ### `/accounts/dismissed_notification`
 
+I don't think this endpoint modifies the db. Should be websocket message only.
+
 Method: POST
 
 Parameters: `account_id=STRING`, `device_id=STRING?`, `id=STRING`
 
-*id refers to a device_conversation_id. device_id is always null in apps...*
+*id refers to a device_conversation_id. device_id is sometimes null in apps...*
 
 Request body: None
 
