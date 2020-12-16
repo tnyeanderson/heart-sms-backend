@@ -8,6 +8,7 @@ var server = supertest.agent("http://localhost:5000/api/v1");
 // UNIT test begin
 
 var accountId = '';
+var contactsToRemove = [];
 
 describe("heart-sms-backend unit test", function () {
 
@@ -381,6 +382,157 @@ describe("heart-sms-backend unit test", function () {
         .expect(200)
         .end(function (err,res) {
             res.status.should.equal(200);
+            done();
+        });
+    });
+    
+    it("Add contacts", function (done) {
+        server
+        .post('/contacts/add')
+        .send({
+            "account_id": accountId,
+            "contacts": [
+                {
+                    "device_id": 1,
+                    "phone_number": "555",
+                    "id_matcher": "idmatch1",
+                    "name": "name1",
+                    "color": 3,
+                    "color_dark": 3,
+                    "color_light": 3,
+                    "color_accent": 3,
+                    "contact_type": 3
+                },
+                {
+                    "device_id": 2,
+                    "phone_number": "666",
+                    "id_matcher": "idmatch2",
+                    "name": "name2",
+                    "color": 4,
+                    "color_dark": 4,
+                    "color_light": 4,
+                    "color_accent": 4,
+                    "contact_type": 4
+                },
+                {
+                    "device_id": 3,
+                    "phone_number": "777",
+                    "id_matcher": "idmatch3",
+                    "name": "name3",
+                    "color": 5,
+                    "color_dark": 5,
+                    "color_light": 5,
+                    "color_accent": 5,
+                    "contact_type": 5
+                },
+                {
+                    "device_id": 4,
+                    "phone_number": "888",
+                    "id_matcher": "idmatch4",
+                    "name": "name4",
+                    "color": 6,
+                    "color_dark": 6,
+                    "color_light": 6,
+                    "color_accent": 6,
+                    "contact_type": 6
+                }
+            ]
+        })
+        .expect("Content-type",/json/)
+        .expect(200)
+        .end(function (err,res) {
+            res.status.should.equal(200);
+            done();
+        });
+    });
+    
+    it("Update contact", function (done) {
+        server
+        .post('/contacts/update_device_id')
+        .query({
+            "account_id": accountId,
+            "device_id": 1
+        })
+        .send({
+            "phone_number": "123",
+            "name": "newname",
+            "color": 456,
+            "color_dark": 456,
+            "color_light": 456,
+            "color_accent": 456,
+            "contact_type": 456
+        })
+        .expect("Content-type",/json/)
+        .expect(200)
+        .end(function (err,res) {
+            res.status.should.equal(200);
+            done();
+        });
+    });
+    
+    it("Remove contact", function (done) {
+        server
+        .post('/contacts/remove_device_id')
+        .query({
+            "account_id": accountId,
+            "device_id": 4
+        })
+        .expect("Content-type",/json/)
+        .expect(200)
+        .end(function (err,res) {
+            res.status.should.equal(200);
+            done();
+        });
+    });
+    
+    it("Get simple contacts", function (done) {
+        server
+        .get('/contacts/simple')
+        .query({
+            "account_id": accountId
+        })
+        .expect("Content-type",/json/)
+        .expect(200)
+        .end(function (err,res) {
+            res.status.should.equal(200);
+            res.body.should.have.lengthOf(4);
+            res.body[0].name.should.equal("newname");
+            res.body[0].phone_number.should.equal("123");
+            res.body[1].name.should.equal("name2");
+            contactsToRemove.push(res.body[1].id);
+            contactsToRemove.push(res.body[2].id);
+            done();
+        });
+    });
+    
+    it("Remove multiple contacts by id", function (done) {
+        server
+        .post('/contacts/remove_ids/' + contactsToRemove.join(','))
+        .query({
+            "account_id": accountId
+        })
+        .expect("Content-type",/json/)
+        .expect(200)
+        .end(function (err,res) {
+            res.status.should.equal(200);
+            done();
+        });
+    });
+    
+    it("Get contacts", function (done) {
+        server
+        .get('/contacts')
+        .query({
+            "account_id": accountId
+        })
+        .expect("Content-type",/json/)
+        .expect(200)
+        .end(function (err,res) {
+            res.status.should.equal(200);
+            res.body.should.have.lengthOf(1);
+            res.body[0].device_id.should.equal(1);
+            res.body[0].phone_number.should.equal("123");
+            res.body[0].contact_type.should.equal(456);
             done();
         });
     });
