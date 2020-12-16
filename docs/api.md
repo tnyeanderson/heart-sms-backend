@@ -205,6 +205,8 @@ Error:
 
 ### `/accounts/update_setting`
 
+*It looks like pulse stores all these settings in the db, but has no known API endpoint to retrieve most of them*
+
 Method: POST
 
 Parameters: `account_id=STRING`, `pref=STRING`, `type=STRING`, `value=OBJECT`
@@ -292,7 +294,7 @@ Method: POST
 
 Parameters: `account_id=STRING`, `device_id=STRING?`, `id=STRING`
 
-*id refers to device_conversation_id. device_id is always null in apps...*
+*id refers to a device_conversation_id. device_id is always null in apps...*
 
 Request body: None
 
@@ -312,7 +314,9 @@ Error:
 
 ### `/accounts/view_subscription`
 
-Not Implemented (original API returns 404)
+Not Implemented (original API returns 404, only appears in android app tests).
+
+Everyone has a lifetime subscription (subscription_type: 3)
 
 
 ---
@@ -320,20 +324,42 @@ Not Implemented (original API returns 404)
 
 ### `/accounts/update_subscription`
 
-Not Implemented
+Not Implemented. Everyone has a lifetime subscription (subscription_type: 3)
+
+Always returns `{}` for compatibility.
 
 
 ### `/activate`
 
 Method: POST
 
-Parameters: `account_id=STRING`
+Parameters: `activation_code=STRING`
 
-Request body: UNKNOWN
+Request body: None
 
 Response:
 ```
-<UNKNOWN>
+{
+    "account_id": STRING,
+    "salt1": STRING,
+    "salt2": STRING,
+    "phone_number": STRING,
+    "name": STRING,
+    "subscription_type": INT,
+    "subscription_expiration": TIMESTAMP,
+    "base_theme": STRING,
+    "rounder_bubbles": BOOL,
+    "global_color_theme": STRING,
+    "color": INT,
+    "color_dark": INT,
+    "color_light": INT,
+    "color_accent": INT,
+    "use_global_theme": BOOL,
+    "apply_primary_color_to_toolbar": BOOL,
+    "passcode": STRING,
+    "message_timestamp": BOOL,
+    "conversation_categories": BOOL
+}
 ```
 
 Error:
@@ -2067,6 +2093,8 @@ Error:
 
 
 ### `/messages/forward_to_phone`
+
+*TODO: This endpoint is sending UNENCRYPTED MESSAGE DATA!!!!*
 
 Method: POST
 

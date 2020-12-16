@@ -4,12 +4,11 @@ var mysql = require('mysql');
 var db = require('../db/query');
 var errors = require('../utils/errors');
 
-router.route('/').get(function (req, res) {
-    var sql = "SELECT 1";
-    
-    db.query(sql, res, function (result) {
-        res.json(result);
-    });
+// Not implemented because we don't care about purchases. Everyone has a lifetime subscription.
+
+router.route('/record').post(function (req, res) {
+    // Respond for compatibility
+    res.json({});
 });
 
 module.exports = router;

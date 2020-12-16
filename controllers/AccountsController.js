@@ -134,4 +134,11 @@ router.route('/settings').get(function (req, res) {
 });
 
 
+router.route('/update_subscription').post(function (req, res) {
+    // Not implemented because everyone gets a lifetime subscription!
+    // Respond for compatibility
+    res.json({});
+});
+
+
 module.exports = router;

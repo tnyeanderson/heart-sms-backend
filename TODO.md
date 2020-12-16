@@ -2,9 +2,8 @@
 TChilderhose implemented nearly all of this backend before giving me his code to use as reference. Thank you!
 
 ### API Endpoints
-Checked means "test written and passing", hash means not needed, and a tilde means the code is present but I haven't tested it yet.
+Checked means "test written and passing"
 
-- [ ] # accounts/ (original api fails on this request)
 - [x] accounts/login
 - [x] accounts/signup
 - [x] accounts/remove_account
@@ -13,15 +12,11 @@ Checked means "test written and passing", hash means not needed, and a tilde mea
 - [x] accounts/settings
 - [ ] accounts/update_setting
 - [ ] accounts/dismissed_notification
-- [ ] accounts/view_subscription
-- [ ] # accounts/update_subscription
 - [ ] activate
 - [x] auto_replies/
 - [x] auto_replies/add
 - [x] auto_replies/remove/{device_id}
 - [x] auto_replies/update/{device_id}
-- [ ] # beta/register
-- [ ] # beta/remove
 - [x] blacklists/
 - [x] blacklists/add
 - [x] blacklists/remove/{device_id}
@@ -50,7 +45,6 @@ Checked means "test written and passing", hash means not needed, and a tilde mea
 - [x] conversations/unarchive/{device_id}
 - [x] conversations/add_to_folder/{device_id}
 - [x] conversations/remove_from_folder/{device_id}
-- [ ] # conversations/clean (included in Android app, but this endpoint is never called from any clients)
 - [x] conversations/cleanup_messages
 - [x] devices/
 - [x] devices/add
@@ -62,7 +56,7 @@ Checked means "test written and passing", hash means not needed, and a tilde mea
 - [x] drafts/add
 - [x] drafts/update/{device_id}
 - [x] drafts/remove/{device_conversation_id}
-- [x] drafts/replace/{device_conversation_id} (different clients use replace vs update)
+- [x] drafts/replace/{device_conversation_id}
 - [x] folders/
 - [x] folders/add
 - [x] folders/remove/{device_id}
@@ -75,7 +69,6 @@ Checked means "test written and passing", hash means not needed, and a tilde mea
 - [x] messages/update_type/{device_id}
 - [x] messages/cleanup
 - [ ] messages/forward_to_phone
-- [ ] purchases/record
 - [x] scheduled_messages/
 - [x] scheduled_messages/add
 - [x] scheduled_messages/update/{device_id}
@@ -85,6 +78,17 @@ Checked means "test written and passing", hash means not needed, and a tilde mea
 - [x] templates/add
 - [x] templates/remove/{device_id}
 - [x] templates/update/{device_id}
+
+
+### Intentionally not implemented
+
+- [x] accounts (original api fails on this request, only appears in tests)
+- [x] accounts/view_subscription
+- [x] accounts/update_subscription
+- [x] beta/register
+- [x] beta/remove
+- [x] conversations/clean (included in Android app, but this endpoint is never called from any clients)
+- [x] purchases/record
 
 
 ## Firebase
