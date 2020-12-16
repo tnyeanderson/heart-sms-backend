@@ -4,6 +4,7 @@ var mysql = require('mysql');
 var db = require('../db/query');
 var errors = require('../utils/errors');
 var stream = require('./StreamController');
+var util = require('../utils/util');
 
 var table = 'Messages';
 
@@ -45,6 +46,11 @@ router.route('/remove/:deviceId').post(function (req, res) {
 
     db.query(sql, res, function (result) {
         res.json({});
+        
+        // Send websocket message
+        stream.sendMessage(req.query.account_id, 'removed_message', {
+            id: req.params.deviceId
+        });
     });
 });
 
@@ -80,6 +86,16 @@ router.route('/add').post(function (req, res) {
         
     db.queries(sqls, res, function (result) {
         res.json({});
+        
+        // Send websocket message
+        req.body.messages.forEach(function (item) {
+            var origKeys = ['device_id', 'device_conversation_id', 'message_type', 'message_from'];
+            var replaceWith = ['id', 'conversation_id', 'type', 'from'];
+            
+            var msg = util.renameKeys(item, origKeys, replaceWith);
+            
+            stream.sendMessage(req.query.account_id, 'added_message', msg);
+        });
     });
 });
 
@@ -101,6 +117,16 @@ router.route('/update/:deviceId').post(function (req, res) {
 
     db.query(sql, res, function (result) {
         res.json({});
+        
+        // Send websocket message
+        var origKeys = ['message_type'];
+        var replaceWith = ['type'];
+        
+        var msg = util.renameKeys(toUpdate, origKeys, replaceWith);
+        
+        msg.id = req.params.deviceId;
+        
+        stream.sendMessage(req.query.account_id, 'updated_message', msg);
     });
 });
 
@@ -124,6 +150,12 @@ router.route('/update_type/:deviceId').post(function (req, res) {
 
     db.query(sql, res, function (result) {
         res.json({});
+        
+        // Send websocket message
+        stream.sendMessage(req.query.account_id, 'update_message_type', {
+            id: req.params.deviceId,
+            message_type: Number(req.query.message_type)
+        });
     });
 });
 
@@ -143,6 +175,11 @@ router.route('/cleanup').post(function (req, res) {
 
     db.query(sql, res, function (result) {
         res.json({});
+        
+        // Send websocket message
+        stream.sendMessage(req.query.account_id, 'cleanup_messages', {
+            timestamp: req.query.timestamp
+        });
     });
 });
 
@@ -157,6 +194,7 @@ router.route('/forward_to_phone').post(function (req, res) {
     
     delete req.body.account_id;
     
+    // Send websocket message
     stream.sendMessage(accountId, 'forward_to_phone', req.body);
     
     res.json({});

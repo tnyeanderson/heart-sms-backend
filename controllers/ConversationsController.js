@@ -3,6 +3,8 @@ var router = express.Router();
 var mysql = require('mysql');
 var db = require('../db/query');
 var errors = require('../utils/errors');
+var stream = require('./StreamController');
+var util = require('../utils/util');
 
 var table = 'Conversations'
 
@@ -382,6 +384,12 @@ router.route('/cleanup_messages').post(function (req, res) {
 
     db.query(sql, res, function (result) {
         res.json({});
+        
+        // Send websocket message
+        stream.sendMessage(req.query.account_id, 'cleanup_conversation_messages', {
+            timestamp: req.query.timestamp,
+            conversation_id: req.query.conversation_id
+        });
     });
 });
 

@@ -49,14 +49,136 @@ For instance:
 ## Operations
 
 ### removed_account
+
+Content:
+```
+{
+    "id": STRING
+}
+```
+
+
+
+---
+
+
 ### updated_account
 ### cleaned_account
+
+Content:
+```
+{
+    "id": STRING
+}
+```
+
+
+
+---
+
+
 ### added_message
+
+Content:
+```
+{
+    "id": INT,
+    "conversation_id": INT,
+    "type": INT,
+    "data": STRING,
+    "timestamp": TIMESTAMP,
+    "mime_type": STRING,
+    "read": BOOL,
+    "seen": BOOL,
+    "from": STRING,
+    "color": INT,
+    "sent_device": INT,
+    "sim_stamp": INT
+}
+```
+
+
+
+---
+
+
 ### update_message_type
+
+Content:
+```
+{
+    "id": STRING,
+    "message_type": INT
+}
+```
+
+*message_type is originally a string here (which is cast to INT in-app)*
+
+
+---
+
+
 ### updated_message
+
+Content:
+```
+{
+    "id": INT,
+    "type": INT,
+    "timestamp": TIMESTAMP,
+    "read": BOOL,
+    "seen": BOOL
+}
+```
+
+
+
+---
+
+
 ### removed_message
+
+Content:
+```
+{
+    "id": STRING
+}
+```
+
+
+
+---
+
+
 ### cleanup_messages
+
+Content:
+```
+{
+    "timestamp": TIMESTAMP
+}
+```
+
+
+
+---
+
+
 ### cleanup_conversation_messages
+
+Content:
+```
+{
+    "timestamp": TIMESTAMP,
+    "conversation_id": STRING
+}
+```
+
+
+
+---
+
+
 ### added_contact
 ### updated_contact
 ### removed_contact
@@ -103,8 +225,8 @@ For instance:
 Content:
 ```
 {
-    id: STRING,
-    device_id: STRING?
+    "id": STRING,
+    "device_id": STRING?
 }
 ```
 

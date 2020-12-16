@@ -71,6 +71,11 @@ router.route('/remove_account').post(function (req, res) {
         res.json({
             "success": "account deleted"
         });
+        
+        // Send websocket message
+        stream.sendMessage(req.query.account_id, 'removed_account', {
+            id: req.query.account_id
+        });
     });
 });
 
@@ -115,6 +120,11 @@ router.route('/clean_account').post(function (req, res) {
     db.queries(sqls, res, function (result) {
         res.json({
             "success": "account cleaned"
+        });
+        
+        // Send websocket message
+        stream.sendMessage(req.query.account_id, 'cleaned_account', {
+            id: req.query.account_id
         });
     });
 });

@@ -1442,7 +1442,7 @@ describe("heart-sms-backend unit test", function () {
             done();
         });
     });
-    
+
     it("Delete account", function (done) {
         server
         .post('/accounts/remove_account')

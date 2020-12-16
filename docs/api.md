@@ -1942,6 +1942,8 @@ Response:
 ]
 ```
 
+*sent_device is sometimes 0, sometimes -1, sometimes an actual device id*
+
 Error:
 ```
 <UNKNOWN>
