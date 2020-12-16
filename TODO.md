@@ -32,7 +32,10 @@ Checked means "test written and passing", hash means not needed, and a tilde mea
 - [ ] ~ contacts/clear
 - [ ] ~ contacts/simple
 - [ ] ~ contacts/remove_ids
-- [x] conversations/
+- [x] conversations
+- [ ] conversations/{device_id}
+- [ ] conversations/folder/{device_id}
+- [ ] conversations/index_public_unarchived
 - [x] conversations/add
 - [x] conversations/update/{device_id}
 - [x] conversations/update_snippet/{device_id}

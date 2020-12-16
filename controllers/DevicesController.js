@@ -52,10 +52,16 @@ router.route('/remove/:id').post(function (req, res) {
         return;
     }
     
-    var sql = "DELETE FROM " + table + " WHERE id = " + mysql.escape(Number(req.params.id)) + " AND " + db.whereAccount(req.query.account_id);
+    var sqls = [];
+    
+    // Update messages sent_device: set to -1
+    sqls.push("UPDATE Messages SET sent_device = -1 WHERE sent_device = " + mysql.escape(Number(req.params.id)) + " AND " + db.whereAccount(req.query.account_id));
+    
+    // Remove the device
+    sqls.push("DELETE FROM " + table + " WHERE id = " + mysql.escape(Number(req.params.id)) + " AND " + db.whereAccount(req.query.account_id));
     
 
-    db.query(sql, res, function (result) {
+    db.queries(sqls, res, function (result) {
         res.json({});
     });
 });

@@ -283,7 +283,7 @@ router.route('/remove_from_folder/:deviceId').post(function (req, res) {
         return;
     }
     
-    var sql = "UPDATE " + table + " SET folder_id = NULL WHERE device_id = " + mysql.escape(Number(req.params.deviceId)) + " AND " + db.whereAccount(req.query.account_id);
+    var sql = "UPDATE " + table + " SET folder_id = -1 WHERE device_id = " + mysql.escape(Number(req.params.deviceId)) + " AND " + db.whereAccount(req.query.account_id);
 
     db.query(sql, res, function (result) {
         res.json({});

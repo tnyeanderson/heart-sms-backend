@@ -394,7 +394,7 @@ describe("heart-sms-backend unit test", function () {
                 {
                     "account_id": accountId,
                     "device_id": 10,
-                    "folder_id": null,
+                    "folder_id": -1,
                     "color": 7,
                     "color_dark": 7,
                     "color_light": 7,
@@ -414,7 +414,7 @@ describe("heart-sms-backend unit test", function () {
                 {
                     "account_id": accountId,
                     "device_id": 20,
-                    "folder_id": null,
+                    "folder_id": -1,
                     "color": 7,
                     "color_dark": 7,
                     "color_light": 7,
@@ -436,7 +436,7 @@ describe("heart-sms-backend unit test", function () {
                 {
                     "account_id": accountId,
                     "device_id": 30,
-                    "folder_id": null,
+                    "folder_id": -1,
                     "color": 7,
                     "color_dark": 7,
                     "color_light": 7,
@@ -649,7 +649,7 @@ describe("heart-sms-backend unit test", function () {
             res.body[0].mute.should.equal(true);
             res.body[0].folder_id.should.equal(2);
             res.body[1].archive.should.equal(false);
-            should(res.body[1].folder_id).be.null();
+            res.body[1].folder_id.should.equal(-1);
             res.body[1].snippet.should.equal('updatedsnippet');
             res.body[1].timestamp.should.equal(1008);
             res.body[1].title.should.equal('updatedtitle');

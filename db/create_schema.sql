@@ -21,8 +21,8 @@ CREATE TABLE IF NOT EXISTS Accounts (
     `message_timestamp` BOOLEAN NOT NULL DEFAULT false,
     `color` INTEGER NOT NULL DEFAULT -15239726,
     `color_dark` INTEGER NOT NULL DEFAULT -15309376,
-    `color_light` INTEGER NOT NULL DEFAULT-1,
-    `color_accent` INTEGER NOT NULL DEFAULT-37312,
+    `color_light` INTEGER NOT NULL DEFAULT -1,
+    `color_accent` INTEGER NOT NULL DEFAULT -37312,
     `subscription_type` INTEGER NOT NULL DEFAULT 2,
     `global_color_theme` VARCHAR(12) NULL DEFAULT 'default'
 );
@@ -74,7 +74,7 @@ CREATE TABLE IF NOT EXISTS Conversations (
     `phone_numbers` TEXT NULL,
     `image_uri` TEXT NULL,
     `id_matcher` TEXT NULL,
-    `folder_id` BIGINT NULL,
+    `folder_id` BIGINT NOT NULL DEFAULT -1,
     `account_id` CHAR(64) NOT NULL,
     `color` INTEGER NOT NULL,
     `color_dark` INTEGER NOT NULL,
@@ -90,8 +90,7 @@ CREATE TABLE IF NOT EXISTS Conversations (
     `mute` BOOLEAN NOT NULL DEFAULT false,
     `archive` BOOLEAN NOT NULL DEFAULT false,
     `private_notifications` BOOLEAN NOT NULL DEFAULT false,
-    CONSTRAINT FK_Conversations_Accounts_account_id FOREIGN KEY (account_id) REFERENCES Accounts (account_id) ON DELETE CASCADE,
-    CONSTRAINT FK_Conversations_Folders_folder_id FOREIGN KEY (folder_id) REFERENCES Folders (device_id) ON DELETE SET NULL
+    CONSTRAINT FK_Conversations_Accounts_account_id FOREIGN KEY (account_id) REFERENCES Accounts (account_id) ON DELETE CASCADE
 );
 CREATE TABLE IF NOT EXISTS Devices (
     `id` INTEGER NOT NULL PRIMARY KEY AUTO_INCREMENT,
@@ -144,12 +143,11 @@ CREATE TABLE IF NOT EXISTS Messages (
     `seen` BOOLEAN NOT NULL,
     `message_from` TEXT NULL,
     `color` INTEGER NOT NULL,
-    `sent_device` INTEGER NULL,
+    `sent_device` INTEGER NOT NULL DEFAULT -1,
     `sim_stamp` TEXT NULL,
     `account_id` CHAR(64) NOT NULL,
     CONSTRAINT FK_Messages_Accounts_account_id FOREIGN KEY (account_id) REFERENCES Accounts (account_id) ON DELETE CASCADE,
-    CONSTRAINT FK_Messages_Conversations_device_conversation_id FOREIGN KEY (device_conversation_id) REFERENCES Conversations (device_id) ON DELETE CASCADE,
-    CONSTRAINT FK_Messages_Devices_sent_device FOREIGN KEY (sent_device) REFERENCES Devices (id) ON DELETE SET NULL
+    CONSTRAINT FK_Messages_Conversations_device_conversation_id FOREIGN KEY (device_conversation_id) REFERENCES Conversations (device_id) ON DELETE CASCADE
 );
 CREATE INDEX IX_AutoReplies_account_id ON AutoReplies (account_id);
 CREATE INDEX IX_Blacklists_account_id ON Blacklists (account_id);
