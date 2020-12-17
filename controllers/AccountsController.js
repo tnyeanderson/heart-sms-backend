@@ -39,18 +39,17 @@ router.route('/signup').post(function (req, res) {
     var salt2 = crypto.randomBytes(64).toString('hex');
     var password_hash = crypto.pbkdf2Sync(req.body.password, salt1, 100000, 64, 'sha512').toString('hex');
     
-    var values = [
-        db.quote(account_id),
-        mysql.escape(req.body.name), 
-        db.quote(password_hash), 
-        db.quote(salt1), 
-        db.quote(salt2), 
-        mysql.escape(req.body.real_name), 
-        mysql.escape(req.body.phone_number)
-    ];
+    var toInsert = {
+        account_id: account_id,
+        username: req.body.name, 
+        password_hash: password_hash, 
+        salt1: salt1, 
+        salt2: salt2, 
+        real_name: req.body.real_name, 
+        phone_number: req.body.phone_number
+    };
     
-    var sql = "INSERT INTO Accounts (account_id, username, password_hash, salt1, salt2, real_name, phone_number) "
-    sql += "VALUES (" + values.join(", ") + ")";
+    var sql = "INSERT INTO Accounts " + db.insertStr(toInsert);
     
     
     db.query(sql, res, function (result) {

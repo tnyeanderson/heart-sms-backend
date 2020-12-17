@@ -44,30 +44,34 @@ router.route('/add').post(function (req, res) {
         return;
     }
     
-    var cols = ['account_id', 'device_id', 'device_conversation_id', 'mime_type', 'data'];
     var sqls = [];
+    var inserted = [];
     
     req.body.drafts.forEach(function (item) {
-        var values = [
-            mysql.escape(req.body.account_id),
-            mysql.escape(item.device_id),
-            mysql.escape(item.device_conversation_id),
-            mysql.escape(item.mime_type),
-            mysql.escape(item.data)
-        ];
-        sqls.push("INSERT INTO " + table + " (" + cols.join(", ") + ") VALUES (" + values.join(", ") + ")");
+        var toInsert = {
+            account_id: req.body.account_id,
+            device_id: item.device_id,
+            device_conversation_id: item.device_conversation_id,
+            mime_type: item.mime_type,
+            data: item.data
+        };
+        
+        inserted.push(toInsert);
+        
+        sqls.push("INSERT INTO " + table + db.insertStr(toInsert));
     });
         
     db.queries(sqls, res, function (result) {
         res.json({});
         
         // Send websocket message
-        req.body.drafts.forEach(function (item) {
+        inserted.forEach(function (item) {
             var origKeys = ['device_id', 'device_conversation_id'];
-            
             var newKeys = ['id', 'conversation_id'];
             
             var msg = util.renameKeys(item, origKeys, newKeys);
+            
+            delete msg.account_id;
             
             stream.sendMessage(req.body.account_id, 'added_draft', msg);
         });

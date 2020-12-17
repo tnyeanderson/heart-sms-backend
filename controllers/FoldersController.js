@@ -29,32 +29,33 @@ router.route('/add').post(function (req, res) {
         return;
     }
     
-    var cols = ['account_id', 'device_id', 'name', 'color', 'color_dark', 'color_light', 'color_accent'];
     var sqls = [];
+    var inserted = [];
     
     req.body.folders.forEach(function (item) {
-        var values = [
-            mysql.escape(req.body.account_id),
-            mysql.escape(item.device_id),
-            mysql.escape(item.name),
-            mysql.escape(item.color),
-            mysql.escape(item.color_dark),
-            mysql.escape(item.color_light),
-            mysql.escape(item.color_accent)
-        ];
-        sqls.push("INSERT INTO " + table + " (" + cols.join(", ") + ") VALUES (" + values.join(", ") + ")");
+        var toInsert = {
+            account_id: req.body.account_id,
+            device_id: item.device_id,
+            name: item.name,
+            color: item.color,
+            color_dark: item.color_dark,
+            color_light: item.color_light,
+            color_accent: item.color_accent
+        };
+        
+        inserted.push(toInsert);
+        
+        sqls.push("INSERT INTO " + table + db.insertStr(toInsert));
     });
         
     db.queries(sqls, res, function (result) {
         res.json({});
         
         // Send websocket message
-        req.body.folders.forEach(function (item) {
-            var toKeep = ['device_id', 'name', 'color', 'color_dark', 'color_light', 'color_accent'];
+        inserted.forEach(function (item) {
+            delete item.account_id;
             
-            var msg = util.keepOnlyKeys(item, toKeep);
-            
-            stream.sendMessage(req.body.account_id, 'added_folder', msg);
+            stream.sendMessage(req.body.account_id, 'added_folder', item);
         });
     });
 });

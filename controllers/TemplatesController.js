@@ -29,28 +29,29 @@ router.route('/add').post(function (req, res) {
         return;
     }
     
-    var cols = ['account_id', 'device_id', 'text'];
     var sqls = [];
+    var inserted = [];
     
     req.body.templates.forEach(function (item) {
-        var values = [
-            mysql.escape(req.body.account_id),
-            mysql.escape(item.device_id),
-            mysql.escape(item.text)
-        ];
-        sqls.push("INSERT INTO " + table + " (" + cols.join(", ") + ") VALUES (" + values.join(", ") + ")");
+        var toInsert = {
+            account_id: req.body.account_id,
+            device_id: item.device_id,
+            text: item.text
+        };
+        
+        inserted.push(toInsert);
+        
+        sqls.push("INSERT INTO " + table + db.insertStr(toInsert));
     });
         
     db.queries(sqls, res, function (result) {
         res.json({});
         
         // Send websocket message
-        req.body.templates.forEach(function (item) {
-            var toKeep = ['device_id', 'text'];
+        inserted.forEach(function (item) {
+            delete item.account_id;
             
-            var msg = util.keepOnlyKeys(item, toKeep);
-            
-            stream.sendMessage(req.body.account_id, 'added_template', msg);
+            stream.sendMessage(req.body.account_id, 'added_template', item);
         });
     });
 });

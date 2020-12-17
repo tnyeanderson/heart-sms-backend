@@ -63,38 +63,41 @@ router.route('/add').post(function (req, res) {
         return;
     }
     
-    var cols = ['account_id', 'device_id', 'phone_number', 'id_matcher', 'name', 'color', 'color_dark', 'color_light', 'color_accent', 'contact_type'];
     var sqls = [];
+    var inserted = [];
     
     req.body.contacts.forEach(function (item) {
-        var values = [
-            mysql.escape(req.body.account_id),
-            mysql.escape(item.device_id),
-            mysql.escape(item.phone_number),
-            mysql.escape(item.id_matcher),
-            mysql.escape(item.name),
-            mysql.escape(item.color),
-            mysql.escape(item.color_dark),
-            mysql.escape(item.color_light),
-            mysql.escape(item.color_accent),
-            mysql.escape(item.contact_type)
-        ];
+        var toInsert = {
+            account_id: req.body.account_id,
+            device_id: item.device_id,
+            phone_number: item.phone_number,
+            id_matcher: item.id_matcher,
+            name: item.name,
+            color: item.color,
+            color_dark: item.color_dark,
+            color_light: item.color_light,
+            color_accent: item.color_accent,
+            contact_type: item.contact_type
+        };
         
-        sqls.push("INSERT INTO " + table + " (" + cols.join(", ") + ") VALUES (" + values.join(", ") + ")");
+        inserted.push(toInsert);
+        
+        sqls.push("INSERT INTO " + table + db.insertStr(toInsert));
     });
         
     db.queries(sqls, res, function (result) {
         res.json({});
         
         // Send websocket message
-        req.body.contacts.forEach(function (item) {
+        inserted.forEach(function (item) {
             var origKeys = ['contact_type'];
             var replaceWith = ['type'];
             
             var msg = util.renameKeys(item, origKeys, replaceWith);
             
-            delete msg.device_id
-            delete msg.id_matcher
+            delete msg.device_id;
+            delete msg.id_matcher;
+            delete msg.account_id;
             
             stream.sendMessage(req.body.account_id, 'added_contact', msg);
         });

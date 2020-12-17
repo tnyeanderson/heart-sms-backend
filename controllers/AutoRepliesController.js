@@ -29,28 +29,33 @@ router.route('/add').post(function (req, res) {
         return;
     }
     
-    var cols = ['account_id', 'device_id', 'reply_type', 'pattern', 'response'];
     var sqls = [];
+    var inserted = [];
     
     req.body.auto_replies.forEach(function (item) {
-        var values = [
-            mysql.escape(req.body.account_id),
-            mysql.escape(item.device_id),
-            mysql.escape(item.reply_type),
-            mysql.escape(item.pattern),
-            mysql.escape(item.response)
-        ];
-        sqls.push("INSERT INTO " + table + " (" + cols.join(", ") + ") VALUES (" + values.join(", ") + ")");
+        var toInsert = {
+            account_id: req.body.account_id,
+            device_id: item.device_id,
+            reply_type: item.reply_type,
+            pattern: item.pattern,
+            response: item.response
+        };
+        
+        inserted.push(toInsert);
+        
+        sqls.push("INSERT INTO " + table + db.insertStr(toInsert));
     });
         
     db.queries(sqls, res, function (result) {
         res.json({});
         
         // Send websocket message
-        req.body.auto_replies.forEach(function (item) {
+        inserted.forEach(function (item) {
             var toKeep = ['device_id', 'type', 'pattern', 'response'];
             
             var msg = util.keepOnlyKeys(item, toKeep);
+            
+            delete msg.account_id;
             
             stream.sendMessage(req.body.account_id, 'added_auto_reply', msg);
         });

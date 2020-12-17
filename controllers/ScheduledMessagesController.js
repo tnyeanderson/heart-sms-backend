@@ -29,33 +29,37 @@ router.route('/add').post(function (req, res) {
         return;
     }
     
-    var cols = ['account_id', 'device_id', '`to`', '`data`', 'mime_type', '`timestamp`', 'title', '`repeat`'];
     var sqls = [];
+    var inserted = [];
     
     req.body.scheduled_messages.forEach(function (item) {
-        var values = [
-            mysql.escape(req.body.account_id),
-            mysql.escape(item.device_id),
-            mysql.escape(item.to),
-            mysql.escape(item.data),
-            mysql.escape(item.mime_type),
-            mysql.escape(item.timestamp),
-            mysql.escape(item.title),
-            mysql.escape(item.repeat)
-        ];
-        sqls.push("INSERT INTO " + table + " (" + cols.join(", ") + ") VALUES (" + values.join(", ") + ")");
+        var toInsert = {
+            account_id: req.body.account_id,
+            device_id: item.device_id,
+            to: item.to,
+            data: item.data,
+            mime_type: item.mime_type,
+            timestamp: item.timestamp,
+            title: item.title,
+            repeat: item.repeat
+        };
+        
+        inserted.push(toInsert);
+        
+        sqls.push("INSERT INTO " + table + db.insertStr(toInsert));
     });
         
     db.queries(sqls, res, function (result) {
         res.json({});
         
         // Send websocket message
-        req.body.scheduled_messages.forEach(function (item) {
+        inserted.forEach(function (item) {
             var origKeys = ['device_id'];
-            
             var newKeys = ['id'];
             
             var msg = util.renameKeys(item, origKeys, newKeys);
+            
+            delete msg.account_id;
             
             stream.sendMessage(req.body.account_id, 'added_scheduled_message', msg);
         });

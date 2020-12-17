@@ -116,47 +116,50 @@ router.route('/add').post(function (req, res) {
         return;
     }
     
-    var cols = ['account_id', 'device_id', 'folder_id', 'color', 'color_dark', 'color_light', 'color_accent', 'led_color', 'pinned', '`read`', '`timestamp`', 'title', 'phone_numbers', 'snippet', 'ringtone', 'image_uri', 'id_matcher', 'mute', 'archive', 'private_notifications'];
     var sqls = [];
+    var inserted = [];
     
     req.body.conversations.forEach(function (item) {
-        var values = [
-            mysql.escape(req.body.account_id),
-            mysql.escape(item.device_id),
-            mysql.escape(item.folder_id),
-            mysql.escape(item.color),
-            mysql.escape(item.color_dark),
-            mysql.escape(item.color_light),
-            mysql.escape(item.color_accent),
-            mysql.escape(item.led_color),
-            mysql.escape(item.pinned),
-            mysql.escape(item.read),
-            mysql.escape(item.timestamp),
-            mysql.escape(item.title),
-            mysql.escape(item.phone_numbers),
-            mysql.escape(item.snippet),
-            mysql.escape(item.ringtone),
-            mysql.escape(item.image_uri),
-            mysql.escape(item.id_matcher),
-            mysql.escape(item.mute),
-            mysql.escape(item.archive),
-            mysql.escape(item.private_notifications)
-        ];
+        var toInsert = {
+            account_id: req.body.account_id,
+            device_id: item.device_id,
+            folder_id: item.folder_id,
+            color: item.color,
+            color_dark: item.color_dark,
+            color_light: item.color_light,
+            color_accent: item.color_accent,
+            led_color: item.led_color,
+            pinned: item.pinned,
+            read: item.read,
+            timestamp: item.timestamp,
+            title: item.title,
+            phone_numbers: item.phone_numbers,
+            snippet: item.snippet,
+            ringtone: item.ringtone,
+            image_uri: item.image_uri,
+            id_matcher: item.id_matcher,
+            mute: item.mute,
+            archive: item.archive,
+            private_notifications: item.private_notifications
+        };
         
-        sqls.push("INSERT INTO " + table + " (" + cols.join(", ") + ") VALUES (" + values.join(", ") + ")");
+        inserted.push(toInsert);
+        
+        sqls.push("INSERT INTO " + table + db.insertStr(toInsert));
     });
         
     db.queries(sqls, res, function (result) {
         res.json({});
         
         // Send websocket message
-        req.body.conversations.forEach(function (item) {
+        inserted.forEach(function (item) {
             var origKeys = ['device_id'];
             var replaceWith = ['id'];
             
             var msg = util.renameKeys(item, origKeys, replaceWith);
             
             delete msg.image_uri;
+            delete msg.account_id;
             
             stream.sendMessage(req.body.account_id, 'added_conversation', msg);
         });

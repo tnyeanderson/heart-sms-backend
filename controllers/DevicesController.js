@@ -28,19 +28,17 @@ router.route('/add').post(function (req, res) {
         res.json(errors.invalidAccount);
         return;
     }
-    
-    var cols = ['account_id', 'id', 'info', 'name', '`primary`', 'fcm_token'];
 
-    var values = [
-        mysql.escape(req.body.account_id),
-        mysql.escape(req.body.device.id),
-        mysql.escape(req.body.device.info),
-        mysql.escape(req.body.device.name),
-        mysql.escape(req.body.device.primary),
-        mysql.escape(req.body.device.fcm_token)
-    ];
+    var toInsert = {
+        account_id: req.body.account_id,
+        id: req.body.device.id,
+        info: req.body.device.info,
+        name: req.body.device.name,
+        primary: req.body.device.primary,
+        fcm_token: req.body.device.fcm_token
+    };
     
-    sql = "INSERT INTO " + table + " (" + cols.join(", ") + ") VALUES (" + values.join(", ") + ")";
+    sql = "INSERT INTO " + table + db.insertStr(toInsert);
         
     db.query(sql, res, function (result) {
         res.json({});

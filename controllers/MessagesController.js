@@ -61,38 +61,42 @@ router.route('/add').post(function (req, res) {
         return;
     }
     
-    var cols = ['account_id', 'device_id', 'device_conversation_id', 'message_type', '`data`', '`timestamp`', 'mime_type', '`read`', 'seen', 'message_from', 'color', 'sent_device', 'sim_stamp'];
     var sqls = [];
+    var inserted = [];
     
     req.body.messages.forEach(function (item) {
-        var values = [
-            mysql.escape(req.body.account_id),
-            mysql.escape(item.device_id),
-            mysql.escape(item.device_conversation_id),
-            mysql.escape(item.message_type),
-            mysql.escape(item.data),
-            mysql.escape(item.timestamp),
-            mysql.escape(item.mime_type),
-            mysql.escape(item.read),
-            mysql.escape(item.seen),
-            mysql.escape(item.message_from),
-            mysql.escape(item.color),
-            mysql.escape(item.sent_device),
-            mysql.escape(item.sim_stamp)
-        ];
+        var toInsert = {
+            account_id: req.body.account_id,
+            device_id: item.device_id,
+            device_conversation_id: item.device_conversation_id,
+            message_type: item.message_type,
+            data: item.data,
+            timestamp: item.timestamp,
+            mime_type: item.mime_type,
+            read: item.read,
+            seen: item.seen,
+            message_from: item.message_from,
+            color: item.color,
+            sent_device: item.sent_device,
+            sim_stamp: item.sim_stamp
+        };
+
+        inserted.push(toInsert);
         
-        sqls.push("INSERT INTO " + table + " (" + cols.join(", ") + ") VALUES (" + values.join(", ") + ")");
+        sqls.push("INSERT INTO " + table + db.insertStr(toInsert));
     });
         
     db.queries(sqls, res, function (result) {
         res.json({});
         
         // Send websocket message
-        req.body.messages.forEach(function (item) {
+        inserted.forEach(function (item) {
             var origKeys = ['device_id', 'device_conversation_id', 'message_type', 'message_from'];
             var replaceWith = ['id', 'conversation_id', 'type', 'from'];
             
             var msg = util.renameKeys(item, origKeys, replaceWith);
+            
+            delete msg.account_id;
             
             stream.sendMessage(req.body.account_id, 'added_message', msg);
         });
