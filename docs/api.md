@@ -1100,7 +1100,6 @@ Request body:
     "account_id": STRING,
     "conversations": [
         {
-            "account_id": STRING,
             "device_id": INT,
             "folder_id": INT,
             "color": INT,
@@ -1259,6 +1258,8 @@ Error:
 Method: POST
 
 Parameters: `account_id=STRING`, `android_device=STRING?`
+
+*android_device is set to a device id and is used to prevent re-reading on the android app in FirebaseHandler.kt*
 
 Request body: None
 

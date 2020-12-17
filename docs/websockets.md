@@ -253,14 +253,173 @@ Content:
 
 
 ### added_conversation
+
+Content:
+```
+{
+    "device_id": INT,
+    "folder_id": INT,
+    "color": INT,
+    "color_dark": INT,
+    "color_light": INT,
+    "color_accent": INT,
+    "led_color": INT,
+    "pinned": BOOL,
+    "read": BOOL,
+    "timestamp": TIMESTAMP,
+    "title": STRING,
+    "phone_numbers": STRING,
+    "snippet": STRING,
+    "ringtone": STRING?,
+    "image_uri": STRING?,
+    "id_matcher": STRING,
+    "mute": BOOL,
+    "archive": BOOL,
+    "private_notifications": BOOL
+}
+```
+
+*ids is a single id or a comma separated list of contact ids (NOT device_ids)*
+
+
+
+---
+
+
 ### update_conversation_snippet
+
+Content:
+```
+{
+    id: INT,
+    read: BOOL,
+    timestamp: TIMESTAMP,
+    snippet: STRING,
+    archive: BOOL
+}
+```
+
+
+
+---
+
+
 ### update_conversation_title
+
+Content:
+```
+{
+    id: INT,
+    title: STRING
+}
+```
+
+
+
+---
+
+
 ### updated_conversation
+
+*TODO: appears android app will overwrite with null value (or throw) if a value is not present!! But webapp does not always push values!!*
+
+Content:
+```
+{
+    "id": INT,
+    "color": INT,
+    "color_dark": INT,
+    "color_light": INT,
+    "color_accent": INT,
+    "led_color": INT,
+    "pinned": BOOL,
+    "read": BOOL,
+    "title": STRING,
+    "snippet": STRING,
+    "ringtone": STRING,
+    "mute": BOOL,
+    "archive": BOOL,
+    "private_notifications": BOOL
+}
+```
+
+
+
+---
+
+
 ### removed_conversation
+
+Content:
+```
+{
+    id: INT
+}
+```
+
+
+
+---
+
+
 ### read_conversation
+
+Content:
+```
+{
+    id: INT,
+    android_device: STRING?
+}
+```
+
+*android_device is set to a device id and is used to prevent re-reading on the android app in FirebaseHandler.kt*
+
+
+
+---
+
+
 ### seen_conversation
+
+Content:
+```
+{
+    id: INT
+}
+```
+
+
+
+---
+
+
 ### archive_conversation
+
+Content:
+```
+{
+    id: INT,
+    archive: BOOL
+}
+```
+
+
+
+---
+
+
 ### seen_conversations
+
+Content:
+```
+{}
+```
+
+
+
+---
+
+
 ### added_draft
 ### replaced_drafts
 ### removed_drafts
@@ -271,7 +430,34 @@ Content:
 ### removed_scheduled_message
 ### added_folder
 ### add_conversation_to_folder
+
+Content:
+```
+{
+    id: INT,
+    folder_id: INT
+}
+```
+
+
+
+---
+
+
 ### remove_conversation_from_folder
+
+Content:
+```
+{
+    id: INT
+}
+```
+
+
+
+---
+
+
 ### updated_folder
 ### removed_folder
 ### added_template

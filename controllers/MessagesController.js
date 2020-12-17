@@ -119,12 +119,13 @@ router.route('/update/:deviceId').post(function (req, res) {
         res.json({});
         
         // Send websocket message
-        var origKeys = ['message_type'];
-        var replaceWith = ['type'];
-        
-        var msg = util.renameKeys(toUpdate, origKeys, replaceWith);
-        
-        msg.id = req.params.deviceId;
+        var msg = {
+            id: Number(req.params.deviceId),
+            message_type: req.body.type,
+            timestamp: req.body.timestamp,
+            read: req.body.read,
+            seen: req.body.seen
+        };
         
         stream.sendMessage(req.query.account_id, 'updated_message', msg);
     });

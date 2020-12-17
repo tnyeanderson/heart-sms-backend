@@ -129,15 +129,15 @@ Firebase messages are being scrapped for pure websockets. Here are the firebase 
 - [x] updated_contact
 - [x] removed_contact
 - [x] removed_contact_by_id
-- [ ] added_conversation
-- [ ] update_conversation_snippet
-- [ ] update_conversation_title
+- [x] added_conversation
+- [x] update_conversation_snippet
+- [x] update_conversation_title
 - [ ] updated_conversation
-- [ ] removed_conversation
-- [ ] read_conversation
-- [ ] seen_conversation
-- [ ] archive_conversation
-- [ ] seen_conversations
+- [x] removed_conversation
+- [x] read_conversation
+- [x] seen_conversation
+- [x] archive_conversation
+- [x] seen_conversations
 - [ ] added_draft
 - [ ] replaced_drafts
 - [ ] removed_drafts
@@ -147,8 +147,8 @@ Firebase messages are being scrapped for pure websockets. Here are the firebase 
 - [ ] updated_scheduled_message
 - [ ] removed_scheduled_message
 - [ ] added_folder
-- [ ] add_conversation_to_folder
-- [ ] remove_conversation_from_folder
+- [x] add_conversation_to_folder
+- [x] remove_conversation_from_folder
 - [ ] updated_folder
 - [ ] removed_folder
 - [ ] added_template

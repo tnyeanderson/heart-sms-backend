@@ -148,6 +148,18 @@ router.route('/add').post(function (req, res) {
         
     db.queries(sqls, res, function (result) {
         res.json({});
+        
+        // Send websocket message
+        req.body.conversations.forEach(function (item) {
+            var origKeys = ['device_id'];
+            var replaceWith = ['id'];
+            
+            var msg = util.renameKeys(item, origKeys, replaceWith);
+            
+            delete msg.image_uri;
+            
+            stream.sendMessage(req.body.account_id, 'added_conversation', msg);
+        });
     });
 });
 
@@ -200,6 +212,17 @@ router.route('/update_snippet/:deviceId').post(function (req, res) {
 
     db.query(sql, res, function (result) {
         res.json({});
+        
+        // Send websocket message
+        var msg = {
+            id: Number(req.params.deviceId),
+            read: req.body.read,
+            timestamp: req.body.timestamp,
+            snippet: req.body.snippet,
+            archive: req.body.archive
+        };
+        
+        stream.sendMessage(req.query.account_id, 'update_conversation_snippet', msg);
     });
 });
 
@@ -223,29 +246,14 @@ router.route('/update_title/:deviceId').post(function (req, res) {
 
     db.query(sql, res, function (result) {
         res.json({});
-    });
-});
-
-
-router.route('/update_snippet/:deviceId').post(function (req, res) {
-    if (!req.query.account_id) {
-        res.json(errors.invalidAccount);
-        return;
-    }
-    
-    if (!req.query.title) {
-        res.json(errors.missingParam);
-        return;
-    }
-    
-    var toUpdate = {
-        title: mysql.escape(req.query.title)
-    };
-    
-    var sql = "UPDATE " + table + " SET " + db.updateStr(toUpdate) + " WHERE device_id = " + mysql.escape(Number(req.params.deviceId)) + " AND " + db.whereAccount(req.query.account_id);
-
-    db.query(sql, res, function (result) {
-        res.json({});
+        
+        // Send websocket message
+        var msg = {
+            id: Number(req.params.deviceId),
+            title: req.body.title
+        };
+        
+        stream.sendMessage(req.query.account_id, 'update_conversation_title', msg);
     });
 });
 
@@ -260,6 +268,13 @@ router.route('/remove/:deviceId').post(function (req, res) {
 
     db.query(sql, res, function (result) {
         res.json({});
+        
+        // Send websocket message
+        var msg = {
+            id: Number(req.params.deviceId)
+        };
+        
+        stream.sendMessage(req.query.account_id, 'removed_conversation', msg);
     });
 });
 
@@ -270,12 +285,18 @@ router.route('/read/:deviceId').post(function (req, res) {
         return;
     }
     
-    // TODO: Handle android_device query param
-    
     var sql = "UPDATE " + table + " SET `read` = true WHERE device_id = " + mysql.escape(Number(req.params.deviceId)) + " AND " + db.whereAccount(req.query.account_id);
 
     db.query(sql, res, function (result) {
         res.json({});
+        
+        // Send websocket message
+        var msg = {
+            id: Number(req.params.deviceId),
+            android_device: req.query.android_device
+        };
+        
+        stream.sendMessage(req.query.account_id, 'read_conversation', msg);
     });
 });
 
@@ -290,6 +311,13 @@ router.route('/seen/:deviceConversationId').post(function (req, res) {
 
     db.query(sql, res, function (result) {
         res.json({});
+        
+        // Send websocket message
+        var msg = {
+            id: Number(req.params.deviceId)
+        };
+        
+        stream.sendMessage(req.query.account_id, 'seen_conversation', msg);
     });
 });
 
@@ -304,6 +332,9 @@ router.route('/seen').post(function (req, res) {
 
     db.query(sql, res, function (result) {
         res.json({});
+        
+        // Send websocket message
+        stream.sendMessage(req.query.account_id, 'seen_conversations', {});
     });
 });
 
@@ -318,6 +349,14 @@ router.route('/archive/:deviceId').post(function (req, res) {
 
     db.query(sql, res, function (result) {
         res.json({});
+        
+        // Send websocket message
+        var msg = {
+            id: Number(req.params.deviceId),
+            archive: true
+        };
+        
+        stream.sendMessage(req.query.account_id, 'archive_conversation', msg);
     });
 });
 
@@ -332,6 +371,14 @@ router.route('/unarchive/:deviceId').post(function (req, res) {
 
     db.query(sql, res, function (result) {
         res.json({});
+        
+        // Send websocket message
+        var msg = {
+            id: Number(req.params.deviceId),
+            archive: false
+        };
+        
+        stream.sendMessage(req.query.account_id, 'archive_conversation', msg);
     });
 });
 
@@ -351,6 +398,14 @@ router.route('/add_to_folder/:deviceId').post(function (req, res) {
 
     db.query(sql, res, function (result) {
         res.json({});
+        
+        // Send websocket message
+        var msg = {
+            id: Number(req.params.deviceId),
+            folder_id: Number(req.query.folder_id)
+        };
+        
+        stream.sendMessage(req.query.account_id, 'add_conversation_to_folder', msg);
     });
 });
 
@@ -365,6 +420,13 @@ router.route('/remove_from_folder/:deviceId').post(function (req, res) {
 
     db.query(sql, res, function (result) {
         res.json({});
+        
+        // Send websocket message
+        var msg = {
+            id: Number(req.params.deviceId)
+        };
+        
+        stream.sendMessage(req.query.account_id, 'remove_conversation_from_folder', msg);
     });
 });
 

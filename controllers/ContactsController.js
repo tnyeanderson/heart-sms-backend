@@ -143,12 +143,15 @@ router.route('/update_device_id').post(function (req, res) {
         res.json({});
         
         // Send websocket message
-        var origKeys = ['contact_type'];
-        var replaceWith = ['type'];
-            
-        var msg = util.renameKeys(toUpdate, origKeys, replaceWith);
-        
-        msg.device_id = req.query.device_id;
+        var msg = {
+            id: req.query.device_id,
+            phone_number: req.body.phone_number,
+            name: req.body.name,
+            color: req.body.color,
+            color_dark: req.body.color_dark,
+            color_light: req.body.color_light,
+            color_accent: req.body.color_accent
+        };
         
         stream.sendMessage(req.query.account_id, 'updated_contact', msg);
     });
