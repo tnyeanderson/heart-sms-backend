@@ -48,6 +48,7 @@ For instance:
 
 ## Operations
 
+---
 ### removed_account
 
 Content:
@@ -180,9 +181,77 @@ Content:
 
 
 ### added_contact
+
+Content:
+```
+{
+    "phone_number": STRING,
+    "name": STRING,
+    "color": INT,
+    "color_dark": INT,
+    "color_light": INT,
+    "color_accent": INT,
+    "type": INT
+}
+```
+
+
+
+---
+
+
 ### updated_contact
+
+Content:
+```
+{
+    "device_id": INT,
+    "phone_number": STRING,
+    "name": STRING,
+    "color": INT,
+    "color_dark": INT,
+    "color_light": INT,
+    "color_accent": INT,
+    "type": INT
+}
+```
+
+
+
+---
+
+
 ### removed_contact
+
+Content:
+```
+{
+    "device_id": INT,
+    "phone_number": STRING
+}
+```
+
+
+
+---
+
+
 ### removed_contact_by_id
+
+Content:
+```
+{
+    "id": STRING
+}
+```
+
+*ids is a single id or a comma separated list of contact ids (NOT device_ids)*
+
+
+
+---
+
+
 ### added_conversation
 ### update_conversation_snippet
 ### update_conversation_title
@@ -234,8 +303,21 @@ Content:
 ---
 
 
-### update_subscription
+
 ### update_primary_device
+
+Content:
+```
+{
+    "new_primary_device_id": STRING
+}
+```
+
+
+
+---
+
+
 ### feature_flag
 
 
@@ -255,3 +337,10 @@ Content:
     "sent_device": INT
 }
 ```
+
+
+## Intentionally not implemented
+
+These messages were not implemented because the features are not supported in HeartSMS. Everyone has a lifetime subscription here :)
+
+* update_subscription

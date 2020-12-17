@@ -3,6 +3,8 @@ var router = express.Router();
 var mysql = require('mysql');
 var db = require('../db/query');
 var errors = require('../utils/errors');
+var stream = require('./StreamController');
+var util = require('../utils/util');
 
 var table = 'Contacts';
 
@@ -83,6 +85,19 @@ router.route('/add').post(function (req, res) {
         
     db.queries(sqls, res, function (result) {
         res.json({});
+        
+        // Send websocket message
+        req.body.contacts.forEach(function (item) {
+            var origKeys = ['contact_type'];
+            var replaceWith = ['type'];
+            
+            var msg = util.renameKeys(item, origKeys, replaceWith);
+            
+            delete msg.device_id
+            delete msg.id_matcher
+            
+            stream.sendMessage(req.body.account_id, 'added_contact', msg);
+        });
     });
 });
 
@@ -107,6 +122,11 @@ router.route('/update_device_id').post(function (req, res) {
         return;
     }
     
+    if (!req.query.device_id) {
+        res.json(errors.missingParam);
+        return;
+    }
+    
     var toUpdate = {
         phone_number: mysql.escape(req.body.phone_number),
         name: mysql.escape(req.body.name),
@@ -121,6 +141,16 @@ router.route('/update_device_id').post(function (req, res) {
 
     db.query(sql, res, function (result) {
         res.json({});
+        
+        // Send websocket message
+        var origKeys = ['contact_type'];
+        var replaceWith = ['type'];
+            
+        var msg = util.renameKeys(toUpdate, origKeys, replaceWith);
+        
+        msg.device_id = req.query.device_id;
+        
+        stream.sendMessage(req.query.account_id, 'updated_contact', msg);
     });
 });
 
@@ -131,16 +161,21 @@ router.route('/remove_device_id').post(function (req, res) {
         return;
     }
     
-    if (!req.query.device_id) {
+    if (!req.query.device_id || !req.query.phone_number) {
         res.json(errors.missingParam);
         return;        
     }
     
-    var sql = "DELETE FROM " + table + " WHERE device_id = " + mysql.escape(req.query.device_id) + " AND " + db.whereAccount(req.query.account_id);
+    var sql = "DELETE FROM " + table + " WHERE " + db.whereAccount(req.query.account_id) + " AND device_id = " + mysql.escape(req.query.device_id);
     
 
     db.query(sql, res, function (result) {
         res.json({});
+        
+        // Send websocket message
+        var msg = util.keepOnlyKeys(req.query, ['device_id', 'phone_number']);
+        
+        stream.sendMessage(req.query.account_id, 'removed_contact', msg);
     });
 });
 
@@ -162,6 +197,11 @@ router.route('/remove_ids/:ids').post(function (req, res) {
 
     db.query(sql, res, function (result) {
         res.json({});
+        
+        // Send websocket message
+        stream.sendMessage(req.query.account_id, 'removed_contact_by_id', {
+            id: req.params.ids
+        });
     });
 });
 

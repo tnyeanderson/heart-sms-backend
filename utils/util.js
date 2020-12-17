@@ -17,6 +17,18 @@ var out = {
         });
         
         return obj;
+    },
+    
+    keepOnlyKeys: function (obj, keysToKeep) {
+        var out = {};
+        
+        Object.keys(obj).forEach(key => {
+            if (keysToKeep.indexOf(key))  {
+                out[key] = obj[key];
+            }
+        });
+        
+        return out;
     }
     
 }

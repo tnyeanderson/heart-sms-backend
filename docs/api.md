@@ -713,6 +713,8 @@ Method: POST
 
 Parameters: `account_id=STRING`, `phone_number=STRING`, `device_id=INT`
 
+*phone_number is required, but we only match on device_id when deleting from the databse*
+
 Request body: None
 
 Response:

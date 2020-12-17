@@ -125,10 +125,10 @@ Firebase messages are being scrapped for pure websockets. Here are the firebase 
 - [x] removed_message
 - [x] cleanup_messages
 - [x] cleanup_conversation_messages
-- [ ] added_contact
-- [ ] updated_contact
-- [ ] removed_contact
-- [ ] removed_contact_by_id
+- [x] added_contact
+- [x] updated_contact
+- [x] removed_contact
+- [x] removed_contact_by_id
 - [ ] added_conversation
 - [ ] update_conversation_snippet
 - [ ] update_conversation_title
@@ -159,8 +159,8 @@ Firebase messages are being scrapped for pure websockets. Here are the firebase 
 - [ ] removed_auto_reply
 - [ ] update_setting
 - [x] dismissed_notification
-- [ ] # update_subscription
-- [ ] update_primary_device
+- [x] # update_subscription
+- [x] update_primary_device
 - [ ] feature_flag
 - [x] forward_to_phone
 

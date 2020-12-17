@@ -3,6 +3,8 @@ var router = express.Router();
 var mysql = require('mysql');
 var db = require('../db/query');
 var errors = require('../utils/errors');
+var stream = require('./StreamController');
+var util = require('../utils/util');
 
 var table = "Devices"
 
@@ -108,6 +110,11 @@ router.route('/update_primary').post(function (req, res) {
 
     db.queries(sqls, res, function (result) {
         res.json({});
+        
+        // Send websocket message
+        stream.sendMessage(req.query.account_id, 'update_primary_device', {
+            new_primary_device_id: req.query.new_primary_device_id
+        });
     });
 });
 

@@ -23,7 +23,8 @@ CREATE TABLE IF NOT EXISTS Accounts (
     `color_dark` INTEGER NOT NULL DEFAULT -15309376,
     `color_light` INTEGER NOT NULL DEFAULT -1,
     `color_accent` INTEGER NOT NULL DEFAULT -37312,
-    `subscription_type` INTEGER NOT NULL DEFAULT 2,
+    `subscription_type` INTEGER NOT NULL DEFAULT 3,
+    `subscription_expiration` BIGINT NOT NULL DEFAULT 1600789518254,
     `global_color_theme` VARCHAR(12) NULL DEFAULT 'default'
 );
 CREATE TABLE IF NOT EXISTS AutoReplies (

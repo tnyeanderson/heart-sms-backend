@@ -94,7 +94,7 @@ router.route('/add').post(function (req, res) {
             
             var msg = util.renameKeys(item, origKeys, replaceWith);
             
-            stream.sendMessage(req.query.account_id, 'added_message', msg);
+            stream.sendMessage(req.body.account_id, 'added_message', msg);
         });
     });
 });

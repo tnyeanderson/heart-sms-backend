@@ -474,7 +474,8 @@ describe("heart-sms-backend unit test", function () {
         .post('/contacts/remove_device_id')
         .query({
             "account_id": accountId,
-            "device_id": 4
+            "device_id": 4,
+            "phone_number": "888"
         })
         .expect("Content-type",/json/)
         .expect(200)
