@@ -1,6 +1,14 @@
 # pulse-sms-backend
 TChilderhose implemented nearly all of this backend before giving me his code to use as reference. Thank you!
 
+### Security
+
+There are some rather large security issues with the original pulse app and API. In fact, calling the app end-to-end encrypted would be, in my estimation, fraudulent.
+
+- [ ] Passwords are send in plain text, meaning the server has everything it needs (password + Salt2) to get the encryption key and decrypt all message data.
+- [ ] There is no authentication/sessions of any kind for the API or websockets. It is all based on knowledge of the account ID, which is returned during login but never changes (and can't be changed by the user). One could clear out and even delete an account if they know the account ID. ID length has been increased to 64 characters for Heart, but some sort of session key should be implemented instead.
+- [ ] When creating a new conversation/thread, the message metadata and contents are sent *unencrypted* in PLAIN TEXT!
+
 ### API Endpoints
 Checked means "test written and passing", tilde means the endpoint sends a websocket (untested)
 
@@ -138,25 +146,25 @@ Firebase messages are being scrapped for pure websockets. Here are the firebase 
 - [x] seen_conversation
 - [x] archive_conversation
 - [x] seen_conversations
-- [ ] added_draft
-- [ ] replaced_drafts
-- [ ] removed_drafts
-- [ ] added_blacklist
-- [ ] removed_blacklist
-- [ ] added_scheduled_message
-- [ ] updated_scheduled_message
-- [ ] removed_scheduled_message
-- [ ] added_folder
+- [x] added_draft
+- [x] replaced_drafts
+- [x] removed_drafts
+- [x] added_blacklist
+- [x] removed_blacklist
+- [x] added_scheduled_message
+- [x] updated_scheduled_message
+- [x] removed_scheduled_message
+- [x] added_folder
 - [x] add_conversation_to_folder
 - [x] remove_conversation_from_folder
-- [ ] updated_folder
-- [ ] removed_folder
-- [ ] added_template
-- [ ] updated_template
-- [ ] removed_template
-- [ ] added_auto_reply
-- [ ] updated_auto_reply
-- [ ] removed_auto_reply
+- [x] updated_folder
+- [x] removed_folder
+- [x] added_template
+- [x] updated_template
+- [x] removed_template
+- [x] added_auto_reply
+- [x] updated_auto_reply
+- [x] removed_auto_reply
 - [ ] update_setting
 - [x] dismissed_notification
 - [x] # update_subscription

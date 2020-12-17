@@ -3,6 +3,8 @@ var router = express.Router();
 var mysql = require('mysql');
 var db = require('../db/query');
 var errors = require('../utils/errors');
+var stream = require('./StreamController');
+var util = require('../utils/util');
 
 var table = "Templates"
 
@@ -41,6 +43,15 @@ router.route('/add').post(function (req, res) {
         
     db.queries(sqls, res, function (result) {
         res.json({});
+        
+        // Send websocket message
+        req.body.templates.forEach(function (item) {
+            var toKeep = ['device_id', 'text'];
+            
+            var msg = util.keepOnlyKeys(item, toKeep);
+            
+            stream.sendMessage(req.body.account_id, 'added_template', msg);
+        });
     });
 });
 
@@ -56,6 +67,13 @@ router.route('/remove/:deviceId').post(function (req, res) {
 
     db.query(sql, res, function (result) {
         res.json({});
+        
+        // Send websocket message
+        var msg = {
+            id: Number(req.params.deviceId)
+        };
+        
+        stream.sendMessage(req.body.account_id, 'removed_template', msg);
     });
 });
 
@@ -74,6 +92,16 @@ router.route('/update/:deviceId').post(function (req, res) {
 
     db.query(sql, res, function (result) {
         res.json({});
+        
+        // Send websocket message
+        var toKeep = ['device_id', 'text'];
+            
+        var msg = {
+            device_id: Number(req.params.deviceId),
+            text: req.body.text
+        };
+        
+        stream.sendMessage(req.body.account_id, 'updated_template', msg);
     });
 });
 

@@ -421,14 +421,161 @@ Content:
 
 
 ### added_draft
+
+Content:
+```
+{
+    id: INT,
+    conversation_id: INT,
+    data: STRING,
+    mime_type: STRING
+}
+```
+
+
+
+---
+
+
 ### replaced_drafts
+
+Content:
+```
+{
+    id: INT,
+    conversation_id: INT,
+    data: STRING,
+    mime_type: STRING
+}
+```
+
+
+
+---
+
+
 ### removed_drafts
+
+Content:
+```
+{
+    id: INT,
+    android_device: INT
+}
+```
+
+*id is a device_conversation_id*
+
+*android_device is set to a device id and is used to prevent re-reading on the android app in FirebaseHandler.kt*
+
+
+
+---
+
+
 ### added_blacklist
+
+Content:
+```
+{
+    "id": INT,
+    "phone_number": STRING,
+    "phrase": STRING
+}
+```
+
+
+
+---
+
+
 ### removed_blacklist
+
+Content:
+```
+{
+    id: INT
+}
+```
+
+
+
+---
+
+
 ### added_scheduled_message
+
+Content:
+```
+{
+    "id": INT,
+    "to": STRING,
+    "data": STRING,
+    "mime_type": STRING,
+    "timestamp": TIMESTAMP,
+    "title": STRING,
+    "repeat": INT
+}
+```
+
+
+
+---
+
+
 ### updated_scheduled_message
+
+Content:
+```
+{
+    "id": INT,
+    "to": STRING,
+    "data": STRING,
+    "mime_type": STRING,
+    "timestamp": TIMESTAMP,
+    "title": STRING,
+    "repeat": INT
+}
+```
+
+
+
+---
+
+
 ### removed_scheduled_message
+
+Content:
+```
+{
+    id: INT
+}
+```
+
+
+
+---
+
+
 ### added_folder
+
+Content:
+```
+{
+    device_id: INT,
+    name: STRING,
+    color: INT,
+    color_dark: INT,
+    color_light: INT,
+    color_accent: INT
+}
+```
+
+
+
+---
+
+
 ### add_conversation_to_folder
 
 Content:
@@ -459,13 +606,130 @@ Content:
 
 
 ### updated_folder
+
+Content:
+```
+{
+    device_id: INT,
+    name: STRING,
+    color: INT,
+    color_dark: INT,
+    color_light: INT,
+    color_accent: INT
+}
+```
+
+
+
+---
+
+
 ### removed_folder
+
+Content:
+```
+{
+    id: INT
+}
+```
+
+
+
+---
+
+
 ### added_template
+
+Content:
+```
+{
+    device_id: INT,
+    text: STRING
+}
+```
+
+
+
+---
+
+
 ### updated_template
+
+Content:
+```
+{
+    device_id: INT,
+    text: STRING
+}
+```
+
+
+
+---
+
+
 ### removed_template
+
+Content:
+```
+{
+    id: INT
+}
+```
+
+
+
+---
+
+
 ### added_auto_reply
+
+Content:
+```
+{
+    device_id: INT,
+    type: STRING,
+    pattern: STRING,
+    response: STRING
+}
+```
+
+
+
+---
+
+
 ### updated_auto_reply
+
+Content:
+```
+{
+    device_id: INT,
+    type: STRING,
+    pattern: STRING,
+    response: STRING
+}
+```
+
+
+
+---
+
+
 ### removed_auto_reply
+
+Content:
+```
+{
+    id: INT
+}
+```
+
+
+
+---
+
+
 ### update_setting
 
 

@@ -3,6 +3,8 @@ var router = express.Router();
 var mysql = require('mysql');
 var db = require('../db/query');
 var errors = require('../utils/errors');
+var stream = require('./StreamController');
+var util = require('../utils/util');
 
 var table = "Drafts"
 
@@ -58,6 +60,17 @@ router.route('/add').post(function (req, res) {
         
     db.queries(sqls, res, function (result) {
         res.json({});
+        
+        // Send websocket message
+        req.body.drafts.forEach(function (item) {
+            var origKeys = ['device_id', 'device_conversation_id'];
+            
+            var newKeys = ['id', 'conversation_id'];
+            
+            var msg = util.renameKeys(item, origKeys, newKeys);
+            
+            stream.sendMessage(req.body.account_id, 'added_draft', msg);
+        });
     });
 });
 
@@ -72,6 +85,14 @@ router.route('/remove/:deviceConversationId').post(function (req, res) {
 
     db.query(sql, res, function (result) {
         res.json({});
+        
+        // Send websocket message
+        var msg = {
+            id: Number(req.params.deviceConversationId),
+            android_device: req.query.android_device
+        };
+        
+        stream.sendMessage(req.body.account_id, 'removed_drafts', msg);
     });
 });
 
@@ -91,6 +112,8 @@ router.route('/update/:deviceId').post(function (req, res) {
 
     db.query(sql, res, function (result) {
         res.json({});
+        
+        // TODO: Send websocket message
     });
 });
 
@@ -116,6 +139,17 @@ router.route('/replace/:deviceConversationId').post(function (req, res) {
 
     db.queries(sqls, res, function (result) {
         res.json({});
+        
+        // Send websocket message
+        req.body.drafts.forEach(function (item) {
+            var origKeys = ['device_id', 'device_conversation_id'];
+            
+            var newKeys = ['id', 'conversation_id'];
+            
+            var msg = util.renameKeys(item, origKeys, newKeys);
+            
+            stream.sendMessage(req.body.account_id, 'replaced_drafts', msg);
+        });
     });
 });
 

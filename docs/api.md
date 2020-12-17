@@ -1710,7 +1710,8 @@ Error:
 Method: POST
 
 Parameters: `account_id=STRING`, `android_device=STRING?`
-*INVESTIGATE: What is android_device? Looks like it is translated to device_id in FirebaseHandler.kt*
+
+*android_device is set to a device id and is used to prevent re-reading on the android app in FirebaseHandler.kt*
 
 Request body: None
 

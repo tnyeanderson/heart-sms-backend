@@ -3,6 +3,8 @@ var router = express.Router();
 var mysql = require('mysql');
 var db = require('../db/query');
 var errors = require('../utils/errors');
+var stream = require('./StreamController');
+var util = require('../utils/util');
 
 var table = "ScheduledMessages"
 
@@ -46,6 +48,17 @@ router.route('/add').post(function (req, res) {
         
     db.queries(sqls, res, function (result) {
         res.json({});
+        
+        // Send websocket message
+        req.body.scheduled_messages.forEach(function (item) {
+            var origKeys = ['device_id'];
+            
+            var newKeys = ['id'];
+            
+            var msg = util.renameKeys(item, origKeys, newKeys);
+            
+            stream.sendMessage(req.body.account_id, 'added_scheduled_message', msg);
+        });
     });
 });
 
@@ -61,6 +74,13 @@ router.route('/remove/:deviceId').post(function (req, res) {
 
     db.query(sql, res, function (result) {
         res.json({});
+        
+        // Send websocket message
+        var msg = {
+            id: Number(req.params.deviceId)
+        };
+        
+        stream.sendMessage(req.body.account_id, 'removed_scheduled_message', msg);
     });
 });
 
@@ -84,6 +104,13 @@ router.route('/update/:deviceId').post(function (req, res) {
 
     db.query(sql, res, function (result) {
         res.json({});
+        
+        // Send websocket message
+        var msg = util.renameKeys(req.body);
+        
+        msg.id = Number(req.params.deviceId);
+        
+        stream.sendMessage(req.body.account_id, 'added_scheduled_message', msg);
     });
 });
 

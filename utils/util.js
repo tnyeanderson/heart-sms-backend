@@ -7,16 +7,22 @@ var out = {
     },
     
     renameKeys: function (obj, keys, renameTo) {
+        var out = {};
+        
+        var keys = keys || [];
+        var renameto = renameTo || [];
+        
         Object.keys(obj).forEach(key => {
             var i = keys.indexOf(key);
             
             if (i !== -1) {
-                obj[renameTo[i]] = obj[key];
-                delete obj[key];
+                out[renameTo[i]] = obj[key];
+            } else {
+                out[key] = obj[key]
             }
         });
         
-        return obj;
+        return out;
     },
     
     keepOnlyKeys: function (obj, keysToKeep) {

@@ -3,6 +3,8 @@ var router = express.Router();
 var mysql = require('mysql');
 var db = require('../db/query');
 var errors = require('../utils/errors');
+var stream = require('./StreamController');
+var util = require('../utils/util');
 
 var table = "Folders"
 
@@ -45,6 +47,15 @@ router.route('/add').post(function (req, res) {
         
     db.queries(sqls, res, function (result) {
         res.json({});
+        
+        // Send websocket message
+        req.body.folders.forEach(function (item) {
+            var toKeep = ['device_id', 'name', 'color', 'color_dark', 'color_light', 'color_accent'];
+            
+            var msg = util.keepOnlyKeys(item, toKeep);
+            
+            stream.sendMessage(req.body.account_id, 'added_folder', msg);
+        });
     });
 });
 
@@ -66,6 +77,11 @@ router.route('/remove/:deviceId').post(function (req, res) {
 
     db.queries(sqls, res, function (result) {
         res.json({});
+        
+        // Send websocket message
+        stream.sendMessage(req.query.account_id, 'removed_folder', {
+            id: req.params.deviceId
+        });
     });
 });
 
@@ -88,6 +104,15 @@ router.route('/update/:deviceId').post(function (req, res) {
 
     db.query(sql, res, function (result) {
         res.json({});
+        
+        // Send websocket message
+        var toKeep = ['name', 'color', 'color_dark', 'color_light', 'color_accent'];
+            
+        var msg = util.keepOnlyKeys(req.body, toKeep);
+        
+        msg.device_id = Number(req.params.deviceId);
+            
+        stream.sendMessage(req.body.account_id, 'updated_folder', msg);
     });
 });
 
