@@ -1893,17 +1893,47 @@ Error:
 ---
 
 
-### `/media`
+### `/media/add`
 
 Method: GET
 
 Parameters: `account_id=STRING`
 
-Request body: UNKNOWN
+Request body: 
+```
+{
+    message_id: INT,
+    data: <RAWFILEDATA>
+}
+```
 
 Response:
 ```
+{}
+```
+
+Error:
+```
 <UNKNOWN>
+```
+
+
+---
+
+
+### `/media/{message_id}`
+
+Method: GET
+
+Parameters: `account_id=STRING`
+
+Request body: None
+
+Response:
+```
+{
+    data: <RAWFILEDATA>
+}
 ```
 
 Error:

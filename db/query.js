@@ -15,7 +15,7 @@ var out = {
     },
     
     query: function (sql, res, callback) {
-        //console.log(sql, ';', '\n');
+        console.log(sql, ';', '\n');
         pool.query(sql, function (err, result) {
             if (err) {
                 console.log(err);
@@ -32,7 +32,7 @@ var out = {
     
     queries: function (sqls, res, callback) {
         var sql = sqls.join('; ');
-        //console.log(sql, ';', '\n');
+        console.log(sql, ';', '\n');
         multiquerypool.query(sql, function (err, result) {
             if (err) {
                 console.log(err);

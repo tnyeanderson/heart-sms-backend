@@ -150,6 +150,15 @@ CREATE TABLE IF NOT EXISTS Messages (
     CONSTRAINT FK_Messages_Accounts_account_id FOREIGN KEY (account_id) REFERENCES Accounts (account_id) ON DELETE CASCADE,
     CONSTRAINT FK_Messages_Conversations_device_conversation_id FOREIGN KEY (device_conversation_id) REFERENCES Conversations (device_id) ON DELETE CASCADE
 );
+CREATE INDEX IX_Messages_device_id ON Messages (device_id);
+CREATE TABLE IF NOT EXISTS Media (
+    `id` INTEGER NOT NULL PRIMARY KEY AUTO_INCREMENT,
+    `message_id` BIGINT NOT NULL,
+    `data` BLOB NULL,
+    `account_id` CHAR(64) NOT NULL,
+    --CONSTRAINT FK_Media_Accounts_account_id FOREIGN KEY (account_id) REFERENCES Accounts (account_id) ON DELETE CASCADE,
+    --CONSTRAINT FK_Media_Messages_device_id FOREIGN KEY (message_id) REFERENCES Messages (device_id) ON DELETE CASCADE
+);
 CREATE INDEX IX_AutoReplies_account_id ON AutoReplies (account_id);
 CREATE INDEX IX_Blacklists_account_id ON Blacklists (account_id);
 CREATE INDEX IX_Contacts_account_id ON Contacts (account_id);
@@ -160,6 +169,8 @@ CREATE INDEX IX_Drafts_device_conversation_id ON Drafts (device_conversation_id)
 CREATE INDEX IX_Folders_account_id ON Folders (account_id);
 CREATE INDEX IX_Messages_account_id ON Messages (account_id);
 CREATE INDEX IX_Messages_device_conversation_id ON Messages (device_conversation_id);
+CREATE INDEX IX_Media_account_id ON Media (account_id);
+CREATE INDEX IX_Media_message_id ON Media (message_id);
 CREATE INDEX IX_ScheduledMessages_account_id ON ScheduledMessages (account_id);
 CREATE INDEX IX_Templates_account_id ON Templates (account_id);
 COMMIT;

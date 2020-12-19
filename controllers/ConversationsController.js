@@ -17,9 +17,9 @@ router.route('/').get(function (req, res) {
     var limitStr = '';
     
     if (req.query.limit) {
-        limitStr += ' LIMIT ' + req.query.limit;
+        limitStr += ' LIMIT ' + mysql.escape(Number(req.query.limit));
         if (req.query.offset) {
-            limitStr += ' OFFSET ' + req.query.offset;
+            limitStr += ' OFFSET ' + mysql.escape(Number(req.query.offset));
         }
     }
     
@@ -68,9 +68,9 @@ router.route('/index_public_unarchived').get(function (req, res) {
     var limitStr = '';
     
     if (req.query.limit) {
-        limitStr += ' LIMIT ' + req.query.limit;
+        limitStr += ' LIMIT ' + mysql.escape(Number(req.query.limit));
         if (req.query.offset) {
-            limitStr += ' OFFSET ' + req.query.offset;
+            limitStr += ' OFFSET ' + mysql.escape(Number(req.query.offset));
         }
     }
     
