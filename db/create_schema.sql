@@ -19,10 +19,10 @@ CREATE TABLE IF NOT EXISTS Accounts (
     `apply_primary_color_to_toolbar` BOOLEAN NOT NULL DEFAULT true,
     `conversation_categories` BOOLEAN NOT NULL DEFAULT true,
     `message_timestamp` BOOLEAN NOT NULL DEFAULT false,
-    `color` INTEGER NOT NULL DEFAULT -15239726,
-    `color_dark` INTEGER NOT NULL DEFAULT -15309376,
+    `color` INTEGER NOT NULL DEFAULT -1352590,
+    `color_dark` INTEGER NOT NULL DEFAULT -4311478,
     `color_light` INTEGER NOT NULL DEFAULT -1,
-    `color_accent` INTEGER NOT NULL DEFAULT -37312,
+    `color_accent` INTEGER NOT NULL DEFAULT -10011977,
     `subscription_type` INTEGER NOT NULL DEFAULT 3,
     `subscription_expiration` BIGINT NOT NULL DEFAULT 1600789518254,
     `global_color_theme` VARCHAR(12) NULL DEFAULT 'default'

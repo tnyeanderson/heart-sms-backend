@@ -82,6 +82,29 @@ router.route('/index_public_unarchived').get(function (req, res) {
 });
 
 
+router.route('/index_public_unread').get(function (req, res) {
+    if (!req.query.account_id) {
+        res.json(errors.invalidAccount);
+        return;
+    }
+    
+    var limitStr = '';
+    
+    if (req.query.limit) {
+        limitStr += ' LIMIT ' + mysql.escape(Number(req.query.limit));
+        if (req.query.offset) {
+            limitStr += ' OFFSET ' + mysql.escape(Number(req.query.offset));
+        }
+    }
+    
+    var sql = "SELECT * FROM " + table + " WHERE `read` = false AND private_notifications = false AND " + db.whereAccount(req.query.account_id) + limitStr;
+
+    db.query(sql, res, function (result) {
+        res.json(result);
+    });
+});
+
+
 router.route('/:deviceId').get(function (req, res) {
     if (!req.query.account_id) {
         res.json(errors.invalidAccount);

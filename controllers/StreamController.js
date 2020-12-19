@@ -43,7 +43,7 @@ var stream = {
     
     init: function(wsPort) {
         // Set up websockets
-        stream.server = new WebSocket.Server({ port: wsPort, path: '/stream', clientTracking: true });
+        stream.server = new WebSocket.Server({ port: wsPort, path: '/api/v1/stream', clientTracking: true });
 
         stream.startPing();
 
