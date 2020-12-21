@@ -120,12 +120,12 @@ We should:
 
 - [x] Create a new table in the DB for "Media", joined to `Messages`, cascading, with FK=`DeviceId`
 - [x] Have the `/media` endpoint lookup the Data column (blob) from the Media table by `DeviceId`
-- [ ] Change `downloadFileFromFirebase()` or equivalent functions in all clients to be queries to `/media`
+- [x] Change `downloadFileFromFirebase()` or equivalent functions in all clients to be queries to `/media`
   - [x] Web client (already uses /media endpoint)
-  - [ ] Android app
-- [ ] Change `downloadFileFromFirebase()` or equivalent functions in all clients to be queries to `/media`
+  - [x] Android app
+- [x] Change `uploadFileToFirebase()` or equivalent functions in all clients to be queries to `/media`
   - [x] Web client (happens in `media.send()` in `messages.js`)
-  - [ ] Android app
+  - [x] Android app
 
 
 ## Websockets
