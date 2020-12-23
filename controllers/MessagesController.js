@@ -70,8 +70,6 @@ router.route('/add').post(function (req, res) {
     var sqls = [];
     var inserted = [];
     
-    console.log(req.body);
-    
     req.body.messages.forEach(function (item) {
         var toInsert = {
             account_id: accountId,

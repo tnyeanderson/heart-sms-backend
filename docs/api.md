@@ -1,8 +1,17 @@
 # API Documentation
 
-WORK IN PROGRESS... Most of these are "documented" in my archived `pulse-sms-backend` repo.
+WORK IN PROGRESS... 
 
 Base url is `/api/v1`
+
+Documented here are the original endpoints, requests, and responses outlined by the android app.
+
+Some differences exist between the current API and the one described in the android app. Including:
+
+* The `account_id` can be in either the request body or a URL query.
+  * There is inconsistency between clients with where the `account_id` should be placed (in the request body or a query). The web client nearly always uses a query. For this reason, all endpoints that require an `account_id` can have it in either place. Queries are checked first, then the body.
+
+
 
 
 
@@ -556,8 +565,8 @@ Request body:
     "blacklists": [
         {
             "device_id": INT,
-            "phone_number": STRING,
-            "phrase": STRING
+            "phone_number": STRING?,
+            "phrase": STRING?
         }
         ...
     ]
