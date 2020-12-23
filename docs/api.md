@@ -83,7 +83,11 @@ Request body:
 
 Response:
 ```
-<UNKNOWN>
+{
+    account_id: STRING,
+    salt1: STRING,
+    salt2: STRING
+}
 ```
 
 

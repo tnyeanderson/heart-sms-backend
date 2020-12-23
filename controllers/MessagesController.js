@@ -28,7 +28,7 @@ router.route('/').get(function (req, res) {
         }
     }
     
-    var sql = "SELECT * FROM " + table + " WHERE " + db.whereAccount(req.query.account_id) + whereConversationStr + limitStr;
+    var sql = "SELECT * FROM " + table + " WHERE " + db.whereAccount(req.query.account_id) + whereConversationStr + " ORDER BY timestamp DESC " + limitStr;
 
     db.query(sql, res, function (result) {
         res.json(result);
@@ -63,6 +63,8 @@ router.route('/add').post(function (req, res) {
     
     var sqls = [];
     var inserted = [];
+    
+    console.log(req.body);
     
     req.body.messages.forEach(function (item) {
         var toInsert = {

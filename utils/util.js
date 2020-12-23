@@ -2,6 +2,10 @@ const { v4: uuidv4 } = require('uuid');
 
 var out = {
     
+    getAccountId: function (req) {
+        return req.query.account_id || req.body.account_id || null;
+    },
+    
     createAccountId: function () {
         return (uuidv4() + uuidv4()).replace(/-/g, '');
     },

@@ -67,16 +67,11 @@ router.route('/remove/:deviceId').post(function (req, res) {
         return;
     }
     
-    var sqls = [];
-    
-    // Update conversations to remove from folder
-    sqls.push("UPDATE Conversations SET folder_id = -1 WHERE folder_id = " + mysql.escape(Number(req.params.deviceId)) + " AND " + db.whereAccount(req.query.account_id));
-    
     // Delete the folder
-    sqls.push("DELETE FROM " + table + " WHERE device_id = " + mysql.escape(Number(req.params.deviceId)) + " AND " + db.whereAccount(req.query.account_id));
+    sql = "DELETE FROM " + table + " WHERE device_id = " + mysql.escape(Number(req.params.deviceId)) + " AND " + db.whereAccount(req.query.account_id);
     
 
-    db.queries(sqls, res, function (result) {
+    db.query(sql, res, function (result) {
         res.json({});
         
         // Send websocket message

@@ -84,7 +84,7 @@ CREATE TABLE IF NOT EXISTS Conversations (
     `led_color` INTEGER NOT NULL,
     `pinned` BOOLEAN NOT NULL DEFAULT false,
     `read` BOOLEAN NOT NULL DEFAULT false,
-    `timestamp` INTEGER NOT NULL,
+    `timestamp` BIGINT NOT NULL,
     `title` TEXT NULL,
     `snippet` TEXT NULL,
     `ringtone` TEXT NULL,
@@ -109,7 +109,7 @@ CREATE TABLE IF NOT EXISTS ScheduledMessages (
     `to` TEXT NULL,
     `data` TEXT NULL,
     `mime_type` TEXT NULL,
-    `timestamp` INTEGER NOT NULL,
+    `timestamp` BIGINT NOT NULL,
     `title` TEXT NULL,
     `repeat` INTEGER NOT NULL,
     `account_id` CHAR(64) NOT NULL,
@@ -139,16 +139,15 @@ CREATE TABLE IF NOT EXISTS Messages (
     `data` TEXT NULL,
     `mime_type` TEXT NULL,
     `message_type` INTEGER NOT NULL,
-    `timestamp` INTEGER NOT NULL,
+    `timestamp` BIGINT NOT NULL,
     `read` BOOLEAN NOT NULL,
     `seen` BOOLEAN NOT NULL,
     `message_from` TEXT NULL,
-    `color` INTEGER NOT NULL,
+    `color` INTEGER NULL,
     `sent_device` INTEGER NOT NULL DEFAULT -1,
     `sim_stamp` TEXT NULL,
     `account_id` CHAR(64) NOT NULL,
-    CONSTRAINT FK_Messages_Accounts_account_id FOREIGN KEY (account_id) REFERENCES Accounts (account_id) ON DELETE CASCADE,
-    CONSTRAINT FK_Messages_Conversations_device_conversation_id FOREIGN KEY (device_conversation_id) REFERENCES Conversations (device_id) ON DELETE CASCADE
+    CONSTRAINT FK_Messages_Accounts_account_id FOREIGN KEY (account_id) REFERENCES Accounts (account_id) ON DELETE CASCADE
 );
 CREATE INDEX IX_Messages_device_id ON Messages (device_id);
 CREATE TABLE IF NOT EXISTS Media (
@@ -156,8 +155,8 @@ CREATE TABLE IF NOT EXISTS Media (
     `message_id` BIGINT NOT NULL,
     `data` BLOB NULL,
     `account_id` CHAR(64) NOT NULL,
-    --CONSTRAINT FK_Media_Accounts_account_id FOREIGN KEY (account_id) REFERENCES Accounts (account_id) ON DELETE CASCADE,
-    --CONSTRAINT FK_Media_Messages_device_id FOREIGN KEY (message_id) REFERENCES Messages (device_id) ON DELETE CASCADE
+    CONSTRAINT FK_Media_Accounts_account_id FOREIGN KEY (account_id) REFERENCES Accounts (account_id) ON DELETE CASCADE,
+    CONSTRAINT FK_Media_Messages_device_id FOREIGN KEY (message_id) REFERENCES Messages (device_id) ON DELETE CASCADE
 );
 CREATE INDEX IX_AutoReplies_account_id ON AutoReplies (account_id);
 CREATE INDEX IX_Blacklists_account_id ON Blacklists (account_id);
@@ -173,5 +172,28 @@ CREATE INDEX IX_Media_account_id ON Media (account_id);
 CREATE INDEX IX_Media_message_id ON Media (message_id);
 CREATE INDEX IX_ScheduledMessages_account_id ON ScheduledMessages (account_id);
 CREATE INDEX IX_Templates_account_id ON Templates (account_id);
-COMMIT;
  
+DELIMITER $$
+
+-- Messages are sometimes added before a conversation is, so we can't use a FK
+CREATE TRIGGER before_conversation_delete
+BEFORE DELETE
+ON Conversations FOR EACH ROW
+BEGIN
+    DELETE FROM Messages WHERE Messages.device_conversation_id = OLD.device_id
+    AND Messages.account_id = OLD.account_id;
+END$$
+
+
+-- Remove conversations from folder before deleting
+CREATE TRIGGER before_folder_delete
+BEFORE DELETE
+ON Folders FOR EACH ROW
+BEGIN
+    UPDATE Conversations SET folder_id = -1 WHERE Conversations.folder_id = OLD.device_id 
+    AND Conversations.account_id = OLD.account_id;
+END$$
+
+DELIMITER ;
+
+COMMIT;

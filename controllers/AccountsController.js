@@ -53,7 +53,11 @@ router.route('/signup').post(function (req, res) {
     
     
     db.query(sql, res, function (result) {
-        res.json({});
+        res.json({
+            account_id: account_id,
+            salt1: salt1,
+            salt2: salt2
+        });
     });
 });
 
