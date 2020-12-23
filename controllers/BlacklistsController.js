@@ -9,12 +9,14 @@ var util = require('../utils/util');
 var table = "Blacklists"
 
 router.route('/').get(function (req, res) {
-    if (!req.query.account_id) {
+    var accountId = util.getAccountId(req);
+    
+    if (!accountId) {
         res.json(errors.invalidAccount);
         return;
     }
     
-    var sql = "SELECT * FROM " + table + " WHERE " + db.whereAccount(req.query.account_id);
+    var sql = "SELECT * FROM " + table + " WHERE " + db.whereAccount(accountId);
     
 
     db.query(sql, res, function (result) {
@@ -24,7 +26,9 @@ router.route('/').get(function (req, res) {
 
 
 router.route('/add').post(function (req, res) {
-    if (!req.body.account_id) {
+    var accountId = util.getAccountId(req);
+    
+    if (!accountId) {
         res.json(errors.invalidAccount);
         return;
     }
@@ -34,7 +38,7 @@ router.route('/add').post(function (req, res) {
     
     req.body.blacklists.forEach(function (item) {
         var toInsert = {
-            account_id: req.body.account_id,
+            account_id: accountId,
             device_id: item.device_id,
             phone_number: item.phone_number,
             phrase: item.phrase
@@ -57,19 +61,21 @@ router.route('/add').post(function (req, res) {
             
             delete msg.account_id;
             
-            stream.sendMessage(req.body.account_id, 'added_blacklist', msg);
+            stream.sendMessage(accountId, 'added_blacklist', msg);
         });
     });
 });
 
 
 router.route('/remove/:deviceId').post(function (req, res) {
-    if (!req.query.account_id) {
+    var accountId = util.getAccountId(req);
+    
+    if (!accountId) {
         res.json(errors.invalidAccount);
         return;
     }
     
-    var sql = "DELETE FROM " + table + " WHERE device_id = " + mysql.escape(Number(req.params.deviceId)) + " AND " + db.whereAccount(req.query.account_id);
+    var sql = "DELETE FROM " + table + " WHERE device_id = " + mysql.escape(Number(req.params.deviceId)) + " AND " + db.whereAccount(accountId);
     
 
     db.query(sql, res, function (result) {
@@ -80,7 +86,7 @@ router.route('/remove/:deviceId').post(function (req, res) {
             id: Number(req.params.deviceId)
         };
         
-        stream.sendMessage(req.body.account_id, 'removed_blacklist', msg);
+        stream.sendMessage(accountId, 'removed_blacklist', msg);
     });
 });
 

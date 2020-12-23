@@ -9,12 +9,14 @@ var util = require('../utils/util');
 var table = "Drafts"
 
 router.route('/').get(function (req, res) {
-    if (!req.query.account_id) {
+    var accountId = util.getAccountId(req);
+    
+    if (!accountId) {
         res.json(errors.invalidAccount);
         return;
     }
     
-    var sql = "SELECT * FROM " + table + " WHERE " + db.whereAccount(req.query.account_id);
+    var sql = "SELECT * FROM " + table + " WHERE " + db.whereAccount(accountId);
     
 
     db.query(sql, res, function (result) {
@@ -24,12 +26,14 @@ router.route('/').get(function (req, res) {
 
 
 router.route('/:deviceConversationId').get(function (req, res) {
-    if (!req.query.account_id) {
+    var accountId = util.getAccountId(req);
+    
+    if (!accountId) {
         res.json(errors.invalidAccount);
         return;
     }
     
-    var sql = "SELECT * FROM " + table + " WHERE device_conversation_id = " + mysql.escape(Number(req.params.deviceConversationId)) + " AND " + db.whereAccount(req.query.account_id);
+    var sql = "SELECT * FROM " + table + " WHERE device_conversation_id = " + mysql.escape(Number(req.params.deviceConversationId)) + " AND " + db.whereAccount(accountId);
     
 
     db.query(sql, res, function (result) {
@@ -39,7 +43,9 @@ router.route('/:deviceConversationId').get(function (req, res) {
 
 
 router.route('/add').post(function (req, res) {
-    if (!req.body.account_id) {
+    var accountId = util.getAccountId(req);
+    
+    if (!accountId) {
         res.json(errors.invalidAccount);
         return;
     }
@@ -49,7 +55,7 @@ router.route('/add').post(function (req, res) {
     
     req.body.drafts.forEach(function (item) {
         var toInsert = {
-            account_id: req.body.account_id,
+            account_id: accountId,
             device_id: item.device_id,
             device_conversation_id: item.device_conversation_id,
             mime_type: item.mime_type,
@@ -73,19 +79,21 @@ router.route('/add').post(function (req, res) {
             
             delete msg.account_id;
             
-            stream.sendMessage(req.body.account_id, 'added_draft', msg);
+            stream.sendMessage(accountId, 'added_draft', msg);
         });
     });
 });
 
 
 router.route('/remove/:deviceConversationId').post(function (req, res) {
-    if (!req.query.account_id) {
+    var accountId = util.getAccountId(req);
+    
+    if (!accountId) {
         res.json(errors.invalidAccount);
         return;
     }
     
-    var sql = "DELETE FROM " + table + " WHERE device_conversation_id = " + mysql.escape(Number(req.params.deviceConversationId)) + " AND " + db.whereAccount(req.query.account_id);
+    var sql = "DELETE FROM " + table + " WHERE device_conversation_id = " + mysql.escape(Number(req.params.deviceConversationId)) + " AND " + db.whereAccount(accountId);
 
     db.query(sql, res, function (result) {
         res.json({});
@@ -96,13 +104,15 @@ router.route('/remove/:deviceConversationId').post(function (req, res) {
             android_device: req.query.android_device
         };
         
-        stream.sendMessage(req.body.account_id, 'removed_drafts', msg);
+        stream.sendMessage(accountId, 'removed_drafts', msg);
     });
 });
 
 
 router.route('/update/:deviceId').post(function (req, res) {
-    if (!req.query.account_id) {
+    var accountId = util.getAccountId(req);
+    
+    if (!accountId) {
         res.json(errors.invalidAccount);
         return;
     }
@@ -112,7 +122,7 @@ router.route('/update/:deviceId').post(function (req, res) {
         mime_type: mysql.escape(req.body.mime_type)
     };
     
-    var sql = "UPDATE " + table + " SET " + db.updateStr(toUpdate) + " WHERE device_id = " + mysql.escape(Number(req.params.deviceId)) + " AND " + db.whereAccount(req.query.account_id);
+    var sql = "UPDATE " + table + " SET " + db.updateStr(toUpdate) + " WHERE device_id = " + mysql.escape(Number(req.params.deviceId)) + " AND " + db.whereAccount(accountId);
 
     db.query(sql, res, function (result) {
         res.json({});
@@ -123,7 +133,9 @@ router.route('/update/:deviceId').post(function (req, res) {
 
 
 router.route('/replace/:deviceConversationId').post(function (req, res) {
-    if (!req.query.account_id) {
+    var accountId = util.getAccountId(req);
+    
+    if (!accountId) {
         res.json(errors.invalidAccount);
         return;
     }
@@ -138,7 +150,7 @@ router.route('/replace/:deviceConversationId').post(function (req, res) {
             data: mysql.escape(item.data)
         };
         
-        sqls.push("UPDATE " + table + " SET " + db.updateStr(toUpdate) + " WHERE device_conversation_id = " + mysql.escape(Number(req.params.deviceConversationId)) + " AND " + db.whereAccount(req.query.account_id));
+        sqls.push("UPDATE " + table + " SET " + db.updateStr(toUpdate) + " WHERE device_conversation_id = " + mysql.escape(Number(req.params.deviceConversationId)) + " AND " + db.whereAccount(accountId));
     });
 
     db.queries(sqls, res, function (result) {
@@ -152,7 +164,7 @@ router.route('/replace/:deviceConversationId').post(function (req, res) {
             
             var msg = util.renameKeys(item, origKeys, newKeys);
             
-            stream.sendMessage(req.body.account_id, 'replaced_drafts', msg);
+            stream.sendMessage(accountId, 'replaced_drafts', msg);
         });
     });
 });

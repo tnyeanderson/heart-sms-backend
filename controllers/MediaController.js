@@ -13,7 +13,9 @@ function addMedia (res, account_id, message_id, data) {
 
 
 router.route('/add').post(function (req, res) {
-    if (!req.query.account_id) {
+    var accountId = util.getAccountId(req);
+    
+    if (!accountId) {
         res.json(errors.invalidAccount);
         return;
     }
@@ -24,7 +26,7 @@ router.route('/add').post(function (req, res) {
     }
     
     var toInsert = {
-        account_id: req.query.account_id,
+        account_id: accountId,
         message_id: Number(req.body.message_id),
         data: req.body.data
     }
@@ -38,12 +40,14 @@ router.route('/add').post(function (req, res) {
 });
 
 router.route('/:messageId').get(function (req, res) {
-    if (!req.query.account_id) {
+    var accountId = util.getAccountId(req);
+    
+    if (!accountId) {
         res.json(errors.invalidAccount);
         return;
     }
     
-    var sql = "SELECT * FROM Media WHERE message_id = " + mysql.escape(Number(req.params.messageId)) + " AND " + db.whereAccount(req.query.account_id) + " LIMIT 1";
+    var sql = "SELECT * FROM Media WHERE message_id = " + mysql.escape(Number(req.params.messageId)) + " AND " + db.whereAccount(accountId) + " LIMIT 1";
     
 
     db.query(sql, res, function (result) {

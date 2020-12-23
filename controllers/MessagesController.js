@@ -9,7 +9,9 @@ var util = require('../utils/util');
 var table = 'Messages';
 
 router.route('/').get(function (req, res) {
-    if (!req.query.account_id) {
+    var accountId = util.getAccountId(req);
+    
+    if (!accountId) {
         res.json(errors.invalidAccount);
         return;
     }
@@ -28,7 +30,7 @@ router.route('/').get(function (req, res) {
         }
     }
     
-    var sql = "SELECT * FROM " + table + " WHERE " + db.whereAccount(req.query.account_id) + whereConversationStr + " ORDER BY timestamp DESC " + limitStr;
+    var sql = "SELECT * FROM " + table + " WHERE " + db.whereAccount(accountId) + whereConversationStr + " ORDER BY timestamp DESC " + limitStr;
 
     db.query(sql, res, function (result) {
         res.json(result);
@@ -37,18 +39,20 @@ router.route('/').get(function (req, res) {
 
 
 router.route('/remove/:deviceId').post(function (req, res) {
-    if (!req.query.account_id) {
+    var accountId = util.getAccountId(req);
+    
+    if (!accountId) {
         res.json(errors.invalidAccount);
         return;
     }
     
-    var sql = "DELETE FROM " + table + " WHERE device_id = " + mysql.escape(Number(req.params.deviceId)) + " AND " + db.whereAccount(req.query.account_id);
+    var sql = "DELETE FROM " + table + " WHERE device_id = " + mysql.escape(Number(req.params.deviceId)) + " AND " + db.whereAccount(accountId);
 
     db.query(sql, res, function (result) {
         res.json({});
         
         // Send websocket message
-        stream.sendMessage(req.query.account_id, 'removed_message', {
+        stream.sendMessage(accountId, 'removed_message', {
             id: req.params.deviceId
         });
     });
@@ -56,7 +60,9 @@ router.route('/remove/:deviceId').post(function (req, res) {
 
 
 router.route('/add').post(function (req, res) {
-    if (!req.body.account_id) {
+    var accountId = util.getAccountId(req);
+    
+    if (!accountId) {
         res.json(errors.invalidAccount);
         return;
     }
@@ -68,7 +74,7 @@ router.route('/add').post(function (req, res) {
     
     req.body.messages.forEach(function (item) {
         var toInsert = {
-            account_id: req.body.account_id,
+            account_id: accountId,
             device_id: item.device_id,
             device_conversation_id: item.device_conversation_id,
             message_type: item.message_type,
@@ -100,14 +106,16 @@ router.route('/add').post(function (req, res) {
             
             delete msg.account_id;
             
-            stream.sendMessage(req.body.account_id, 'added_message', msg);
+            stream.sendMessage(accountId, 'added_message', msg);
         });
     });
 });
 
 
 router.route('/update/:deviceId').post(function (req, res) {
-    if (!req.query.account_id) {
+    var accountId = util.getAccountId(req);
+    
+    if (!accountId) {
         res.json(errors.invalidAccount);
         return;
     }
@@ -119,7 +127,7 @@ router.route('/update/:deviceId').post(function (req, res) {
         seen: mysql.escape(req.body.seen)
     };
     
-    var sql = "UPDATE " + table + " SET " + db.updateStr(toUpdate) + " WHERE device_id = " + mysql.escape(Number(req.params.deviceId)) + " AND " + db.whereAccount(req.query.account_id);
+    var sql = "UPDATE " + table + " SET " + db.updateStr(toUpdate) + " WHERE device_id = " + mysql.escape(Number(req.params.deviceId)) + " AND " + db.whereAccount(accountId);
 
     db.query(sql, res, function (result) {
         res.json({});
@@ -133,13 +141,15 @@ router.route('/update/:deviceId').post(function (req, res) {
             seen: req.body.seen
         };
         
-        stream.sendMessage(req.query.account_id, 'updated_message', msg);
+        stream.sendMessage(accountId, 'updated_message', msg);
     });
 });
 
 
 router.route('/update_type/:deviceId').post(function (req, res) {
-    if (!req.query.account_id) {
+    var accountId = util.getAccountId(req);
+    
+    if (!accountId) {
         res.json(errors.invalidAccount);
         return;
     }
@@ -153,13 +163,13 @@ router.route('/update_type/:deviceId').post(function (req, res) {
         message_type: mysql.escape(req.query.message_type)
     };
     
-    var sql = "UPDATE " + table + " SET " + db.updateStr(toUpdate) + " WHERE device_id = " + mysql.escape(Number(req.params.deviceId)) + " AND " + db.whereAccount(req.query.account_id);
+    var sql = "UPDATE " + table + " SET " + db.updateStr(toUpdate) + " WHERE device_id = " + mysql.escape(Number(req.params.deviceId)) + " AND " + db.whereAccount(accountId);
 
     db.query(sql, res, function (result) {
         res.json({});
         
         // Send websocket message
-        stream.sendMessage(req.query.account_id, 'update_message_type', {
+        stream.sendMessage(accountId, 'update_message_type', {
             id: req.params.deviceId,
             message_type: Number(req.query.message_type)
         });
@@ -168,7 +178,9 @@ router.route('/update_type/:deviceId').post(function (req, res) {
 
 
 router.route('/cleanup').post(function (req, res) {
-    if (!req.query.account_id) {
+    var accountId = util.getAccountId(req);
+    
+    if (!accountId) {
         res.json(errors.invalidAccount);
         return;
     }
@@ -178,13 +190,13 @@ router.route('/cleanup').post(function (req, res) {
         return;
     }
     
-    var sql = "DELETE FROM " + table + " WHERE timestamp < " + mysql.escape(req.query.timestamp) + " AND " + db.whereAccount(req.query.account_id);
+    var sql = "DELETE FROM " + table + " WHERE timestamp < " + mysql.escape(req.query.timestamp) + " AND " + db.whereAccount(accountId);
 
     db.query(sql, res, function (result) {
         res.json({});
         
         // Send websocket message
-        stream.sendMessage(req.query.account_id, 'cleanup_messages', {
+        stream.sendMessage(accountId, 'cleanup_messages', {
             timestamp: req.query.timestamp
         });
     });
@@ -192,12 +204,12 @@ router.route('/cleanup').post(function (req, res) {
 
 
 router.route('/forward_to_phone').post(function (req, res) {
-    if (!req.body.account_id) {
+    var accountId = util.getAccountId(req);
+    
+    if (!accountId) {
         res.json(errors.invalidAccount);
         return;
     }
-    
-    var accountId = req.body.account_id;
     
     delete req.body.account_id;
     

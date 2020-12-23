@@ -1024,14 +1024,14 @@ describe("heart-sms-backend unit test", function () {
         .end(function (err,res) {
             res.status.should.equal(200);
             res.body.should.have.lengthOf(3);
-            res.body[0].timestamp.should.equal(500);
-            res.body[0].read.should.equal(true);
             res.body[0].seen.should.equal(true);
-            res.body[0].message_type.should.equal(4);
             res.body[1].read.should.equal(false);
             res.body[1].seen.should.equal(true);
             res.body[1].message_type.should.equal(7);
+            res.body[2].timestamp.should.equal(500);
+            res.body[2].read.should.equal(true);
             res.body[2].seen.should.equal(true);
+            res.body[2].message_type.should.equal(4);
             done();
         });
     });

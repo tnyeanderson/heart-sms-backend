@@ -9,7 +9,9 @@ var util = require('../utils/util');
 var table = 'Contacts';
 
 router.route('/').get(function (req, res) {
-    if (!req.query.account_id) {
+    var accountId = util.getAccountId(req);
+    
+    if (!accountId) {
         res.json(errors.invalidAccount);
         return;
     }
@@ -25,7 +27,7 @@ router.route('/').get(function (req, res) {
     
     var cols = ['id', 'account_id', 'device_id', 'phone_number', 'name', 'color', 'color_dark', 'color_light', 'color_accent', 'contact_type'];
     
-    var sql = "SELECT " + cols.join(', ') + " FROM " + table + " WHERE " + db.whereAccount(req.query.account_id) + limitStr;
+    var sql = "SELECT " + cols.join(', ') + " FROM " + table + " WHERE " + db.whereAccount(accountId) + limitStr;
 
     db.query(sql, res, function (result) {
         res.json(result);
@@ -33,7 +35,9 @@ router.route('/').get(function (req, res) {
 });
 
 router.route('/simple').get(function (req, res) {
-    if (!req.query.account_id) {
+    var accountId = util.getAccountId(req);
+    
+    if (!accountId) {
         res.json(errors.invalidAccount);
         return;
     }
@@ -49,7 +53,7 @@ router.route('/simple').get(function (req, res) {
     
     var cols = ['phone_number', 'name', 'id', 'id_matcher', 'color', 'color_accent', 'contact_type'];
     
-    var sql = "SELECT " + cols.join(', ') + " FROM " + table + " WHERE " + db.whereAccount(req.query.account_id) + limitStr;
+    var sql = "SELECT " + cols.join(', ') + " FROM " + table + " WHERE " + db.whereAccount(accountId) + limitStr;
 
     db.query(sql, res, function (result) {
         res.json(result);
@@ -58,7 +62,9 @@ router.route('/simple').get(function (req, res) {
 
 
 router.route('/add').post(function (req, res) {
-    if (!req.body.account_id) {
+    var accountId = util.getAccountId(req);
+    
+    if (!accountId) {
         res.json(errors.invalidAccount);
         return;
     }
@@ -68,7 +74,7 @@ router.route('/add').post(function (req, res) {
     
     req.body.contacts.forEach(function (item) {
         var toInsert = {
-            account_id: req.body.account_id,
+            account_id: accountId,
             device_id: item.device_id,
             phone_number: item.phone_number,
             id_matcher: item.id_matcher,
@@ -99,19 +105,21 @@ router.route('/add').post(function (req, res) {
             delete msg.id_matcher;
             delete msg.account_id;
             
-            stream.sendMessage(req.body.account_id, 'added_contact', msg);
+            stream.sendMessage(accountId, 'added_contact', msg);
         });
     });
 });
 
 
 router.route('/clear').post(function (req, res) {
-    if (!req.query.account_id) {
+    var accountId = util.getAccountId(req);
+    
+    if (!accountId) {
         res.json(errors.invalidAccount);
         return;
     }
     
-    var sql = "DELETE FROM " + table + " WHERE " + db.whereAccount(req.query.account_id);
+    var sql = "DELETE FROM " + table + " WHERE " + db.whereAccount(accountId);
 
     db.query(sql, res, function (result) {
         res.json({});
@@ -120,7 +128,9 @@ router.route('/clear').post(function (req, res) {
 
 
 router.route('/update_device_id').post(function (req, res) {
-    if (!req.query.account_id) {
+    var accountId = util.getAccountId(req);
+    
+    if (!accountId) {
         res.json(errors.invalidAccount);
         return;
     }
@@ -139,7 +149,7 @@ router.route('/update_device_id').post(function (req, res) {
         color_accent: mysql.escape(req.body.color_accent)
     };
     
-    var sql = "UPDATE " + table + " SET " + db.updateStr(toUpdate) + " WHERE device_id = " + mysql.escape(req.query.device_id) + " AND " + db.whereAccount(req.query.account_id);
+    var sql = "UPDATE " + table + " SET " + db.updateStr(toUpdate) + " WHERE device_id = " + mysql.escape(req.query.device_id) + " AND " + db.whereAccount(accountId);
     
 
     db.query(sql, res, function (result) {
@@ -156,13 +166,15 @@ router.route('/update_device_id').post(function (req, res) {
             color_accent: req.body.color_accent
         };
         
-        stream.sendMessage(req.query.account_id, 'updated_contact', msg);
+        stream.sendMessage(accountId, 'updated_contact', msg);
     });
 });
 
 
 router.route('/remove_device_id').post(function (req, res) {
-    if (!req.query.account_id) {
+    var accountId = util.getAccountId(req);
+    
+    if (!accountId) {
         res.json(errors.invalidAccount);
         return;
     }
@@ -172,7 +184,7 @@ router.route('/remove_device_id').post(function (req, res) {
         return;        
     }
     
-    var sql = "DELETE FROM " + table + " WHERE " + db.whereAccount(req.query.account_id) + " AND device_id = " + mysql.escape(req.query.device_id);
+    var sql = "DELETE FROM " + table + " WHERE " + db.whereAccount(accountId) + " AND device_id = " + mysql.escape(req.query.device_id);
     
 
     db.query(sql, res, function (result) {
@@ -181,13 +193,15 @@ router.route('/remove_device_id').post(function (req, res) {
         // Send websocket message
         var msg = util.keepOnlyKeys(req.query, ['device_id', 'phone_number']);
         
-        stream.sendMessage(req.query.account_id, 'removed_contact', msg);
+        stream.sendMessage(accountId, 'removed_contact', msg);
     });
 });
 
 
 router.route('/remove_ids/:ids').post(function (req, res) {
-    if (!req.query.account_id) {
+    var accountId = util.getAccountId(req);
+    
+    if (!accountId) {
         res.json(errors.invalidAccount);
         return;
     }
@@ -199,13 +213,13 @@ router.route('/remove_ids/:ids').post(function (req, res) {
         whereId.push('id = ' + mysql.escape(Number(id)));
     });
     
-    var sql = "DELETE FROM " + table + " WHERE " + db.whereAccount(req.query.account_id) + " AND (" + whereId.join(' OR ') + ")";
+    var sql = "DELETE FROM " + table + " WHERE " + db.whereAccount(accountId) + " AND (" + whereId.join(' OR ') + ")";
 
     db.query(sql, res, function (result) {
         res.json({});
         
         // Send websocket message
-        stream.sendMessage(req.query.account_id, 'removed_contact_by_id', {
+        stream.sendMessage(accountId, 'removed_contact_by_id', {
             id: req.params.ids
         });
     });

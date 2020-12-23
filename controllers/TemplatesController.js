@@ -9,12 +9,14 @@ var util = require('../utils/util');
 var table = "Templates"
 
 router.route('/').get(function (req, res) {
-    if (!req.query.account_id) {
+    var accountId = util.getAccountId(req);
+    
+    if (!accountId) {
         res.json(errors.invalidAccount);
         return;
     }
     
-    var sql = "SELECT * FROM " + table + " WHERE " + db.whereAccount(req.query.account_id);
+    var sql = "SELECT * FROM " + table + " WHERE " + db.whereAccount(accountId);
     
 
     db.query(sql, res, function (result) {
@@ -24,7 +26,9 @@ router.route('/').get(function (req, res) {
 
 
 router.route('/add').post(function (req, res) {
-    if (!req.body.account_id) {
+    var accountId = util.getAccountId(req);
+    
+    if (!accountId) {
         res.json(errors.invalidAccount);
         return;
     }
@@ -34,7 +38,7 @@ router.route('/add').post(function (req, res) {
     
     req.body.templates.forEach(function (item) {
         var toInsert = {
-            account_id: req.body.account_id,
+            account_id: accountId,
             device_id: item.device_id,
             text: item.text
         };
@@ -51,19 +55,21 @@ router.route('/add').post(function (req, res) {
         inserted.forEach(function (item) {
             delete item.account_id;
             
-            stream.sendMessage(req.body.account_id, 'added_template', item);
+            stream.sendMessage(accountId, 'added_template', item);
         });
     });
 });
 
 
 router.route('/remove/:deviceId').post(function (req, res) {
-    if (!req.query.account_id) {
+    var accountId = util.getAccountId(req);
+    
+    if (!accountId) {
         res.json(errors.invalidAccount);
         return;
     }
     
-    var sql = "DELETE FROM " + table + " WHERE device_id = " + mysql.escape(Number(req.params.deviceId)) + " AND " + db.whereAccount(req.query.account_id);
+    var sql = "DELETE FROM " + table + " WHERE device_id = " + mysql.escape(Number(req.params.deviceId)) + " AND " + db.whereAccount(accountId);
     
 
     db.query(sql, res, function (result) {
@@ -74,13 +80,15 @@ router.route('/remove/:deviceId').post(function (req, res) {
             id: Number(req.params.deviceId)
         };
         
-        stream.sendMessage(req.body.account_id, 'removed_template', msg);
+        stream.sendMessage(accountId, 'removed_template', msg);
     });
 });
 
 
 router.route('/update/:deviceId').post(function (req, res) {
-    if (!req.query.account_id) {
+    var accountId = util.getAccountId(req);
+    
+    if (!accountId) {
         res.json(errors.invalidAccount);
         return;
     }
@@ -89,7 +97,7 @@ router.route('/update/:deviceId').post(function (req, res) {
         text: mysql.escape(req.body.text)
     };
     
-    var sql = "UPDATE " + table + " SET " + db.updateStr(toUpdate) + " WHERE device_id = " + mysql.escape(Number(req.params.deviceId)) + " AND " + db.whereAccount(req.query.account_id);
+    var sql = "UPDATE " + table + " SET " + db.updateStr(toUpdate) + " WHERE device_id = " + mysql.escape(Number(req.params.deviceId)) + " AND " + db.whereAccount(accountId);
 
     db.query(sql, res, function (result) {
         res.json({});
@@ -102,7 +110,7 @@ router.route('/update/:deviceId').post(function (req, res) {
             text: req.body.text
         };
         
-        stream.sendMessage(req.body.account_id, 'updated_template', msg);
+        stream.sendMessage(accountId, 'updated_template', msg);
     });
 });
 

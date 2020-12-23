@@ -63,12 +63,14 @@ router.route('/signup').post(function (req, res) {
 
 
 router.route('/remove_account').post(function (req, res) {
-    if (!req.query.account_id) {
+    var accountId = util.getAccountId(req);
+    
+    if (!accountId) {
         res.json(errors.invalidAccount);
         return;
     }
     
-    var sql = "DELETE FROM Accounts WHERE " + db.whereAccount(req.query.account_id) + " LIMIT 1";
+    var sql = "DELETE FROM Accounts WHERE " + db.whereAccount(accountId) + " LIMIT 1";
     
     db.query(sql, res, function (result) {
         res.json({
@@ -76,15 +78,17 @@ router.route('/remove_account').post(function (req, res) {
         });
         
         // Send websocket message
-        stream.sendMessage(req.query.account_id, 'removed_account', {
-            id: req.query.account_id
+        stream.sendMessage(accountId, 'removed_account', {
+            id: accountId
         });
     });
 });
 
 
 router.route('/count').get(function (req, res) {
-    if (!req.query.account_id) {
+    var accountId = util.getAccountId(req);
+    
+    if (!accountId) {
         res.json(errors.invalidAccount);
         return;
     }
@@ -95,7 +99,7 @@ router.route('/count').get(function (req, res) {
     // Use subqueries to count from each table
     var sql = "SELECT ";
     for (var i=0, len=tables.length; i<len; i++) {
-        sql += "(SELECT COUNT(*) FROM " + tables[i] + " WHERE " + db.whereAccount(req.query.account_id) + ") AS " + colNames[i] + ", ";
+        sql += "(SELECT COUNT(*) FROM " + tables[i] + " WHERE " + db.whereAccount(accountId) + ") AS " + colNames[i] + ", ";
     }
     // Remove last comma
     sql = sql.substring(0, sql.lastIndexOf(","));
@@ -106,7 +110,9 @@ router.route('/count').get(function (req, res) {
 });
 
 router.route('/clean_account').post(function (req, res) {
-    if (!req.query.account_id) {
+    var accountId = util.getAccountId(req);
+    
+    if (!accountId) {
         res.json(errors.invalidAccount);
         return;
     }
@@ -117,7 +123,7 @@ router.route('/clean_account').post(function (req, res) {
     var sqls = []
     
     tables.forEach(table => {
-        sqls.push("DELETE FROM " + table + " WHERE " + db.whereAccount(req.query.account_id));
+        sqls.push("DELETE FROM " + table + " WHERE " + db.whereAccount(accountId));
     });
     
     db.queries(sqls, res, function (result) {
@@ -126,21 +132,23 @@ router.route('/clean_account').post(function (req, res) {
         });
         
         // Send websocket message
-        stream.sendMessage(req.query.account_id, 'cleaned_account', {
-            id: req.query.account_id
+        stream.sendMessage(accountId, 'cleaned_account', {
+            id: accountId
         });
     });
 });
 
 router.route('/settings').get(function (req, res) {
-    if (!req.query.account_id) {
+    var accountId = util.getAccountId(req);
+    
+    if (!accountId) {
         res.json(errors.invalidAccount);
         return;
     }
     
     var fields = ["base_theme", "global_color_theme", "rounder_bubbles", "color", "color_dark", "color_light", "color_accent", "use_global_theme", "apply_primary_color_to_toolbar", "passcode", "subscription_type", "message_timestamp", "conversation_categories"];
     
-    var sql = "SELECT " + fields.join(", ") + " FROM Accounts WHERE " + db.whereAccount(req.query.account_id) + " LIMIT 1";
+    var sql = "SELECT " + fields.join(", ") + " FROM Accounts WHERE " + db.whereAccount(accountId) + " LIMIT 1";
     
     db.query(sql, res, function (result) {
         res.json(result[0] || null);
@@ -149,7 +157,9 @@ router.route('/settings').get(function (req, res) {
 
 
 router.route('/dismissed_notification').post(function (req, res) {
-    if (!req.query.account_id) {
+    var accountId = util.getAccountId(req);
+    
+    if (!accountId) {
         res.json(errors.invalidAccount);
         return;
     }
@@ -159,7 +169,7 @@ router.route('/dismissed_notification').post(function (req, res) {
         device_id: req.query.device_id
     }
     
-    stream.sendMessage(req.query.account_id, 'dismissed_notification', msg);
+    stream.sendMessage(accountId, 'dismissed_notification', msg);
     
     res.json({});
 });
