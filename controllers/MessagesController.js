@@ -119,10 +119,10 @@ router.route('/update/:deviceId').post(function (req, res) {
     }
     
     var toUpdate = {
-        message_type: mysql.escape(req.body.type),
-        timestamp: mysql.escape(req.body.timestamp),
-        read: mysql.escape(req.body.read),
-        seen: mysql.escape(req.body.seen)
+        message_type: req.body.type,
+        timestamp: req.body.timestamp,
+        read: req.body.read,
+        seen: req.body.seen
     };
     
     var sql = "UPDATE " + table + " SET " + db.updateStr(toUpdate) + " WHERE device_id = " + mysql.escape(Number(req.params.deviceId)) + " AND " + db.whereAccount(accountId);
@@ -158,7 +158,7 @@ router.route('/update_type/:deviceId').post(function (req, res) {
     }
     
     var toUpdate = {
-        message_type: mysql.escape(req.query.message_type)
+        message_type: req.query.message_type
     };
     
     var sql = "UPDATE " + table + " SET " + db.updateStr(toUpdate) + " WHERE device_id = " + mysql.escape(Number(req.params.deviceId)) + " AND " + db.whereAccount(accountId);

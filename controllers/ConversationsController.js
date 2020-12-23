@@ -215,20 +215,20 @@ router.route('/update/:deviceId').post(function (req, res) {
     }
     
     var toUpdate = {
-        color: mysql.escape(req.body.color),
-        color_dark: mysql.escape(req.body.color_dark),
-        color_light: mysql.escape(req.body.color_light),
-        color_accent: mysql.escape(req.body.color_accent),
-        led_color: mysql.escape(req.body.led_color),
-        pinned: mysql.escape(req.body.pinned),
-        read: mysql.escape(req.body.read),
-        timestamp: mysql.escape(req.body.timestamp),
-        title: mysql.escape(req.body.title),
-        snippet: mysql.escape(req.body.snippet),
-        ringtone: mysql.escape(req.body.ringtone),
-        mute: mysql.escape(req.body.mute),
-        archive: mysql.escape(req.body.archive),
-        private_notifications: mysql.escape(req.body.private_notifications)
+        color: req.body.color,
+        color_dark: req.body.color_dark,
+        color_light: req.body.color_light,
+        color_accent: req.body.color_accent,
+        led_color: req.body.led_color,
+        pinned: req.body.pinned,
+        read: req.body.read,
+        timestamp: req.body.timestamp,
+        title: req.body.title,
+        snippet: req.body.snippet,
+        ringtone: req.body.ringtone,
+        mute: req.body.mute,
+        archive: req.body.archive,
+        private_notifications: req.body.private_notifications
     };
     
     var sql = "UPDATE " + table + " SET " + db.updateStr(toUpdate) + " WHERE device_id = " + mysql.escape(Number(req.params.deviceId)) + " AND " + db.whereAccount(accountId);
@@ -248,10 +248,10 @@ router.route('/update_snippet/:deviceId').post(function (req, res) {
     }
     
     var toUpdate = {
-        read: mysql.escape(req.body.read),
-        timestamp: mysql.escape(req.body.timestamp),
-        snippet: mysql.escape(req.body.snippet),
-        archive: mysql.escape(req.body.archive)
+        read: req.body.read,
+        timestamp: req.body.timestamp,
+        snippet: req.body.snippet,
+        archive: req.body.archive
     };
     
     var sql = "UPDATE " + table + " SET " + db.updateStr(toUpdate) + " WHERE device_id = " + mysql.escape(Number(req.params.deviceId)) + " AND " + db.whereAccount(accountId);
@@ -287,7 +287,7 @@ router.route('/update_title/:deviceId').post(function (req, res) {
     }
     
     var toUpdate = {
-        title: mysql.escape(req.query.title)
+        title: req.query.title
     };
     
     var sql = "UPDATE " + table + " SET " + db.updateStr(toUpdate) + " WHERE device_id = " + mysql.escape(Number(req.params.deviceId)) + " AND " + db.whereAccount(accountId);

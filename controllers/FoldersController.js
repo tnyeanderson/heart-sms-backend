@@ -97,11 +97,11 @@ router.route('/update/:deviceId').post(function (req, res) {
     }
     
     var toUpdate = {
-        name: mysql.escape(req.body.name),
-        color: mysql.escape(req.body.color),
-        color_dark: mysql.escape(req.body.color_dark),
-        color_light: mysql.escape(req.body.color_light),
-        color_accent: mysql.escape(req.body.color_accent)
+        name: req.body.name,
+        color: req.body.color,
+        color_dark: req.body.color_dark,
+        color_light: req.body.color_light,
+        color_accent: req.body.color_accent
     };
     
     var sql = "UPDATE " + table + " SET " + db.updateStr(toUpdate) + " WHERE device_id = " + mysql.escape(Number(req.params.deviceId)) + " AND " + db.whereAccount(accountId);

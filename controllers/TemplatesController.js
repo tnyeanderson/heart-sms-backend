@@ -94,7 +94,7 @@ router.route('/update/:deviceId').post(function (req, res) {
     }
     
     var toUpdate = {
-        text: mysql.escape(req.body.text)
+        text: req.body.text
     };
     
     var sql = "UPDATE " + table + " SET " + db.updateStr(toUpdate) + " WHERE device_id = " + mysql.escape(Number(req.params.deviceId)) + " AND " + db.whereAccount(accountId);

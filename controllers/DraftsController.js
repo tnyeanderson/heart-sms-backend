@@ -118,8 +118,8 @@ router.route('/update/:deviceId').post(function (req, res) {
     }
     
     var toUpdate = {
-        data: mysql.escape(req.body.data),
-        mime_type: mysql.escape(req.body.mime_type)
+        data: req.body.data,
+        mime_type: req.body.mime_type
     };
     
     var sql = "UPDATE " + table + " SET " + db.updateStr(toUpdate) + " WHERE device_id = " + mysql.escape(Number(req.params.deviceId)) + " AND " + db.whereAccount(accountId);
@@ -144,10 +144,10 @@ router.route('/replace/:deviceConversationId').post(function (req, res) {
     
     req.body.drafts.forEach(item => {
         var toUpdate = {
-            device_id: mysql.escape(item.device_id),
-            device_conversation_id: mysql.escape(item.device_conversation_id),
-            mime_type: mysql.escape(item.mime_type),
-            data: mysql.escape(item.data)
+            device_id: item.device_id,
+            device_conversation_id: item.device_conversation_id,
+            mime_type: item.mime_type,
+            data: item.data
         };
         
         sqls.push("UPDATE " + table + " SET " + db.updateStr(toUpdate) + " WHERE device_conversation_id = " + mysql.escape(Number(req.params.deviceConversationId)) + " AND " + db.whereAccount(accountId));

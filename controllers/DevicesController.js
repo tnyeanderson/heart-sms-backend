@@ -82,8 +82,8 @@ router.route('/update/:id').post(function (req, res) {
     }
     
     var toUpdate = {
-        fcm_token: mysql.escape(req.query.fcm_token),
-        name: mysql.escape(req.query.name)
+        fcm_token: req.query.fcm_token,
+        name: req.query.name
     };
     
     var sql = "UPDATE " + table + " SET " + db.updateStr(toUpdate) + " WHERE id = " + mysql.escape(Number(req.params.id)) + " AND " + db.whereAccount(accountId);

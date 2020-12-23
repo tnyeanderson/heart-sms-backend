@@ -63,8 +63,8 @@ var out = {
         var out = [];
         
         Object.keys(toUpdate).forEach(key => {
-            if (toUpdate[key] && toUpdate[key] != "''" && toUpdate[key] != 'NULL') {
-                out.push("`" + key + "` = " + toUpdate[key]);
+            if (toUpdate[key] != undefined) {
+                out.push(mysql.escapeId(key) + " = " + mysql.escape(toUpdate[key]));
             }
         });
         
