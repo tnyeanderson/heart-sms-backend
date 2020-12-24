@@ -178,6 +178,6 @@ Firebase messages are being scrapped for pure websockets. Here are the firebase 
 - [x] dismissed_notification
 - [x] # update_subscription
 - [x] update_primary_device
-- [ ] feature_flag
+- [x] # feature_flag
 - [x] forward_to_phone
 

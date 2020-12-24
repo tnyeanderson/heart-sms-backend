@@ -770,6 +770,8 @@ Content:
 
 ### feature_flag
 
+Not implemented. Used to roll out features for A/B testing.
+
 
 
 ---
