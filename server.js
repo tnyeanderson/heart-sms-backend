@@ -28,6 +28,7 @@ app.use(express.json())
 // Define routes to controllers
 app.use(getUrl('/accounts'),           controllers.AccountsController);
 app.use(getUrl('/activate'),           controllers.ActivateController);
+app.use(getUrl('/article'),            controllers.ArticleController);
 app.use(getUrl('/auto_replies'),       controllers.AutoRepliesController);
 app.use(getUrl('/blacklists'),         controllers.BlacklistsController);
 app.use(getUrl('/contacts'),           controllers.ContactsController);
