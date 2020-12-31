@@ -16,23 +16,26 @@ The end goal is a docker-compose file that can be initialized with environment v
 
 # Build and run
 
-Make sure you have Node/npm installed, then:
+Make sure you have docker installed, then:
 ```
 git clone git@github.com:tnyeanderson/heart-sms-backend.git
 
 cd heart-sms-backend
 
-npm install
+cp .db.env.example .db.env
 
-node server.js
+# EDIT THE .db.env FILE TO CHANGE THE USER PASSWORD
+
+docker-compose up -d
 ```
 
-At the moment, the database is not fully implemented. You can run the `docker-compose up -d` to start a mysql server (be sure to change the root password in `docker-compose.yml`). Then you can create the tables using `db/create_schema.sql`.
+This will give you the full development stack: the database, API, and web interface.
 
-Then configure the database connection by editing a copy of `db/connect.example.js`:
-```
-cp db/connect.example.js db/connect.js
-```
+Currently, the API and web interface are served over HTTP. Eventually a reverse proxy will be added to the docker stack to provide SSL.
+
+Change any variables in `docker-compose.yml` as needed.
+
+At the moment the web interface requires a lot of work as many dependencies are outdated/deprecated. See the `TODO.md` file in `heart-sms-web`
 
 
 ## The following is from TChilderhose (edited)
