@@ -1,7 +1,5 @@
 START TRANSACTION;
 
-CREATE DATABASE heartsms;
-
 USE heartsms;
 
 CREATE TABLE IF NOT EXISTS Accounts (
@@ -27,6 +25,7 @@ CREATE TABLE IF NOT EXISTS Accounts (
     `subscription_expiration` BIGINT NOT NULL DEFAULT 1600789518254,
     `global_color_theme` VARCHAR(12) NULL DEFAULT 'default'
 );
+
 CREATE TABLE IF NOT EXISTS AutoReplies (
     `id` INTEGER NOT NULL PRIMARY KEY AUTO_INCREMENT,
     `device_id` BIGINT NOT NULL,
@@ -36,6 +35,7 @@ CREATE TABLE IF NOT EXISTS AutoReplies (
     `account_id` CHAR(64) NOT NULL,
     CONSTRAINT FK_AutoReplies_Accounts_account_id FOREIGN KEY (account_id) REFERENCES Accounts (account_id) ON DELETE CASCADE
 );
+
 CREATE TABLE IF NOT EXISTS Blacklists (
     `id` INTEGER NOT NULL PRIMARY KEY AUTO_INCREMENT,
     `device_id` BIGINT NOT NULL,
@@ -44,6 +44,7 @@ CREATE TABLE IF NOT EXISTS Blacklists (
     `account_id` CHAR(64) NOT NULL,
     CONSTRAINT FK_Blacklists_Accounts_account_id FOREIGN KEY (account_id) REFERENCES Accounts (account_id) ON DELETE CASCADE
 );
+
 CREATE TABLE IF NOT EXISTS Contacts (
     `id` INTEGER NOT NULL PRIMARY KEY AUTO_INCREMENT,
     `device_id` BIGINT NOT NULL,
@@ -58,6 +59,7 @@ CREATE TABLE IF NOT EXISTS Contacts (
     `color_accent` INTEGER NOT NULL,
     CONSTRAINT FK_Contacts_Accounts_account_id FOREIGN KEY (account_id) REFERENCES Accounts (account_id) ON DELETE CASCADE
 );
+
 CREATE TABLE IF NOT EXISTS Folders (
     `id` INTEGER NOT NULL PRIMARY KEY AUTO_INCREMENT,
     `device_id` BIGINT NOT NULL UNIQUE,
@@ -69,6 +71,7 @@ CREATE TABLE IF NOT EXISTS Folders (
     `color_accent` INTEGER NOT NULL,
     CONSTRAINT FK_Folders_Accounts_account_id FOREIGN KEY (account_id) REFERENCES Accounts (account_id) ON DELETE CASCADE
 );
+
 CREATE TABLE IF NOT EXISTS Conversations (
     `id` INTEGER NOT NULL PRIMARY KEY AUTO_INCREMENT,
     `device_id` BIGINT NOT NULL UNIQUE,
@@ -93,6 +96,7 @@ CREATE TABLE IF NOT EXISTS Conversations (
     `private_notifications` BOOLEAN NOT NULL DEFAULT false,
     CONSTRAINT FK_Conversations_Accounts_account_id FOREIGN KEY (account_id) REFERENCES Accounts (account_id) ON DELETE CASCADE
 );
+
 CREATE TABLE IF NOT EXISTS Devices (
     `id` INTEGER NOT NULL PRIMARY KEY AUTO_INCREMENT,
     `info` TEXT NULL,
@@ -103,6 +107,7 @@ CREATE TABLE IF NOT EXISTS Devices (
     `ios` BOOLEAN NOT NULL DEFAULT false,
     CONSTRAINT FK_Devices_Accounts_account_id FOREIGN KEY (account_id) REFERENCES Accounts (account_id) ON DELETE CASCADE
 );
+
 CREATE TABLE IF NOT EXISTS ScheduledMessages (
     `id` INTEGER NOT NULL PRIMARY KEY AUTO_INCREMENT,
     `device_id` BIGINT NOT NULL,
@@ -115,6 +120,7 @@ CREATE TABLE IF NOT EXISTS ScheduledMessages (
     `account_id` CHAR(64) NOT NULL,
     CONSTRAINT FK_ScheduledMessages_Accounts_account_id FOREIGN KEY (account_id) REFERENCES Accounts (account_id) ON DELETE CASCADE
 );
+
 CREATE TABLE IF NOT EXISTS Templates (
     `id` INTEGER NOT NULL PRIMARY KEY AUTO_INCREMENT,
     `device_id` BIGINT NOT NULL,
@@ -122,6 +128,7 @@ CREATE TABLE IF NOT EXISTS Templates (
     `account_id` CHAR(64) NOT NULL,
     CONSTRAINT FK_Templates_Accounts_account_id FOREIGN KEY (account_id) REFERENCES Accounts (account_id) ON DELETE CASCADE
 );
+
 CREATE TABLE IF NOT EXISTS Drafts (
     `id` INTEGER NOT NULL PRIMARY KEY AUTO_INCREMENT,
     `device_id` BIGINT NOT NULL,
@@ -132,6 +139,7 @@ CREATE TABLE IF NOT EXISTS Drafts (
     CONSTRAINT FK_Drafts_Accounts_account_id FOREIGN KEY (account_id) REFERENCES Accounts (account_id) ON DELETE CASCADE,
     CONSTRAINT FK_Drafts_Conversations_device_conversation_id FOREIGN KEY (device_conversation_id) REFERENCES Conversations (device_id) ON DELETE CASCADE
 );
+
 CREATE TABLE IF NOT EXISTS Messages (
     `id` INTEGER NOT NULL PRIMARY KEY AUTO_INCREMENT,
     `device_id` BIGINT NOT NULL,
@@ -150,6 +158,7 @@ CREATE TABLE IF NOT EXISTS Messages (
     CONSTRAINT FK_Messages_Accounts_account_id FOREIGN KEY (account_id) REFERENCES Accounts (account_id) ON DELETE CASCADE
 );
 CREATE INDEX IX_Messages_device_id ON Messages (device_id);
+
 CREATE TABLE IF NOT EXISTS Media (
     `id` INTEGER NOT NULL PRIMARY KEY AUTO_INCREMENT,
     `message_id` BIGINT NOT NULL,
@@ -158,6 +167,7 @@ CREATE TABLE IF NOT EXISTS Media (
     CONSTRAINT FK_Media_Accounts_account_id FOREIGN KEY (account_id) REFERENCES Accounts (account_id) ON DELETE CASCADE,
     CONSTRAINT FK_Media_Messages_device_id FOREIGN KEY (message_id) REFERENCES Messages (device_id) ON DELETE CASCADE
 );
+
 CREATE INDEX IX_AutoReplies_account_id ON AutoReplies (account_id);
 CREATE INDEX IX_Blacklists_account_id ON Blacklists (account_id);
 CREATE INDEX IX_Contacts_account_id ON Contacts (account_id);

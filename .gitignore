@@ -1,5 +1,5 @@
 # Heart specific
-db/connect.js
+.db.env
 
 # Kate
 *.kate-swp

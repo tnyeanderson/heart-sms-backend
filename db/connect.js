@@ -1,11 +1,17 @@
 var mysql = require('mysql');
 
+var mysql_host = process.env.mysql_host || 'heart-sms-db';
+var mysql_port = process.env.mysql_port || 3306;
+var mysql_user = process.env.MYSQL_USER || 'heart';
+var mysql_pass = process.env.MYSQL_PASSWORD || 'TESTPASSWORD';
+var mysql_db   = process.env.MYSQL_DATABASE || 'heartsms';
+
 var base_settings = {
-    host: 'localhost',
-    port: 8000,
-    user: 'test',
-    password: 'testpassword',
-    database: 'heartsms',
+    host: mysql_host,
+    port: mysql_port,
+    user: mysql_user,
+    password: mysql_pass,
+    database: mysql_db,
     typeCast: function (field, next) {
         // Cast TINYINT(1) to boolean
         if (field.type === 'TINY' && field.length === 1) {
