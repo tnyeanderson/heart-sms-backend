@@ -1,9 +1,9 @@
 var mysql = require('mysql');
 
-var mysql_host = process.env.mysql_host || 'heart-sms-db';
+var mysql_host = process.env.mysql_host || 'localhost';
 var mysql_port = process.env.mysql_port || 3306;
 var mysql_user = process.env.MYSQL_USER || 'heart';
-var mysql_pass = process.env.MYSQL_PASSWORD || 'TESTPASSWORD';
+var mysql_pass = process.env.MYSQL_PASSWORD || 'TESTPASSWORD2';
 var mysql_db   = process.env.MYSQL_DATABASE || 'heartsms';
 
 var base_settings = {

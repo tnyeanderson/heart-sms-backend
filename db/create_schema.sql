@@ -164,8 +164,7 @@ CREATE TABLE IF NOT EXISTS Media (
     `message_id` BIGINT NOT NULL,
     `data` BLOB NULL,
     `account_id` CHAR(64) NOT NULL,
-    CONSTRAINT FK_Media_Accounts_account_id FOREIGN KEY (account_id) REFERENCES Accounts (account_id) ON DELETE CASCADE,
-    CONSTRAINT FK_Media_Messages_device_id FOREIGN KEY (message_id) REFERENCES Messages (device_id) ON DELETE CASCADE
+    CONSTRAINT FK_Media_Accounts_account_id FOREIGN KEY (account_id) REFERENCES Accounts (account_id) ON DELETE CASCADE
 );
 
 CREATE INDEX IX_AutoReplies_account_id ON AutoReplies (account_id);
@@ -192,6 +191,16 @@ ON Conversations FOR EACH ROW
 BEGIN
     DELETE FROM Messages WHERE Messages.device_conversation_id = OLD.device_id
     AND Messages.account_id = OLD.account_id;
+END$$
+
+
+-- Media is sometimes added before a message is, so we can't use a FK
+CREATE TRIGGER before_message_delete
+BEFORE DELETE
+ON Messages FOR EACH ROW
+BEGIN
+    DELETE FROM Media WHERE Media.message_id = OLD.device_id
+    AND Media.account_id = OLD.account_id;
 END$$
 
 
