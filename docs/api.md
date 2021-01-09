@@ -1690,7 +1690,7 @@ Error:
 
 ### `/drafts/update/{device_id}`
 
-*Different clients use replace vs update*
+*This is deprecated and less efficient. Android app sends a remove then an add. Web app sends replace*
 
 Method: POST
 
@@ -1744,7 +1744,7 @@ Error:
 
 ### `/drafts/replace/{device_conversation_id}`
 
-*Different clients use replace vs update*
+*Use this instead of /drafts/update*
 
 Method: POST
 

@@ -1,6 +1,6 @@
 # Websockets
 
-Local websocket URL: `ws://localhost:5050/stream?account_id=STRING`
+Local websocket URL: `ws://localhost:5050/api/v1/stream?account_id=STRING`
 
 *An account_id MUST be included.*
 

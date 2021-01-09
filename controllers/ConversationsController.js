@@ -8,6 +8,8 @@ var util = require('../utils/util');
 
 var table = 'Conversations'
 
+var notInFolder = " (folder_id IS NULL OR folder_id < 0) ";
+
 router.route('/').get(function (req, res) {
     var accountId = util.getAccountId(req);
     
@@ -25,7 +27,7 @@ router.route('/').get(function (req, res) {
         }
     }
     
-    var sql = "SELECT * FROM " + table + " WHERE " + db.whereAccount(accountId) + limitStr;
+    var sql = "SELECT * FROM " + table + " WHERE " + db.whereAccount(accountId) + " ORDER BY timestamp DESC " + limitStr;
 
     db.query(sql, res, function (result) {
         res.json(result);
@@ -41,7 +43,7 @@ router.route('/index_archived').get(function (req, res) {
         return;
     }
     
-    var sql = "SELECT * FROM " + table + " WHERE archive = true AND " + db.whereAccount(accountId);
+    var sql = "SELECT * FROM " + table + " WHERE archive = true AND " + notInFolder + " AND " + db.whereAccount(accountId) + " ORDER BY timestamp DESC ";
 
     db.query(sql, res, function (result) {
         res.json(result);
@@ -57,7 +59,7 @@ router.route('/index_private').get(function (req, res) {
         return;
     }
     
-    var sql = "SELECT * FROM " + table + " WHERE private_notifications = true AND " + db.whereAccount(accountId);
+    var sql = "SELECT * FROM " + table + " WHERE private_notifications = true AND " + notInFolder + " AND " + db.whereAccount(accountId) + " ORDER BY timestamp DESC ";
 
     db.query(sql, res, function (result) {
         res.json(result);
@@ -82,7 +84,7 @@ router.route('/index_public_unarchived').get(function (req, res) {
         }
     }
     
-    var sql = "SELECT * FROM " + table + " WHERE archive = false AND private_notifications = false AND " + db.whereAccount(accountId) + limitStr;
+    var sql = "SELECT * FROM " + table + " WHERE archive = false AND private_notifications = false AND " + db.whereAccount(accountId) + " ORDER BY timestamp DESC " + limitStr;
 
     db.query(sql, res, function (result) {
         res.json(result);
@@ -107,7 +109,7 @@ router.route('/index_public_unread').get(function (req, res) {
         }
     }
     
-    var sql = "SELECT * FROM " + table + " WHERE `read` = false AND private_notifications = false AND " + db.whereAccount(accountId) + limitStr;
+    var sql = "SELECT * FROM " + table + " WHERE `read` = false AND private_notifications = false AND " + db.whereAccount(accountId) + " ORDER BY timestamp DESC " + limitStr;
 
     db.query(sql, res, function (result) {
         res.json(result);
@@ -235,6 +237,15 @@ router.route('/update/:deviceId').post(function (req, res) {
 
     db.query(sql, res, function (result) {
         res.json({});
+        
+        // TODO: This is inefficient but we have to have all the data :(
+        var fields = "device_id AS id, color, color_dark, color_light, color_accent, led_color, pinned, read, title, snippet, ringtone, mute, archive, private_notifications"
+        
+        var sql = "SELECT " + fields + " FROM " + table + " WHERE device_id = " + mysql.escape(Number(req.params.deviceId)) + " AND " + db.whereAccount(accountId) + " LIMIT 1";
+        
+        db.query(sql, res, function (result) {
+            stream.sendMessage(accountId, 'updated_conversation', result[0]);
+        });
     });
 });
 
@@ -403,7 +414,7 @@ router.route('/archive/:deviceId').post(function (req, res) {
         return;
     }
     
-    var sql = "UPDATE " + table + " SET archive = true WHERE device_id = " + mysql.escape(Number(req.params.deviceId)) + " AND " + db.whereAccount(accountId);
+    var sql = "UPDATE " + table + " SET archive = true, folder_id = -1 WHERE device_id = " + mysql.escape(Number(req.params.deviceId)) + " AND " + db.whereAccount(accountId);
 
     db.query(sql, res, function (result) {
         res.json({});
@@ -427,7 +438,7 @@ router.route('/unarchive/:deviceId').post(function (req, res) {
         return;
     }
     
-    var sql = "UPDATE " + table + " SET archive = false WHERE device_id = " + mysql.escape(Number(req.params.deviceId)) + " AND " + db.whereAccount(accountId);
+    var sql = "UPDATE " + table + " SET archive = false, folder_id = -1 WHERE device_id = " + mysql.escape(Number(req.params.deviceId)) + " AND " + db.whereAccount(accountId);
 
     db.query(sql, res, function (result) {
         res.json({});
