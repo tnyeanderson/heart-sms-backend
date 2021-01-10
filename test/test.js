@@ -1,9 +1,11 @@
 var supertest = require("supertest");
 var should = require("should");
 
-// This agent refers to PORT where program is runninng.
+// This starts the server and gets the urls object
+const { urls, server } = require("../server");
 
-var server = supertest.agent("http://localhost:5000/api/v1");
+// This agent refers to PORT where program is runninng.
+var api = supertest.agent(urls.api + "/api/v1");
 
 // UNIT test begin
 
@@ -13,7 +15,7 @@ var contactsToRemove = [];
 describe("heart-sms-backend unit test", function () {
 
     it("Create new user", function (done) {
-        server
+        api
         .post('/accounts/signup')
         .send({
             "name": "test@email.com",
@@ -30,7 +32,7 @@ describe("heart-sms-backend unit test", function () {
     });
     
     it("Log in", function (done) {
-        server
+        api
         .post('/accounts/login')
         .send({
             "username": "test@email.com",
@@ -49,7 +51,7 @@ describe("heart-sms-backend unit test", function () {
     });
     
     it("Account settings", function (done) {
-        server
+        api
         .get('/accounts/settings')
         .query({
             "account_id": accountId
@@ -64,7 +66,7 @@ describe("heart-sms-backend unit test", function () {
     });
     
     it("Add auto replies", function (done) {
-        server
+        api
         .post('/auto_replies/add')
         .send({
             "account_id": accountId,
@@ -92,7 +94,7 @@ describe("heart-sms-backend unit test", function () {
     });
     
     it("Update auto reply", function (done) {
-        server
+        api
         .post('/auto_replies/update/1')
         .query({
             "account_id": accountId
@@ -110,7 +112,7 @@ describe("heart-sms-backend unit test", function () {
     });
     
     it("Get auto replies", function (done) {
-        server
+        api
         .get('/auto_replies')
         .query({
             "account_id": accountId
@@ -127,7 +129,7 @@ describe("heart-sms-backend unit test", function () {
     });
     
     it("Remove auto reply", function (done) {
-        server
+        api
         .post('/auto_replies/remove/2')
         .query({
             "account_id": accountId
@@ -141,7 +143,7 @@ describe("heart-sms-backend unit test", function () {
     });
     
     it("Add blacklist", function (done) {
-        server
+        api
         .post('/blacklists/add')
         .send({
             "account_id": accountId,
@@ -167,7 +169,7 @@ describe("heart-sms-backend unit test", function () {
     });
     
     it("Get blacklists", function (done) {
-        server
+        api
         .get('/blacklists')
         .query({
             "account_id": accountId
@@ -184,7 +186,7 @@ describe("heart-sms-backend unit test", function () {
     });
     
     it("Remove blacklist", function (done) {
-        server
+        api
         .post('/blacklists/remove/2')
         .query({
             "account_id": accountId
@@ -198,7 +200,7 @@ describe("heart-sms-backend unit test", function () {
     });
     
     it("Add device", function (done) {
-        server
+        api
         .post('/devices/add')
         .send({
             "account_id": accountId,
@@ -219,7 +221,7 @@ describe("heart-sms-backend unit test", function () {
     });
     
     it("Add second device", function (done) {
-        server
+        api
         .post('/devices/add')
         .send({
             "account_id": accountId,
@@ -240,7 +242,7 @@ describe("heart-sms-backend unit test", function () {
     });
     
     it("Update device", function (done) {
-        server
+        api
         .post('/devices/update/1')
         .query({
             "account_id": accountId,
@@ -255,7 +257,7 @@ describe("heart-sms-backend unit test", function () {
     });
     
     it("Change primary device", function (done) {
-        server
+        api
         .post('/devices/update_primary')
         .query({
             "account_id": accountId,
@@ -270,7 +272,7 @@ describe("heart-sms-backend unit test", function () {
     });
     
     it("Get devices", function (done) {
-        server
+        api
         .get('/devices')
         .query({
             "account_id": accountId
@@ -289,7 +291,7 @@ describe("heart-sms-backend unit test", function () {
     });
     
     it("Remove device", function (done) {
-        server
+        api
         .post('/devices/remove/1')
         .query({
             "account_id": accountId
@@ -303,7 +305,7 @@ describe("heart-sms-backend unit test", function () {
     });
     
     it("Add folders", function (done) {
-        server
+        api
         .post('/folders/add')
         .send({
             "account_id": accountId,
@@ -335,7 +337,7 @@ describe("heart-sms-backend unit test", function () {
     });
     
     it("Update folder", function (done) {
-        server
+        api
         .post('/folders/update/1')
         .query({
             "account_id": accountId
@@ -353,7 +355,7 @@ describe("heart-sms-backend unit test", function () {
     });
     
     it("Get folders", function (done) {
-        server
+        api
         .get('/folders')
         .query({
             "account_id": accountId
@@ -373,7 +375,7 @@ describe("heart-sms-backend unit test", function () {
     });
     
     it("Remove folder", function (done) {
-        server
+        api
         .post('/folders/remove/1')
         .query({
             "account_id": accountId
@@ -387,7 +389,7 @@ describe("heart-sms-backend unit test", function () {
     });
     
     it("Add contacts", function (done) {
-        server
+        api
         .post('/contacts/add')
         .send({
             "account_id": accountId,
@@ -447,7 +449,7 @@ describe("heart-sms-backend unit test", function () {
     });
     
     it("Update contact", function (done) {
-        server
+        api
         .post('/contacts/update_device_id')
         .query({
             "account_id": accountId,
@@ -470,7 +472,7 @@ describe("heart-sms-backend unit test", function () {
     });
     
     it("Remove contact", function (done) {
-        server
+        api
         .post('/contacts/remove_device_id')
         .query({
             "account_id": accountId,
@@ -486,7 +488,7 @@ describe("heart-sms-backend unit test", function () {
     });
     
     it("Get simple contacts", function (done) {
-        server
+        api
         .get('/contacts/simple')
         .query({
             "account_id": accountId
@@ -506,7 +508,7 @@ describe("heart-sms-backend unit test", function () {
     });
     
     it("Remove multiple contacts by id", function (done) {
-        server
+        api
         .post('/contacts/remove_ids/' + contactsToRemove.join(','))
         .query({
             "account_id": accountId
@@ -520,7 +522,7 @@ describe("heart-sms-backend unit test", function () {
     });
     
     it("Get contacts", function (done) {
-        server
+        api
         .get('/contacts')
         .query({
             "account_id": accountId
@@ -538,7 +540,7 @@ describe("heart-sms-backend unit test", function () {
     });
     
     it("Clear contacts", function (done) {
-        server
+        api
         .post('/contacts/clear')
         .query({
             "account_id": accountId
@@ -552,7 +554,7 @@ describe("heart-sms-backend unit test", function () {
     });
     
     it("Add conversations", function (done) {
-        server
+        api
         .post('/conversations/add')
         .send({
             "account_id": accountId,
@@ -630,7 +632,7 @@ describe("heart-sms-backend unit test", function () {
     });
     
     it("Update conversation", function (done) {
-        server
+        api
         .post('/conversations/update/10')
         .query({
             "account_id": accountId
@@ -651,7 +653,7 @@ describe("heart-sms-backend unit test", function () {
     });
     
     it("Update conversation snippet", function (done) {
-        server
+        api
         .post('/conversations/update_snippet/20')
         .query({
             "account_id": accountId
@@ -671,7 +673,7 @@ describe("heart-sms-backend unit test", function () {
     });
     
     it("Update conversation title", function (done) {
-        server
+        api
         .post('/conversations/update_title/20')
         .query({
             "account_id": accountId,
@@ -686,7 +688,7 @@ describe("heart-sms-backend unit test", function () {
     });
     
     it("Update conversation read", function (done) {
-        server
+        api
         .post('/conversations/read/30')
         .query({
             "account_id": accountId
@@ -700,7 +702,7 @@ describe("heart-sms-backend unit test", function () {
     });
     
     it("Update conversation archive", function (done) {
-        server
+        api
         .post('/conversations/archive/30')
         .query({
             "account_id": accountId
@@ -714,7 +716,7 @@ describe("heart-sms-backend unit test", function () {
     });
     
     it("Update conversation unarchive", function (done) {
-        server
+        api
         .post('/conversations/unarchive/10')
         .query({
             "account_id": accountId
@@ -728,7 +730,7 @@ describe("heart-sms-backend unit test", function () {
     });
     
     it("Add conversation to folder", function (done) {
-        server
+        api
         .post('/conversations/add_to_folder/10')
         .query({
             "account_id": accountId,
@@ -743,7 +745,7 @@ describe("heart-sms-backend unit test", function () {
     });
     
     it("Add another conversation to folder", function (done) {
-        server
+        api
         .post('/conversations/add_to_folder/20')
         .query({
             "account_id": accountId,
@@ -758,7 +760,7 @@ describe("heart-sms-backend unit test", function () {
     });
     
     it("Remove conversation from folder", function (done) {
-        server
+        api
         .post('/conversations/remove_from_folder/20')
         .query({
             "account_id": accountId
@@ -772,7 +774,7 @@ describe("heart-sms-backend unit test", function () {
     });
     
     it("Get conversations", function (done) {
-        server
+        api
         .get('/conversations')
         .query({
             "account_id": accountId
@@ -782,22 +784,25 @@ describe("heart-sms-backend unit test", function () {
         .end(function (err,res) {
             res.status.should.equal(200);
             res.body.should.have.lengthOf(3);
-            res.body[0].title.should.equal('newtitle');
-            res.body[0].ringtone.should.equal('newringer');
-            res.body[0].mute.should.equal(true);
-            res.body[0].folder_id.should.equal(2);
-            res.body[1].archive.should.equal(false);
-            res.body[1].folder_id.should.equal(-1);
-            res.body[1].snippet.should.equal('updatedsnippet');
-            res.body[1].timestamp.should.equal(1008);
-            res.body[1].title.should.equal('updatedtitle');
-            res.body[2].archive.should.equal(true);
+            res.body[0].device_id.should.equal(20);
+            res.body[0].archive.should.equal(false);
+            res.body[0].folder_id.should.equal(-1);
+            res.body[0].snippet.should.equal('updatedsnippet');
+            res.body[0].timestamp.should.equal(1008);
+            res.body[0].title.should.equal('updatedtitle');
+            res.body[1].device_id.should.equal(30);
+            res.body[1].archive.should.equal(true);
+            res.body[2].device_id.should.equal(10);
+            res.body[2].title.should.equal('newtitle');
+            res.body[2].ringtone.should.equal('newringer');
+            res.body[2].mute.should.equal(true);
+            res.body[2].folder_id.should.equal(2);
             done();
         });
     });
     
     it("Get conversation by id", function (done) {
-        server
+        api
         .get('/conversations/10')
         .query({
             "account_id": accountId
@@ -815,7 +820,7 @@ describe("heart-sms-backend unit test", function () {
     });
     
     it("Get conversations by folder", function (done) {
-        server
+        api
         .get('/conversations/folder/2')
         .query({
             "account_id": accountId
@@ -834,7 +839,7 @@ describe("heart-sms-backend unit test", function () {
     });
     
     it("Get archived conversations", function (done) {
-        server
+        api
         .get('/conversations/index_archived')
         .query({
             "account_id": accountId
@@ -851,7 +856,7 @@ describe("heart-sms-backend unit test", function () {
     });
     
     it("Get private conversations", function (done) {
-        server
+        api
         .get('/conversations/index_private')
         .query({
             "account_id": accountId
@@ -872,7 +877,7 @@ describe("heart-sms-backend unit test", function () {
     });
     
     it("Get non-private and non-archived conversations", function (done) {
-        server
+        api
         .get('/conversations/index_public_unarchived')
         .query({
             "account_id": accountId
@@ -893,7 +898,7 @@ describe("heart-sms-backend unit test", function () {
     });
     
     it("Add messages", function (done) {
-        server
+        api
         .post('/messages/add')
         .send({
             "account_id": accountId,
@@ -951,7 +956,7 @@ describe("heart-sms-backend unit test", function () {
     });
     
     it("Update message", function (done) {
-        server
+        api
         .post('/messages/update/1')
         .query({
             "account_id": accountId
@@ -971,7 +976,7 @@ describe("heart-sms-backend unit test", function () {
     });
     
     it("Update message type", function (done) {
-        server
+        api
         .post('/messages/update_type/2')
         .query({
             "account_id": accountId,
@@ -986,7 +991,7 @@ describe("heart-sms-backend unit test", function () {
     });
     
     it("Update conversation seen", function (done) {
-        server
+        api
         .post('/conversations/seen/30')
         .query({
             "account_id": accountId
@@ -1000,7 +1005,7 @@ describe("heart-sms-backend unit test", function () {
     });
     
     it("Mark all conversations seen", function (done) {
-        server
+        api
         .post('/conversations/seen')
         .query({
             "account_id": accountId
@@ -1014,7 +1019,7 @@ describe("heart-sms-backend unit test", function () {
     });
     
     it("Get messages", function (done) {
-        server
+        api
         .get('/messages')
         .query({
             "account_id": accountId
@@ -1037,7 +1042,7 @@ describe("heart-sms-backend unit test", function () {
     });
     
     it("Remove message", function (done) {
-        server
+        api
         .post('/messages/remove/3')
         .query({
             "account_id": accountId
@@ -1051,7 +1056,7 @@ describe("heart-sms-backend unit test", function () {
     });
     
     it("Add drafts", function (done) {
-        server
+        api
         .post('/drafts/add')
         .send({
             "account_id": accountId,
@@ -1085,7 +1090,7 @@ describe("heart-sms-backend unit test", function () {
     });
     
     it("Update draft", function (done) {
-        server
+        api
         .post('/drafts/update/1')
         .query({
             "account_id": accountId
@@ -1102,7 +1107,7 @@ describe("heart-sms-backend unit test", function () {
     });
     
     it("Replace draft", function (done) {
-        server
+        api
         .post('/drafts/replace/20')
         .query({
             "account_id": accountId
@@ -1125,7 +1130,7 @@ describe("heart-sms-backend unit test", function () {
     });
     
     it("Get drafts", function (done) {
-        server
+        api
         .get('/drafts')
         .query({
             "account_id": accountId
@@ -1145,7 +1150,7 @@ describe("heart-sms-backend unit test", function () {
     });
     
     it("Get draft by conversation id", function (done) {
-        server
+        api
         .get('/drafts/10')
         .query({
             "account_id": accountId
@@ -1162,7 +1167,7 @@ describe("heart-sms-backend unit test", function () {
     });
     
     it("Remove draft", function (done) {
-        server
+        api
         .post('/drafts/remove/30')
         .query({
             "account_id": accountId
@@ -1176,7 +1181,7 @@ describe("heart-sms-backend unit test", function () {
     });
     
     it("Add scheduled messages", function (done) {
-        server
+        api
         .post('/scheduled_messages/add')
         .send({
             "account_id": accountId,
@@ -1210,7 +1215,7 @@ describe("heart-sms-backend unit test", function () {
     });
     
     it("Update scheduled message", function (done) {
-        server
+        api
         .post('/scheduled_messages/update/1')
         .query({
             "account_id": accountId
@@ -1228,7 +1233,7 @@ describe("heart-sms-backend unit test", function () {
     });
     
     it("Get scheduled messages", function (done) {
-        server
+        api
         .get('/scheduled_messages')
         .query({
             "account_id": accountId
@@ -1248,7 +1253,7 @@ describe("heart-sms-backend unit test", function () {
     });
     
     it("Remove scheduled message", function (done) {
-        server
+        api
         .post('/scheduled_messages/remove/1')
         .query({
             "account_id": accountId
@@ -1262,7 +1267,7 @@ describe("heart-sms-backend unit test", function () {
     });
     
     it("Add templates", function (done) {
-        server
+        api
         .post('/templates/add')
         .send({
             "account_id": accountId,
@@ -1286,7 +1291,7 @@ describe("heart-sms-backend unit test", function () {
     });
     
     it("Update template", function (done) {
-        server
+        api
         .post('/templates/update/1')
         .query({
             "account_id": accountId
@@ -1303,7 +1308,7 @@ describe("heart-sms-backend unit test", function () {
     });
     
     it("Get templates", function (done) {
-        server
+        api
         .get('/templates')
         .query({
             "account_id": accountId
@@ -1322,7 +1327,7 @@ describe("heart-sms-backend unit test", function () {
     });
     
     it("Remove template", function (done) {
-        server
+        api
         .post('/templates/remove/1')
         .query({
             "account_id": accountId
@@ -1336,7 +1341,7 @@ describe("heart-sms-backend unit test", function () {
     });
     
     it("Cleanup conversation messages", function (done) {
-        server
+        api
         .post('/conversations/cleanup_messages')
         .query({
             "account_id": accountId,
@@ -1353,7 +1358,7 @@ describe("heart-sms-backend unit test", function () {
     });
     
     it("Clean up messages", function (done) {
-        server
+        api
         .post('/messages/cleanup')
         .query({
             "account_id": accountId,
@@ -1369,7 +1374,7 @@ describe("heart-sms-backend unit test", function () {
     });
     
     it("Remove conversation", function (done) {
-        server
+        api
         .post('/conversations/remove/10')
         .query({
             "account_id": accountId
@@ -1383,7 +1388,7 @@ describe("heart-sms-backend unit test", function () {
     });
     
     it("Account stats", function (done) {
-        server
+        api
         .get('/accounts/count')
         .query({
             "account_id": accountId
@@ -1407,7 +1412,7 @@ describe("heart-sms-backend unit test", function () {
     });
     
     it("Clean account", function (done) {
-        server
+        api
         .post('/accounts/clean_account')
         .query({
             "account_id": accountId
@@ -1421,7 +1426,7 @@ describe("heart-sms-backend unit test", function () {
     });
     
     it("Account stats after cleaning", function (done) {
-        server
+        api
         .get('/accounts/count')
         .query({
             "account_id": accountId
@@ -1445,7 +1450,7 @@ describe("heart-sms-backend unit test", function () {
     });
 
     it("Delete account", function (done) {
-        server
+        api
         .post('/accounts/remove_account')
         .query({
             "account_id": accountId
@@ -1460,7 +1465,7 @@ describe("heart-sms-backend unit test", function () {
     });
 
     it("should return 404",function(done){
-        server
+        api
         .get("/random")
         .expect(404)
         .end(function(err,res){
@@ -1469,3 +1474,4 @@ describe("heart-sms-backend unit test", function () {
         });
     });
 }); 
+

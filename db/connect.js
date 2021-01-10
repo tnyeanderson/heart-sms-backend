@@ -4,7 +4,14 @@ var mysql_host = process.env.mysql_host || 'localhost';
 var mysql_port = process.env.mysql_port || 3306;
 var mysql_user = process.env.MYSQL_USER || 'heart';
 var mysql_pass = process.env.MYSQL_PASSWORD || 'TESTPASSWORD2';
-var mysql_db   = process.env.MYSQL_DATABASE || 'heartsms';
+
+// Set db name based on environmnet
+var mysql_db = process.env.MYSQL_DATABASE || 'heartsms'; // default
+if (process.env.NODE_ENV === 'dev' || process.env.NODE_ENV === 'test') {
+    mysql_db = 'heartsms-dev';
+}
+
+console.log("Using: ", mysql_db);
 
 var base_settings = {
     host: mysql_host,

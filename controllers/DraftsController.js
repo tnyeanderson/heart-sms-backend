@@ -131,7 +131,7 @@ router.route('/update/:deviceId').post(function (req, res) {
         
         // TODO: This is inefficient. but how do we get the conversation_id?
         var fields = "device_id AS id, device_conversation_id AS conversation_id, data, mime_type"
-        var sql = "SELECT " + fields + " FROM " + table + " WHERE device_id = " + mysql.escape(Number(req.params.deviceId)) + db.whereAccount(accountId) + " LIMIT 1";
+        var sql = "SELECT " + fields + " FROM " + table + " WHERE device_id = " + mysql.escape(Number(req.params.deviceId)) + " AND " + db.whereAccount(accountId) + " LIMIT 1";
         db.query(sql, res, function (result) {
             stream.sendMessage(accountId, 'replaced_drafts', result[0]);
         });

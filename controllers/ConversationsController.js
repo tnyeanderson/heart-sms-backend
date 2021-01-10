@@ -239,9 +239,9 @@ router.route('/update/:deviceId').post(function (req, res) {
         res.json({});
         
         // TODO: This is inefficient but we have to have all the data :(
-        var fields = "device_id AS id, color, color_dark, color_light, color_accent, led_color, pinned, read, title, snippet, ringtone, mute, archive, private_notifications"
+        var fields = ["device_id AS id", "color", "color_dark", "color_light", "color_accent", "led_color", "pinned", "read", "title", "snippet", "ringtone", "mute", "archive", "private_notifications"];
         
-        var sql = "SELECT " + fields + " FROM " + table + " WHERE device_id = " + mysql.escape(Number(req.params.deviceId)) + " AND " + db.whereAccount(accountId) + " LIMIT 1";
+        var sql = "SELECT " + db.selectFields(fields) + " FROM " + table + " WHERE device_id = " + mysql.escape(Number(req.params.deviceId)) + " AND " + db.whereAccount(accountId) + " LIMIT 1";
         
         db.query(sql, res, function (result) {
             stream.sendMessage(accountId, 'updated_conversation', result[0]);

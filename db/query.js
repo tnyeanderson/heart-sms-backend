@@ -15,7 +15,9 @@ var out = {
     },
     
     query: function (sql, res, callback) {
-        console.log(sql, ';', '\n');
+        if (process.env.NODE_ENV == 'dev') {
+            console.log(sql, ';', '\n');
+        }
         pool.query(sql, function (err, result) {
             if (err) {
                 console.log(err);
@@ -32,7 +34,9 @@ var out = {
     
     queries: function (sqls, res, callback) {
         var sql = sqls.join('; ');
-        console.log(sql, ';', '\n');
+        if (process.env.NODE_ENV == 'dev') {
+            console.log(sql, ';', '\n');
+        }
         multiquerypool.query(sql, function (err, result) {
             if (err) {
                 console.log(err);
@@ -45,6 +49,24 @@ var out = {
             }
             callback(result);
         });
+    },
+    
+    selectFields: function (fields) {
+        var out = [];
+        
+        fields.forEach(field => {
+            var parts = field.split(" AS ");
+            var fieldstr = mysql.escapeId(parts[0]);
+            
+            if (parts.length === 2) {
+                fieldstr += " AS " + mysql.escapeId(parts[1]);
+            }
+            
+            
+            out.push(fieldstr);
+        });
+        
+        return out.join(', ');
     },
     
     insertStr: function (toInsert) {
