@@ -11,7 +11,7 @@ if (process.env.NODE_ENV === 'dev' || process.env.NODE_ENV === 'test') {
     mysql_db = 'heartsms-dev';
 }
 
-console.log("Using: ", mysql_db);
+console.log("Using database: ", mysql_db);
 
 var base_settings = {
     host: mysql_host,
