@@ -1362,6 +1362,39 @@ describe("heart-sms-backend unit test", function () {
         });
     });
     
+    it("Add media", function (done) {
+        api
+        .post('/media/add')
+        .query({
+            "account_id": accountId
+        })
+        .send({
+            "message_id": 1,
+            "data": "MYFILE"
+        })
+        .expect("Content-type",/json/)
+        .expect(200)
+        .end(function (err,res) {
+            res.status.should.equal(200);
+            done();
+        });
+    });
+    
+    it("Get media", function (done) {
+        api
+        .get('/media/1')
+        .query({
+            "account_id": accountId
+        })
+        .expect("Content-type",/json/)
+        .expect(200)
+        .end(function (err,res) {
+            res.status.should.equal(200);
+            res.body.data.should.equal("MYFILE");
+            done();
+        });
+    });
+    
     it("Cleanup conversation messages", function (done) {
         api
         .post('/conversations/cleanup_messages')
