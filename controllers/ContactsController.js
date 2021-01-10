@@ -149,24 +149,21 @@ router.route('/update_device_id').post(function (req, res) {
         color_accent: req.body.color_accent
     };
     
-    var sql = "UPDATE " + table + " SET " + db.updateStr(toUpdate) + " WHERE device_id = " + mysql.escape(req.query.device_id) + " AND " + db.whereAccount(accountId);
+    var sql = "UPDATE " + table + " SET " + db.updateStr(toUpdate) + " WHERE device_id = " + mysql.escape(Number(req.query.device_id)) + " AND " + db.whereAccount(accountId);
     
 
     db.query(sql, res, function (result) {
         res.json({});
         
-        // Send websocket message
-        var msg = {
-            id: req.query.device_id,
-            phone_number: req.body.phone_number,
-            name: req.body.name,
-            color: req.body.color,
-            color_dark: req.body.color_dark,
-            color_light: req.body.color_light,
-            color_accent: req.body.color_accent
-        };
         
-        stream.sendMessage(accountId, 'updated_contact', msg);
+        // TODO: this is inefficient, but we need the contact_type
+        var fields = ["device_id", "phone_number", "name", "color", "color_dark", "color_light", "color_accent", "contact_type AS type"];
+        
+        var sql = "SELECT " + db.selectFields(fields) + " FROM " + table + " WHERE device_id = " + mysql.escape(Number(req.query.device_id)) + " AND " + db.whereAccount(accountId) + " LIMIT 1";
+        
+        db.query(sql, res, function (result) {
+            stream.sendMessage(accountId, 'updated_contact', result[0]);
+        });
     });
 });
 

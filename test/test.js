@@ -115,6 +115,7 @@ describe("heart-sms-backend unit test", function () {
         })
         .send({
             "type": "updatedtype",
+            "pattern": "updatedpattern",
             "response": "updatedtest"
         })
         .expect("Content-type",/json/)
@@ -137,6 +138,7 @@ describe("heart-sms-backend unit test", function () {
             res.status.should.equal(200);
             res.body.should.have.lengthOf(2);
             res.body[0].response.should.equal('updatedtest');
+            res.body[0].pattern.should.equal('updatedpattern');
             res.body[1].response.should.equal('test2');
             done();
         });
@@ -358,7 +360,10 @@ describe("heart-sms-backend unit test", function () {
         })
         .send({
             "name": "newfolder",
-            "color": 5
+            "color": 5,
+            "color_dark": 6,
+            "color_light": 6,
+            "color_accent": 6
         })
         .expect("Content-type",/json/)
         .expect(200)
@@ -1131,6 +1136,7 @@ describe("heart-sms-backend unit test", function () {
                 {
                     "device_id": 5,
                     "device_conversation_id": 30,
+                    "data": "newtest2",
                     "mime_type": "newmime"
                 }
             ]
@@ -1157,6 +1163,7 @@ describe("heart-sms-backend unit test", function () {
             res.body[0].data.should.equal('newtest');
             res.body[1].device_id.should.equal(5);
             res.body[1].device_conversation_id.should.equal(30);
+            res.body[1].data.should.equal("newtest2");
             res.body[1].mime_type.should.equal("newmime");
             res.body[2].data.should.equal("test3");
             done();
@@ -1184,7 +1191,8 @@ describe("heart-sms-backend unit test", function () {
         api
         .post('/drafts/remove/30')
         .query({
-            "account_id": accountId
+            "account_id": accountId,
+            "android_device": 2
         })
         .expect("Content-type",/json/)
         .expect(200)

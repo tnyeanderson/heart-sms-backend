@@ -43,7 +43,7 @@ For instance:
 {"identifier":"{\"channel\":\"NotificationsChannel\"}","message":{"operation":"forward_to_phone","content":{"to":"5555555555","message":"test","mime_type":"text/plain","sent_device":0}}}
 ```
 
-*THIS EXAMPLE WAS CHOSEN BECAUSE forward_to_phone IS ACTUALLY SENDING UNENCRYPTED DATA IN PULSE!!! This will be fixed before release :)*
+*THIS EXAMPLE WAS CHOSEN BECAUSE forward_to_phone WAS ACTUALLY SENDING UNENCRYPTED DATA IN PULSE!!! This has been fixed, and your data is encrypted now :)*
 
 
 ## Operations
@@ -321,7 +321,7 @@ Content:
 
 ### updated_conversation
 
-*TODO: appears android app will overwrite with null value (or throw) if a value is not present!! But webapp does not always push values!!*
+*It appears android app will overwrite with null value (or throw) if a value is not present!! But webapp does not always push values!!*
 
 Content:
 ```

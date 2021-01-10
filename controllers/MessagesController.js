@@ -133,7 +133,7 @@ router.route('/update/:deviceId').post(function (req, res) {
         // Send websocket message
         var msg = {
             id: Number(req.params.deviceId),
-            message_type: req.body.type,
+            type: req.body.type,
             timestamp: req.body.timestamp,
             read: req.body.read,
             seen: req.body.seen

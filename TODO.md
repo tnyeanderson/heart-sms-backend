@@ -149,7 +149,7 @@ Firebase messages are being scrapped for pure websockets. Here are the firebase 
 - [x] added_conversation
 - [x] update_conversation_snippet
 - [x] update_conversation_title
-- [ ] updated_conversation
+- [x] updated_conversation
 - [x] removed_conversation
 - [x] read_conversation
 - [x] seen_conversation

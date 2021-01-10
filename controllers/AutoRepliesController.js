@@ -55,11 +55,11 @@ router.route('/add').post(function (req, res) {
         
         // Send websocket message
         inserted.forEach(function (item) {
-            var toKeep = ['device_id', 'type', 'pattern', 'response'];
+            var toKeep = ['device_id', 'reply_type', 'pattern', 'response'];
             
             var msg = util.keepOnlyKeys(item, toKeep);
             
-            delete msg.account_id;
+            msg = util.renameKeys(msg, ['reply_type'], ['type']);
             
             stream.sendMessage(accountId, 'added_auto_reply', msg);
         });
@@ -118,7 +118,7 @@ router.route('/update/:deviceId').post(function (req, res) {
         
         msg.device_id = req.params.deviceId;
             
-        stream.sendMessage(accountId, 'added_auto_reply', msg);
+        stream.sendMessage(accountId, 'updated_auto_reply', msg);
     });
 });
 

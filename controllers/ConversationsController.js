@@ -194,15 +194,10 @@ router.route('/add').post(function (req, res) {
         
         // Send websocket message
         inserted.forEach(function (item) {
-            var origKeys = ['device_id'];
-            var replaceWith = ['id'];
+            delete item.image_uri;
+            delete item.account_id;
             
-            var msg = util.renameKeys(item, origKeys, replaceWith);
-            
-            delete msg.image_uri;
-            delete msg.account_id;
-            
-            stream.sendMessage(accountId, 'added_conversation', msg);
+            stream.sendMessage(accountId, 'added_conversation', item);
         });
     });
 });
@@ -309,7 +304,7 @@ router.route('/update_title/:deviceId').post(function (req, res) {
         // Send websocket message
         var msg = {
             id: Number(req.params.deviceId),
-            title: req.body.title
+            title: req.query.title
         };
         
         stream.sendMessage(accountId, 'update_conversation_title', msg);
@@ -379,7 +374,7 @@ router.route('/seen/:deviceConversationId').post(function (req, res) {
         
         // Send websocket message
         var msg = {
-            id: Number(req.params.deviceId)
+            id: Number(req.params.deviceConversationId)
         };
         
         stream.sendMessage(accountId, 'seen_conversation', msg);

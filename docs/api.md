@@ -2145,8 +2145,6 @@ Error:
 
 ### `/messages/forward_to_phone`
 
-*TODO: This endpoint is sending UNENCRYPTED MESSAGE DATA!!!!*
-
 Method: POST
 
 Parameters: `account_id=STRING`

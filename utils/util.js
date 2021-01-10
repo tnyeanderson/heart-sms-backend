@@ -33,7 +33,7 @@ var out = {
         var out = {};
         
         Object.keys(obj).forEach(key => {
-            if (keysToKeep.indexOf(key))  {
+            if (keysToKeep.indexOf(key) > -1)  {
                 out[key] = obj[key];
             }
         });

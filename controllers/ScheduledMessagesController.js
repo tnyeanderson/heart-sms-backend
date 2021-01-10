@@ -117,12 +117,12 @@ router.route('/update/:deviceId').post(function (req, res) {
     db.query(sql, res, function (result) {
         res.json({});
         
-        // Send websocket message
-        var msg = util.renameKeys(req.body);
-        
-        msg.id = Number(req.params.deviceId);
-        
-        stream.sendMessage(accountId, 'added_scheduled_message', msg);
+        // TODO: This is inefficient. but we need the data
+        var fields = ["device_id AS id", "to", "data", "mime_type", "timestamp", "title", "repeat"];
+        var sql = "SELECT " + db.selectFields(fields) + " FROM " + table + " WHERE device_id = " + mysql.escape(Number(req.params.deviceId)) + " AND " + db.whereAccount(accountId) + " LIMIT 1";
+        db.query(sql, res, function (result) {
+            stream.sendMessage(accountId, 'updated_scheduled_message', result[0]);
+        });
     });
 });
 
