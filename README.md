@@ -38,6 +38,25 @@ Change any variables in `docker-compose.yml` as needed.
 At the moment the web interface requires a lot of work as many dependencies are outdated/deprecated. See the `TODO.md` file in `heart-sms-web`
 
 
+## Run test suite
+
+Right now the testing is pretty dirty, but it seems to work alright for now. To run the tests:
+
+```
+npm run test
+```
+
+Once the test server starts, you will be given 3 seconds to open up a websocket connection by running the following command in another shell:
+
+```
+wscat -c localhost:5051/api/v1/stream?account_id=test
+```
+
+The `test` account is only available when `NODE_ENV=test`, and it receives all websocket messages sent to any user. It does not require a subscription string.
+
+You can look over the stream manually and check against `docs/websockets.md`. Tests need to be written for receiving the websocket messages. (The responses look good as of this commit by my error-prone eyes)
+
+
 ## The following is from TChilderhose (edited)
 
 When Pulse SMS was [bought by Maple Media](https://www.androidpolice.com/2020/10/29/it-looks-like-pulse-sms-has-been-bought-by-maple-media-get-ready-for-intrusive-ads/), I started working on a backend that I could selfhost and just fork the android client, manually swap the urls and keys and use that.
