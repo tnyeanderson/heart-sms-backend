@@ -8,7 +8,7 @@ TChilderhose implemented *so* much of this backend (in C#) before giving me his 
 
 Check the `TODO.md` file for current state and future plans.
 
-Eventually (and hopefully soon) hard forks of the clients will be created, rebranded to Heart SMS with new logos et al, and released on F-Droid, etc.
+Eventually the rebranded Heart SMS app will be released on F-Droid, etc.
 
 The end goal is a docker-compose file that can be initialized with environment variables, including the web client. Native clients will have preferences added to set the base url of the API.
 
@@ -66,8 +66,8 @@ Eventually Maple Media made the repo private, so I stopped working on it because
 Findings
 - `pulse-sms-android`
   - There are inconsistencies with naming and case. Sometimes it expects camelcase, sometimes it expect snake case
-  - It does seem to be E2EE, but the `api/v1/accounts/signup` and `api/v1/accounts/login` are sending the password in plain text... So in theory they could be storing that password when you login, and then they have everything they need (password and salt2) to decrypt the messages. My recommendation would be to first hash the password on the client when sending the signup and login requests (continue to hash it on the server as well) and continue to use the raw password with `salt2` to generate the E2EE key. That way the server can't decrypt the messages no matter what.
-  - It uses Firebase data messages to share data between clients. It works well, but also means it's reliant on Google services
+  - (THIS HAS BEEN FIXED IN HEARTSMS) It does seem to be E2EE, but the `api/v1/accounts/signup` and `api/v1/accounts/login` are sending the password in plain text... So in theory they could be storing that password when you login, and then they have everything they need (password and salt2) to decrypt the messages. My recommendation would be to first hash the password on the client when sending the signup and login requests (continue to hash it on the server as well) and continue to use the raw password with `salt2` to generate the E2EE key. That way the server can't decrypt the messages no matter what.
+  - (HEARTSMS USES PURE WEBSOCKETS, NOT FIREBASE) It uses Firebase data messages to share data between clients. It works well, but also means it's reliant on Google services
   
 Setup
 - `pulse-sms-android`
