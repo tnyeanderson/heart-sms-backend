@@ -62,7 +62,7 @@ describe("heart-sms-backend unit test", function () {
     });
     
     console.log("Waiting to give you time to open a websocket connection...");
-    delay(8000);
+    delay(3000);
     
     it("Account settings", function (done) {
         api
