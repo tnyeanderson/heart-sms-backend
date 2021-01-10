@@ -7,7 +7,7 @@ var wsPort = process.env.wsPort || 5050;
 
 var urls = {
     api: "localhost:" + port,
-    websockets: "localhost:" + wsPort
+    websocket: "localhost:" + wsPort
 }
 
 // Set up websockets

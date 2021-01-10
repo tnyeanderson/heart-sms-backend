@@ -1,5 +1,6 @@
 var WebSocket = require('ws');
 var url = require('url');
+var db = require('../db/query');
 
 var stream = {
     
@@ -41,7 +42,26 @@ var stream = {
         }
     },
     
-    init: function(wsPort) {
+    onboardClient: function (ws) {
+        ws.connectionId = Math.floor(Math.random() * 10000);
+            
+        stream.addClient(ws.accountId, ws);
+        
+        ws.on('message', function incoming(message) {
+            console.log('received: %s', message);
+            stream.parse(ws, message);
+        });
+        
+        ws.on('close', function () {
+            stream.removeClient(ws.accountId, ws.connectionId);
+        });
+
+        ws.send(JSON.stringify({
+            type: "welcome"
+        }));
+    },
+    
+    init: function (wsPort) {
         // Set up websockets
         stream.server = new WebSocket.Server({ port: wsPort, path: '/api/v1/stream', clientTracking: true });
 
@@ -57,22 +77,22 @@ var stream = {
             
             ws.accountId = parameters.query.account_id;
             
-            ws.connectionId = Math.floor(Math.random() * 10000);
+            if (process.env.NODE_ENV === 'test' && ws.accountId === 'test') {
+                stream.onboardClient(ws);
+                return;
+            }
             
-            stream.addClient(ws.accountId, ws);
+            var sql = "SELECT account_id FROM Accounts WHERE " + db.whereAccount(ws.accountId);
             
-            ws.on('message', function incoming(message) {
-                console.log('received: %s', message);
-                stream.parse(ws, message);
+            db.query(sql, {}, function (result) {
+                if (!result[0]) {
+                    console.log("Unrecognized user: ", ws.accountId);
+                    return ws.close();
+                } else {
+                    stream.onboardClient(ws);
+                }
             });
             
-            ws.on('close', function () {
-                stream.removeClient(ws.accountId, ws.connectionId);
-            });
-
-            ws.send(JSON.stringify({
-                type: "welcome"
-            }));
         });
         
         stream.server.on('listening', function () {
@@ -92,19 +112,25 @@ var stream = {
     },
     
     sendMessage: function (accountId, operation, content) {
+        var message = {
+            identifier: stream.identifierStr,
+            message: {
+                operation: operation,
+                content: content
+            }
+        };
+        
+        if (process.env.NODE_ENV === 'test' && stream.clients['test']) {
+            stream.clients['test'][0].send(JSON.stringify(message));
+        }
+        
         if (!stream.clients[accountId]) {
             return;
         }
         
         stream.clients[accountId].forEach(function (ws, i) {
             if (ws.subscribed) {
-                ws.send(JSON.stringify({
-                    identifier: stream.identifierStr,
-                    message: {
-                        operation: operation,
-                        content: content
-                    }
-                }));
+                ws.send(JSON.stringify(message));
             }
         });
     },
@@ -125,6 +151,11 @@ var stream = {
     },
     
     startPing: function () {
+        if (process.env.NODE_ENV === 'test') {
+            // Don't send pings if we are testing
+            return;
+        }
+        
         setInterval(stream.sendPing, 1000 * 3);
     },
     

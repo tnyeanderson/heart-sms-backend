@@ -12,6 +12,17 @@ var api = supertest.agent(urls.api + "/api/v1");
 var accountId = '';
 var contactsToRemove = [];
 
+
+function delay(interval) {
+   return it('should delay', done => 
+   {
+      setTimeout(() => done(), interval)
+
+   }).timeout(interval + 100) // The extra 100ms should guarantee the test will not fail due to exceeded timeout
+}
+
+console.log("Dont forget to run this in another terminal: wscat -c " + urls.websocket + "/api/v1/stream?account_id=test");
+
 describe("heart-sms-backend unit test", function () {
 
     it("Create new user", function (done) {
@@ -49,6 +60,9 @@ describe("heart-sms-backend unit test", function () {
             done();
         });
     });
+    
+    console.log("Waiting to give you time to open a websocket connection...");
+    delay(8000);
     
     it("Account settings", function (done) {
         api
@@ -1474,4 +1488,3 @@ describe("heart-sms-backend unit test", function () {
         });
     });
 }); 
-
