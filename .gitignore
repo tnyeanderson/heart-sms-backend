@@ -1,5 +1,6 @@
 # Heart specific
 .db.env
+heart-web-config/
 
 # Kate
 *.kate-swp

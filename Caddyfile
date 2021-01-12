@@ -1,0 +1,21 @@
+api.test.com {
+
+  route /api/v1/stream {
+    reverse_proxy http://localhost:5050
+  }
+
+  route /* {
+    reverse_proxy http://localhost:5000
+  }
+ 
+  tls internal 
+}
+
+web.test.com {
+  route /* {
+    reverse_proxy http://localhost:8081
+  }
+
+  tls internal
+}
+ 

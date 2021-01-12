@@ -18,10 +18,10 @@ services:
     restart: always
     ports:
       - "127.0.0.1:8081:80"
-    environment:
-      - VUE_APP_API_BASE_URL=localhost:5000
-      - VUE_APP_WEBSOCKETS_BASE_URL=localhost:5050
-    
+    volumes:
+      # Mount the config directory, then edit/replace web-config.json once the container has started
+      - ./heart-web-config:/usr/share/nginx/html/config
+ 
   heart-sms-db:
     container_name: heart-sms-db
     image: heartsms/heart-sms-db
