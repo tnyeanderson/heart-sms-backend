@@ -31,9 +31,22 @@ docker-compose up -d
 
 This will give you the full development stack: the database, API, and web interface.
 
-Currently, the API and web interface are served over HTTP. Eventually a reverse proxy will be added to the docker stack to provide SSL.
-
 Change any variables in `docker-compose.yml` as needed.
+
+
+## Deployment
+
+Caddy v2 is used for deployment.
+
+Once containers have started, edit `heart-web-config/web-config.json` with your API urls and set `useSSL` to true.
+
+Change the `Caddyfile` to use your urls, and turn off internal certificates and generate real ones. Then:
+
+```
+caddy start
+```
+
+Or run caddy as a service.
 
 At the moment the web interface requires a lot of work as many dependencies are outdated/deprecated. See the `TODO.md` file in `heart-sms-web`
 
