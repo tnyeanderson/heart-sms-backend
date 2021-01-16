@@ -31,7 +31,7 @@ router.route('/add').post(function (req, res) {
         data: req.body.data
     }
     
-    var sql = "INSERT INTO Media " + db.insertStr(toInsert);
+    var sql = "INSERT INTO Media " + db.insertStr([toInsert]);
     
 
     db.query(sql, res, function (result) {

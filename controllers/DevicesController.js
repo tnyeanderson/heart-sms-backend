@@ -42,7 +42,7 @@ router.route('/add').post(function (req, res) {
         fcm_token: req.body.device.fcm_token
     };
     
-    sql = "INSERT INTO " + table + db.insertStr(toInsert);
+    sql = "INSERT INTO " + table + db.insertStr([toInsert]);
         
     db.query(sql, res, function (result) {
         res.json({});

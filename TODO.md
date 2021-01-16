@@ -2,7 +2,7 @@
 TChilderhose implemented nearly all of this backend before giving me his code to use as reference. Thank you!
 
 ### Efficiency
-- [ ] Refactor to use multirow insert statements!
+- [x] Refactor to use multirow insert statements!
 
 ### Security
 

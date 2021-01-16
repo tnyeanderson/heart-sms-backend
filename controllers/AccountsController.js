@@ -49,8 +49,7 @@ router.route('/signup').post(function (req, res) {
         phone_number: req.body.phone_number
     };
     
-    var sql = "INSERT INTO Accounts " + db.insertStr(toInsert);
-    
+    var sql = "INSERT INTO Accounts " + db.insertStr([toInsert]);
     
     db.query(sql, res, function (result) {
         res.json({

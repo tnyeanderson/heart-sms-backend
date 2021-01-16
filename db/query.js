@@ -74,15 +74,36 @@ var out = {
     },
     
     insertStr: function (toInsert) {
-        var cols = [];
-        var vals = [];
-        
-        Object.keys(toInsert).forEach(key => {
+        let cols = [];
+        let vals = [];
+        let out = "";
+
+        // Get column names from the first object to insert
+        Object.keys(toInsert[0]).forEach(key => {
             cols.push(mysql.escapeId(key));
-            vals.push(mysql.escape(toInsert[key]));
         });
         
-        return " (" + cols.join(", ") + ") VALUES (" + vals.join(", ") + ")";
+        // For each item to insert, push to vals
+        toInsert.forEach(item => {
+            let val = [];
+
+            Object.keys(item).forEach(key => {
+                val.push(mysql.escape(item[key]));
+            });
+
+            vals.push(val);
+        });
+
+        out += " (" + cols.join(", ") + ") VALUES ";
+
+        var valStr = [];
+        vals.forEach(val => {
+            valStr.push(" (" + val.join(", ") + ") ");
+        });
+
+        out += valStr.join(", ");
+        
+        return out;
     },
     
     updateStr: function (toUpdate) {

@@ -50,7 +50,6 @@ router.route('/add').post(function (req, res) {
         return;
     }
     
-    var sqls = [];
     var inserted = [];
     
     req.body.drafts.forEach(function (item) {
@@ -63,11 +62,11 @@ router.route('/add').post(function (req, res) {
         };
         
         inserted.push(toInsert);
-        
-        sqls.push("INSERT INTO " + table + db.insertStr(toInsert));
     });
+
+    var sql = "INSERT INTO " + table + db.insertStr(inserted);
         
-    db.queries(sqls, res, function (result) {
+    db.query(sql, res, function (result) {
         res.json({});
         
         // Send websocket message
