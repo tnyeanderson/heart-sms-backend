@@ -22,9 +22,11 @@ var out = {
             if (err) {
                 console.log(err);
                 
-                res.status(400).json({
-                    error: "Could not query database"
-                });
+                if (res.status) {
+                    res.status(400).json({
+                        error: "Could not query database"
+                    });
+                }
                 
                 return
             }
@@ -41,9 +43,11 @@ var out = {
             if (err) {
                 console.log(err);
                 
-                res.status(400).json({
-                    error: "Could not query database"
-                });
+                if (res.status) {
+                    res.status(400).json({
+                        error: "Could not query database"
+                    });
+                }
                 
                 return
             }
