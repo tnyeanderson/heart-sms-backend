@@ -5,6 +5,12 @@ var mysql_port = process.env.MYSQL_PORT || 3306;
 var mysql_user = process.env.MYSQL_USER || 'heart';
 var mysql_pass = process.env.MYSQL_PASSWORD || 'TESTPASSWORD2';
 
+// If we are in production, refuse to use the default password
+if (process.env.NODE_ENV === 'production' && mysql_pass === 'TESTPASSWORD2') {
+    console.log("ERROR: You cannot use the default MYSQL password in production. Change it in .db.env");
+    return;
+}
+
 // Set db name based on environmnet
 var mysql_db = process.env.MYSQL_DATABASE || 'heartsms'; // default
 if (process.env.NODE_ENV === 'dev' || process.env.NODE_ENV === 'test') {
