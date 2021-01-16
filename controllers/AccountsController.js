@@ -116,16 +116,10 @@ router.route('/clean_account').post(function (req, res) {
         return;
     }
     
-    var tables = ["Messages", "Conversations", "Contacts", "Drafts", "ScheduledMessages", "Blacklists", "Folders", "AutoReplies", "Templates"];
+    // Calls the "CleanAccount" mysql stored procedure
+    var sql = "CALL CleanAccount(" + mysql.escape(accountId) + ")";
     
-    
-    var sqls = []
-    
-    tables.forEach(table => {
-        sqls.push("DELETE FROM " + table + " WHERE " + db.whereAccount(accountId));
-    });
-    
-    db.queries(sqls, res, function (result) {
+    db.query(sql, res, function (result) {
         res.json({
             "success": "account cleaned"
         });

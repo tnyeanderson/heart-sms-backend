@@ -214,6 +214,41 @@ BEGIN
     AND Conversations.account_id = OLD.account_id;
 END //
 
+
+-- Disassociate device from messages before deleting
+CREATE TRIGGER before_device_delete
+BEFORE DELETE
+ON Devices FOR EACH ROW
+BEGIN
+    UPDATE Messages SET sent_device = -1 WHERE Messages.sent_device = OLD.id 
+    AND Messages.account_id = OLD.account_id;
+END //
+
+
+-- Stored procedure for cleaning an account
+CREATE PROCEDURE CleanAccount(IN accountId CHAR(64))
+BEGIN
+    DELETE FROM Messages WHERE account_id = accountId;
+    DELETE FROM Conversations WHERE account_id = accountId;
+    DELETE FROM Contacts WHERE account_id = accountId;
+    DELETE FROM Drafts WHERE account_id = accountId;
+    DELETE FROM ScheduledMessages WHERE account_id = accountId;
+    DELETE FROM Blacklists WHERE account_id = accountId;
+    DELETE FROM Folders WHERE account_id = accountId;
+    DELETE FROM AutoReplies WHERE account_id = accountId;
+    DELETE FROM Templates WHERE account_id = accountId;
+END //
+
+
+-- Stored procedure for updating the primary device
+-- Sets all other devices to false before setting the new one to "true"
+-- TODO: Add a check to make sure the new id exists first!
+CREATE PROCEDURE UpdatePrimaryDevice(IN accountId CHAR(64), IN newDeviceId INT)
+BEGIN
+    UPDATE Devices SET `primary` = false WHERE account_id = accountId;
+    UPDATE Devices SET `primary` = true WHERE id = newDeviceId AND account_id = accountId;
+END //
+
 DELIMITER ;
 
 COMMIT;

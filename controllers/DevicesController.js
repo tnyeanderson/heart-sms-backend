@@ -57,17 +57,12 @@ router.route('/remove/:id').post(function (req, res) {
         res.json(errors.invalidAccount);
         return;
     }
-    
-    var sqls = [];
-    
-    // Update messages sent_device: set to -1
-    sqls.push("UPDATE Messages SET sent_device = -1 WHERE sent_device = " + mysql.escape(Number(req.params.id)) + " AND " + db.whereAccount(accountId));
-    
+
     // Remove the device
-    sqls.push("DELETE FROM " + table + " WHERE id = " + mysql.escape(Number(req.params.id)) + " AND " + db.whereAccount(accountId));
+    var sql = "DELETE FROM " + table + " WHERE id = " + mysql.escape(Number(req.params.id)) + " AND " + db.whereAccount(accountId);
     
 
-    db.queries(sqls, res, function (result) {
+    db.query(sql, res, function (result) {
         res.json({});
     });
 });
@@ -108,15 +103,10 @@ router.route('/update_primary').post(function (req, res) {
         return;
     }
     
-    var sqls = [];
+    // Calls the MYSQL stored procedure
+    var sql = "CALL UpdatePrimaryDevice(" + mysql.escape(accountId) + ", " + mysql.escape(Number(req.query.new_primary_device_id)) + ")";
     
-    // Set all devices to primary = false
-    sqls.push("UPDATE " + table + " SET `primary` = false WHERE " + db.whereAccount(accountId));
-    
-    // Set new primary to primary = true
-    sqls.push("UPDATE " + table + " SET `primary` = true WHERE id = " + mysql.escape(Number(req.query.new_primary_device_id)) + " AND " + db.whereAccount(accountId));
-
-    db.queries(sqls, res, function (result) {
+    db.query(sql, res, function (result) {
         res.json({});
         
         // Send websocket message
