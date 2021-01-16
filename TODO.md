@@ -1,6 +1,9 @@
 # pulse-sms-backend
 TChilderhose implemented nearly all of this backend before giving me his code to use as reference. Thank you!
 
+### Efficiency
+- [ ] Refactor to use multirow insert statements!
+
 ### Security
 
 There are some rather large security issues with the original pulse app and API. In fact, calling the app end-to-end encrypted would be, in my estimation, fraudulent.

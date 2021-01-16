@@ -29,10 +29,37 @@ cp .db.env.example .db.env
 docker-compose up -d
 ```
 
-This will give you the full development stack: the database, API, and web interface.
-
 Change any variables in `docker-compose.yml` as needed.
 
+This will give you the full development stack: the database, API, and web interface.
+
+Once the container is up and running, be sure to change your `web-config.js` with your urls. By default it is mounted at `./heart-web-config/web-config.js` on the host. In production, these urls will be set to your domain, and `useSSL` will be set to `true`:
+
+```
+var heartConfig = {
+    "api": {
+        "baseUrl": "localhost:5000",
+        "websocketsUrl": "localhost:5050",
+        "useSSL": false
+    }
+}
+```
+
+
+## Development server
+
+Follow the steps in "Build and run" but instead of running docker-compose, run:
+
+```
+npm run start-dev
+```
+
+This will start only the backend server listening on `5000` (HTTP API) and `5050` (websockets). Using `start-dev` indicates that the `heartsms-dev` database should be used instead of the production `heartsms` database.
+
+To use the production database with the development server, run:
+```
+npm run start
+```
 
 ## Deployment
 
@@ -48,7 +75,7 @@ caddy start
 
 Or run caddy as a service.
 
-At the moment the web interface requires a lot of work as many dependencies are outdated/deprecated. See the `TODO.md` file in `heart-sms-web`
+At the moment the web interface requires some work as many dependencies are outdated/deprecated. See the `TODO.md` file in `heart-sms-web`
 
 
 ## Run test suite
@@ -59,7 +86,7 @@ Right now the testing is pretty dirty, but it seems to work alright for now. To 
 npm run test
 ```
 
-Once the test server starts, you will be given 3 seconds to open up a websocket connection by running the following command in another shell:
+Once the test server starts (listening at `5001` and `5051`), you will be given 3 seconds to open up a websocket connection by running the following command in another shell:
 
 ```
 wscat -c localhost:5051/api/v1/stream?account_id=test

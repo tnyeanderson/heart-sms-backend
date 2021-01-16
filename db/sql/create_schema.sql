@@ -1,6 +1,6 @@
 START TRANSACTION;
 
-USE heartsms;
+USE `heartsms`;
 
 CREATE TABLE IF NOT EXISTS Accounts (
     `account_id` CHAR(64) NOT NULL PRIMARY KEY,
@@ -24,7 +24,7 @@ CREATE TABLE IF NOT EXISTS Accounts (
     `subscription_type` INTEGER NOT NULL DEFAULT 3,
     `subscription_expiration` BIGINT NOT NULL DEFAULT 1600789518254,
     `global_color_theme` VARCHAR(12) NULL DEFAULT 'default'
-);
+) ;
 
 CREATE TABLE IF NOT EXISTS AutoReplies (
     `id` INTEGER NOT NULL PRIMARY KEY AUTO_INCREMENT,
@@ -34,7 +34,7 @@ CREATE TABLE IF NOT EXISTS AutoReplies (
     `response` TEXT NULL,
     `account_id` CHAR(64) NOT NULL,
     CONSTRAINT FK_AutoReplies_Accounts_account_id FOREIGN KEY (account_id) REFERENCES Accounts (account_id) ON DELETE CASCADE
-);
+) ;
 
 CREATE TABLE IF NOT EXISTS Blacklists (
     `id` INTEGER NOT NULL PRIMARY KEY AUTO_INCREMENT,
@@ -43,7 +43,7 @@ CREATE TABLE IF NOT EXISTS Blacklists (
     `phrase` TEXT NULL,
     `account_id` CHAR(64) NOT NULL,
     CONSTRAINT FK_Blacklists_Accounts_account_id FOREIGN KEY (account_id) REFERENCES Accounts (account_id) ON DELETE CASCADE
-);
+) ;
 
 CREATE TABLE IF NOT EXISTS Contacts (
     `id` INTEGER NOT NULL PRIMARY KEY AUTO_INCREMENT,
@@ -58,7 +58,7 @@ CREATE TABLE IF NOT EXISTS Contacts (
     `color_light` INTEGER NOT NULL,
     `color_accent` INTEGER NOT NULL,
     CONSTRAINT FK_Contacts_Accounts_account_id FOREIGN KEY (account_id) REFERENCES Accounts (account_id) ON DELETE CASCADE
-);
+) ;
 
 CREATE TABLE IF NOT EXISTS Folders (
     `id` INTEGER NOT NULL PRIMARY KEY AUTO_INCREMENT,
@@ -70,7 +70,7 @@ CREATE TABLE IF NOT EXISTS Folders (
     `color_light` INTEGER NOT NULL,
     `color_accent` INTEGER NOT NULL,
     CONSTRAINT FK_Folders_Accounts_account_id FOREIGN KEY (account_id) REFERENCES Accounts (account_id) ON DELETE CASCADE
-);
+) ;
 
 CREATE TABLE IF NOT EXISTS Conversations (
     `id` INTEGER NOT NULL PRIMARY KEY AUTO_INCREMENT,
@@ -95,7 +95,7 @@ CREATE TABLE IF NOT EXISTS Conversations (
     `archive` BOOLEAN NOT NULL DEFAULT false,
     `private_notifications` BOOLEAN NOT NULL DEFAULT false,
     CONSTRAINT FK_Conversations_Accounts_account_id FOREIGN KEY (account_id) REFERENCES Accounts (account_id) ON DELETE CASCADE
-);
+) ;
 
 CREATE TABLE IF NOT EXISTS Devices (
     `id` INTEGER NOT NULL PRIMARY KEY AUTO_INCREMENT,
@@ -106,7 +106,7 @@ CREATE TABLE IF NOT EXISTS Devices (
     `account_id` CHAR(64) NOT NULL,
     `ios` BOOLEAN NOT NULL DEFAULT false,
     CONSTRAINT FK_Devices_Accounts_account_id FOREIGN KEY (account_id) REFERENCES Accounts (account_id) ON DELETE CASCADE
-);
+) ;
 
 CREATE TABLE IF NOT EXISTS ScheduledMessages (
     `id` INTEGER NOT NULL PRIMARY KEY AUTO_INCREMENT,
@@ -119,7 +119,7 @@ CREATE TABLE IF NOT EXISTS ScheduledMessages (
     `repeat` INTEGER NOT NULL,
     `account_id` CHAR(64) NOT NULL,
     CONSTRAINT FK_ScheduledMessages_Accounts_account_id FOREIGN KEY (account_id) REFERENCES Accounts (account_id) ON DELETE CASCADE
-);
+) ;
 
 CREATE TABLE IF NOT EXISTS Templates (
     `id` INTEGER NOT NULL PRIMARY KEY AUTO_INCREMENT,
@@ -127,7 +127,7 @@ CREATE TABLE IF NOT EXISTS Templates (
     `text` TEXT NULL,
     `account_id` CHAR(64) NOT NULL,
     CONSTRAINT FK_Templates_Accounts_account_id FOREIGN KEY (account_id) REFERENCES Accounts (account_id) ON DELETE CASCADE
-);
+) ;
 
 CREATE TABLE IF NOT EXISTS Drafts (
     `id` INTEGER NOT NULL PRIMARY KEY AUTO_INCREMENT,
@@ -138,7 +138,7 @@ CREATE TABLE IF NOT EXISTS Drafts (
     `account_id` CHAR(64) NOT NULL,
     CONSTRAINT FK_Drafts_Accounts_account_id FOREIGN KEY (account_id) REFERENCES Accounts (account_id) ON DELETE CASCADE,
     CONSTRAINT FK_Drafts_Conversations_device_conversation_id FOREIGN KEY (device_conversation_id) REFERENCES Conversations (device_id) ON DELETE CASCADE
-);
+) ;
 
 CREATE TABLE IF NOT EXISTS Messages (
     `id` INTEGER NOT NULL PRIMARY KEY AUTO_INCREMENT,
@@ -156,8 +156,8 @@ CREATE TABLE IF NOT EXISTS Messages (
     `sim_stamp` TEXT NULL,
     `account_id` CHAR(64) NOT NULL,
     CONSTRAINT FK_Messages_Accounts_account_id FOREIGN KEY (account_id) REFERENCES Accounts (account_id) ON DELETE CASCADE
-);
-CREATE INDEX IX_Messages_device_id ON Messages (device_id);
+) ;
+CREATE INDEX IX_Messages_device_id ON Messages (device_id) ;
 
 CREATE TABLE IF NOT EXISTS Media (
     `id` INTEGER NOT NULL PRIMARY KEY AUTO_INCREMENT,
@@ -165,24 +165,25 @@ CREATE TABLE IF NOT EXISTS Media (
     `data` BLOB NULL,
     `account_id` CHAR(64) NOT NULL,
     CONSTRAINT FK_Media_Accounts_account_id FOREIGN KEY (account_id) REFERENCES Accounts (account_id) ON DELETE CASCADE
-);
+) ;
 
-CREATE INDEX IX_AutoReplies_account_id ON AutoReplies (account_id);
-CREATE INDEX IX_Blacklists_account_id ON Blacklists (account_id);
-CREATE INDEX IX_Contacts_account_id ON Contacts (account_id);
-CREATE INDEX IX_Conversations_account_id ON Conversations (account_id);
-CREATE INDEX IX_Devices_account_id ON Devices (account_id);
-CREATE INDEX IX_Drafts_account_id ON Drafts (account_id);
-CREATE INDEX IX_Drafts_device_conversation_id ON Drafts (device_conversation_id);
-CREATE INDEX IX_Folders_account_id ON Folders (account_id);
-CREATE INDEX IX_Messages_account_id ON Messages (account_id);
-CREATE INDEX IX_Messages_device_conversation_id ON Messages (device_conversation_id);
-CREATE INDEX IX_Media_account_id ON Media (account_id);
-CREATE INDEX IX_Media_message_id ON Media (message_id);
-CREATE INDEX IX_ScheduledMessages_account_id ON ScheduledMessages (account_id);
-CREATE INDEX IX_Templates_account_id ON Templates (account_id);
- 
-DELIMITER $$
+CREATE INDEX IX_AutoReplies_account_id ON AutoReplies (account_id) ;
+CREATE INDEX IX_Blacklists_account_id ON Blacklists (account_id) ;
+CREATE INDEX IX_Contacts_account_id ON Contacts (account_id) ;
+CREATE INDEX IX_Conversations_account_id ON Conversations (account_id) ;
+CREATE INDEX IX_Devices_account_id ON Devices (account_id) ;
+CREATE INDEX IX_Drafts_account_id ON Drafts (account_id) ;
+CREATE INDEX IX_Drafts_device_conversation_id ON Drafts (device_conversation_id) ;
+CREATE INDEX IX_Folders_account_id ON Folders (account_id) ;
+CREATE INDEX IX_Messages_account_id ON Messages (account_id) ;
+CREATE INDEX IX_Messages_device_conversation_id ON Messages (device_conversation_id) ;
+CREATE INDEX IX_Media_account_id ON Media (account_id) ;
+CREATE INDEX IX_Media_message_id ON Media (message_id) ;
+CREATE INDEX IX_ScheduledMessages_account_id ON ScheduledMessages (account_id) ;
+CREATE INDEX IX_Templates_account_id ON Templates (account_id) ;
+
+
+DELIMITER //
 
 -- Messages are sometimes added before a conversation is, so we can't use a FK
 CREATE TRIGGER before_conversation_delete
@@ -191,7 +192,7 @@ ON Conversations FOR EACH ROW
 BEGIN
     DELETE FROM Messages WHERE Messages.device_conversation_id = OLD.device_id
     AND Messages.account_id = OLD.account_id;
-END$$
+END //
 
 
 -- Media is sometimes added before a message is, so we can't use a FK
@@ -201,7 +202,7 @@ ON Messages FOR EACH ROW
 BEGIN
     DELETE FROM Media WHERE Media.message_id = OLD.device_id
     AND Media.account_id = OLD.account_id;
-END$$
+END //
 
 
 -- Remove conversations from folder before deleting
@@ -211,7 +212,7 @@ ON Folders FOR EACH ROW
 BEGIN
     UPDATE Conversations SET folder_id = -1 WHERE Conversations.folder_id = OLD.device_id 
     AND Conversations.account_id = OLD.account_id;
-END$$
+END //
 
 DELIMITER ;
 

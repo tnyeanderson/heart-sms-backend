@@ -7,6 +7,8 @@ var stream = {
     server: null,
     
     clients: {},
+
+    allowedAccounts: [],
     
     subscribeStr: '{"command":"subscribe","identifier":"{\\"channel\\":\\"NotificationsChannel\\"}"}',
     
@@ -14,27 +16,21 @@ var stream = {
     
     addClient: function (id, ws) {
         if (!stream.clients[id]) {
-            stream.clients[id] = [];
+            stream.clients[id] = {};
         }
         
-        stream.clients[id].push(ws);
+        stream.clients[id][ws.clientId] = ws;
     },
     
-    removeClient: function (accountId, connectionId) {
+    removeClient: function (accountId, clientId) {
         var index = -1;
         
         if (!stream.clients[accountId]) {
             return;
         }
         
-        stream.clients[accountId].forEach(function (ws, i) {
-            if (ws.connectionId == connectionId) {
-                index = i;
-            }
-        });
-        
-        if (index !== -1) {
-            stream.clients[accountId].splice(index, 1);
+        if (stream.clients[accountId][clientId]) {
+            delete stream.clients[accountId][clientId];
         }
         
         if (!stream.clients[accountId].length) {
@@ -43,7 +39,9 @@ var stream = {
     },
     
     onboardClient: function (ws) {
-        ws.connectionId = Math.floor(Math.random() * 10000);
+        // Generate a clientId if we don't have one
+        console.log("Client connected to websocket with id: ", ws.clientId);
+        ws.clientId = ws.clientId || Math.floor(Math.random() * 10000);
             
         stream.addClient(ws.accountId, ws);
         
@@ -53,7 +51,7 @@ var stream = {
         });
         
         ws.on('close', function () {
-            stream.removeClient(ws.accountId, ws.connectionId);
+            stream.removeClient(ws.accountId, ws.clientId);
         });
 
         ws.send(JSON.stringify({
@@ -76,12 +74,20 @@ var stream = {
             }
             
             ws.accountId = parameters.query.account_id;
+            ws.clientId = parameters.query.client_id;
             
             if (process.env.NODE_ENV === 'test' && ws.accountId === 'test') {
                 stream.onboardClient(ws);
                 return;
             }
             
+            // Check the cache to avoid querying the db
+            if (stream.allowedAccounts.includes(ws.accountId)) {
+                stream.onboardClient(ws);
+                return;
+            }
+
+            // Query the database to see if the account id is valid
             var sql = "SELECT account_id FROM Accounts WHERE " + db.whereAccount(ws.accountId);
             
             db.query(sql, {}, function (result) {
@@ -89,6 +95,8 @@ var stream = {
                     console.log("Unrecognized user: ", ws.accountId);
                     return ws.close();
                 } else {
+                    // Cache the allowed user so we don't constantly query the database
+                    stream.allowedAccounts.push(ws.accountId)
                     stream.onboardClient(ws);
                 }
             });
@@ -119,16 +127,20 @@ var stream = {
                 content: content
             }
         };
+
+        var accountClients = stream.clients[accountId];
         
         if (process.env.NODE_ENV === 'test' && stream.clients['test']) {
-            stream.clients['test'][0].send(JSON.stringify(message));
+            Object.values(stream.clients['test']).forEach(ws => {
+                ws.send(JSON.stringify(message));
+            });
         }
         
-        if (!stream.clients[accountId]) {
+        if (!accountClients) {
             return;
         }
         
-        stream.clients[accountId].forEach(function (ws, i) {
+        Object.values(accountClients).forEach(ws => {
             if (ws.subscribed) {
                 ws.send(JSON.stringify(message));
             }
@@ -144,7 +156,7 @@ var stream = {
     
     broadcast: function (message) {
         Object.values(stream.clients).forEach(connectedClients => {
-            connectedClients.forEach(ws => {
+            Object.values(connectedClients).forEach(ws => {
                 ws.send(JSON.stringify(message));
             });
         });
@@ -156,7 +168,8 @@ var stream = {
             return;
         }
         
-        setInterval(stream.sendPing, 1000 * 3);
+        // Send ping every 20 seconds
+        setInterval(stream.sendPing, 1000 * 10);
     },
     
     sendPing: function () {
