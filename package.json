@@ -5,7 +5,7 @@
   "main": "server.js",
   "scripts": {
     "test": "NODE_ENV=test mocha --exit",
-    "start": "NODE_ENV=production node server.js", 
+    "start": "NODE_ENV=production node server.js",
     "start-dev": "NODE_ENV=dev node server.js"
   },
   "repository": {
@@ -23,6 +23,7 @@
     "body-parser": "^1.19.0",
     "cors": "^2.8.5",
     "express": "^4.17.1",
+    "mqtt": "^4.2.6",
     "mysql": "^2.18.1",
     "require-all": "^3.0.0",
     "url": "^0.11.0",

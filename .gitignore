@@ -1,6 +1,7 @@
 # Heart specific
 .db.env
 heart-web-config/
+mosquitto/
 
 # Kate
 *.kate-swp

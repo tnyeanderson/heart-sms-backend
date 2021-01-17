@@ -30,7 +30,8 @@ describe("heart-sms-backend unit test", function () {
         .post('/accounts/signup')
         .send({
             "name": "test@email.com",
-            "password": "tester",
+            // Password is 'tester', this is the SHA256 hash
+            "password": "9bba5c53a0545e0c80184b946153c9f58387e3bd1d4ee35740f29ac2e718b019",
             "phone_number": "5555555555",
             "real_name": "testname"
         })
@@ -47,7 +48,7 @@ describe("heart-sms-backend unit test", function () {
         .post('/accounts/login')
         .send({
             "username": "test@email.com",
-            "password": "tester"
+            "password": "9bba5c53a0545e0c80184b946153c9f58387e3bd1d4ee35740f29ac2e718b019"
         })
         .expect("Content-type",/json/)
         .expect(200)

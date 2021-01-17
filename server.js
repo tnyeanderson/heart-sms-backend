@@ -16,8 +16,8 @@ var urls = {
     websocket: "localhost:" + wsPort
 }
 
-// Set up websockets
-StreamController.init(wsPort);
+// Connect to MQTT broker
+StreamController.init();
 
 var server = app.listen(port, function () {
     console.log("Server running on port " + port);

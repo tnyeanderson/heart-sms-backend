@@ -34,6 +34,18 @@ services:
       - .db.env
     volumes:
       - mysql:/var/lib/mysql
+
+  heart-sms-mqtt:
+    container_name: heart-sms-mqtt
+    image: eclipse-mosquitto
+    restart: always
+    ports:
+      # Keep mqtt local for now, haven't figured out SSL yet
+      - "127.0.0.1:1883:1883"
+      # This will always be local only
+      - "127.0.0.1:5050:5050"
+    volumes:
+      - ./mosquitto:/mosquitto
       
 volumes:
   mysql:
