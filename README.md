@@ -12,6 +12,8 @@ Eventually the rebranded Heart SMS app will be released on F-Droid, etc.
 
 The end goal is a docker-compose file that can be initialized with environment variables, including the web client. Native clients will have preferences added to set the base url of the API.
 
+Heart does not use Firebase Messaging. Instead, it has an MQTT broker (mosquitto) included, which is accessible on websockets for the web client.
+
 ---
 
 # Build and run
@@ -31,7 +33,7 @@ docker-compose up -d
 
 Change any variables in `docker-compose.yml` as needed.
 
-This will give you the full development stack: the database, API, and web interface.
+This will give you the full development stack: the database, API, MQTT, and web interface.
 
 Once the container is up and running, be sure to change your `web-config.js` with your urls. By default it is mounted at `./heart-web-config/web-config.js` on the host. In production, these urls will be set to your domain, and `useSSL` will be set to `true`:
 
@@ -54,7 +56,7 @@ Follow the steps in "Build and run" but instead of running docker-compose, run:
 npm run start-dev
 ```
 
-This will start only the backend server listening on `5000` (HTTP API) and `5050` (websockets). Using `start-dev` indicates that the `heartsms-dev` database should be used instead of the production `heartsms` database.
+This will start only the backend server listening on `5000` (HTTP API). Using `start-dev` indicates that the `heartsms-dev` database should be used instead of the production `heartsms` database.
 
 To use the production database with the development server, run:
 ```

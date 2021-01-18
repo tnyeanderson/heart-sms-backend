@@ -8,7 +8,6 @@ services:
     restart: always
     ports:
       - "127.0.0.1:5000:5000"
-      - "127.0.0.1:5050:5050"
     env_file:
       - .db.env
     
@@ -28,8 +27,8 @@ services:
     command: --default-authentication-plugin=mysql_native_password
     restart: always
     # Uncomment the below lines for testing
-    #ports:
-    #  - "127.0.0.1:3306:3306"
+    ports:
+      - "127.0.0.1:3306:3306"
     env_file:
       - .db.env
     volumes:
@@ -37,7 +36,7 @@ services:
 
   heart-sms-mqtt:
     container_name: heart-sms-mqtt
-    image: eclipse-mosquitto
+    image: iegomez/mosquitto-go-auth
     restart: always
     ports:
       # Keep mqtt local for now, haven't figured out SSL yet
@@ -45,7 +44,7 @@ services:
       # This will always be local only
       - "127.0.0.1:5050:5050"
     volumes:
-      - ./mosquitto:/mosquitto
+      - ./mosquitto:/etc/mosquitto
       
 volumes:
   mysql:

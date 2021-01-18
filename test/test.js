@@ -13,15 +13,13 @@ var accountId = '';
 var contactsToRemove = [];
 
 
-function delay(interval) {
+function delay(interval = 3000) {
    return it('should delay', done => 
    {
       setTimeout(() => done(), interval)
 
    }).timeout(interval + 100) // The extra 100ms should guarantee the test will not fail due to exceeded timeout
 }
-
-console.log("Dont forget to run this in another terminal: wscat -c " + urls.websocket + "/api/v1/stream?account_id=test");
 
 describe("heart-sms-backend unit test", function () {
 
@@ -57,13 +55,13 @@ describe("heart-sms-backend unit test", function () {
             res.body.should.have.property('account_id');
             res.body.should.have.property('salt2');
             accountId = res.body.account_id;
-            console.log('\n', "Account ID: ", accountId, '\n');
+            console.log('\n', "Account ID: ", res.body.account_id, '\n');
             done();
         });
     });
     
-    console.log("Waiting to give you time to open a websocket connection...");
-    delay(3000);
+    console.log("Waiting to give you time to log in, etc...");
+    delay();
     
     it("Account settings", function (done) {
         api

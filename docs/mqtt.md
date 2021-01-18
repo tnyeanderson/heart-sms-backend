@@ -1,49 +1,34 @@
-# Websockets
+# MQTT
 
-Local websocket URL: `ws://localhost:5050/api/v1/stream?account_id=STRING`
+The docker-compose file contains a Mosquitto MQTT broker. Clients subscribe to topics relating to their account id (for now) and receive their messages. Websocket endpoint exists for web.
 
-*An account_id MUST be included.*
+The websocket is available at `localhost:5050` according to the mosquitto config. When using the caddy reverse proxy, this is the endpoint of `wss://api.base.url/api/v1/stream`, so use that.
 
+MQTT is currently local only until I figure out https. It runs on port `1883`.
 
 ## Connecting
 
-On connection to the websocket, the following message will be received by the client:
-```
-{"type":"welcome"}
-```
+Connect to the MQTT broker using your HeartSMS username and your account id for the password.
 
-From this point on, the server sends a ping (with a ten-digit timestamp) to all clients every 3 seconds. For example:
+To subscribe to notifications, subscribe to the `heartsms/YOURACCOUNTID` topic. For instance:
 ```
-{"type":"ping","message":1608150458}
-```
-
-To subscribe to notifications, send:
-```
-{"command":"subscribe","identifier":"{\"channel\":\"NotificationsChannel\"}"}
-```
-
-Which should respond with confirmation:
-```
-{"identifier":"{\"channel\":\"NotificationsChannel\"}","type":"confirm_subscription"}
+heartsms/d940fd63db994e4e809091bbd7993c1359c9362cf5374531b1982d8e5b7adda3
 ```
 
 Now you will receive messages anytime something happens. Messages take the following form (formatted for readability):
 ```
 {
-    "identifier": "{\"channel\":\"NotificationsChannel\"}",
-    "message": {
-        "operation": STRING,
-        "content": OBJECT
-    }
+    "operation": STRING,
+    "content": OBJECT
 }
 ```
 
 For instance:
 ```
-{"identifier":"{\"channel\":\"NotificationsChannel\"}","message":{"operation":"forward_to_phone","content":{"to":"5555555555","message":"test","mime_type":"text/plain","sent_device":0}}}
+{"operation":"forward_to_phone","content":{"to":"5555555555","message":"test","mime_type":"text/plain","sent_device":0}}
 ```
 
-*THIS EXAMPLE WAS CHOSEN BECAUSE forward_to_phone WAS ACTUALLY SENDING UNENCRYPTED DATA IN PULSE!!! This has been fixed, and your data is encrypted now :)*
+*THIS EXAMPLE WAS CHOSEN BECAUSE forward_to_phone WAS ACTUALLY SENDING UNENCRYPTED DATA IN PULSE!!! This has been fixed in Heart, and your data is encrypted now :)*
 
 
 ## Operations

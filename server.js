@@ -1,19 +1,17 @@
 var app = require('./app');
+
 var StreamController = require('./controllers/StreamController');
 
-// Get ports
+// Get port
 var port = process.env.port || 5000;
-var wsPort = process.env.wsPort || 5050;
 
 // Override these if we are testing
 if (process.env.NODE_ENV === 'test') {
     port = 5001;
-    wsPort = 5051
 }
 
 var urls = {
-    api: "localhost:" + port,
-    websocket: "localhost:" + wsPort
+    api: "localhost:" + port
 }
 
 // Connect to MQTT broker

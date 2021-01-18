@@ -11,23 +11,22 @@ router.route('/').get(function (req, res) {
     res.json(errors.notImplemented);
 });
 
-
 router.route('/login').post(function (req, res) {
     var sql = "SELECT * FROM Accounts WHERE username = " + mysql.escape(req.body.username) + " LIMIT 1";
     
     db.query(sql, res, function (result) {
         if (!result[0]) {
-            res.json(errors.auth);
+            res.status(401).json(errors.auth);
             return;
         }
         
         var testhash = crypto.pbkdf2Sync(req.body.password, result[0].salt1, 100000, 64, 'sha512').toString('hex');
-        if (result[0].password_hash == testhash) {
+        if (testhash.length && result[0].password_hash == testhash) {
             delete result[0].password_hash;
             delete result[0].username;
             res.json(result[0]);
         } else {
-            res.json(errors.auth);
+            res.status(401).json(errors.auth);
         }
     });
 });
