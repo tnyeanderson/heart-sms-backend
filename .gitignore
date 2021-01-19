@@ -1,6 +1,8 @@
 # Heart specific
 .db.env
+.api.env
 heart-web-config/
+certs/
 
 # Kate
 *.kate-swp

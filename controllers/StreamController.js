@@ -11,9 +11,12 @@ var stream = {
     init: function () {
         this.backendPassword = (process.env.NODE_ENV === 'dev' || process.env.NODE_ENV === 'test') ? 'testpassword' : crypto.randomBytes(64).toString('hex');
 
-        console.log("Connecting to MQTT with password: " + this.backendPassword);
+        let url = (process.env.HEART_USE_SSL === 'true') ? 'mqtts://' : 'mqtt://';
+        url += (process.env.HEART_MQTT_URL) ? process.env.HEART_MQTT_URL : 'localhost'
 
-        this.socket = mqtt.connect("mqtt://localhost", {
+        console.log("Connecting to " + url + " with password: " + this.backendPassword);
+
+        this.socket = mqtt.connect(url, {
             username: 'heart-sms-backend',
             password: this.backendPassword
         });
