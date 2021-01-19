@@ -9,7 +9,7 @@
     "start-dev": "NODE_ENV=dev node server.js",
     "docker:build": "sudo docker build -t heartsms/heart-sms-backend:staged .",
     "docker:build-latest": "sudo docker build -t heartsms/heart-sms-backend:latest .",
-    "docker:push": "sudo docker push heartsms/heart-sms-backend:latest",
+    "docker:push": "npm run docker:build-latest && sudo docker push heartsms/heart-sms-backend:latest",
     "docker:start": "sudo docker-compose up -d heart-sms-backend heart-sms-db heart-sms-mqtt"
   },
   "repository": {
