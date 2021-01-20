@@ -2,9 +2,9 @@
 
 The docker-compose file contains a Mosquitto MQTT broker. Clients subscribe to topics relating to their account id and receive their messages. Websocket endpoint exists for web.
 
-The websocket is available at `localhost:5050` according to the mosquitto config. When using the caddy reverse proxy, this is the endpoint of `wss://api.base.url/api/v1/stream`, so use that. 
+The unsecured websocket is available at `localhost:5050` according to the mosquitto config. When using the caddy reverse proxy, this is the endpoint of `wss://api.base.url/api/v1/stream`, so use that. 
 
-## MQTTS - SSL/TLS Set up
+## MQTTS - SSL/TLS Setup
 
 MQTT currently requires encryption (TLS) for security reasons, and the service is available at port `8883`. The `heart-sms-mqtt` container expects three certificate files to be present:
 
@@ -18,7 +18,7 @@ Public key for CA:        /etc/certs/ca.pem
 
 ## Authentication / Authorization
 
-Authentication to the broker and authorization to pub/sub to different topics uses [mosquitto-go-auth](https://github.com/iegomez/mosquitto-go-auth). It queries the following endpoints:
+Authentication to the broker and authorization to pub/sub to different topics uses [mosquitto-go-auth](https://github.com/iegomez/mosquitto-go-auth). It queries the following endpoints of the API:
 
 ```
 /api/v1/mqtt/login
@@ -27,7 +27,7 @@ Authentication to the broker and authorization to pub/sub to different topics us
 
 The API generates (and outputs to the console) a random password every time the container starts. It uses the username `heart-sms-backend` and this password to authenticate (since it is handling its own authentication). If `NODE_ENV=dev` on the backend, the password is simply `testpassword`. This allows use of a program like MQTT Explorer to debug.
 
-The `heart-sms-backend` has all permissions. It can pub/sub to any topic, including the root topic (`#`).
+The `heart-sms-backend` account has all permissions. It can pub/sub to any topic, including the root topic (`#`).
 
 ## Connecting
 

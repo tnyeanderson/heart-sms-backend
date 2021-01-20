@@ -18,29 +18,18 @@ Heart does not use Firebase Messaging. Instead, it has an MQTT broker (mosquitto
 
 # Build and run
 
-Make sure you have docker installed, then:
-```
-git clone git@github.com:tnyeanderson/heart-sms-backend.git
+For a detailed guide, see [Getting Started](docs/getting-started.md)
 
-cd heart-sms-backend
+Here's the short version:
 
-cp .db.env.example .db.env
-cp .api.env.example .api.env
+1. Clone the repo
+2. Quickly create your `api` and `db` env files
+3. Generate certificates using certbot (or your own CA for testing)
+4. Update URLs and cert paths in Caddyfile
+5. Mount the certs to the `heart-sms-mqtt` container
+6. `docker-compose up -d`
+7. `caddy run`
 
-# EDIT THE .db.env FILE TO CHANGE THE USER PASSWORD
-# EDIT THE .api.env FILE TO CHANGE THE SERVICE URLS
-
-docker-compose up -d
-```
-
-This will give you the full stack: the database (dev and prod), API, MQTT, and web interface.
-
-Change any variables/volumes in `docker-compose.yml` as needed.
-
-Your MySQL root password will be printed to the logs when the container is first created. **IT WILL NOT BE SHOWN EVER AGAIN!!** Make sure you save it somewhere. Find it using:
-```
-docker-compose logs heart-sms-db
-```
 
 ## SSL/TLS for testing
 
@@ -56,7 +45,7 @@ You can simply edit your `/etc/hosts` file to have a line like this:
 127.0.0.1 localhost api.heart.lan web.heart.lan mqtt.heart.lan
 ```
 
-Then you should generate a wildcard certificate for `*.heart.lan` (I use my PFSense CA for this).
+Then you should generate a wildcard certificate for `*.heart.lan` (I use my PFSense CA for this, but you can use `openssl`).
 
 Then start caddy from the project root to get SSL/TLS *almost* everywhere:
 ```
@@ -65,27 +54,13 @@ caddy run
 
 *Note: When testing the web interface, be sure to navigate to api.heart.lan in your browser to accept the self signed certificate first! Otherwise API calls will not go through*
 
-The last place you need encryption is the MQTT broker (mosquitto). See the "MQTTS" header in `docs/mqtt.md` for instructions on how to set up.
+The last place you need encryption is the MQTT broker (mosquitto). See the see [MQTTS - SSL/TLS Setup](mqtt.md) and [Getting Started - Mosquitto](getting-started.md) for instructions on how to set up.
 
-
-## Deployment
-
-Caddy v2 is used for deployment once the containers have started.
-
-Change the `Caddyfile` to use your urls, and turn off internal certificates and generate real ones. Then:
-
-```
-caddy run
-```
-
-Or run caddy as a service.
-
-At the moment the web interface requires some work as many dependencies are outdated/deprecated. See the `TODO.md` file in `heart-sms-web`
 
 
 ## Development server
 
-Follow the steps in "Build and run" but instead of running docker-compose, run:
+Follow the steps in [Getting Started](getting-started.md), paying careful attention to notes for developers. However, instead of running docker-compose, run:
 
 ```
 npm run start-dev
@@ -113,12 +88,12 @@ Then, you might want to open MQTT explorer and log into the `heart-sms-backend` 
 npm run test
 ```
 
-You can look over the stream manually and check against `docs/mqtt.md`. Tests need to be written for receiving the websocket and mqtt messages. (The responses look good as of this commit by my error-prone eyes)
+You can look over the stream manually and check against [our MQTT documentation](mqtt.md). Tests need to be written for receiving the websocket and mqtt messages. (The responses look good as of this commit by my error-prone eyes)
 
 
 ## Docker
 
-This project uses 4 bespoke containers to make configuration easy. Just create/edit the `.db.env` and `.api.env` files and you're ready to go!
+This project uses 4 bespoke containers to make configuration easy. Just create/edit the `.db.env` and `.api.env` files, add the certs and you're ready to go!
 
 If you want to build the containers yourself (might be a good idea if you are testing because I don't have CI/CD in place... yet), you can do so in the following way:
 
@@ -156,6 +131,8 @@ sudo docker build -t heartsms/heart-sms-mqtt:staged .
 
 
 ## The following is from TChilderhose (edited)
+
+*TChilderhose put a lot of work in to a C# backend, and gave me the confidence to take this on. Thanks!*
 
 When Pulse SMS was [bought by Maple Media](https://www.androidpolice.com/2020/10/29/it-looks-like-pulse-sms-has-been-bought-by-maple-media-get-ready-for-intrusive-ads/), I started working on a backend that I could selfhost and just fork the android client, manually swap the urls and keys and use that.
 
