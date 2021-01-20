@@ -1,6 +1,6 @@
 # Getting Started
 
-**HeartSMS is a work in progress. It hasn't even been alpha tested yet and should NOT be used in production. This guide exists for developer reference and future releases*
+**HeartSMS is a work in progress. It hasn't even been alpha tested yet and should NOT be used in production. This guide exists for developer reference and future releases**
 
 In this guide, you should be replacing the example URLs, `api.heart.lan` and `web.heart.lan`, with your own api and web URLs.
 
@@ -11,7 +11,7 @@ The system is made up of four docker containers, configured using docker-compose
 
 In general, all four containers will run on the same server.
 
-The API (`heart-sms-backend`) is used by clients (phones, web clients, etc) to query the database. Each time certain database operations are made, the API also publishes a relevant message to the MQTT server, which delivers the message to all subscribed clients (phones, web clients, etc). For more information on the structure and content of MQTT messages in Heart, see `docs/mqtt.md`.
+The API container (`heart-sms-backend`) is used by clients (phones, web clients, etc) to query the database. Each time certain database operations are made, the API also publishes a relevant message to the MQTT server, which delivers the message to all subscribed clients (phones, web clients, etc). For more information on the structure and content of MQTT messages in Heart, see `docs/mqtt.md`.
 
 The web client also makes calls to the API, but since browsers can't use MQTT directly, a websocket endpoint is included in `heart-sms-mqtt` for web clients to connect to.
 
@@ -119,6 +119,7 @@ HEART_USE_SSL=true
 ### Certificates
 
 **Caddy**
+
 Update the `Caddyfile` with your own URLs (no need to add a block for `mqtt.heart.lan`). Change every `tls internal` line to read:
 ```
 tls /path/to/cert.crt /path/to/key.key
@@ -167,7 +168,7 @@ docker-compose logs heart-sms-db
 caddy start
 ```
 
-The encrypted API, web, and websocket endpoints are now available on the internet. You may want to [run caddy as a service](https://caddyserver.com/docs/install#linux-service) to survive restarts :)
+The encrypted API, MQTT, web client, and websocket endpoints are now available on the internet. You may want to [run caddy as a service](https://caddyserver.com/docs/install#linux-service) to survive restarts :)
 
 
 Unfortunately, that is it for now; the Android app is not yet fully functional. See the `heart-sms-android` repo for build instructions.
