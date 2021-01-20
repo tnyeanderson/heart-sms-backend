@@ -8,6 +8,6 @@ COPY ./mosquitto /etc/mosquitto
 COPY ./entrypoint.sh /root/entrypoint.sh
 RUN chmod +x /root/entrypoint.sh
 
-EXPOSE 8883 5050
+EXPOSE 1883 8883 5050
 
 ENTRYPOINT ["/root/entrypoint.sh"]

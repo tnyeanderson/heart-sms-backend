@@ -25,27 +25,62 @@ git clone git@github.com:tnyeanderson/heart-sms-backend.git
 cd heart-sms-backend
 
 cp .db.env.example .db.env
+cp .api.env.example .api.env
 
 # EDIT THE .db.env FILE TO CHANGE THE USER PASSWORD
+# EDIT THE .api.env FILE TO CHANGE THE SERVICE URLS
 
 docker-compose up -d
 ```
 
-Change any variables in `docker-compose.yml` as needed.
+This will give you the full stack: the database (dev and prod), API, MQTT, and web interface.
 
-This will give you the full development stack: the database, API, MQTT, and web interface.
+Change any variables/volumes in `docker-compose.yml` as needed.
 
-Once the container is up and running, be sure to change your `web-config.js` with your urls. By default it is mounted at `./heart-web-config/web-config.js` on the host. In production, these urls will be set to your domain, and `useSSL` will be set to `true`:
+Your MySQL root password will be printed to the logs when the container is first created. **IT WILL NOT BE SHOWN EVER AGAIN!!** Make sure you save it somewhere. Find it using:
+```
+docker-compose logs heart-sms-db
+```
+
+## SSL/TLS for testing
+
+It is highly recommended that you use TLS and SSL even when you are testing. The current de facto testing domains are:
+```
+web.heart.lan
+api.heart.lan
+mqtt.heart.lan
+```
+
+You can simply edit your `/etc/hosts` file to have a line like this:
+```
+127.0.0.1 localhost api.heart.lan web.heart.lan mqtt.heart.lan
+```
+
+Then you should generate a wildcard certificate for `*.heart.lan` (I use my PFSense CA for this).
+
+Then start caddy from the project root to get SSL/TLS *almost* everywhere:
+```
+caddy run
+```
+
+*Note: When testing the web interface, be sure to navigate to api.heart.lan in your browser to accept the self signed certificate first! Otherwise API calls will not go through*
+
+The last place you need encryption is the MQTT broker (mosquitto). See the "MQTTS" header in `docs/mqtt.md` for instructions on how to set up.
+
+
+## Deployment
+
+Caddy v2 is used for deployment once the containers have started.
+
+Change the `Caddyfile` to use your urls, and turn off internal certificates and generate real ones. Then:
 
 ```
-var heartConfig = {
-    "api": {
-        "baseUrl": "localhost:5000",
-        "websocketsUrl": "localhost:5050",
-        "useSSL": false
-    }
-}
+caddy run
 ```
+
+Or run caddy as a service.
+
+At the moment the web interface requires some work as many dependencies are outdated/deprecated. See the `TODO.md` file in `heart-sms-web`
 
 
 ## Development server
@@ -63,40 +98,61 @@ To use the production database with the development server, run:
 npm run start
 ```
 
-## Deployment
+## Testing
 
-Caddy v2 is used for deployment.
+Right now the testing is pretty dirty with a *lot* of blind spots, but it seems to work alright for now.
 
-Once containers have started, edit `heart-web-config/web-config.json` with your API urls and set `useSSL` to true.
-
-Change the `Caddyfile` to use your urls, and turn off internal certificates and generate real ones. Then:
-
+First we need to have a dev server running, because MQTT authentication/authorization is done through the HeartSMS API:
 ```
-caddy start
+npm run start-dev
 ```
 
-Or run caddy as a service.
-
-At the moment the web interface requires some work as many dependencies are outdated/deprecated. See the `TODO.md` file in `heart-sms-web`
-
-
-## Run test suite
-
-Right now the testing is pretty dirty, but it seems to work alright for now. To run the tests:
+Then, you might want to open MQTT explorer and log into the `heart-sms-backend` account. Since we are using a dev server, the password is `testpassword`. This account has full privileges on the MQTT broker and can subscribe to the root topic for testing (`#`). Then run the tests:
 
 ```
 npm run test
 ```
 
-Once the test server starts (listening at `5001` and `5051`), you will be given 3 seconds to open up a websocket connection by running the following command in another shell:
+You can look over the stream manually and check against `docs/mqtt.md`. Tests need to be written for receiving the websocket and mqtt messages. (The responses look good as of this commit by my error-prone eyes)
 
+
+## Docker
+
+This project uses 4 bespoke containers to make configuration easy. Just create/edit the `.db.env` and `.api.env` files and you're ready to go!
+
+If you want to build the containers yourself (might be a good idea if you are testing because I don't have CI/CD in place... yet), you can do so in the following way:
+
+### heart-sms-backend
+
+From project root, run:
 ```
-wscat -c localhost:5051/api/v1/stream?account_id=test
+npm run docker:build
 ```
 
-The `test` account is only available when `NODE_ENV=test`, and it receives all websocket messages sent to any user. It does not require a subscription string.
+This will create a container tagged `heartsms/heart-sms-backend:staged`.
 
-You can look over the stream manually and check against `docs/websockets.md`. Tests need to be written for receiving the websocket messages. (The responses look good as of this commit by my error-prone eyes)
+### heart-sms-web
+
+Clone the `heart-sms-web` repo, then run from web project root:
+```
+npm run docker:build
+```
+
+This will create a container tagged `heartsms/heart-sms-web:staged`.
+
+### heart-sms-db
+```
+cd ./db
+
+sudo docker build -t heartsms/heart-sms-db:staged .
+```
+
+### heart-sms-mqtt
+```
+cd ./mqtt
+
+sudo docker build -t heartsms/heart-sms-mqtt:staged .
+```
 
 
 ## The following is from TChilderhose (edited)
