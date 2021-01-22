@@ -2152,7 +2152,7 @@ Parameters: `account_id=STRING`
 Request body: 
 ```
 {
-    "account_id": store.state.account_id,
+    "account_id": STRING,
     "to": STRING,
     "message": STRING,
     "mime_type": STRING?,
@@ -2170,6 +2170,78 @@ Response:
 Error:
 ```
 <UNKNOWN>
+```
+
+
+---
+
+
+### `/mqtt/login`
+
+*Determines whether a user can authenticate to the MQTT broker*
+
+Method: POST
+
+Parameters: None
+
+Request body: 
+```
+{
+    "username": STRING,
+    "password": STRING
+}
+```
+
+Response (200):
+```
+{
+    Ok: true,
+
+}
+```
+
+Error (401):
+```
+{
+    Ok: false,
+    Error: STRING
+}
+```
+
+
+---
+
+
+### `/mqtt/acl`
+
+*Determines whether a user is allowed to pub/sub to a given topic*
+
+Method: POST
+
+Parameters: None
+
+Request body: 
+```
+{
+    "username": STRING,
+    "topic": STRING
+}
+```
+
+Response (200):
+```
+{
+    Ok: true,
+
+}
+```
+
+Error (401):
+```
+{
+    Ok: false,
+    Error: STRING
+}
 ```
 
 

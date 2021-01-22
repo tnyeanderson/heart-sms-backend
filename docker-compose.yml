@@ -1,4 +1,3 @@
-# Use root/example as user/password credentials
 version: "3.1"
 
 services:
@@ -8,19 +7,21 @@ services:
     restart: always
     ports:
       - "127.0.0.1:5000:5000"
-      - "127.0.0.1:5050:5050"
     env_file:
       - .db.env
+      - .api.env
     
+      
   heart-sms-web:
     container_name: heart-sms-web
     image: heartsms/heart-sms-web
     restart: always
     ports:
       - "127.0.0.1:8081:80"
-    volumes:
-      # Mount the config directory, then edit/replace web-config.json once the container has started
-      - ./heart-web-config:/usr/share/nginx/html/config
+    env_file: 
+      # /config/web-config.json is derived from .api.env
+      - .api.env
+
  
   heart-sms-db:
     container_name: heart-sms-db
@@ -28,12 +29,30 @@ services:
     command: --default-authentication-plugin=mysql_native_password
     restart: always
     # Uncomment the below lines for testing
-    #ports:
-    #  - "127.0.0.1:3306:3306"
+    ports:
+      - "127.0.0.1:3306:3306"
     env_file:
       - .db.env
     volumes:
       - mysql:/var/lib/mysql
+
+  heart-sms-mqtt:
+    container_name: heart-sms-mqtt
+    image: heartsms/heart-sms-mqtt
+    restart: always
+    ports:
+      # Uncomment this line for testing (unencrypted)
+      #- "127.0.0.1:1883:1883"
+      # SSL endpoint is exposed directly
+      - "8883:8883"
+      # Unsecured websockets will always be local only
+      - "127.0.0.1:5050:5050"
+    env_file: 
+      # /etc/mosquitto/conf.d/go-auth.conf is derived from .api.env
+      # Comment this out during development to allow unencrypted connection between containers on :5000
+      - .api.env
+    volumes:
+      - ./certs:/etc/certs
       
 volumes:
   mysql:

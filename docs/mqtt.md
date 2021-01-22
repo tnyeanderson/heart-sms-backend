@@ -1,49 +1,57 @@
-# Websockets
+# MQTT
 
-Local websocket URL: `ws://localhost:5050/api/v1/stream?account_id=STRING`
+The docker-compose file contains a Mosquitto MQTT broker. Clients subscribe to topics relating to their account id and receive their messages. Websocket endpoint exists for web.
 
-*An account_id MUST be included.*
+The unsecured websocket is available at `localhost:5050` according to the mosquitto config. When using the caddy reverse proxy, this is the endpoint of `wss://api.base.url/api/v1/stream`, so use that. 
 
+## MQTTS - SSL/TLS Setup
+
+MQTT currently requires encryption (TLS) for security reasons, and the service is available at port `8883`. The `heart-sms-mqtt` container expects three certificate files to be present:
+
+```
+Public key for web cert:  /etc/certs/cert.pem
+Private key for web cert: /etc/certs/key.pem
+Public key for CA:        /etc/certs/ca.pem
+```
+
+*NOTE: When mounting these certificates, please take care that their permissions on the host are appropriate!*
+
+## Authentication / Authorization
+
+Authentication to the broker and authorization to pub/sub to different topics uses [mosquitto-go-auth](https://github.com/iegomez/mosquitto-go-auth). It queries the following endpoints of the API:
+
+```
+/api/v1/mqtt/login
+/api/v1/mqtt/acl
+```
+
+The API generates (and outputs to the console) a random password every time the container starts. It uses the username `heart-sms-backend` and this password to authenticate (since it is handling its own authentication). If `NODE_ENV=dev` on the backend, the password is simply `testpassword`. This allows use of a program like MQTT Explorer to debug.
+
+The `heart-sms-backend` account has all permissions. It can pub/sub to any topic, including the root topic (`#`).
 
 ## Connecting
 
-On connection to the websocket, the following message will be received by the client:
-```
-{"type":"welcome"}
-```
+Connect to the MQTT broker using your HeartSMS username and your account id for the password.
 
-From this point on, the server sends a ping (with a ten-digit timestamp) to all clients every 3 seconds. For example:
+To subscribe to notifications, subscribe to the `heartsms/YOURACCOUNTID` topic. For instance:
 ```
-{"type":"ping","message":1608150458}
-```
-
-To subscribe to notifications, send:
-```
-{"command":"subscribe","identifier":"{\"channel\":\"NotificationsChannel\"}"}
-```
-
-Which should respond with confirmation:
-```
-{"identifier":"{\"channel\":\"NotificationsChannel\"}","type":"confirm_subscription"}
+heartsms/d940fd63db994e4e809091bbd7993c1359c9362cf5374531b1982d8e5b7adda3
 ```
 
 Now you will receive messages anytime something happens. Messages take the following form (formatted for readability):
 ```
 {
-    "identifier": "{\"channel\":\"NotificationsChannel\"}",
-    "message": {
-        "operation": STRING,
-        "content": OBJECT
-    }
+    "operation": STRING,
+    "content": OBJECT
 }
 ```
 
 For instance:
 ```
-{"identifier":"{\"channel\":\"NotificationsChannel\"}","message":{"operation":"forward_to_phone","content":{"to":"5555555555","message":"test","mime_type":"text/plain","sent_device":0}}}
+{"operation":"forward_to_phone","content":{"to":"5555555555","message":"test","mime_type":"text/plain","sent_device":0}}
 ```
 
-*THIS EXAMPLE WAS CHOSEN BECAUSE forward_to_phone WAS ACTUALLY SENDING UNENCRYPTED DATA IN PULSE!!! This has been fixed, and your data is encrypted now :)*
+*THIS EXAMPLE WAS CHOSEN BECAUSE forward_to_phone WAS ACTUALLY SENDING UNENCRYPTED DATA IN PULSE!!! This has been fixed in Heart, and your data is encrypted now :)*
 
 
 ## Operations

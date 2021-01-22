@@ -4,9 +4,13 @@
   "description": "Backend for HeartSMS, a fork of PulseSMS",
   "main": "server.js",
   "scripts": {
-    "test": "NODE_ENV=test mocha --exit",
-    "start": "NODE_ENV=production node server.js", 
-    "start-dev": "NODE_ENV=dev node server.js"
+    "test": "NODE_ENV=test env-cmd -f ./.db.env mocha --exit",
+    "start": "NODE_ENV=production node server.js",
+    "start-dev": "NODE_ENV=dev node server.js",
+    "docker:build": "sudo docker build -t heartsms/heart-sms-backend:staged .",
+    "docker:build-latest": "sudo docker build -t heartsms/heart-sms-backend:latest .",
+    "docker:push": "npm run docker:build-latest && sudo docker push heartsms/heart-sms-backend:latest",
+    "docker:start": "sudo docker-compose up -d heart-sms-backend heart-sms-db heart-sms-mqtt"
   },
   "repository": {
     "type": "git",
@@ -23,6 +27,7 @@
     "body-parser": "^1.19.0",
     "cors": "^2.8.5",
     "express": "^4.17.1",
+    "mqtt": "^4.2.6",
     "mysql": "^2.18.1",
     "require-all": "^3.0.0",
     "url": "^0.11.0",
@@ -30,6 +35,7 @@
     "ws": "^7.4.1"
   },
   "devDependencies": {
+    "env-cmd": "^10.1.0",
     "mocha": "^8.2.1",
     "should": "^13.2.3",
     "supertest": "^6.0.1"

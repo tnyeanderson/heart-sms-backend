@@ -31,6 +31,7 @@ app.use(getUrl('/drafts'),             controllers.DraftsController);
 app.use(getUrl('/folders'),            controllers.FoldersController);
 app.use(getUrl('/media'),              controllers.MediaController);
 app.use(getUrl('/messages'),           controllers.MessagesController);
+app.use(getUrl('/mqtt'),               controllers.MQTTController);
 app.use(getUrl('/purchases'),          controllers.PurchasesController);
 app.use(getUrl('/scheduled_messages'), controllers.ScheduledMessagesController);
 app.use(getUrl('/templates'),          controllers.TemplatesController);

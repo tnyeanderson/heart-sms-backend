@@ -11,10 +11,11 @@ if (process.env.NODE_ENV === 'production' && mysql_pass === 'TESTPASSWORD2') {
     return;
 }
 
-// Set db name based on environmnet
+// Set db name and host based on environmnet
 var mysql_db = process.env.MYSQL_DATABASE || 'heartsms'; // default
 if (process.env.NODE_ENV === 'dev' || process.env.NODE_ENV === 'test') {
     mysql_db = 'heartsms-dev';
+    mysql_host = 'localhost';
 }
 
 console.log("Using database: ", mysql_db);

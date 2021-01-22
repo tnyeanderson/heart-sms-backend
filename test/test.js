@@ -13,15 +13,13 @@ var accountId = '';
 var contactsToRemove = [];
 
 
-function delay(interval) {
+function delay(interval = 3000) {
    return it('should delay', done => 
    {
       setTimeout(() => done(), interval)
 
    }).timeout(interval + 100) // The extra 100ms should guarantee the test will not fail due to exceeded timeout
 }
-
-console.log("Dont forget to run this in another terminal: wscat -c " + urls.websocket + "/api/v1/stream?account_id=test");
 
 describe("heart-sms-backend unit test", function () {
 
@@ -30,7 +28,8 @@ describe("heart-sms-backend unit test", function () {
         .post('/accounts/signup')
         .send({
             "name": "test@email.com",
-            "password": "tester",
+            // Password is 'tester', this is the SHA256 hash
+            "password": "9bba5c53a0545e0c80184b946153c9f58387e3bd1d4ee35740f29ac2e718b019",
             "phone_number": "5555555555",
             "real_name": "testname"
         })
@@ -47,7 +46,7 @@ describe("heart-sms-backend unit test", function () {
         .post('/accounts/login')
         .send({
             "username": "test@email.com",
-            "password": "tester"
+            "password": "9bba5c53a0545e0c80184b946153c9f58387e3bd1d4ee35740f29ac2e718b019"
         })
         .expect("Content-type",/json/)
         .expect(200)
@@ -56,13 +55,13 @@ describe("heart-sms-backend unit test", function () {
             res.body.should.have.property('account_id');
             res.body.should.have.property('salt2');
             accountId = res.body.account_id;
-            console.log('\n', "Account ID: ", accountId, '\n');
+            console.log('\n', "Account ID: ", res.body.account_id, '\n');
             done();
         });
     });
     
-    console.log("Waiting to give you time to open a websocket connection...");
-    delay(3000);
+    console.log("Waiting to give you time to log in, etc...");
+    delay();
     
     it("Account settings", function (done) {
         api
