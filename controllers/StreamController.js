@@ -22,10 +22,16 @@ var stream = {
         });
 
         this.socket.on('connect', this.onConnect);
+
+        this.socket.on('error', this.onError);
     },
 
     onConnect() {
         console.log("Connected to MQTT broker");
+    },
+
+    onError(err) {
+        console.log("MQTT error: ", err);
     },
     
     sendMessage: function (accountId, operation, content) {

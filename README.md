@@ -2,6 +2,10 @@
 
 This project provides a database and API backend for HeartSMS, a fork of PulseSMS. Written in NodeJS.
 
+**Heart** is a text messaging app for android that lets you text from your browser on any computer. Whenever you receive or send a text on your phone, it is encrypted (along with certain metadata) on the client, sent to the backend (this repo), and stored in a database. The web client can use this database via its associated API (plus MQTT messaging) to read and respond to SMS messages in real time from any modern browser. When you hit send in the browser, it sends a request to your android phone to actually send the message. This means that you keep your phone number.
+
+Your messages are yours. Heart does not collect any analytics data (or any data whatsoever), and the backend is meant to be self hosted.
+
 None of this would be possible without the work of Luke Klinker and TChilderhose.
 
 TChilderhose implemented *so* much of this backend (in C#) before giving me his code to use for reference. Thank you!

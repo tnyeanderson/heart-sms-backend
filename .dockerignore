@@ -1,0 +1,13 @@
+certs/
+docs/
+mqtt/
+node_modules/
+test/
+*.env*
+.dockerignore
+.gitignore
+Caddyfile
+docker-compose.yml
+Dockerfile
+README.md
+TODO.md
