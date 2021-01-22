@@ -1,8 +1,8 @@
-var express = require('express');
-var router = express.Router();
-var mysql = require('mysql');
-var db = require('../db/query');
-var errors = require('../utils/errors');
+const express = require('express');
+const router = express.Router();
+const mysql = require('mysql');
+const db = require('../db/query');
+const errors = require('../utils/errors');
 
 // Not implemented because we don't care about purchases. Everyone has a lifetime subscription.
 

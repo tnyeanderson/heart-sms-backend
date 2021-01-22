@@ -1,12 +1,12 @@
 // https://github.com/rabbitmq/rabbitmq-server/tree/master/deps/rabbitmq_auth_backend_http#what-must-my-web-server-do
 
-var express = require('express');
-var router = express.Router();
-var mysql = require('mysql');
-var db = require('../db/query');
-var errors = require('../utils/errors');
+const express = require('express');
+const router = express.Router();
+const mysql = require('mysql');
+const db = require('../db/query');
+const errors = require('../utils/errors');
 const crypto = require('crypto');
-var stream = require('./StreamController');
+const stream = require('./StreamController');
 
 function deny (res) {
     res.status(401).json({
@@ -32,7 +32,7 @@ router.route('/login').post(function (req, res) {
         return;
     }
 
-    var sql = "SELECT `account_id` FROM Accounts WHERE username = " + mysql.escape(req.body.username) + " LIMIT 1";
+    let sql = "SELECT `account_id` FROM Accounts WHERE username = " + mysql.escape(req.body.username) + " LIMIT 1";
     
     db.query(sql, res, function (result) {
         if (!result[0]) {
@@ -56,7 +56,7 @@ router.route('/acl').post(function (req, res) {
         return;
     }
 
-    var sql = "SELECT * FROM Accounts WHERE username = " + mysql.escape(req.body.username) + " LIMIT 1";
+    let sql = "SELECT * FROM Accounts WHERE username = " + mysql.escape(req.body.username) + " LIMIT 1";
 
     db.query(sql, res, function (result) {
         if (!result[0]) {

@@ -1,22 +1,22 @@
-var express = require('express');
-var router = express.Router();
-var mysql = require('mysql');
-var db = require('../db/query');
-var errors = require('../utils/errors');
-var stream = require('./StreamController');
-var util = require('../utils/util');
+const express = require('express');
+const router = express.Router();
+const mysql = require('mysql');
+const db = require('../db/query');
+const errors = require('../utils/errors');
+const stream = require('./StreamController');
+const util = require('../utils/util');
 
-var table = "Drafts"
+const table = "Drafts"
 
 router.route('/').get(function (req, res) {
-    var accountId = util.getAccountId(req);
+    let accountId = util.getAccountId(req);
     
     if (!accountId) {
         res.json(errors.invalidAccount);
         return;
     }
     
-    var sql = "SELECT * FROM " + table + " WHERE " + db.whereAccount(accountId);
+    let sql = "SELECT * FROM " + table + " WHERE " + db.whereAccount(accountId);
     
 
     db.query(sql, res, function (result) {
@@ -26,14 +26,14 @@ router.route('/').get(function (req, res) {
 
 
 router.route('/:deviceConversationId').get(function (req, res) {
-    var accountId = util.getAccountId(req);
+    let accountId = util.getAccountId(req);
     
     if (!accountId) {
         res.json(errors.invalidAccount);
         return;
     }
     
-    var sql = "SELECT * FROM " + table + " WHERE device_conversation_id = " + mysql.escape(Number(req.params.deviceConversationId)) + " AND " + db.whereAccount(accountId);
+    let sql = "SELECT * FROM " + table + " WHERE device_conversation_id = " + mysql.escape(Number(req.params.deviceConversationId)) + " AND " + db.whereAccount(accountId);
     
 
     db.query(sql, res, function (result) {
@@ -43,17 +43,17 @@ router.route('/:deviceConversationId').get(function (req, res) {
 
 
 router.route('/add').post(function (req, res) {
-    var accountId = util.getAccountId(req);
+    let accountId = util.getAccountId(req);
     
     if (!accountId) {
         res.json(errors.invalidAccount);
         return;
     }
     
-    var inserted = [];
+    let inserted = [];
     
     req.body.drafts.forEach(function (item) {
-        var toInsert = {
+        let toInsert = {
             account_id: accountId,
             device_id: item.device_id,
             device_conversation_id: item.device_conversation_id,
@@ -64,17 +64,17 @@ router.route('/add').post(function (req, res) {
         inserted.push(toInsert);
     });
 
-    var sql = "INSERT INTO " + table + db.insertStr(inserted);
+    let sql = "INSERT INTO " + table + db.insertStr(inserted);
         
     db.query(sql, res, function (result) {
         res.json({});
         
         // Send websocket message
         inserted.forEach(function (item) {
-            var origKeys = ['device_id', 'device_conversation_id'];
-            var newKeys = ['id', 'conversation_id'];
+            let origKeys = ['device_id', 'device_conversation_id'];
+            let newKeys = ['id', 'conversation_id'];
             
-            var msg = util.renameKeys(item, origKeys, newKeys);
+            let msg = util.renameKeys(item, origKeys, newKeys);
             
             delete msg.account_id;
             
@@ -85,20 +85,20 @@ router.route('/add').post(function (req, res) {
 
 
 router.route('/remove/:deviceConversationId').post(function (req, res) {
-    var accountId = util.getAccountId(req);
+    let accountId = util.getAccountId(req);
     
     if (!accountId) {
         res.json(errors.invalidAccount);
         return;
     }
     
-    var sql = "DELETE FROM " + table + " WHERE device_conversation_id = " + mysql.escape(Number(req.params.deviceConversationId)) + " AND " + db.whereAccount(accountId);
+    let sql = "DELETE FROM " + table + " WHERE device_conversation_id = " + mysql.escape(Number(req.params.deviceConversationId)) + " AND " + db.whereAccount(accountId);
 
     db.query(sql, res, function (result) {
         res.json({});
         
         // Send websocket message
-        var msg = {
+        let msg = {
             id: Number(req.params.deviceConversationId),
             android_device: req.query.android_device
         };
@@ -109,7 +109,7 @@ router.route('/remove/:deviceConversationId').post(function (req, res) {
 
 
 router.route('/update/:deviceId').post(function (req, res) {
-    var accountId = util.getAccountId(req);
+    let accountId = util.getAccountId(req);
     
     console.log("*************** /drafts/update called!!!!!! **********************");
     
@@ -118,19 +118,19 @@ router.route('/update/:deviceId').post(function (req, res) {
         return;
     }
     
-    var toUpdate = {
+    let toUpdate = {
         data: req.body.data,
         mime_type: req.body.mime_type
     };
     
-    var sql = "UPDATE " + table + " SET " + db.updateStr(toUpdate) + " WHERE device_id = " + mysql.escape(Number(req.params.deviceId)) + " AND " + db.whereAccount(accountId);
+    let sql = "UPDATE " + table + " SET " + db.updateStr(toUpdate) + " WHERE device_id = " + mysql.escape(Number(req.params.deviceId)) + " AND " + db.whereAccount(accountId);
 
     db.query(sql, res, function (result) {
         res.json({});
         
         // TODO: This is inefficient. but we need all the data
-        var fields = ["device_id AS id", "device_conversation_id AS conversation_id", "data", "mime_type"];
-        var sql = "SELECT " + db.selectFields(fields) + " FROM " + table + " WHERE device_id = " + mysql.escape(Number(req.params.deviceId)) + " AND " + db.whereAccount(accountId) + " LIMIT 1";
+        let fields = ["device_id AS id", "device_conversation_id AS conversation_id", "data", "mime_type"];
+        let sql = "SELECT " + db.selectFields(fields) + " FROM " + table + " WHERE device_id = " + mysql.escape(Number(req.params.deviceId)) + " AND " + db.whereAccount(accountId) + " LIMIT 1";
         db.query(sql, res, function (result) {
             stream.sendMessage(accountId, 'replaced_drafts', result[0]);
         });
@@ -139,17 +139,17 @@ router.route('/update/:deviceId').post(function (req, res) {
 
 
 router.route('/replace/:deviceConversationId').post(function (req, res) {
-    var accountId = util.getAccountId(req);
+    let accountId = util.getAccountId(req);
     
     if (!accountId) {
         res.json(errors.invalidAccount);
         return;
     }
     
-    var sqls = [];
+    let sqls = [];
     
     req.body.drafts.forEach(item => {
-        var toUpdate = {
+        let toUpdate = {
             device_id: item.device_id,
             device_conversation_id: item.device_conversation_id,
             mime_type: item.mime_type,
@@ -164,11 +164,11 @@ router.route('/replace/:deviceConversationId').post(function (req, res) {
         
         // Send websocket message
         req.body.drafts.forEach(function (item) {
-            var origKeys = ['device_id', 'device_conversation_id'];
+            let origKeys = ['device_id', 'device_conversation_id'];
             
-            var newKeys = ['id', 'conversation_id'];
+            let newKeys = ['id', 'conversation_id'];
             
-            var msg = util.renameKeys(item, origKeys, newKeys);
+            let msg = util.renameKeys(item, origKeys, newKeys);
             
             stream.sendMessage(accountId, 'replaced_drafts', msg);
         });

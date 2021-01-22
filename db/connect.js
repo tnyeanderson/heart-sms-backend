@@ -1,9 +1,11 @@
-var mysql = require('mysql');
+const mysql = require('mysql');
+const util = require('../utils/util');
 
-var mysql_host = process.env.DB_HOST || 'localhost';
-var mysql_port = process.env.MYSQL_PORT || 3306;
-var mysql_user = process.env.MYSQL_USER || 'heart';
-var mysql_pass = process.env.MYSQL_PASSWORD || 'TESTPASSWORD2';
+const mysql_host = (util.devOrTesting()) ? 'localhost' : (process.env.DB_HOST || 'localhost');
+const mysql_db   = (util.devOrTesting()) ? 'heartsms' : (process.env.MYSQL_DATABASE || 'heartsms');
+const mysql_port = process.env.MYSQL_PORT || 3306;
+const mysql_user = process.env.MYSQL_USER || 'heart';
+const mysql_pass = process.env.MYSQL_PASSWORD || 'TESTPASSWORD2';
 
 // If we are in production, refuse to use the default password
 if (process.env.NODE_ENV === 'production' && mysql_pass === 'TESTPASSWORD2') {
@@ -11,16 +13,9 @@ if (process.env.NODE_ENV === 'production' && mysql_pass === 'TESTPASSWORD2') {
     return;
 }
 
-// Set db name and host based on environmnet
-var mysql_db = process.env.MYSQL_DATABASE || 'heartsms'; // default
-if (process.env.NODE_ENV === 'dev' || process.env.NODE_ENV === 'test') {
-    mysql_db = 'heartsms-dev';
-    mysql_host = 'localhost';
-}
-
 console.log("Using database: ", mysql_db);
 
-var base_settings = {
+const base_settings = {
     host: mysql_host,
     port: mysql_port,
     user: mysql_user,
@@ -36,8 +31,8 @@ var base_settings = {
     }
 }
 
-var config = function (extraSettings) {
-    var out = base_settings;
+const config = function (extraSettings) {
+    let out = base_settings;
     
     if (extraSettings) {
         Object.keys(extraSettings).forEach(key => {

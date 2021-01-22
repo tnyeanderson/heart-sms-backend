@@ -1,10 +1,10 @@
-var express = require('express');
-var router = express.Router();
-var mysql = require('mysql');
-var db = require('../db/query');
-var errors = require('../utils/errors');
-var stream = require('./StreamController');
-var util = require('../utils/util');
+const express = require('express');
+const router = express.Router();
+const mysql = require('mysql');
+const db = require('../db/query');
+const errors = require('../utils/errors');
+const stream = require('./StreamController');
+const util = require('../utils/util');
 
 
 function addMedia (res, account_id, message_id, data) {
@@ -13,7 +13,7 @@ function addMedia (res, account_id, message_id, data) {
 
 
 router.route('/add').post(function (req, res) {
-    var accountId = util.getAccountId(req);
+    let accountId = util.getAccountId(req);
     
     if (!accountId) {
         res.json(errors.invalidAccount);
@@ -25,13 +25,13 @@ router.route('/add').post(function (req, res) {
         return
     }
     
-    var toInsert = {
+    let toInsert = {
         account_id: accountId,
         message_id: Number(req.body.message_id),
         data: req.body.data
     }
     
-    var sql = "INSERT INTO Media " + db.insertStr([toInsert]);
+    let sql = "INSERT INTO Media " + db.insertStr([toInsert]);
     
 
     db.query(sql, res, function (result) {
@@ -40,14 +40,14 @@ router.route('/add').post(function (req, res) {
 });
 
 router.route('/:messageId').get(function (req, res) {
-    var accountId = util.getAccountId(req);
+    let accountId = util.getAccountId(req);
     
     if (!accountId) {
         res.json(errors.invalidAccount);
         return;
     }
     
-    var sql = "SELECT * FROM Media WHERE message_id = " + mysql.escape(Number(req.params.messageId)) + " AND " + db.whereAccount(accountId) + " LIMIT 1";
+    let sql = "SELECT * FROM Media WHERE message_id = " + mysql.escape(Number(req.params.messageId)) + " AND " + db.whereAccount(accountId) + " LIMIT 1";
     
 
     db.query(sql, res, function (result) {

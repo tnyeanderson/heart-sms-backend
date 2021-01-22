@@ -1,7 +1,7 @@
-var express = require('express');
-var app = express();
-var router = express.Router();
-var cors = require('cors');
+const express = require('express');
+const app = express();
+const router = express.Router();
+const cors = require('cors');
 
 
 function getUrl (path) {
@@ -10,7 +10,7 @@ function getUrl (path) {
 
 
 // Import Controllers
-var controllers = require('require-all')(__dirname + '/controllers');
+const controllers = require('require-all')(__dirname + '/controllers');
 
 // Allow cross-site requests
 app.use(cors());

@@ -1,4 +1,4 @@
-var errors = {
+ const errors = {
     
     invalidAccount: {
         "error": "account id invalid"

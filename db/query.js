@@ -1,10 +1,10 @@
-var mysql = require('mysql');
-var poolConf = require('../db/connect');
+const mysql = require('mysql');
+const poolConf = require('../db/connect');
 
-var pool  = mysql.createPool(poolConf());
-var multiquerypool  = mysql.createPool(poolConf({multipleStatements: true}));
+let pool  = mysql.createPool(poolConf());
+let multiquerypool  = mysql.createPool(poolConf({multipleStatements: true}));
 
-var out = {
+let out = {
     
     whereAccount: function (accountId) {
         return "account_id = " + mysql.escape(accountId);
@@ -35,7 +35,7 @@ var out = {
     },
     
     queries: function (sqls, res, callback) {
-        var sql = sqls.join('; ');
+        let sql = sqls.join('; ');
         if (process.env.NODE_ENV == 'dev') {
             console.log(sql, ';', '\n');
         }
@@ -56,11 +56,11 @@ var out = {
     },
     
     selectFields: function (fields) {
-        var out = [];
+        let out = [];
         
         fields.forEach(field => {
-            var parts = field.split(" AS ");
-            var fieldstr = mysql.escapeId(parts[0]);
+            let parts = field.split(" AS ");
+            let fieldstr = mysql.escapeId(parts[0]);
             
             if (parts.length === 2) {
                 fieldstr += " AS " + mysql.escapeId(parts[1]);
@@ -96,7 +96,7 @@ var out = {
 
         out += " (" + cols.join(", ") + ") VALUES ";
 
-        var valStr = [];
+        let valStr = [];
         vals.forEach(val => {
             valStr.push(" (" + val.join(", ") + ") ");
         });
@@ -107,7 +107,7 @@ var out = {
     },
     
     updateStr: function (toUpdate) {
-        var out = [];
+        let out = [];
         
         Object.keys(toUpdate).forEach(key => {
             if (toUpdate[key] != undefined) {

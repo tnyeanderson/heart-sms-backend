@@ -1,16 +1,16 @@
-var supertest = require("supertest");
-var should = require("should");
+const supertest = require("supertest");
+const should = require("should");
 
 // This starts the server and gets the urls object
 const { urls, server } = require("../server");
 
 // This agent refers to PORT where program is runninng.
-var api = supertest.agent(urls.api + "/api/v1");
+const api = supertest.agent(urls.api + "/api/v1");
 
 // UNIT test begin
 
-var accountId = '';
-var contactsToRemove = [];
+let accountId = '';
+let contactsToRemove = [];
 
 
 function delay(interval = 3000) {

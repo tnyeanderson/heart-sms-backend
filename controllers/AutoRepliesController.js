@@ -1,22 +1,22 @@
-var express = require('express');
-var router = express.Router();
-var mysql = require('mysql');
-var db = require('../db/query');
-var errors = require('../utils/errors');
-var stream = require('./StreamController');
-var util = require('../utils/util');
+const express = require('express');
+const router = express.Router();
+const mysql = require('mysql');
+const db = require('../db/query');
+const errors = require('../utils/errors');
+const stream = require('./StreamController');
+const util = require('../utils/util');
 
-var table = "AutoReplies"
+const table = "AutoReplies"
 
 router.route('/').get(function (req, res) {
-    var accountId = util.getAccountId(req);
+    let accountId = util.getAccountId(req);
     
     if (!accountId) {
         res.json(errors.invalidAccount);
         return;
     }
     
-    var sql = "SELECT * FROM " + table + " WHERE " + db.whereAccount(accountId);
+    let sql = "SELECT * FROM " + table + " WHERE " + db.whereAccount(accountId);
     
 
     db.query(sql, res, function (result) {
@@ -26,17 +26,17 @@ router.route('/').get(function (req, res) {
 
 
 router.route('/add').post(function (req, res) {
-    var accountId = util.getAccountId(req);
+    let accountId = util.getAccountId(req);
     
     if (!accountId) {
         res.json(errors.invalidAccount);
         return;
     }
 
-    var inserted = [];
+    let inserted = [];
     
     req.body.auto_replies.forEach(function (item) {
-        var toInsert = {
+        let toInsert = {
             account_id: accountId,
             device_id: item.device_id,
             reply_type: item.reply_type,
@@ -47,16 +47,16 @@ router.route('/add').post(function (req, res) {
         inserted.push(toInsert);
     });
 
-    var sql = "INSERT INTO " + table + db.insertStr(inserted);
+    let sql = "INSERT INTO " + table + db.insertStr(inserted);
         
     db.query(sql, res, function (result) {
         res.json({});
         
         // Send websocket message
         inserted.forEach(function (item) {
-            var toKeep = ['device_id', 'reply_type', 'pattern', 'response'];
+            let toKeep = ['device_id', 'reply_type', 'pattern', 'response'];
             
-            var msg = util.keepOnlyKeys(item, toKeep);
+            let msg = util.keepOnlyKeys(item, toKeep);
             
             msg = util.renameKeys(msg, ['reply_type'], ['type']);
             
@@ -67,21 +67,21 @@ router.route('/add').post(function (req, res) {
 
 
 router.route('/remove/:deviceId').post(function (req, res) {
-    var accountId = util.getAccountId(req);
+    let accountId = util.getAccountId(req);
     
     if (!accountId) {
         res.json(errors.invalidAccount);
         return;
     }
     
-    var sql = "DELETE FROM " + table + " WHERE device_id = " + mysql.escape(Number(req.params.deviceId)) + " AND " + db.whereAccount(accountId);
+    let sql = "DELETE FROM " + table + " WHERE device_id = " + mysql.escape(Number(req.params.deviceId)) + " AND " + db.whereAccount(accountId);
     
 
     db.query(sql, res, function (result) {
         res.json({});
         
         // Send websocket message
-        var msg = {
+        let msg = {
             id: Number(req.params.deviceId)
         };
         
@@ -91,29 +91,29 @@ router.route('/remove/:deviceId').post(function (req, res) {
 
 
 router.route('/update/:deviceId').post(function (req, res) {
-    var accountId = util.getAccountId(req);
+    let accountId = util.getAccountId(req);
     
     if (!accountId) {
         res.json(errors.invalidAccount);
         return;
     }
     
-    var toUpdate = {
+    let toUpdate = {
         reply_type: req.body.type,
         pattern: req.body.pattern,
         response: req.body.response
     };
     
-    var sql = "UPDATE " + table + " SET " + db.updateStr(toUpdate) + " WHERE device_id = " + mysql.escape(Number(req.params.deviceId)) + " AND " + db.whereAccount(accountId);
+    let sql = "UPDATE " + table + " SET " + db.updateStr(toUpdate) + " WHERE device_id = " + mysql.escape(Number(req.params.deviceId)) + " AND " + db.whereAccount(accountId);
     
 
     db.query(sql, res, function (result) {
         res.json({});
         
         // Send websocket message
-        var toKeep = ['type', 'pattern', 'response'];
+        let toKeep = ['type', 'pattern', 'response'];
             
-        var msg = util.keepOnlyKeys(req.body, toKeep);
+        let msg = util.keepOnlyKeys(req.body, toKeep);
         
         msg.device_id = req.params.deviceId;
             

@@ -1,9 +1,9 @@
-var mqtt = require('mqtt');
-var url = require('url');
-var db = require('../db/query');
+const mqtt = require('mqtt');
+const url = require('url');
+const db = require('../db/query');
 const crypto = require('crypto');
 
-var stream = {
+const stream = {
     socket: null,
     topicPrefix: 'heartsms/',
     backendPassword: null,
@@ -35,7 +35,7 @@ var stream = {
     },
     
     sendMessage: function (accountId, operation, content) {
-        var message = {
+        let message = {
             operation: operation,
             content: content
         };

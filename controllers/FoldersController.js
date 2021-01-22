@@ -1,22 +1,22 @@
-var express = require('express');
-var router = express.Router();
-var mysql = require('mysql');
-var db = require('../db/query');
-var errors = require('../utils/errors');
-var stream = require('./StreamController');
-var util = require('../utils/util');
+const express = require('express');
+const router = express.Router();
+const mysql = require('mysql');
+const db = require('../db/query');
+const errors = require('../utils/errors');
+const stream = require('./StreamController');
+const util = require('../utils/util');
 
-var table = "Folders"
+const table = "Folders"
 
 router.route('/').get(function (req, res) {
-    var accountId = util.getAccountId(req);
+    let accountId = util.getAccountId(req);
     
     if (!accountId) {
         res.json(errors.invalidAccount);
         return;
     }
     
-    var sql = "SELECT * FROM " + table + " WHERE " + db.whereAccount(accountId);
+    let sql = "SELECT * FROM " + table + " WHERE " + db.whereAccount(accountId);
     
 
     db.query(sql, res, function (result) {
@@ -26,17 +26,17 @@ router.route('/').get(function (req, res) {
 
 
 router.route('/add').post(function (req, res) {
-    var accountId = util.getAccountId(req);
+    let accountId = util.getAccountId(req);
     
     if (!accountId) {
         res.json(errors.invalidAccount);
         return;
     }
     
-    var inserted = [];
+    let inserted = [];
     
     req.body.folders.forEach(function (item) {
-        var toInsert = {
+        let toInsert = {
             account_id: accountId,
             device_id: item.device_id,
             name: item.name,
@@ -49,7 +49,7 @@ router.route('/add').post(function (req, res) {
         inserted.push(toInsert);
     });
 
-    var sql = "INSERT INTO " + table + db.insertStr(inserted);
+    let sql = "INSERT INTO " + table + db.insertStr(inserted);
         
     db.query(sql, res, function (result) {
         res.json({});
@@ -65,7 +65,7 @@ router.route('/add').post(function (req, res) {
 
 
 router.route('/remove/:deviceId').post(function (req, res) {
-    var accountId = util.getAccountId(req);
+    let accountId = util.getAccountId(req);
     
     if (!accountId) {
         res.json(errors.invalidAccount);
@@ -88,14 +88,14 @@ router.route('/remove/:deviceId').post(function (req, res) {
 
 
 router.route('/update/:deviceId').post(function (req, res) {
-    var accountId = util.getAccountId(req);
+    let accountId = util.getAccountId(req);
     
     if (!accountId) {
         res.json(errors.invalidAccount);
         return;
     }
     
-    var toUpdate = {
+    let toUpdate = {
         name: req.body.name,
         color: req.body.color,
         color_dark: req.body.color_dark,
@@ -103,15 +103,15 @@ router.route('/update/:deviceId').post(function (req, res) {
         color_accent: req.body.color_accent
     };
     
-    var sql = "UPDATE " + table + " SET " + db.updateStr(toUpdate) + " WHERE device_id = " + mysql.escape(Number(req.params.deviceId)) + " AND " + db.whereAccount(accountId);
+    let sql = "UPDATE " + table + " SET " + db.updateStr(toUpdate) + " WHERE device_id = " + mysql.escape(Number(req.params.deviceId)) + " AND " + db.whereAccount(accountId);
 
     db.query(sql, res, function (result) {
         res.json({});
         
         // Send websocket message
-        var toKeep = ['name', 'color', 'color_dark', 'color_light', 'color_accent'];
+        let toKeep = ['name', 'color', 'color_dark', 'color_light', 'color_accent'];
             
-        var msg = util.keepOnlyKeys(req.body, toKeep);
+        let msg = util.keepOnlyKeys(req.body, toKeep);
         
         msg.device_id = Number(req.params.deviceId);
             

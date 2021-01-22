@@ -1,7 +1,7 @@
-var express = require('express');
-var router = express.Router();
-var errors = require('../utils/errors');
-var Mercury = require('@postlight/mercury-parser');
+const express = require('express');
+const router = express.Router();
+const errors = require('../utils/errors');
+const Mercury = require('@postlight/mercury-parser');
 
 router.route('/').get(function (req, res) {
     if (!req.body.url) {
@@ -10,7 +10,7 @@ router.route('/').get(function (req, res) {
     }
     
     Mercury.parse(req.body.url).then(result => {
-        var out = {
+        let out = {
             title: result.title,
             description: result.excerpt,
             image_url: result.lead_image_url,

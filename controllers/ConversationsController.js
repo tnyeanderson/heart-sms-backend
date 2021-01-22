@@ -1,24 +1,24 @@
-var express = require('express');
-var router = express.Router();
-var mysql = require('mysql');
-var db = require('../db/query');
-var errors = require('../utils/errors');
-var stream = require('./StreamController');
-var util = require('../utils/util');
+const express = require('express');
+const router = express.Router();
+const mysql = require('mysql');
+const db = require('../db/query');
+const errors = require('../utils/errors');
+const stream = require('./StreamController');
+const util = require('../utils/util');
 
-var table = 'Conversations'
+const table = 'Conversations'
 
-var notInFolder = " (folder_id IS NULL OR folder_id < 0) ";
+const notInFolder = " (folder_id IS NULL OR folder_id < 0) ";
 
 router.route('/').get(function (req, res) {
-    var accountId = util.getAccountId(req);
+    let accountId = util.getAccountId(req);
     
     if (!accountId) {
         res.json(errors.invalidAccount);
         return;
     }
     
-    var limitStr = '';
+    let limitStr = '';
     
     if (req.query.limit) {
         limitStr += ' LIMIT ' + mysql.escape(Number(req.query.limit));
@@ -27,7 +27,7 @@ router.route('/').get(function (req, res) {
         }
     }
     
-    var sql = "SELECT * FROM " + table + " WHERE " + db.whereAccount(accountId) + " ORDER BY timestamp DESC " + limitStr;
+    let sql = "SELECT * FROM " + table + " WHERE " + db.whereAccount(accountId) + " ORDER BY timestamp DESC " + limitStr;
 
     db.query(sql, res, function (result) {
         res.json(result);
@@ -36,14 +36,14 @@ router.route('/').get(function (req, res) {
 
 
 router.route('/index_archived').get(function (req, res) {
-    var accountId = util.getAccountId(req);
+    let accountId = util.getAccountId(req);
     
     if (!accountId) {
         res.json(errors.invalidAccount);
         return;
     }
     
-    var sql = "SELECT * FROM " + table + " WHERE archive = true AND " + notInFolder + " AND " + db.whereAccount(accountId) + " ORDER BY timestamp DESC ";
+    let sql = "SELECT * FROM " + table + " WHERE archive = true AND " + notInFolder + " AND " + db.whereAccount(accountId) + " ORDER BY timestamp DESC ";
 
     db.query(sql, res, function (result) {
         res.json(result);
@@ -52,14 +52,14 @@ router.route('/index_archived').get(function (req, res) {
 
 
 router.route('/index_private').get(function (req, res) {
-    var accountId = util.getAccountId(req);
+    let accountId = util.getAccountId(req);
     
     if (!accountId) {
         res.json(errors.invalidAccount);
         return;
     }
     
-    var sql = "SELECT * FROM " + table + " WHERE private_notifications = true AND " + notInFolder + " AND " + db.whereAccount(accountId) + " ORDER BY timestamp DESC ";
+    let sql = "SELECT * FROM " + table + " WHERE private_notifications = true AND " + notInFolder + " AND " + db.whereAccount(accountId) + " ORDER BY timestamp DESC ";
 
     db.query(sql, res, function (result) {
         res.json(result);
@@ -68,14 +68,14 @@ router.route('/index_private').get(function (req, res) {
 
 
 router.route('/index_public_unarchived').get(function (req, res) {
-    var accountId = util.getAccountId(req);
+    let accountId = util.getAccountId(req);
     
     if (!accountId) {
         res.json(errors.invalidAccount);
         return;
     }
     
-    var limitStr = '';
+    let limitStr = '';
     
     if (req.query.limit) {
         limitStr += ' LIMIT ' + mysql.escape(Number(req.query.limit));
@@ -84,7 +84,7 @@ router.route('/index_public_unarchived').get(function (req, res) {
         }
     }
     
-    var sql = "SELECT * FROM " + table + " WHERE archive = false AND private_notifications = false AND " + db.whereAccount(accountId) + " ORDER BY timestamp DESC " + limitStr;
+    let sql = "SELECT * FROM " + table + " WHERE archive = false AND private_notifications = false AND " + db.whereAccount(accountId) + " ORDER BY timestamp DESC " + limitStr;
 
     db.query(sql, res, function (result) {
         res.json(result);
@@ -93,14 +93,14 @@ router.route('/index_public_unarchived').get(function (req, res) {
 
 
 router.route('/index_public_unread').get(function (req, res) {
-    var accountId = util.getAccountId(req);
+    let accountId = util.getAccountId(req);
     
     if (!accountId) {
         res.json(errors.invalidAccount);
         return;
     }
     
-    var limitStr = '';
+    let limitStr = '';
     
     if (req.query.limit) {
         limitStr += ' LIMIT ' + mysql.escape(Number(req.query.limit));
@@ -109,7 +109,7 @@ router.route('/index_public_unread').get(function (req, res) {
         }
     }
     
-    var sql = "SELECT * FROM " + table + " WHERE `read` = false AND private_notifications = false AND " + db.whereAccount(accountId) + " ORDER BY timestamp DESC " + limitStr;
+    let sql = "SELECT * FROM " + table + " WHERE `read` = false AND private_notifications = false AND " + db.whereAccount(accountId) + " ORDER BY timestamp DESC " + limitStr;
 
     db.query(sql, res, function (result) {
         res.json(result);
@@ -118,14 +118,14 @@ router.route('/index_public_unread').get(function (req, res) {
 
 
 router.route('/:deviceId').get(function (req, res) {
-    var accountId = util.getAccountId(req);
+    let accountId = util.getAccountId(req);
     
     if (!accountId) {
         res.json(errors.invalidAccount);
         return;
     }
     
-    var sql = "SELECT * FROM " + table + " WHERE device_id = " + mysql.escape(Number(req.params.deviceId)) + " AND " + db.whereAccount(accountId) + " LIMIT 1";
+    let sql = "SELECT * FROM " + table + " WHERE device_id = " + mysql.escape(Number(req.params.deviceId)) + " AND " + db.whereAccount(accountId) + " LIMIT 1";
 
     db.query(sql, res, function (result) {
         res.json(result[0] || null);
@@ -134,14 +134,14 @@ router.route('/:deviceId').get(function (req, res) {
 
 
 router.route('/folder/:folderId').get(function (req, res) {
-    var accountId = util.getAccountId(req);
+    let accountId = util.getAccountId(req);
     
     if (!accountId) {
         res.json(errors.invalidAccount);
         return;
     }
     
-    var sql = "SELECT * FROM " + table + " WHERE folder_id = " + mysql.escape(Number(req.params.folderId)) + " AND " + db.whereAccount(accountId);
+    let sql = "SELECT * FROM " + table + " WHERE folder_id = " + mysql.escape(Number(req.params.folderId)) + " AND " + db.whereAccount(accountId);
 
     db.query(sql, res, function (result) {
         res.json(result);
@@ -150,17 +150,17 @@ router.route('/folder/:folderId').get(function (req, res) {
 
 
 router.route('/add').post(function (req, res) {
-    var accountId = util.getAccountId(req);
+    let accountId = util.getAccountId(req);
     
     if (!accountId) {
         res.json(errors.invalidAccount);
         return;
     }
     
-    var inserted = [];
+    let inserted = [];
     
     req.body.conversations.forEach(function (item) {
-        var toInsert = {
+        let toInsert = {
             account_id: accountId,
             device_id: item.device_id,
             folder_id: item.folder_id,
@@ -186,7 +186,7 @@ router.route('/add').post(function (req, res) {
         inserted.push(toInsert);
     });
 
-    var sql = "INSERT INTO " + table + db.insertStr(inserted);
+    let sql = "INSERT INTO " + table + db.insertStr(inserted);
         
     db.query(sql, res, function (result) {
         res.json({});
@@ -203,14 +203,14 @@ router.route('/add').post(function (req, res) {
 
 
 router.route('/update/:deviceId').post(function (req, res) {
-    var accountId = util.getAccountId(req);
+    let accountId = util.getAccountId(req);
     
     if (!accountId) {
         res.json(errors.invalidAccount);
         return;
     }
     
-    var toUpdate = {
+    let toUpdate = {
         color: req.body.color,
         color_dark: req.body.color_dark,
         color_light: req.body.color_light,
@@ -227,15 +227,15 @@ router.route('/update/:deviceId').post(function (req, res) {
         private_notifications: req.body.private_notifications
     };
     
-    var sql = "UPDATE " + table + " SET " + db.updateStr(toUpdate) + " WHERE device_id = " + mysql.escape(Number(req.params.deviceId)) + " AND " + db.whereAccount(accountId);
+    let sql = "UPDATE " + table + " SET " + db.updateStr(toUpdate) + " WHERE device_id = " + mysql.escape(Number(req.params.deviceId)) + " AND " + db.whereAccount(accountId);
 
     db.query(sql, res, function (result) {
         res.json({});
         
         // TODO: This is inefficient but we have to have all the data :(
-        var fields = ["device_id AS id", "color", "color_dark", "color_light", "color_accent", "led_color", "pinned", "read", "title", "snippet", "ringtone", "mute", "archive", "private_notifications"];
+        let fields = ["device_id AS id", "color", "color_dark", "color_light", "color_accent", "led_color", "pinned", "read", "title", "snippet", "ringtone", "mute", "archive", "private_notifications"];
         
-        var sql = "SELECT " + db.selectFields(fields) + " FROM " + table + " WHERE device_id = " + mysql.escape(Number(req.params.deviceId)) + " AND " + db.whereAccount(accountId) + " LIMIT 1";
+        let sql = "SELECT " + db.selectFields(fields) + " FROM " + table + " WHERE device_id = " + mysql.escape(Number(req.params.deviceId)) + " AND " + db.whereAccount(accountId) + " LIMIT 1";
         
         db.query(sql, res, function (result) {
             stream.sendMessage(accountId, 'updated_conversation', result[0]);
@@ -245,27 +245,27 @@ router.route('/update/:deviceId').post(function (req, res) {
 
 
 router.route('/update_snippet/:deviceId').post(function (req, res) {
-    var accountId = util.getAccountId(req);
+    let accountId = util.getAccountId(req);
     
     if (!accountId) {
         res.json(errors.invalidAccount);
         return;
     }
     
-    var toUpdate = {
+    let toUpdate = {
         read: req.body.read,
         timestamp: req.body.timestamp,
         snippet: req.body.snippet,
         archive: req.body.archive
     };
     
-    var sql = "UPDATE " + table + " SET " + db.updateStr(toUpdate) + " WHERE device_id = " + mysql.escape(Number(req.params.deviceId)) + " AND " + db.whereAccount(accountId);
+    let sql = "UPDATE " + table + " SET " + db.updateStr(toUpdate) + " WHERE device_id = " + mysql.escape(Number(req.params.deviceId)) + " AND " + db.whereAccount(accountId);
 
     db.query(sql, res, function (result) {
         res.json({});
         
         // Send websocket message
-        var msg = {
+        let msg = {
             id: Number(req.params.deviceId),
             read: req.body.read,
             timestamp: req.body.timestamp,
@@ -279,7 +279,7 @@ router.route('/update_snippet/:deviceId').post(function (req, res) {
 
 
 router.route('/update_title/:deviceId').post(function (req, res) {
-    var accountId = util.getAccountId(req);
+    let accountId = util.getAccountId(req);
     
     if (!accountId) {
         res.json(errors.invalidAccount);
@@ -291,17 +291,17 @@ router.route('/update_title/:deviceId').post(function (req, res) {
         return;
     }
     
-    var toUpdate = {
+    let toUpdate = {
         title: req.query.title
     };
     
-    var sql = "UPDATE " + table + " SET " + db.updateStr(toUpdate) + " WHERE device_id = " + mysql.escape(Number(req.params.deviceId)) + " AND " + db.whereAccount(accountId);
+    let sql = "UPDATE " + table + " SET " + db.updateStr(toUpdate) + " WHERE device_id = " + mysql.escape(Number(req.params.deviceId)) + " AND " + db.whereAccount(accountId);
 
     db.query(sql, res, function (result) {
         res.json({});
         
         // Send websocket message
-        var msg = {
+        let msg = {
             id: Number(req.params.deviceId),
             title: req.query.title
         };
@@ -312,20 +312,20 @@ router.route('/update_title/:deviceId').post(function (req, res) {
 
 
 router.route('/remove/:deviceId').post(function (req, res) {
-    var accountId = util.getAccountId(req);
+    let accountId = util.getAccountId(req);
     
     if (!accountId) {
         res.json(errors.invalidAccount);
         return;
     }
     
-    var sql = "DELETE FROM " + table + " WHERE device_id = " + mysql.escape(Number(req.params.deviceId)) + " AND " + db.whereAccount(accountId);
+    let sql = "DELETE FROM " + table + " WHERE device_id = " + mysql.escape(Number(req.params.deviceId)) + " AND " + db.whereAccount(accountId);
 
     db.query(sql, res, function (result) {
         res.json({});
         
         // Send websocket message
-        var msg = {
+        let msg = {
             id: Number(req.params.deviceId)
         };
         
@@ -335,20 +335,20 @@ router.route('/remove/:deviceId').post(function (req, res) {
 
 
 router.route('/read/:deviceId').post(function (req, res) {
-    var accountId = util.getAccountId(req);
+    let accountId = util.getAccountId(req);
     
     if (!accountId) {
         res.json(errors.invalidAccount);
         return;
     }
     
-    var sql = "UPDATE " + table + " SET `read` = true WHERE device_id = " + mysql.escape(Number(req.params.deviceId)) + " AND " + db.whereAccount(accountId);
+    let sql = "UPDATE " + table + " SET `read` = true WHERE device_id = " + mysql.escape(Number(req.params.deviceId)) + " AND " + db.whereAccount(accountId);
 
     db.query(sql, res, function (result) {
         res.json({});
         
         // Send websocket message
-        var msg = {
+        let msg = {
             id: Number(req.params.deviceId),
             android_device: req.query.android_device
         };
@@ -359,20 +359,20 @@ router.route('/read/:deviceId').post(function (req, res) {
 
 
 router.route('/seen/:deviceConversationId').post(function (req, res) {
-    var accountId = util.getAccountId(req);
+    let accountId = util.getAccountId(req);
     
     if (!accountId) {
         res.json(errors.invalidAccount);
         return;
     }
     
-    var sql = "UPDATE Messages SET seen = true WHERE device_conversation_id = " + mysql.escape(Number(req.params.deviceConversationId)) + " AND " + db.whereAccount(accountId);
+    let sql = "UPDATE Messages SET seen = true WHERE device_conversation_id = " + mysql.escape(Number(req.params.deviceConversationId)) + " AND " + db.whereAccount(accountId);
 
     db.query(sql, res, function (result) {
         res.json({});
         
         // Send websocket message
-        var msg = {
+        let msg = {
             id: Number(req.params.deviceConversationId)
         };
         
@@ -382,14 +382,14 @@ router.route('/seen/:deviceConversationId').post(function (req, res) {
 
 
 router.route('/seen').post(function (req, res) {
-    var accountId = util.getAccountId(req);
+    let accountId = util.getAccountId(req);
     
     if (!accountId) {
         res.json(errors.invalidAccount);
         return;
     }
     
-    var sql = "UPDATE Messages SET seen = true WHERE " + db.whereAccount(accountId);
+    let sql = "UPDATE Messages SET seen = true WHERE " + db.whereAccount(accountId);
 
     db.query(sql, res, function (result) {
         res.json({});
@@ -401,20 +401,20 @@ router.route('/seen').post(function (req, res) {
 
 
 router.route('/archive/:deviceId').post(function (req, res) {
-    var accountId = util.getAccountId(req);
+    let accountId = util.getAccountId(req);
     
     if (!accountId) {
         res.json(errors.invalidAccount);
         return;
     }
     
-    var sql = "UPDATE " + table + " SET archive = true, folder_id = -1 WHERE device_id = " + mysql.escape(Number(req.params.deviceId)) + " AND " + db.whereAccount(accountId);
+    let sql = "UPDATE " + table + " SET archive = true, folder_id = -1 WHERE device_id = " + mysql.escape(Number(req.params.deviceId)) + " AND " + db.whereAccount(accountId);
 
     db.query(sql, res, function (result) {
         res.json({});
         
         // Send websocket message
-        var msg = {
+        let msg = {
             id: Number(req.params.deviceId),
             archive: true
         };
@@ -425,20 +425,20 @@ router.route('/archive/:deviceId').post(function (req, res) {
 
 
 router.route('/unarchive/:deviceId').post(function (req, res) {
-    var accountId = util.getAccountId(req);
+    let accountId = util.getAccountId(req);
     
     if (!accountId) {
         res.json(errors.invalidAccount);
         return;
     }
     
-    var sql = "UPDATE " + table + " SET archive = false, folder_id = -1 WHERE device_id = " + mysql.escape(Number(req.params.deviceId)) + " AND " + db.whereAccount(accountId);
+    let sql = "UPDATE " + table + " SET archive = false, folder_id = -1 WHERE device_id = " + mysql.escape(Number(req.params.deviceId)) + " AND " + db.whereAccount(accountId);
 
     db.query(sql, res, function (result) {
         res.json({});
         
         // Send websocket message
-        var msg = {
+        let msg = {
             id: Number(req.params.deviceId),
             archive: false
         };
@@ -449,7 +449,7 @@ router.route('/unarchive/:deviceId').post(function (req, res) {
 
 
 router.route('/add_to_folder/:deviceId').post(function (req, res) {
-    var accountId = util.getAccountId(req);
+    let accountId = util.getAccountId(req);
     
     if (!accountId) {
         res.json(errors.invalidAccount);
@@ -461,13 +461,13 @@ router.route('/add_to_folder/:deviceId').post(function (req, res) {
         return;
     }
     
-    var sql = "UPDATE " + table + " SET folder_id = " + mysql.escape(Number(req.query.folder_id)) + " WHERE device_id = " + mysql.escape(Number(req.params.deviceId)) + " AND " + db.whereAccount(accountId);
+    let sql = "UPDATE " + table + " SET folder_id = " + mysql.escape(Number(req.query.folder_id)) + " WHERE device_id = " + mysql.escape(Number(req.params.deviceId)) + " AND " + db.whereAccount(accountId);
 
     db.query(sql, res, function (result) {
         res.json({});
         
         // Send websocket message
-        var msg = {
+        let msg = {
             id: Number(req.params.deviceId),
             folder_id: Number(req.query.folder_id)
         };
@@ -478,20 +478,20 @@ router.route('/add_to_folder/:deviceId').post(function (req, res) {
 
 
 router.route('/remove_from_folder/:deviceId').post(function (req, res) {
-    var accountId = util.getAccountId(req);
+    let accountId = util.getAccountId(req);
     
     if (!accountId) {
         res.json(errors.invalidAccount);
         return;
     }
     
-    var sql = "UPDATE " + table + " SET folder_id = -1 WHERE device_id = " + mysql.escape(Number(req.params.deviceId)) + " AND " + db.whereAccount(accountId);
+    let sql = "UPDATE " + table + " SET folder_id = -1 WHERE device_id = " + mysql.escape(Number(req.params.deviceId)) + " AND " + db.whereAccount(accountId);
 
     db.query(sql, res, function (result) {
         res.json({});
         
         // Send websocket message
-        var msg = {
+        let msg = {
             id: Number(req.params.deviceId)
         };
         
@@ -501,7 +501,7 @@ router.route('/remove_from_folder/:deviceId').post(function (req, res) {
 
 
 router.route('/cleanup_messages').post(function (req, res) {
-    var accountId = util.getAccountId(req);
+    let accountId = util.getAccountId(req);
     
     if (!accountId) {
         res.json(errors.invalidAccount);
@@ -513,7 +513,7 @@ router.route('/cleanup_messages').post(function (req, res) {
         return;
     }
     
-    var sql = "DELETE FROM Messages WHERE device_conversation_id = " + mysql.escape(req.query.conversation_id) + " AND timestamp < " + mysql.escape(req.query.timestamp) + " AND " + db.whereAccount(accountId);
+    let sql = "DELETE FROM Messages WHERE device_conversation_id = " + mysql.escape(req.query.conversation_id) + " AND timestamp < " + mysql.escape(req.query.timestamp) + " AND " + db.whereAccount(accountId);
 
     db.query(sql, res, function (result) {
         res.json({});

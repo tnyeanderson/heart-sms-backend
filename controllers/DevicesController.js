@@ -1,22 +1,22 @@
-var express = require('express');
-var router = express.Router();
-var mysql = require('mysql');
-var db = require('../db/query');
-var errors = require('../utils/errors');
-var stream = require('./StreamController');
-var util = require('../utils/util');
+const express = require('express');
+const router = express.Router();
+const mysql = require('mysql');
+const db = require('../db/query');
+const errors = require('../utils/errors');
+const stream = require('./StreamController');
+const util = require('../utils/util');
 
-var table = "Devices"
+const table = "Devices"
 
 router.route('/').get(function (req, res) {
-    var accountId = util.getAccountId(req);
+    let accountId = util.getAccountId(req);
     
     if (!accountId) {
         res.json(errors.invalidAccount);
         return;
     }
     
-    var sql = "SELECT * FROM " + table + " WHERE " + db.whereAccount(accountId);
+    let sql = "SELECT * FROM " + table + " WHERE " + db.whereAccount(accountId);
     
 
     db.query(sql, res, function (result) {
@@ -26,14 +26,14 @@ router.route('/').get(function (req, res) {
 
 
 router.route('/add').post(function (req, res) {
-    var accountId = util.getAccountId(req);
+    let accountId = util.getAccountId(req);
     
     if (!accountId) {
         res.json(errors.invalidAccount);
         return;
     }
 
-    var toInsert = {
+    let toInsert = {
         account_id: accountId,
         id: req.body.device.id,
         info: req.body.device.info,
@@ -51,7 +51,7 @@ router.route('/add').post(function (req, res) {
 
 
 router.route('/remove/:id').post(function (req, res) {
-    var accountId = util.getAccountId(req);
+    let accountId = util.getAccountId(req);
     
     if (!accountId) {
         res.json(errors.invalidAccount);
@@ -59,7 +59,7 @@ router.route('/remove/:id').post(function (req, res) {
     }
 
     // Remove the device
-    var sql = "DELETE FROM " + table + " WHERE id = " + mysql.escape(Number(req.params.id)) + " AND " + db.whereAccount(accountId);
+    let sql = "DELETE FROM " + table + " WHERE id = " + mysql.escape(Number(req.params.id)) + " AND " + db.whereAccount(accountId);
     
 
     db.query(sql, res, function (result) {
@@ -69,19 +69,19 @@ router.route('/remove/:id').post(function (req, res) {
 
 
 router.route('/update/:id').post(function (req, res) {
-    var accountId = util.getAccountId(req);
+    let accountId = util.getAccountId(req);
     
     if (!accountId) {
         res.json(errors.invalidAccount);
         return;
     }
     
-    var toUpdate = {
+    let toUpdate = {
         fcm_token: req.query.fcm_token,
         name: req.query.name
     };
     
-    var sql = "UPDATE " + table + " SET " + db.updateStr(toUpdate) + " WHERE id = " + mysql.escape(Number(req.params.id)) + " AND " + db.whereAccount(accountId);
+    let sql = "UPDATE " + table + " SET " + db.updateStr(toUpdate) + " WHERE id = " + mysql.escape(Number(req.params.id)) + " AND " + db.whereAccount(accountId);
     
 
     db.query(sql, res, function (result) {
@@ -91,7 +91,7 @@ router.route('/update/:id').post(function (req, res) {
 
 
 router.route('/update_primary').post(function (req, res) {
-    var accountId = util.getAccountId(req);
+    let accountId = util.getAccountId(req);
     
     if (!accountId) {
         res.json(errors.invalidAccount);
@@ -104,7 +104,7 @@ router.route('/update_primary').post(function (req, res) {
     }
     
     // Calls the MYSQL stored procedure
-    var sql = "CALL UpdatePrimaryDevice(" + mysql.escape(accountId) + ", " + mysql.escape(Number(req.query.new_primary_device_id)) + ")";
+    let sql = "CALL UpdatePrimaryDevice(" + mysql.escape(accountId) + ", " + mysql.escape(Number(req.query.new_primary_device_id)) + ")";
     
     db.query(sql, res, function (result) {
         res.json({});

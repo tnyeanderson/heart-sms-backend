@@ -1,22 +1,22 @@
-var express = require('express');
-var router = express.Router();
-var mysql = require('mysql');
-var db = require('../db/query');
-var errors = require('../utils/errors');
-var stream = require('./StreamController');
-var util = require('../utils/util');
+const express = require('express');
+const router = express.Router();
+const mysql = require('mysql');
+const db = require('../db/query');
+const errors = require('../utils/errors');
+const stream = require('./StreamController');
+const util = require('../utils/util');
 
-var table = 'Contacts';
+const table = 'Contacts';
 
 router.route('/').get(function (req, res) {
-    var accountId = util.getAccountId(req);
+    let accountId = util.getAccountId(req);
     
     if (!accountId) {
         res.json(errors.invalidAccount);
         return;
     }
     
-    var limitStr = '';
+    let limitStr = '';
     
     if (req.query.limit) {
         limitStr += ' LIMIT ' + mysql.escape(Number(req.query.limit));
@@ -25,9 +25,9 @@ router.route('/').get(function (req, res) {
         }
     }
     
-    var cols = ['id', 'account_id', 'device_id', 'phone_number', 'name', 'color', 'color_dark', 'color_light', 'color_accent', 'contact_type'];
+    let cols = ['id', 'account_id', 'device_id', 'phone_number', 'name', 'color', 'color_dark', 'color_light', 'color_accent', 'contact_type'];
     
-    var sql = "SELECT " + cols.join(', ') + " FROM " + table + " WHERE " + db.whereAccount(accountId) + limitStr;
+    let sql = "SELECT " + cols.join(', ') + " FROM " + table + " WHERE " + db.whereAccount(accountId) + limitStr;
 
     db.query(sql, res, function (result) {
         res.json(result);
@@ -35,14 +35,14 @@ router.route('/').get(function (req, res) {
 });
 
 router.route('/simple').get(function (req, res) {
-    var accountId = util.getAccountId(req);
+    let accountId = util.getAccountId(req);
     
     if (!accountId) {
         res.json(errors.invalidAccount);
         return;
     }
     
-    var limitStr = '';
+    let limitStr = '';
     
     if (req.query.limit) {
         limitStr += ' LIMIT ' + mysql.escape(Number(req.query.limit));
@@ -51,9 +51,9 @@ router.route('/simple').get(function (req, res) {
         }
     }
     
-    var cols = ['phone_number', 'name', 'id', 'id_matcher', 'color', 'color_accent', 'contact_type'];
+    let cols = ['phone_number', 'name', 'id', 'id_matcher', 'color', 'color_accent', 'contact_type'];
     
-    var sql = "SELECT " + cols.join(', ') + " FROM " + table + " WHERE " + db.whereAccount(accountId) + limitStr;
+    let sql = "SELECT " + cols.join(', ') + " FROM " + table + " WHERE " + db.whereAccount(accountId) + limitStr;
 
     db.query(sql, res, function (result) {
         res.json(result);
@@ -62,17 +62,17 @@ router.route('/simple').get(function (req, res) {
 
 
 router.route('/add').post(function (req, res) {
-    var accountId = util.getAccountId(req);
+    let accountId = util.getAccountId(req);
     
     if (!accountId) {
         res.json(errors.invalidAccount);
         return;
     }
     
-    var inserted = [];
+    let inserted = [];
     
     req.body.contacts.forEach(function (item) {
-        var toInsert = {
+        let toInsert = {
             account_id: accountId,
             device_id: item.device_id,
             phone_number: item.phone_number,
@@ -88,17 +88,17 @@ router.route('/add').post(function (req, res) {
         inserted.push(toInsert);
     });
 
-    var sql = "INSERT INTO " + table + db.insertStr(inserted);
+    let sql = "INSERT INTO " + table + db.insertStr(inserted);
         
     db.query(sql, res, function (result) {
         res.json({});
         
         // Send websocket message
         inserted.forEach(function (item) {
-            var origKeys = ['contact_type'];
-            var replaceWith = ['type'];
+            let origKeys = ['contact_type'];
+            let replaceWith = ['type'];
             
-            var msg = util.renameKeys(item, origKeys, replaceWith);
+            let msg = util.renameKeys(item, origKeys, replaceWith);
             
             delete msg.device_id;
             delete msg.id_matcher;
@@ -111,14 +111,14 @@ router.route('/add').post(function (req, res) {
 
 
 router.route('/clear').post(function (req, res) {
-    var accountId = util.getAccountId(req);
+    let accountId = util.getAccountId(req);
     
     if (!accountId) {
         res.json(errors.invalidAccount);
         return;
     }
     
-    var sql = "DELETE FROM " + table + " WHERE " + db.whereAccount(accountId);
+    let sql = "DELETE FROM " + table + " WHERE " + db.whereAccount(accountId);
 
     db.query(sql, res, function (result) {
         res.json({});
@@ -127,7 +127,7 @@ router.route('/clear').post(function (req, res) {
 
 
 router.route('/update_device_id').post(function (req, res) {
-    var accountId = util.getAccountId(req);
+    let accountId = util.getAccountId(req);
     
     if (!accountId) {
         res.json(errors.invalidAccount);
@@ -139,7 +139,7 @@ router.route('/update_device_id').post(function (req, res) {
         return;
     }
     
-    var toUpdate = {
+    let toUpdate = {
         phone_number: req.body.phone_number,
         name: req.body.name,
         color: req.body.color,
@@ -148,7 +148,7 @@ router.route('/update_device_id').post(function (req, res) {
         color_accent: req.body.color_accent
     };
     
-    var sql = "UPDATE " + table + " SET " + db.updateStr(toUpdate) + " WHERE device_id = " + mysql.escape(Number(req.query.device_id)) + " AND " + db.whereAccount(accountId);
+    let sql = "UPDATE " + table + " SET " + db.updateStr(toUpdate) + " WHERE device_id = " + mysql.escape(Number(req.query.device_id)) + " AND " + db.whereAccount(accountId);
     
 
     db.query(sql, res, function (result) {
@@ -156,9 +156,9 @@ router.route('/update_device_id').post(function (req, res) {
         
         
         // TODO: this is inefficient, but we need the contact_type
-        var fields = ["device_id", "phone_number", "name", "color", "color_dark", "color_light", "color_accent", "contact_type AS type"];
+        let fields = ["device_id", "phone_number", "name", "color", "color_dark", "color_light", "color_accent", "contact_type AS type"];
         
-        var sql = "SELECT " + db.selectFields(fields) + " FROM " + table + " WHERE device_id = " + mysql.escape(Number(req.query.device_id)) + " AND " + db.whereAccount(accountId) + " LIMIT 1";
+        let sql = "SELECT " + db.selectFields(fields) + " FROM " + table + " WHERE device_id = " + mysql.escape(Number(req.query.device_id)) + " AND " + db.whereAccount(accountId) + " LIMIT 1";
         
         db.query(sql, res, function (result) {
             stream.sendMessage(accountId, 'updated_contact', result[0]);
@@ -168,7 +168,7 @@ router.route('/update_device_id').post(function (req, res) {
 
 
 router.route('/remove_device_id').post(function (req, res) {
-    var accountId = util.getAccountId(req);
+    let accountId = util.getAccountId(req);
     
     if (!accountId) {
         res.json(errors.invalidAccount);
@@ -180,14 +180,14 @@ router.route('/remove_device_id').post(function (req, res) {
         return;        
     }
     
-    var sql = "DELETE FROM " + table + " WHERE " + db.whereAccount(accountId) + " AND device_id = " + mysql.escape(req.query.device_id);
+    let sql = "DELETE FROM " + table + " WHERE " + db.whereAccount(accountId) + " AND device_id = " + mysql.escape(req.query.device_id);
     
 
     db.query(sql, res, function (result) {
         res.json({});
         
         // Send websocket message
-        var msg = util.keepOnlyKeys(req.query, ['device_id', 'phone_number']);
+        let msg = util.keepOnlyKeys(req.query, ['device_id', 'phone_number']);
         
         stream.sendMessage(accountId, 'removed_contact', msg);
     });
@@ -195,21 +195,21 @@ router.route('/remove_device_id').post(function (req, res) {
 
 
 router.route('/remove_ids/:ids').post(function (req, res) {
-    var accountId = util.getAccountId(req);
+    let accountId = util.getAccountId(req);
     
     if (!accountId) {
         res.json(errors.invalidAccount);
         return;
     }
     
-    var whereId = [];
-    var idList = req.params.ids.split(',');
+    let whereId = [];
+    let idList = req.params.ids.split(',');
     
     idList.forEach(id => {
         whereId.push('id = ' + mysql.escape(Number(id)));
     });
     
-    var sql = "DELETE FROM " + table + " WHERE " + db.whereAccount(accountId) + " AND (" + whereId.join(' OR ') + ")";
+    let sql = "DELETE FROM " + table + " WHERE " + db.whereAccount(accountId) + " AND (" + whereId.join(' OR ') + ")";
 
     db.query(sql, res, function (result) {
         res.json({});

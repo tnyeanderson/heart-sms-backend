@@ -1,6 +1,6 @@
 const { v4: uuidv4 } = require('uuid');
 
-var out = {
+const util = {
     
     getAccountId: function (req) {
         return req.query.account_id || req.body.account_id || null;
@@ -10,14 +10,11 @@ var out = {
         return (uuidv4() + uuidv4()).replace(/-/g, '');
     },
     
-    renameKeys: function (obj, keys, renameTo) {
-        var out = {};
-        
-        var keys = keys || [];
-        var renameto = renameTo || [];
+    renameKeys: function (obj, keys=[], renameTo=[]) {
+        let out = {};
         
         Object.keys(obj).forEach(key => {
-            var i = keys.indexOf(key);
+            let i = keys.indexOf(key);
             
             if (i !== -1) {
                 out[renameTo[i]] = obj[key];
@@ -30,7 +27,7 @@ var out = {
     },
     
     keepOnlyKeys: function (obj, keysToKeep) {
-        var out = {};
+        let out = {};
         
         Object.keys(obj).forEach(key => {
             if (keysToKeep.indexOf(key) > -1)  {
@@ -39,8 +36,11 @@ var out = {
         });
         
         return out;
-    }
+    },
     
+    devOrTesting: function () {
+        return (process.env.NODE_ENV === 'dev' || process.env.NODE_ENV === 'test');
+    }
 }
 
-module.exports = out;
+module.exports = util;

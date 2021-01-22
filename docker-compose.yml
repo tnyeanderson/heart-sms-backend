@@ -42,15 +42,15 @@ services:
     restart: always
     ports:
       # Uncomment this line for testing (unencrypted)
-      #- "127.0.0.1:1883:1883"
+      - "127.0.0.1:1883:1883"
       # SSL endpoint is exposed directly
       - "8883:8883"
       # Unsecured websockets will always be local only
       - "127.0.0.1:5050:5050"
-    env_file: 
+    #env_file: 
       # /etc/mosquitto/conf.d/go-auth.conf is derived from .api.env
       # Comment this out during development to allow unencrypted connection between containers on :5000
-      - .api.env
+      #- .api.env
     volumes:
       - ./certs:/etc/certs
       

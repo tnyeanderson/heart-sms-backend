@@ -1,11 +1,11 @@
-var express = require('express');
-var router = express.Router();
-var mysql = require('mysql');
-var db = require('../db/query');
-var errors = require('../utils/errors');
+const express = require('express');
+const router = express.Router();
+const mysql = require('mysql');
+const db = require('../db/query');
+const errors = require('../utils/errors');
 
 router.route('/').get(function (req, res) {
-    var sql = "SELECT 1";
+    let sql = "SELECT 1";
     
     db.query(sql, res, function (result) {
         res.json(result);

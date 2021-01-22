@@ -1,20 +1,15 @@
-var app = require('./app');
+const app = require('./app');
 
-var StreamController = require('./controllers/StreamController');
+const StreamController = require('./controllers/StreamController');
 
-// Get port
-var port = process.env.port || 5000;
+// Get port (5000 default, 5001 if testing)
+const port = (process.env.NODE_ENV === 'test') ? 5001 : (process.env.port || 5000);
 
-// Override these if we are testing
-if (process.env.NODE_ENV === 'test') {
-    port = 5001;
-}
-
-var urls = {
+const urls = {
     api: "localhost:" + port
 }
 
-var server = app.listen(port, function () {
+const server = app.listen(port, function () {
     console.log("Server running on port " + port);
 
     // Once the server is up so we can authenticate users, connect to the MQTT broker
