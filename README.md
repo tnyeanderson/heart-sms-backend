@@ -35,33 +35,6 @@ Here's the short version:
 7. `caddy run`
 
 
-## SSL/TLS for testing
-
-It is highly recommended that you use TLS and SSL even when you are testing. The current de facto testing domains are:
-```
-web.heart.lan
-api.heart.lan
-mqtt.heart.lan
-```
-
-You can simply edit your `/etc/hosts` file to have a line like this:
-```
-127.0.0.1 localhost api.heart.lan web.heart.lan mqtt.heart.lan
-```
-
-Then you should generate a wildcard certificate for `*.heart.lan` (I use my PFSense CA for this, but you can use `openssl`).
-
-Then start caddy from the project root to get SSL/TLS *almost* everywhere:
-```
-caddy run
-```
-
-*Note: When testing the web interface, be sure to navigate to api.heart.lan in your browser to accept the self signed certificate first! Otherwise API calls will not go through*
-
-The last place you need encryption is the MQTT broker (mosquitto). See the see [MQTTS - SSL/TLS Setup](mqtt.md) and [Getting Started - Mosquitto](getting-started.md) for instructions on how to set up.
-
-
-
 ## Development server
 
 Follow the steps in [Contributing to HeartSMS](CONTRIBUTING.md) to set up a development server for tinkering.
