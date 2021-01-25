@@ -1,6 +1,7 @@
 const mqtt = require('mqtt');
 const url = require('url');
 const db = require('../db/query');
+const util = require('../utils/util');
 const crypto = require('crypto');
 
 const stream = {
@@ -9,15 +10,17 @@ const stream = {
     backendPassword: null,
 
     init: function () {
-        this.backendPassword = (process.env.NODE_ENV === 'dev' || process.env.NODE_ENV === 'test') ? 'testpassword' : crypto.randomBytes(64).toString('hex');
+        this.backendPassword = (util.env.devOrTest()) ? 'testpassword' : crypto.randomBytes(64).toString('hex');
 
-        let url = (process.env.HEART_USE_SSL === 'true') ? 'mqtts://' : 'mqtt://';
-        url += (process.env.HEART_MQTT_URL) ? process.env.HEART_MQTT_URL : 'localhost'
+        let username = 'heart-sms-backend';
 
-        console.log("Connecting to " + url + " with password: " + this.backendPassword);
+        let protocol = (process.env.HEART_USE_SSL === 'true') ? 'mqtts://' : 'mqtt://';
+        let url = (process.env.HEART_MQTT_URL) ? process.env.HEART_MQTT_URL : 'localhost';
 
-        this.socket = mqtt.connect(url, {
-            username: 'heart-sms-backend',
+        console.log("Connecting to " + username + ":" + this.backendPassword + "@" + protocol + url);
+
+        this.socket = mqtt.connect(protocol + url, {
+            username: username,
             password: this.backendPassword
         });
 

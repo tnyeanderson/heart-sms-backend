@@ -3,6 +3,7 @@ TChilderhose implemented nearly all of this backend before giving me his code to
 
 ### Efficiency
 - [x] Refactor to use multirow insert statements!
+- [ ] Authentication cache for MQTT
 
 ### Security
 
@@ -11,7 +12,7 @@ There are some rather large security issues with the original pulse app and API.
 A "check" means that this security issue has been resolved
 
 - [x] Passwords were sent in plain text, meaning the server has everything it needs (password + Salt2) to get the encryption key and decrypt all message data. We should hash before AND after sending (`/signup` and `/login`)
-- [ ] There is no authentication/sessions of any kind for the API or websockets. It is all based on knowledge of the account ID, which is returned during login but never changes (and can't be changed by the user). One could copy, clear out, and even delete an account if they know the account ID. ID length has been increased to 64 characters for Heart, but some sort of session key should be implemented instead.
+- [ ] There is no authentication/sessions of any kind for the API. It is all based on knowledge of the account ID, which is returned during login but never changes (and can't be changed by the user). One could copy, clear out, and even delete an account if they know the account ID. ID length has been increased to 64 characters for Heart, but some sort of session key should be implemented instead.
 - [x] When creating a new conversation/thread, the message metadata and contents are sent *unencrypted* in PLAIN TEXT!
 - [ ] For a self-hosted solution, we should have a whitelist of allowed accounts to prevent third-party use of a private server
 

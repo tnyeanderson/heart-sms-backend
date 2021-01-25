@@ -1,26 +1,28 @@
 const mysql = require('mysql');
 const util = require('../utils/util');
 
-const mysql_host = (util.devOrTesting()) ? 'localhost' : (process.env.DB_HOST || 'localhost');
-const mysql_db   = (util.devOrTesting()) ? 'heartsms' : (process.env.MYSQL_DATABASE || 'heartsms');
-const mysql_port = process.env.MYSQL_PORT || 3306;
-const mysql_user = process.env.MYSQL_USER || 'heart';
-const mysql_pass = process.env.MYSQL_PASSWORD || 'TESTPASSWORD2';
+const dbDefaultPass = 'TESTPASSWORD2';
+
+const dbHost = (util.env.test()) ? 'localhost' : (process.env.DB_HOST || 'localhost');
+const dbName   = (util.env.devOrTest()) ? 'heartsms-dev' : (process.env.MYSQL_DATABASE || 'heartsms');
+const dbPort = process.env.MYSQL_PORT || 3306;
+const dbUser = process.env.MYSQL_USER || 'heart';
+const dbPass = (util.env.test()) ? dbDefaultPass : (process.env.MYSQL_PASSWORD || dbDefaultPass);
 
 // If we are in production, refuse to use the default password
-if (process.env.NODE_ENV === 'production' && mysql_pass === 'TESTPASSWORD2') {
+if (util.env.prod() && dbPass === dbDefaultPass) {
     console.log("ERROR: You cannot use the default MYSQL password in production. Change it in .db.env");
     return;
 }
 
-console.log("Using database: ", mysql_db);
+console.log("Using database: " + dbHost + ":" + dbName);
 
-const base_settings = {
-    host: mysql_host,
-    port: mysql_port,
-    user: mysql_user,
-    password: mysql_pass,
-    database: mysql_db,
+const baseSettings = {
+    host: dbHost,
+    port: dbPort,
+    user: dbUser,
+    password: dbPass,
+    database: dbName,
     typeCast: function (field, next) {
         // Cast TINYINT(1) to boolean
         if (field.type === 'TINY' && field.length === 1) {
@@ -32,7 +34,7 @@ const base_settings = {
 }
 
 const config = function (extraSettings) {
-    let out = base_settings;
+    let out = baseSettings;
     
     if (extraSettings) {
         Object.keys(extraSettings).forEach(key => {

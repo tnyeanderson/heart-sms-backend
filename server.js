@@ -1,9 +1,10 @@
 const app = require('./app');
+const util = require('./utils/util');
 
 const StreamController = require('./controllers/StreamController');
 
 // Get port (5000 default, 5001 if testing)
-const port = (process.env.NODE_ENV === 'test') ? 5001 : (process.env.port || 5000);
+const port = (util.env.test()) ? 5001 : (process.env.port || 5000);
 
 const urls = {
     api: "localhost:" + port

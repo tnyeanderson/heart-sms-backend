@@ -1,5 +1,7 @@
 FROM mysql
 
+ENV MYSQL_RANDOM_ROOT_PASSWORD=yes
+
 COPY ./sql/create_schema.sql /docker-entrypoint-initdb.d/01-create_schema.sql
 
 COPY ./sql/create_dev.sql /docker-entrypoint-initdb.d/02-create_dev.sql

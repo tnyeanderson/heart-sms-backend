@@ -1,5 +1,12 @@
 #!/bin/sh
 
+# If we are in dev, don't use SSL
+if [ "$DEV_NO_SSL" = "true" ]; then
+    mv /etc/mosquitto/conf.d/ssl.conf /etc/mosquitto/conf.d/ssl.conf.bak
+else
+    mv /etc/mosquitto/conf.d/ssl.conf.bak /etc/mosquitto/conf.d/ssl.conf
+fi
+
 # Default values
 AUTH_HOST='heart-sms-backend'
 AUTH_PORT=5000

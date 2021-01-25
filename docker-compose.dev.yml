@@ -3,7 +3,8 @@ version: "3.1"
 services:
   heart-sms-backend:
     container_name: heart-sms-backend
-    image: heartsms/heart-sms-backend
+    image: heartsms/heart-sms-backend:dev
+    command: ["npm", "run", "start-dev"]
     restart: always
     depends_on: 
       - heart-sms-db
@@ -11,51 +12,55 @@ services:
     ports:
       - "127.0.0.1:5000:5000"
     env_file:
-      - .db.env
-      - .api.env
+      - .db.env.example
+      - .api.env.example
     
-      
-  heart-sms-web:
-    container_name: heart-sms-web
-    image: heartsms/heart-sms-web
-    restart: always
-    ports:
-      - "127.0.0.1:8081:80"
-    env_file: 
-      # /config/web-config.json is derived from .api.env
-      - .api.env
+  # We usually test using heart-sms-web without docker (npm run start-dev)
+  #    
+  #heart-sms-web:
+  #  container_name: heart-sms-web
+  #  image: heartsms/heart-sms-web:dev
+  #  restart: always
+  #  ports:
+  #    - "127.0.0.1:8081:80"
+  #  env_file: 
+  #    # /config/web-config.json is derived from .api.env
+  #    - .api.env
 
  
   heart-sms-db:
     container_name: heart-sms-db
-    image: heartsms/heart-sms-db
+    image: heartsms/heart-sms-db:dev
     command: --default-authentication-plugin=mysql_native_password
     restart: always
     # Uncomment the below lines for testing
-    # ports:
-      # - "127.0.0.1:3306:3306"
+    ports:
+      - "127.0.0.1:3306:3306"
     env_file:
-      - .db.env
+      - .db.env.example
     volumes:
-      - mysql:/var/lib/mysql
+      - mysql-dev:/var/lib/mysql
 
   heart-sms-mqtt:
     container_name: heart-sms-mqtt
-    image: heartsms/heart-sms-mqtt
+    image: heartsms/heart-sms-mqtt:dev
     restart: always
+    environment: 
+      # This skips setting up SSL on the broker. Uncomment if you've generated your own certificates
+      - DEV_NO_SSL=true
     ports:
       # Uncomment this line for testing (unencrypted)
-      #- "127.0.0.1:1883:1883"
+      - "127.0.0.1:1883:1883"
       # SSL endpoint is exposed directly
       - "8883:8883"
       # Unsecured websockets will always be local only
       - "127.0.0.1:5050:5050"
-    env_file: 
+    #env_file: 
       # /etc/mosquitto/conf.d/go-auth.conf is derived from .api.env
       # Comment this out during development to allow unencrypted connection between containers on :5000
-      - .api.env
-    volumes:
-      - ./certs:/etc/certs
+      #- .api.env
+    #volumes:
+      #- ./certs:/etc/certs
       
 volumes:
-  mysql:
+  mysql-dev:

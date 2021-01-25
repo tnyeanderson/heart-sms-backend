@@ -1,5 +1,6 @@
 const mysql = require('mysql');
 const poolConf = require('../db/connect');
+const util = require('../utils/util');
 
 let pool  = mysql.createPool(poolConf());
 let multiquerypool  = mysql.createPool(poolConf({multipleStatements: true}));
@@ -15,7 +16,7 @@ let out = {
     },
     
     query: function (sql, res, callback) {
-        if (process.env.NODE_ENV == 'dev') {
+        if (util.env.dev()) {
             console.log(sql, ';', '\n');
         }
         pool.query(sql, function (err, result) {
@@ -36,7 +37,7 @@ let out = {
     
     queries: function (sqls, res, callback) {
         let sql = sqls.join('; ');
-        if (process.env.NODE_ENV == 'dev') {
+        if (util.env.dev()) {
             console.log(sql, ';', '\n');
         }
         multiquerypool.query(sql, function (err, result) {

@@ -2,6 +2,8 @@
 
 **HeartSMS is a work in progress. It hasn't even been alpha tested yet and should NOT be used in production. This guide exists for developer reference and future releases**
 
+Read this to learn how to deploy a HeartSMS backend to production on your server. For hacking around on a development server, see [Contributing to HeartSMS](../CONTRIBUTING.md)
+
 In this guide, you should be replacing the example URLs, `api.heart.lan` and `web.heart.lan`, with your own api and web URLs.
 
 
@@ -28,7 +30,7 @@ The web client also makes calls to the API, but since browsers can't use MQTT di
 *Note: the reverse proxy listens on port 80 and 443, but only uses 80 to upgrade to HTTPS*
 
 ## URLs
-Heart uses the following URLs in the following way (example urls are given, you will have your own, but they will probably be similar). Keep in mind that both URLs will lead to the same IP address (the containers are all running on the same server).
+Heart uses the following URLs in the following way (example urls are given, you will have your own, but they will probably be similar). Keep in mind that all URLs will lead to the same IP address (the containers are all running on the same server).
 
 #### api.heart.lan
 
@@ -59,11 +61,7 @@ Open ports:
 
 1. Please make sure you have git, caddy, docker, and docker-compose installed.
 2. You must have a domain name. It is recommended to have a wildcard DNS record to direct all subdomains to your server
-   - If you are a developer or testing: in this project, we use the internal `heart.lan` domain name. You can add this to your `/etc/hosts` file.
 3. You must generate a wildcard certificate signed by a CA for your domain (so it works for the web.* , api.* , and (optional) mqtt.* subdomains). You can use certbot for this.
-   - If you are a developer or testing you have two options:
-     1. Leave `tls internal` in the Caddyfile, then in `docker-compose.yml` under `heart-sms-mqtt` uncomment the line to expose port 1883. This will allow unencrypted use of MQTT locally so you can test.
-     2. The better option is to generate a self-signed certificate and get it signed by a CA. I do this in pfSense, but you can also use `openssl` to create a CSR
 
 
 Example certbot command for production certs (follow the certbot documentation for automatic renewal, etc):
@@ -73,8 +71,11 @@ certbot certonly --manual \
   --email test@email.com \
   --server https://acme-v02.api.letsencrypt.org/directory \
   --agree-tos \
-  -d “*.heart.lan”
+  -d "*.heart.lan"
 ```
+
+
+---
 
 ## Step-by-step
 
@@ -100,7 +101,6 @@ cp .api.env.example .api.env
 For instance, in `.db.env` you probably only need to change `MYSQL_PASSWORD`:
 ```
 DB_HOST=heart-sms-db
-MYSQL_RANDOM_ROOT_PASSWORD=yes
 MYSQL_DATABASE=heartsms
 MYSQL_USER=heart
 MYSQL_PASSWORD=MyNewSuperSecurePassword
@@ -120,7 +120,7 @@ HEART_USE_SSL=true
 
 **Caddy**
 
-Update the `Caddyfile` with your own URLs (no need to add a block for `mqtt.heart.lan`). Change every `tls internal` line to read:
+Update the `Caddyfile` with your own URLs (no need to add a block for `mqtt.heart.lan`). Then, change every `tls internal` line to read:
 ```
 tls /path/to/cert.crt /path/to/key.key
 ```
@@ -142,12 +142,23 @@ heart-sms-mqtt:
       - /path/to/key.key:/etc/certs/key.pem
       - /path/to/ca/publickey.pem:/etc/certs/ca.pem
 ```
-*Note: if you are a developer or testing, be sure to comment out the `.api.env` file for `heart-sms-mqtt`, otherwise you won't be able to authenticate into MQTT.*
 
 **Make sure the permissions for your .env and certificate files are appropriate on the host!**
 
 
 ### Start the containers
+
+The first time you run the containers, please start the `db` container first using the following command, and wait a minute or so to initialize the database:
+```
+npm run db:init
+```
+
+**VERY IMPORTANT:** Your MySQL root password will be printed to the logs when the `heart-sms-db` container is first created. Save this somewhere. **IT WILL NOT BE SHOWN EVER AGAIN!!** 
+
+Once you see the following log message (the logs should stop coming after this), you can `CTRL+C` to stop the container:
+```
+/usr/sbin/mysqld: ready for connections.
+```
 
 You're ready!
 
@@ -157,12 +168,10 @@ docker-compose up -d
 
 This will create the entire stack with all the containers for you, ready to go.
 
-**VERY IMPORTANT:** Your MySQL root password will be printed to the logs when the `heart-sms-db` container is first created. **IT WILL NOT BE SHOWN EVER AGAIN!!** Make sure you save it somewhere. Find it using:
-```
-docker-compose logs heart-sms-db
-```
 
 ### Create the reverse proxy and bring it online
+
+The last step is setting up HTTPS and routing with caddy as a reverse proxy. Once you're sure you've set your urls and cert paths in the Caddyfile, run:
 
 ```
 caddy start

@@ -64,42 +64,14 @@ The last place you need encryption is the MQTT broker (mosquitto). See the see [
 
 ## Development server
 
-Follow the steps in [Getting Started](getting-started.md), paying careful attention to notes for developers. However, instead of running docker-compose, run:
-
-```
-npm run start-dev
-```
-
-This will start only the backend server listening on `5000` (HTTP API). Using `start-dev` indicates that the `heartsms-dev` database should be used instead of the production `heartsms` database.
-
-To use the production database with the development server, run:
-```
-npm run start
-```
-
-## Testing
-
-Right now the testing is pretty dirty with a *lot* of blind spots, but it seems to work alright for now.
-
-First we need to have a dev server running, because MQTT authentication/authorization is done through the HeartSMS API:
-```
-npm run start-dev
-```
-
-Then, you might want to open MQTT explorer and log into the `heart-sms-backend` account. Since we are using a dev server, the password is `testpassword`. This account has full privileges on the MQTT broker and can subscribe to the root topic for testing (`#`). Then run the tests:
-
-```
-npm run test
-```
-
-You can look over the stream manually and check against [our MQTT documentation](mqtt.md). Tests need to be written for receiving the websocket and mqtt messages. (The responses look good as of this commit by my error-prone eyes)
+Follow the steps in [Contributing to HeartSMS](CONTRIBUTING.md) to set up a development server for tinkering.
 
 
 ## Docker
 
 This project uses 4 bespoke containers to make configuration easy. Just create/edit the `.db.env` and `.api.env` files, add the certs and you're ready to go!
 
-If you want to build the containers yourself (might be a good idea if you are testing because I don't have CI/CD in place... yet), you can do so in the following way:
+If you want to build the production containers yourself (might be a good idea if you are testing certain things because I don't have CI/CD in place... yet), you can do so in the following way:
 
 ### heart-sms-backend
 
@@ -108,7 +80,7 @@ From project root, run:
 npm run docker:build
 ```
 
-This will create a container tagged `heartsms/heart-sms-backend:staged`.
+This will create a container tagged `heartsms/heart-sms-backend:dev`.
 
 ### heart-sms-web
 
@@ -117,20 +89,20 @@ Clone the `heart-sms-web` repo, then run from web project root:
 npm run docker:build
 ```
 
-This will create a container tagged `heartsms/heart-sms-web:staged`.
+This will create a container tagged `heartsms/heart-sms-web:dev`.
 
 ### heart-sms-db
 ```
 cd ./db
 
-sudo docker build -t heartsms/heart-sms-db:staged .
+sudo docker build -t heartsms/heart-sms-db:dev .
 ```
 
 ### heart-sms-mqtt
 ```
 cd ./mqtt
 
-sudo docker build -t heartsms/heart-sms-mqtt:staged .
+sudo docker build -t heartsms/heart-sms-mqtt:dev .
 ```
 
 

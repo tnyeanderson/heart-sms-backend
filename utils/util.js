@@ -38,8 +38,22 @@ const util = {
         return out;
     },
     
-    devOrTesting: function () {
-        return (process.env.NODE_ENV === 'dev' || process.env.NODE_ENV === 'test');
+    env: {
+        dev: function () {
+            return (process.env.NODE_ENV === 'dev');
+        },
+
+        test: function () {
+            return (process.env.NODE_ENV === 'test');
+        },
+
+        devOrTest: function () {
+            return (process.env.NODE_ENV === 'dev' || process.env.NODE_ENV === 'test');
+        },
+
+        prod: function () {
+            return (process.env.NODE_ENV === 'production')
+        }
     }
 }
 
