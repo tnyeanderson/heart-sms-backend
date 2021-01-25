@@ -1,6 +1,6 @@
 # Contributing to HeartSMS
 
-Contributions and pull requests are welcome! Read [Getting Started](getting-started.md) to get an idea of how Heart is set up.
+Contributions and pull requests are welcome! Read [Getting Started](docs/getting-started.md) to get an idea of how Heart is set up.
 
 
 ## Building the development environment
@@ -90,7 +90,7 @@ Then run the tests!
 npm run test
 ```
 
-You can look over the stream manually in MQTT Explorer and check against [our MQTT documentation](mqtt.md). Tests need to be written for receiving the websocket and mqtt messages. (The responses look good as of this commit by my error-prone eyes)
+You can look over the stream manually in MQTT Explorer and check against [our MQTT documentation](docs/mqtt.md). Tests need to be written for receiving the websocket and mqtt messages. (The responses look good as of this commit by my error-prone eyes)
 
 
 
