@@ -10,7 +10,8 @@ services:
       - heart-sms-db
       - heart-sms-mqtt
     ports:
-      - "127.0.0.1:5000:5000"
+      # In dev we open this up so the android app (emulator) can get here easily
+      - "5000:5000"
     env_file:
       - .db.env.example
       - .api.env.example
