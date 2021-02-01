@@ -1,6 +1,5 @@
 const express = require('express');
 const router = express.Router();
-const mysql = require('mysql');
 const db = require('../db/query');
 const errors = require('../utils/errors');
 const stream = require('./StreamController');
@@ -78,7 +77,7 @@ router.route('/remove/:deviceId').post(function (req, res) {
         return;
     }
     
-    let sql = "DELETE FROM " + table + " WHERE device_id = " + mysql.escape(Number(req.params.deviceId)) + " AND " + db.whereAccount(accountId);
+    let sql = "DELETE FROM " + table + " WHERE device_id = " + db.escape(Number(req.params.deviceId)) + " AND " + db.whereAccount(accountId);
     
 
     db.query(sql, res, function (result) {
@@ -111,14 +110,14 @@ router.route('/update/:deviceId').post(function (req, res) {
         repeat: req.body.repeat
     };
     
-    let sql = "UPDATE " + table + " SET " + db.updateStr(toUpdate) + " WHERE device_id = " + mysql.escape(Number(req.params.deviceId)) + " AND " + db.whereAccount(accountId);
+    let sql = "UPDATE " + table + " SET " + db.updateStr(toUpdate) + " WHERE device_id = " + db.escape(Number(req.params.deviceId)) + " AND " + db.whereAccount(accountId);
 
     db.query(sql, res, function (result) {
         res.json({});
         
         // TODO: This is inefficient. but we need the data
         let fields = ["device_id AS id", "to", "data", "mime_type", "timestamp", "title", "repeat"];
-        let sql = "SELECT " + db.selectFields(fields) + " FROM " + table + " WHERE device_id = " + mysql.escape(Number(req.params.deviceId)) + " AND " + db.whereAccount(accountId) + " LIMIT 1";
+        let sql = "SELECT " + db.selectFields(fields) + " FROM " + table + " WHERE device_id = " + db.escape(Number(req.params.deviceId)) + " AND " + db.whereAccount(accountId) + " LIMIT 1";
         db.query(sql, res, function (result) {
             stream.sendMessage(accountId, 'updated_scheduled_message', result[0]);
         });

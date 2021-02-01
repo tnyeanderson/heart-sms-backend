@@ -2,7 +2,6 @@
 
 const express = require('express');
 const router = express.Router();
-const mysql = require('mysql');
 const db = require('../db/query');
 const errors = require('../utils/errors');
 const crypto = require('crypto');
@@ -23,7 +22,7 @@ function allow (res) {
 
 
 router.route('/login').post(function (req, res) {
-    // This is called by rabbitmq to authenticate the user for messaging
+    // This is called by mosquitto-go-auth to authenticate the user for messaging
     // It just sends a different result from the /accounts/login endpoint
 
     // Since we control auth, always accept our own requests
@@ -32,7 +31,7 @@ router.route('/login').post(function (req, res) {
         return;
     }
 
-    let sql = "SELECT `account_id` FROM Accounts WHERE username = " + mysql.escape(req.body.username) + " LIMIT 1";
+    let sql = "SELECT `account_id` FROM Accounts WHERE username = " + db.escape(req.body.username) + " LIMIT 1";
     
     db.query(sql, res, function (result) {
         if (!result[0]) {
@@ -56,20 +55,11 @@ router.route('/acl').post(function (req, res) {
         return;
     }
 
-    let sql = "SELECT * FROM Accounts WHERE username = " + mysql.escape(req.body.username) + " LIMIT 1";
-
-    db.query(sql, res, function (result) {
-        if (!result[0]) {
-            deny(res);
-            return;
-        }
-        
-        if (req.body.topic === 'heartsms/' + result[0].account_id) {
-            allow(res);
-        } else {
-            deny(res);
-        }
-    });
+    if (req.body.topic === 'heartsms/' + req.body.username) {
+        allow(res);
+    } else {
+        deny(res);
+    }
 });
 
 module.exports = router;

@@ -14,7 +14,7 @@
     "docker:push": "npm run docker:build-latest && sudo docker push heartsms/heart-sms-backend:latest",
     "docker:start": "sudo docker-compose up -d heart-sms-backend heart-sms-db heart-sms-mqtt",
     "db:init": "sudo docker-compose up heart-sms-db",
-    "db:init-dev": "sudo docker-compose -f docker-compose.dev.yml up heart-sms-db",
+    "db:init-dev": "sudo docker volume rm heart-sms-backend_mysql-dev; sudo docker-compose -f docker-compose.dev.yml up heart-sms-db",
     "db:build": "cd db && sudo docker build -t heartsms/heart-sms-db:dev .",
     "db:build-latest": "cd db && sudo docker build -t heartsms/heart-sms-db:latest .",
     "db:push": "npm run db:build-latest && sudo docker push heartsms/heart-sms-db:latest",

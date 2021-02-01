@@ -2,10 +2,10 @@ const supertest = require("supertest");
 const should = require("should");
 
 // This starts the server and gets the urls object
-const { urls, server } = require("../server");
+//const { urls, server } = require("../server");
 
 // This agent refers to PORT where program is runninng.
-const api = supertest.agent(urls.api + "/api/v1");
+const api = supertest.agent("http://localhost:5000/api/v1");
 
 // UNIT test begin
 
@@ -1465,6 +1465,8 @@ describe("heart-sms-backend unit test", function () {
         });
     });
     
+    //delay(30000);
+
     it("Clean account", function (done) {
         api
         .post('/accounts/clean_account')

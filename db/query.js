@@ -5,14 +5,22 @@ const util = require('../utils/util');
 let pool  = mysql.createPool(poolConf());
 let multiquerypool  = mysql.createPool(poolConf({multipleStatements: true}));
 
-let out = {
+let Query = {
     
     whereAccount: function (accountId) {
-        return "account_id = " + mysql.escape(accountId);
+        return "account_id = " + Query.translateSessionToAccount(accountId) + " ";
     },
     
-    quote: function (str) {
-        return "'" + str + "'";
+    escape: function (item) {
+        return mysql.escape(item);
+    },
+
+    escapeId: function (item) {
+        return mysql.escapeId(item);
+    },
+
+    translateSessionToAccount: function (sessionId) {
+        return "TRANSLATE_SESSION_ID(" + Query.escape(sessionId) + ")";
     },
     
     query: function (sql, res, callback) {
@@ -61,10 +69,10 @@ let out = {
         
         fields.forEach(field => {
             let parts = field.split(" AS ");
-            let fieldstr = mysql.escapeId(parts[0]);
+            let fieldstr = Query.escapeId(parts[0]);
             
             if (parts.length === 2) {
-                fieldstr += " AS " + mysql.escapeId(parts[1]);
+                fieldstr += " AS " + Query.escapeId(parts[1]);
             }
             
             
@@ -81,7 +89,7 @@ let out = {
 
         // Get column names from the first object to insert
         Object.keys(toInsert[0]).forEach(key => {
-            cols.push(mysql.escapeId(key));
+            cols.push(Query.escapeId(key));
         });
         
         // For each item to insert, push to vals
@@ -89,7 +97,12 @@ let out = {
             let val = [];
 
             Object.keys(item).forEach(key => {
-                val.push(mysql.escape(item[key]));
+                if (key == 'account_id') {
+                    // Translate session id to account id using MYSQL function
+                    val.push(Query.translateSessionToAccount(item[key]));
+                } else {
+                    val.push(Query.escape(item[key]));
+                }
             });
 
             vals.push(val);
@@ -112,13 +125,23 @@ let out = {
         
         Object.keys(toUpdate).forEach(key => {
             if (toUpdate[key] != undefined) {
-                out.push(mysql.escapeId(key) + " = " + mysql.escape(toUpdate[key]));
+                out.push(Query.escapeId(key) + " = " + Query.escape(toUpdate[key]));
             }
         });
         
         return out.join(", ");
+    },
+
+    escapeAll: function (toEscape) {
+        let out = [];
+
+        toEscape.forEach(item => {
+            out.push(Query.escape(item));
+        });
+
+        return out.join(', ');
     }
 
 }
 
-module.exports = out;
+module.exports = Query;

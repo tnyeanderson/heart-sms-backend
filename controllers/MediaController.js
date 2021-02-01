@@ -1,6 +1,5 @@
 const express = require('express');
 const router = express.Router();
-const mysql = require('mysql');
 const db = require('../db/query');
 const errors = require('../utils/errors');
 const stream = require('./StreamController');
@@ -47,7 +46,7 @@ router.route('/:messageId').get(function (req, res) {
         return;
     }
     
-    let sql = "SELECT * FROM Media WHERE message_id = " + mysql.escape(Number(req.params.messageId)) + " AND " + db.whereAccount(accountId) + " LIMIT 1";
+    let sql = "SELECT * FROM Media WHERE message_id = " + db.escape(Number(req.params.messageId)) + " AND " + db.whereAccount(accountId) + " LIMIT 1";
     
 
     db.query(sql, res, function (result) {

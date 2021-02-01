@@ -1,6 +1,5 @@
 const express = require('express');
 const router = express.Router();
-const mysql = require('mysql');
 const db = require('../db/query');
 const errors = require('../utils/errors');
 const stream = require('./StreamController');
@@ -19,9 +18,9 @@ router.route('/').get(function (req, res) {
     let limitStr = '';
     
     if (req.query.limit) {
-        limitStr += ' LIMIT ' + mysql.escape(Number(req.query.limit));
+        limitStr += ' LIMIT ' + db.escape(Number(req.query.limit));
         if (req.query.offset) {
-            limitStr += ' OFFSET ' + mysql.escape(Number(req.query.offset));
+            limitStr += ' OFFSET ' + db.escape(Number(req.query.offset));
         }
     }
     
@@ -45,9 +44,9 @@ router.route('/simple').get(function (req, res) {
     let limitStr = '';
     
     if (req.query.limit) {
-        limitStr += ' LIMIT ' + mysql.escape(Number(req.query.limit));
+        limitStr += ' LIMIT ' + db.escape(Number(req.query.limit));
         if (req.query.offset) {
-            limitStr += ' OFFSET ' + mysql.escape(Number(req.query.offset));
+            limitStr += ' OFFSET ' + db.escape(Number(req.query.offset));
         }
     }
     
@@ -148,7 +147,7 @@ router.route('/update_device_id').post(function (req, res) {
         color_accent: req.body.color_accent
     };
     
-    let sql = "UPDATE " + table + " SET " + db.updateStr(toUpdate) + " WHERE device_id = " + mysql.escape(Number(req.query.device_id)) + " AND " + db.whereAccount(accountId);
+    let sql = "UPDATE " + table + " SET " + db.updateStr(toUpdate) + " WHERE device_id = " + db.escape(Number(req.query.device_id)) + " AND " + db.whereAccount(accountId);
     
 
     db.query(sql, res, function (result) {
@@ -158,7 +157,7 @@ router.route('/update_device_id').post(function (req, res) {
         // TODO: this is inefficient, but we need the contact_type
         let fields = ["device_id", "phone_number", "name", "color", "color_dark", "color_light", "color_accent", "contact_type AS type"];
         
-        let sql = "SELECT " + db.selectFields(fields) + " FROM " + table + " WHERE device_id = " + mysql.escape(Number(req.query.device_id)) + " AND " + db.whereAccount(accountId) + " LIMIT 1";
+        let sql = "SELECT " + db.selectFields(fields) + " FROM " + table + " WHERE device_id = " + db.escape(Number(req.query.device_id)) + " AND " + db.whereAccount(accountId) + " LIMIT 1";
         
         db.query(sql, res, function (result) {
             stream.sendMessage(accountId, 'updated_contact', result[0]);
@@ -180,7 +179,7 @@ router.route('/remove_device_id').post(function (req, res) {
         return;        
     }
     
-    let sql = "DELETE FROM " + table + " WHERE " + db.whereAccount(accountId) + " AND device_id = " + mysql.escape(req.query.device_id);
+    let sql = "DELETE FROM " + table + " WHERE " + db.whereAccount(accountId) + " AND device_id = " + db.escape(req.query.device_id);
     
 
     db.query(sql, res, function (result) {
@@ -206,7 +205,7 @@ router.route('/remove_ids/:ids').post(function (req, res) {
     let idList = req.params.ids.split(',');
     
     idList.forEach(id => {
-        whereId.push('id = ' + mysql.escape(Number(id)));
+        whereId.push('id = ' + db.escape(Number(id)));
     });
     
     let sql = "DELETE FROM " + table + " WHERE " + db.whereAccount(accountId) + " AND (" + whereId.join(' OR ') + ")";

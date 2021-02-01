@@ -2,8 +2,15 @@ START TRANSACTION;
 
 USE `heartsms`;
 
+-- ---------------------------
+-- ---------------------------
+-- Create tables -------------
+-- ---------------------------
+-- ---------------------------
+
+
 CREATE TABLE IF NOT EXISTS Accounts (
-    `account_id` CHAR(64) NOT NULL PRIMARY KEY,
+    `account_id` INTEGER NOT NULL PRIMARY KEY AUTO_INCREMENT,
     `username` VARCHAR(64) NOT NULL UNIQUE,
     `password_hash` TEXT NOT NULL,
     `real_name` TEXT NULL,
@@ -26,13 +33,19 @@ CREATE TABLE IF NOT EXISTS Accounts (
     `global_color_theme` VARCHAR(12) NULL DEFAULT 'default'
 ) ;
 
+CREATE TABLE IF NOT EXISTS SessionMap (
+    `session_id` CHAR(64) NOT NULL PRIMARY KEY,
+    `account_id` INTEGER NOT NULL,
+    CONSTRAINT FK_SessionMap_Accounts_account_id FOREIGN KEY (account_id) REFERENCES Accounts (account_id) ON DELETE CASCADE
+) ;
+
 CREATE TABLE IF NOT EXISTS AutoReplies (
     `id` INTEGER NOT NULL PRIMARY KEY AUTO_INCREMENT,
     `device_id` BIGINT NOT NULL,
     `reply_type` TEXT NULL,
     `pattern` TEXT NULL,
     `response` TEXT NULL,
-    `account_id` CHAR(64) NOT NULL,
+    `account_id` INTEGER NOT NULL,
     CONSTRAINT FK_AutoReplies_Accounts_account_id FOREIGN KEY (account_id) REFERENCES Accounts (account_id) ON DELETE CASCADE
 ) ;
 
@@ -41,7 +54,7 @@ CREATE TABLE IF NOT EXISTS Blacklists (
     `device_id` BIGINT NOT NULL,
     `phone_number` TEXT NULL,
     `phrase` TEXT NULL,
-    `account_id` CHAR(64) NOT NULL,
+    `account_id` INTEGER NOT NULL,
     CONSTRAINT FK_Blacklists_Accounts_account_id FOREIGN KEY (account_id) REFERENCES Accounts (account_id) ON DELETE CASCADE
 ) ;
 
@@ -52,7 +65,7 @@ CREATE TABLE IF NOT EXISTS Contacts (
     `id_matcher` TEXT NULL,
     `name` TEXT NULL,
     `contact_type` INTEGER NOT NULL,
-    `account_id` CHAR(64) NOT NULL,
+    `account_id` INTEGER NOT NULL,
     `color` INTEGER NOT NULL,
     `color_dark` INTEGER NOT NULL,
     `color_light` INTEGER NOT NULL,
@@ -64,7 +77,7 @@ CREATE TABLE IF NOT EXISTS Folders (
     `id` INTEGER NOT NULL PRIMARY KEY AUTO_INCREMENT,
     `device_id` BIGINT NOT NULL UNIQUE,
     `name` TEXT NULL,
-    `account_id` CHAR(64) NOT NULL,
+    `account_id` INTEGER NOT NULL,
     `color` INTEGER NOT NULL,
     `color_dark` INTEGER NOT NULL,
     `color_light` INTEGER NOT NULL,
@@ -79,7 +92,7 @@ CREATE TABLE IF NOT EXISTS Conversations (
     `image_uri` TEXT NULL,
     `id_matcher` TEXT NULL,
     `folder_id` BIGINT NOT NULL DEFAULT -1,
-    `account_id` CHAR(64) NOT NULL,
+    `account_id` INTEGER NOT NULL,
     `color` INTEGER NOT NULL,
     `color_dark` INTEGER NOT NULL,
     `color_light` INTEGER NOT NULL,
@@ -103,7 +116,7 @@ CREATE TABLE IF NOT EXISTS Devices (
     `name` TEXT NULL,
     `primary` BOOLEAN NOT NULL,
     `fcm_token` TEXT NULL,
-    `account_id` CHAR(64) NOT NULL,
+    `account_id` INTEGER NOT NULL,
     `ios` BOOLEAN NOT NULL DEFAULT false,
     CONSTRAINT FK_Devices_Accounts_account_id FOREIGN KEY (account_id) REFERENCES Accounts (account_id) ON DELETE CASCADE
 ) ;
@@ -117,7 +130,7 @@ CREATE TABLE IF NOT EXISTS ScheduledMessages (
     `timestamp` BIGINT NOT NULL,
     `title` TEXT NULL,
     `repeat` INTEGER NOT NULL,
-    `account_id` CHAR(64) NOT NULL,
+    `account_id` INTEGER NOT NULL,
     CONSTRAINT FK_ScheduledMessages_Accounts_account_id FOREIGN KEY (account_id) REFERENCES Accounts (account_id) ON DELETE CASCADE
 ) ;
 
@@ -125,7 +138,7 @@ CREATE TABLE IF NOT EXISTS Templates (
     `id` INTEGER NOT NULL PRIMARY KEY AUTO_INCREMENT,
     `device_id` BIGINT NOT NULL,
     `text` TEXT NULL,
-    `account_id` CHAR(64) NOT NULL,
+    `account_id` INTEGER NOT NULL,
     CONSTRAINT FK_Templates_Accounts_account_id FOREIGN KEY (account_id) REFERENCES Accounts (account_id) ON DELETE CASCADE
 ) ;
 
@@ -135,7 +148,7 @@ CREATE TABLE IF NOT EXISTS Drafts (
     `device_conversation_id` BIGINT NOT NULL,
     `data` TEXT NULL,
     `mime_type` TEXT NULL,
-    `account_id` CHAR(64) NOT NULL,
+    `account_id` INTEGER NOT NULL,
     CONSTRAINT FK_Drafts_Accounts_account_id FOREIGN KEY (account_id) REFERENCES Accounts (account_id) ON DELETE CASCADE,
     CONSTRAINT FK_Drafts_Conversations_device_conversation_id FOREIGN KEY (device_conversation_id) REFERENCES Conversations (device_id) ON DELETE CASCADE
 ) ;
@@ -154,7 +167,7 @@ CREATE TABLE IF NOT EXISTS Messages (
     `color` INTEGER NULL,
     `sent_device` INTEGER NOT NULL DEFAULT -1,
     `sim_stamp` TEXT NULL,
-    `account_id` CHAR(64) NOT NULL,
+    `account_id` INTEGER NOT NULL,
     CONSTRAINT FK_Messages_Accounts_account_id FOREIGN KEY (account_id) REFERENCES Accounts (account_id) ON DELETE CASCADE
 ) ;
 CREATE INDEX IX_Messages_device_id ON Messages (device_id) ;
@@ -163,10 +176,19 @@ CREATE TABLE IF NOT EXISTS Media (
     `id` INTEGER NOT NULL PRIMARY KEY AUTO_INCREMENT,
     `message_id` BIGINT NOT NULL,
     `data` BLOB NULL,
-    `account_id` CHAR(64) NOT NULL,
+    `account_id` INTEGER NOT NULL,
     CONSTRAINT FK_Media_Accounts_account_id FOREIGN KEY (account_id) REFERENCES Accounts (account_id) ON DELETE CASCADE
 ) ;
 
+
+-- ---------------------------
+-- ---------------------------
+-- Create Indexes ------------
+-- ---------------------------
+-- ---------------------------
+
+
+CREATE INDEX IX_SessionMap_account_id ON SessionMap (account_id) ;
 CREATE INDEX IX_AutoReplies_account_id ON AutoReplies (account_id) ;
 CREATE INDEX IX_Blacklists_account_id ON Blacklists (account_id) ;
 CREATE INDEX IX_Contacts_account_id ON Contacts (account_id) ;
@@ -184,6 +206,28 @@ CREATE INDEX IX_Templates_account_id ON Templates (account_id) ;
 
 
 DELIMITER //
+
+
+-- ---------------------------
+-- ---------------------------
+-- Functions -----------------
+-- ---------------------------
+-- ---------------------------
+
+CREATE FUNCTION TRANSLATE_SESSION_ID(sessionId CHAR(64)) RETURNS INTEGER DETERMINISTIC
+BEGIN
+    DECLARE accountId INTEGER;
+    SELECT account_id INTO accountId FROM SessionMap WHERE session_id = sessionId;
+    RETURN accountId;
+END //
+
+
+
+-- ---------------------------
+-- ---------------------------
+-- Triggers ------------------
+-- ---------------------------
+-- ---------------------------
 
 -- Messages are sometimes added before a conversation is, so we can't use a FK
 CREATE TRIGGER before_conversation_delete
@@ -225,9 +269,19 @@ BEGIN
 END //
 
 
+
+-- ---------------------------
+-- ---------------------------
+-- Stored Procedures ---------
+-- ---------------------------
+-- ---------------------------
+
 -- Stored procedure for cleaning an account
-CREATE PROCEDURE CleanAccount(IN accountId CHAR(64))
+CREATE PROCEDURE CleanAccount(IN sessionId CHAR(64))
 BEGIN
+    DECLARE accountId INTEGER;
+    SET accountId = TRANSLATE_SESSION_ID(sessionId);
+
     DELETE FROM Messages WHERE account_id = accountId;
     DELETE FROM Conversations WHERE account_id = accountId;
     DELETE FROM Contacts WHERE account_id = accountId;
@@ -243,10 +297,31 @@ END //
 -- Stored procedure for updating the primary device
 -- Sets all other devices to false before setting the new one to "true"
 -- TODO: Add a check to make sure the new id exists first!
-CREATE PROCEDURE UpdatePrimaryDevice(IN accountId CHAR(64), IN newDeviceId INT)
+CREATE PROCEDURE UpdatePrimaryDevice(IN sessionId CHAR(64), IN newDeviceId INT)
 BEGIN
+    DECLARE accountId INTEGER;
+    SET accountId = TRANSLATE_SESSION_ID(sessionId);
+
     UPDATE Devices SET `primary` = false WHERE account_id = accountId;
     UPDATE Devices SET `primary` = true WHERE id = newDeviceId AND account_id = accountId;
+END //
+
+
+-- Stored procedure for creating an account
+-- Creates the account then stores a session ID
+CREATE PROCEDURE CreateAccount(
+    IN sessionId CHAR(64), 
+    IN username VARCHAR(64), 
+    IN passwordHash TEXT, 
+    IN salt1 TEXT, 
+    IN salt2 TEXT, 
+    IN realName TEXT, 
+    IN phoneNumber TEXT)
+BEGIN
+    START TRANSACTION;
+    INSERT INTO Accounts  (`username`, `password_hash`, `salt1`, `salt2`, `real_name`, `phone_number`) VALUES (username, passwordHash, salt1, salt2, realName, phoneNumber);
+    INSERT INTO SessionMap (`session_id`, `account_id`) VALUES (sessionId, LAST_INSERT_ID());
+    COMMIT;
 END //
 
 DELIMITER ;

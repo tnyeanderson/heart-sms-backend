@@ -1,4 +1,3 @@
-const mysql = require('mysql');
 const util = require('../utils/util');
 
 const dbDefaultPass = 'TESTPASSWORD2';

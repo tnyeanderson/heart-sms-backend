@@ -1,4 +1,4 @@
-FROM mysql
+FROM mariadb
 
 ENV MYSQL_RANDOM_ROOT_PASSWORD=yes
 

@@ -1,6 +1,5 @@
 const express = require('express');
 const router = express.Router();
-const mysql = require('mysql');
 const db = require('../db/query');
 const errors = require('../utils/errors');
 const util = require('../utils/util');
@@ -12,7 +11,7 @@ router.route('/').get(function (req, res) {
 });
 
 router.route('/login').post(function (req, res) {
-    let sql = "SELECT * FROM Accounts WHERE username = " + mysql.escape(req.body.username) + " LIMIT 1";
+    let sql = "SELECT * FROM Accounts INNER JOIN SessionMap USING (account_id) WHERE username = " + db.escape(req.body.username) + " LIMIT 1";
     
     db.query(sql, res, function (result) {
         if (!result[0]) {
@@ -20,14 +19,23 @@ router.route('/login').post(function (req, res) {
             return;
         }
         
-        let testhash = crypto.pbkdf2Sync(req.body.password, result[0].salt1, 100000, 64, 'sha512').toString('hex');
-        if (testhash.length && result[0].password_hash == testhash) {
-            delete result[0].password_hash;
-            delete result[0].username;
-            res.json(result[0]);
-        } else {
-            res.status(401).json(errors.auth);
-        }
+        // Hash password async
+        crypto.pbkdf2(req.body.password, result[0].salt1, 100000, 64, 'sha512', (err, derivedHash) => {
+            let testhash = derivedHash.toString('hex');
+
+            if (testhash.length && result[0].password_hash == testhash) {
+                delete result[0].password_hash;
+                delete result[0].username;
+    
+                // Replace account_id with session_id
+                result[0].account_id = result[0].session_id;
+                delete result[0].session_id;
+    
+                res.json(result[0]);
+            } else {
+                res.status(401).json(errors.auth);
+            }
+        });
     });
 });
 
@@ -36,25 +44,27 @@ router.route('/signup').post(function (req, res) {
     let account_id = util.createAccountId();
     let salt1 = crypto.randomBytes(64).toString('hex');
     let salt2 = crypto.randomBytes(64).toString('hex');
-    let password_hash = crypto.pbkdf2Sync(req.body.password, salt1, 100000, 64, 'sha512').toString('hex');
     
-    let toInsert = {
-        account_id: account_id,
-        username: req.body.name, 
-        password_hash: password_hash, 
-        salt1: salt1, 
-        salt2: salt2, 
-        real_name: req.body.real_name, 
-        phone_number: req.body.phone_number
-    };
-    
-    let sql = "INSERT INTO Accounts " + db.insertStr([toInsert]);
-    
-    db.query(sql, res, function (result) {
-        res.json({
-            account_id: account_id,
-            salt1: salt1,
-            salt2: salt2
+    // Create password hash async
+    crypto.pbkdf2(req.body.password, salt1, 100000, 64, 'sha512', (err, password_hash) => {
+        let values = [
+            account_id,
+            req.body.name,
+            password_hash.toString('hex'),
+            salt1,
+            salt2,
+            req.body.real_name,
+            req.body.phone_number
+        ];
+        
+        let sql = "CALL CreateAccount(" + db.escapeAll(values) + ")";
+        
+        db.query(sql, res, function (result) {
+            res.json({
+                account_id: account_id,
+                salt1: salt1,
+                salt2: salt2
+            });
         });
     });
 });
@@ -116,7 +126,7 @@ router.route('/clean_account').post(function (req, res) {
     }
     
     // Calls the "CleanAccount" mysql stored procedure
-    let sql = "CALL CleanAccount(" + mysql.escape(accountId) + ")";
+    let sql = "CALL CleanAccount(" + db.escape(accountId) + ")";
     
     db.query(sql, res, function (result) {
         res.json({

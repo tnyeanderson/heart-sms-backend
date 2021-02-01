@@ -1,6 +1,5 @@
 const express = require('express');
 const router = express.Router();
-const mysql = require('mysql');
 const db = require('../db/query');
 const errors = require('../utils/errors');
 const stream = require('./StreamController');
@@ -21,9 +20,9 @@ router.route('/').get(function (req, res) {
     let limitStr = '';
     
     if (req.query.limit) {
-        limitStr += ' LIMIT ' + mysql.escape(Number(req.query.limit));
+        limitStr += ' LIMIT ' + db.escape(Number(req.query.limit));
         if (req.query.offset) {
-            limitStr += ' OFFSET ' + mysql.escape(Number(req.query.offset));
+            limitStr += ' OFFSET ' + db.escape(Number(req.query.offset));
         }
     }
     
@@ -78,9 +77,9 @@ router.route('/index_public_unarchived').get(function (req, res) {
     let limitStr = '';
     
     if (req.query.limit) {
-        limitStr += ' LIMIT ' + mysql.escape(Number(req.query.limit));
+        limitStr += ' LIMIT ' + db.escape(Number(req.query.limit));
         if (req.query.offset) {
-            limitStr += ' OFFSET ' + mysql.escape(Number(req.query.offset));
+            limitStr += ' OFFSET ' + db.escape(Number(req.query.offset));
         }
     }
     
@@ -103,9 +102,9 @@ router.route('/index_public_unread').get(function (req, res) {
     let limitStr = '';
     
     if (req.query.limit) {
-        limitStr += ' LIMIT ' + mysql.escape(Number(req.query.limit));
+        limitStr += ' LIMIT ' + db.escape(Number(req.query.limit));
         if (req.query.offset) {
-            limitStr += ' OFFSET ' + mysql.escape(Number(req.query.offset));
+            limitStr += ' OFFSET ' + db.escape(Number(req.query.offset));
         }
     }
     
@@ -125,7 +124,7 @@ router.route('/:deviceId').get(function (req, res) {
         return;
     }
     
-    let sql = "SELECT * FROM " + table + " WHERE device_id = " + mysql.escape(Number(req.params.deviceId)) + " AND " + db.whereAccount(accountId) + " LIMIT 1";
+    let sql = "SELECT * FROM " + table + " WHERE device_id = " + db.escape(Number(req.params.deviceId)) + " AND " + db.whereAccount(accountId) + " LIMIT 1";
 
     db.query(sql, res, function (result) {
         res.json(result[0] || null);
@@ -141,7 +140,7 @@ router.route('/folder/:folderId').get(function (req, res) {
         return;
     }
     
-    let sql = "SELECT * FROM " + table + " WHERE folder_id = " + mysql.escape(Number(req.params.folderId)) + " AND " + db.whereAccount(accountId);
+    let sql = "SELECT * FROM " + table + " WHERE folder_id = " + db.escape(Number(req.params.folderId)) + " AND " + db.whereAccount(accountId);
 
     db.query(sql, res, function (result) {
         res.json(result);
@@ -227,7 +226,7 @@ router.route('/update/:deviceId').post(function (req, res) {
         private_notifications: req.body.private_notifications
     };
     
-    let sql = "UPDATE " + table + " SET " + db.updateStr(toUpdate) + " WHERE device_id = " + mysql.escape(Number(req.params.deviceId)) + " AND " + db.whereAccount(accountId);
+    let sql = "UPDATE " + table + " SET " + db.updateStr(toUpdate) + " WHERE device_id = " + db.escape(Number(req.params.deviceId)) + " AND " + db.whereAccount(accountId);
 
     db.query(sql, res, function (result) {
         res.json({});
@@ -235,7 +234,7 @@ router.route('/update/:deviceId').post(function (req, res) {
         // TODO: This is inefficient but we have to have all the data :(
         let fields = ["device_id AS id", "color", "color_dark", "color_light", "color_accent", "led_color", "pinned", "read", "title", "snippet", "ringtone", "mute", "archive", "private_notifications"];
         
-        let sql = "SELECT " + db.selectFields(fields) + " FROM " + table + " WHERE device_id = " + mysql.escape(Number(req.params.deviceId)) + " AND " + db.whereAccount(accountId) + " LIMIT 1";
+        let sql = "SELECT " + db.selectFields(fields) + " FROM " + table + " WHERE device_id = " + db.escape(Number(req.params.deviceId)) + " AND " + db.whereAccount(accountId) + " LIMIT 1";
         
         db.query(sql, res, function (result) {
             stream.sendMessage(accountId, 'updated_conversation', result[0]);
@@ -259,7 +258,7 @@ router.route('/update_snippet/:deviceId').post(function (req, res) {
         archive: req.body.archive
     };
     
-    let sql = "UPDATE " + table + " SET " + db.updateStr(toUpdate) + " WHERE device_id = " + mysql.escape(Number(req.params.deviceId)) + " AND " + db.whereAccount(accountId);
+    let sql = "UPDATE " + table + " SET " + db.updateStr(toUpdate) + " WHERE device_id = " + db.escape(Number(req.params.deviceId)) + " AND " + db.whereAccount(accountId);
 
     db.query(sql, res, function (result) {
         res.json({});
@@ -295,7 +294,7 @@ router.route('/update_title/:deviceId').post(function (req, res) {
         title: req.query.title
     };
     
-    let sql = "UPDATE " + table + " SET " + db.updateStr(toUpdate) + " WHERE device_id = " + mysql.escape(Number(req.params.deviceId)) + " AND " + db.whereAccount(accountId);
+    let sql = "UPDATE " + table + " SET " + db.updateStr(toUpdate) + " WHERE device_id = " + db.escape(Number(req.params.deviceId)) + " AND " + db.whereAccount(accountId);
 
     db.query(sql, res, function (result) {
         res.json({});
@@ -319,7 +318,7 @@ router.route('/remove/:deviceId').post(function (req, res) {
         return;
     }
     
-    let sql = "DELETE FROM " + table + " WHERE device_id = " + mysql.escape(Number(req.params.deviceId)) + " AND " + db.whereAccount(accountId);
+    let sql = "DELETE FROM " + table + " WHERE device_id = " + db.escape(Number(req.params.deviceId)) + " AND " + db.whereAccount(accountId);
 
     db.query(sql, res, function (result) {
         res.json({});
@@ -342,7 +341,7 @@ router.route('/read/:deviceId').post(function (req, res) {
         return;
     }
     
-    let sql = "UPDATE " + table + " SET `read` = true WHERE device_id = " + mysql.escape(Number(req.params.deviceId)) + " AND " + db.whereAccount(accountId);
+    let sql = "UPDATE " + table + " SET `read` = true WHERE device_id = " + db.escape(Number(req.params.deviceId)) + " AND " + db.whereAccount(accountId);
 
     db.query(sql, res, function (result) {
         res.json({});
@@ -366,7 +365,7 @@ router.route('/seen/:deviceConversationId').post(function (req, res) {
         return;
     }
     
-    let sql = "UPDATE Messages SET seen = true WHERE device_conversation_id = " + mysql.escape(Number(req.params.deviceConversationId)) + " AND " + db.whereAccount(accountId);
+    let sql = "UPDATE Messages SET seen = true WHERE device_conversation_id = " + db.escape(Number(req.params.deviceConversationId)) + " AND " + db.whereAccount(accountId);
 
     db.query(sql, res, function (result) {
         res.json({});
@@ -408,7 +407,7 @@ router.route('/archive/:deviceId').post(function (req, res) {
         return;
     }
     
-    let sql = "UPDATE " + table + " SET archive = true, folder_id = -1 WHERE device_id = " + mysql.escape(Number(req.params.deviceId)) + " AND " + db.whereAccount(accountId);
+    let sql = "UPDATE " + table + " SET archive = true, folder_id = -1 WHERE device_id = " + db.escape(Number(req.params.deviceId)) + " AND " + db.whereAccount(accountId);
 
     db.query(sql, res, function (result) {
         res.json({});
@@ -432,7 +431,7 @@ router.route('/unarchive/:deviceId').post(function (req, res) {
         return;
     }
     
-    let sql = "UPDATE " + table + " SET archive = false, folder_id = -1 WHERE device_id = " + mysql.escape(Number(req.params.deviceId)) + " AND " + db.whereAccount(accountId);
+    let sql = "UPDATE " + table + " SET archive = false, folder_id = -1 WHERE device_id = " + db.escape(Number(req.params.deviceId)) + " AND " + db.whereAccount(accountId);
 
     db.query(sql, res, function (result) {
         res.json({});
@@ -461,7 +460,7 @@ router.route('/add_to_folder/:deviceId').post(function (req, res) {
         return;
     }
     
-    let sql = "UPDATE " + table + " SET folder_id = " + mysql.escape(Number(req.query.folder_id)) + " WHERE device_id = " + mysql.escape(Number(req.params.deviceId)) + " AND " + db.whereAccount(accountId);
+    let sql = "UPDATE " + table + " SET folder_id = " + db.escape(Number(req.query.folder_id)) + " WHERE device_id = " + db.escape(Number(req.params.deviceId)) + " AND " + db.whereAccount(accountId);
 
     db.query(sql, res, function (result) {
         res.json({});
@@ -485,7 +484,7 @@ router.route('/remove_from_folder/:deviceId').post(function (req, res) {
         return;
     }
     
-    let sql = "UPDATE " + table + " SET folder_id = -1 WHERE device_id = " + mysql.escape(Number(req.params.deviceId)) + " AND " + db.whereAccount(accountId);
+    let sql = "UPDATE " + table + " SET folder_id = -1 WHERE device_id = " + db.escape(Number(req.params.deviceId)) + " AND " + db.whereAccount(accountId);
 
     db.query(sql, res, function (result) {
         res.json({});
@@ -513,7 +512,7 @@ router.route('/cleanup_messages').post(function (req, res) {
         return;
     }
     
-    let sql = "DELETE FROM Messages WHERE device_conversation_id = " + mysql.escape(req.query.conversation_id) + " AND timestamp < " + mysql.escape(req.query.timestamp) + " AND " + db.whereAccount(accountId);
+    let sql = "DELETE FROM Messages WHERE device_conversation_id = " + db.escape(req.query.conversation_id) + " AND timestamp < " + db.escape(req.query.timestamp) + " AND " + db.whereAccount(accountId);
 
     db.query(sql, res, function (result) {
         res.json({});
