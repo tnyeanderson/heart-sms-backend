@@ -87,7 +87,7 @@ router.route('/index_public_unread').get(function (req, res) {
     
     let limitStr = db.limitStr(req.query.limit, req.query.offset);
     
-    let sql = `SELECT * FROM ${table} WHERE ${db.escapeId("read")} = false AND private_notifications = false AND {db.whereAccount(accountId)} ORDER BY timestamp DESC ${limitStr}`;
+    let sql = `SELECT * FROM ${table} WHERE ${db.escapeId("read")} = false AND private_notifications = false AND ${db.whereAccount(accountId)} ORDER BY timestamp DESC ${limitStr}`;
 
     db.query(sql, res, function (result) {
         res.json(result);

@@ -99,6 +99,13 @@ Response:
 }
 ```
 
+Error:
+```
+{
+    error: STRING
+}
+```
+
 
 ---
 

@@ -44,29 +44,55 @@ router.route('/signup').post(function (req, res) {
     let account_id = util.createAccountId();
     let salt1 = crypto.randomBytes(64).toString('hex');
     let salt2 = crypto.randomBytes(64).toString('hex');
+
+    if (!req.body.name) {
+        res.json(errors.missingParam);
+        return;
+    }
+
+    let validate_username = `SELECT username FROM Accounts WHERE username = ${db.escape(req.body.name)}`;
     
-    // Create password hash async
-    crypto.pbkdf2(req.body.password, salt1, 100000, 64, 'sha512', (err, password_hash) => {
-        let values = [
-            account_id,
-            req.body.name,
-            password_hash.toString('hex'),
-            salt1,
-            salt2,
-            req.body.real_name,
-            req.body.phone_number
-        ];
-        
-        let sql = `CALL CreateAccount( ${db.escapeAll(values)} )`;
-        
-        db.query(sql, res, function (result) {
-            res.json({
-                account_id: account_id,
-                salt1: salt1,
-                salt2: salt2
+    // Don't do the work to hash the password if the user already exists
+    db.query(validate_username, res, function (result) {
+        if (result[0] && result[0].username === req.body.name) {
+            // User exists
+            res.json(errors.duplicateUser);
+            return;
+        } else {
+            doSignup();
+        }
+    });
+
+    function doSignup() {
+        // Create password hash async
+        crypto.pbkdf2(req.body.password, salt1, 100000, 64, 'sha512', (err, password_hash) => {
+            let values = [
+                account_id,
+                req.body.name,
+                password_hash.toString('hex'),
+                salt1,
+                salt2,
+                req.body.real_name,
+                req.body.phone_number
+            ];
+
+            let sql = `CALL CreateAccount( ${db.escapeAll(values)} )`;
+
+            db.query(sql, res, function (result) {
+                if (result[1] && result[1].affectedRows === 0 && result[0][0].error) {
+                    res.json({
+                        error: result[0][0].error
+                    })
+                } else {
+                    res.json({
+                        account_id: account_id,
+                        salt1: salt1,
+                        salt2: salt2
+                    });
+                }
             });
         });
-    });
+    }
 });
 
 
@@ -150,7 +176,7 @@ router.route('/settings').get(function (req, res) {
     
     let fields = ["base_theme", "global_color_theme", "rounder_bubbles", "color", "color_dark", "color_light", "color_accent", "use_global_theme", "apply_primary_color_to_toolbar", "passcode", "subscription_type", "message_timestamp", "conversation_categories"];
     
-    let sql = `SELECT ${fields.join(", ")} FROM Accounts WHERE ${db.whereAccount(accountId)} LIMIT 1`;
+    let sql = `SELECT ${db.selectFields(fields)} FROM Accounts WHERE ${db.whereAccount(accountId)} LIMIT 1`;
     
     db.query(sql, res, function (result) {
         res.json(result[0] || null);

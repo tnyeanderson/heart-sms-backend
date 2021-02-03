@@ -19,7 +19,7 @@ router.route('/').get(function (req, res) {
     
     let cols = ['id', 'account_id', 'device_id', 'phone_number', 'name', 'color', 'color_dark', 'color_light', 'color_accent', 'contact_type'];
     
-    let sql = `SELECT ${cols.join(', ')} FROM ${table} WHERE ${db.whereAccount(accountId)} ${limitStr}`;
+    let sql = `SELECT ${db.selectFields(cols)} FROM ${table} WHERE ${db.whereAccount(accountId)} ${limitStr}`;
 
     db.query(sql, res, function (result) {
         res.json(result);
@@ -38,7 +38,7 @@ router.route('/simple').get(function (req, res) {
     
     let cols = ['phone_number', 'name', 'id', 'id_matcher', 'color', 'color_accent', 'contact_type'];
     
-    let sql = `SELECT ${cols.join(', ')} FROM ${table} WHERE ${db.whereAccount(accountId)} ${limitStr}`;
+    let sql = `SELECT ${db.selectFields(cols)} FROM ${table} WHERE ${db.whereAccount(accountId)} ${limitStr}`;
 
     db.query(sql, res, function (result) {
         res.json(result);
@@ -188,13 +188,12 @@ router.route('/remove_ids/:ids').post(function (req, res) {
     }
     
     let whereId = [];
-    let idList = req.params.ids.split(',');
     
-    idList.forEach(id => {
-        whereId.push('id = ' + db.escape(Number(id)));
+    req.params.ids.split(',').forEach(id => {
+        whereId.push(db.escape(Number(id)));
     });
     
-    let sql = `DELETE FROM ${table} WHERE ${db.whereAccount(accountId)} AND ( ${whereId.join(' OR ')} )`;
+    let sql = `DELETE FROM ${table} WHERE ${db.whereAccount(accountId)} AND ${db.escapeId('id')} in ( ${whereId.join(', ')} )`;
 
     db.query(sql, res, function (result) {
         res.json({});

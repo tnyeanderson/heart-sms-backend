@@ -37,6 +37,26 @@ describe("heart-sms-backend unit test", function () {
         .expect(200)
         .end(function (err,res) {
             res.status.should.equal(200);
+            res.body.should.have.property('account_id');
+            done();
+        });
+    });
+
+    it("Fail to create duplicate user", function (done) {
+        api
+        .post('/accounts/signup')
+        .send({
+            "name": "test@email.com",
+            // Password is 'tester', this is the SHA256 hash
+            "password": "9bba5c53a0545e0c80184b946153c9f58387e3bd1d4ee35740f29ac2e718b019",
+            "phone_number": "5555555555",
+            "real_name": "testname"
+        })
+        .expect("Content-type",/json/)
+        .expect(200)
+        .end(function (err,res) {
+            res.status.should.equal(200);
+            res.body.error.should.equal("user already exists");
             done();
         });
     });

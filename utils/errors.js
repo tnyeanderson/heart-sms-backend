@@ -3,6 +3,10 @@
     invalidAccount: {
         "error": "account id invalid"
     },
+
+    duplicateUser: {
+        "error": "user already exists"
+    },
     
     auth: {
         "error": "username or password incorrect"

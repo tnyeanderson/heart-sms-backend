@@ -188,7 +188,7 @@ CREATE TABLE IF NOT EXISTS Media (
 -- ---------------------------
 
 
-CREATE INDEX IX_SessionMap_account_id ON SessionMap (account_id) ;
+CREATE INDEX IX_SessionMap_session_id ON SessionMap (session_id) ;
 CREATE INDEX IX_AutoReplies_account_id ON AutoReplies (account_id) ;
 CREATE INDEX IX_Blacklists_account_id ON Blacklists (account_id) ;
 CREATE INDEX IX_Contacts_account_id ON Contacts (account_id) ;
@@ -318,6 +318,12 @@ CREATE PROCEDURE CreateAccount(
     IN realName TEXT, 
     IN phoneNumber TEXT)
 BEGIN
+    DECLARE EXIT HANDLER FOR 1062
+    BEGIN
+        ROLLBACK;
+        SELECT "user already exists" error;
+    END;
+
     START TRANSACTION;
     INSERT INTO Accounts  (`username`, `password_hash`, `salt1`, `salt2`, `real_name`, `phone_number`) VALUES (username, passwordHash, salt1, salt2, realName, phoneNumber);
     INSERT INTO SessionMap (`session_id`, `account_id`) VALUES (sessionId, LAST_INSERT_ID());
