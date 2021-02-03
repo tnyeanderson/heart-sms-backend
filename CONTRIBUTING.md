@@ -41,7 +41,7 @@ After you initialize the db container, follow the logs and **be sure to save the
 
 Once you see the following log message (the logs should stop coming after this), you can `CTRL+C` to stop the container:
 ```
-/usr/sbin/mysqld: ready for connections.
+mysqld: ready for connections.
 ```
 
 Once the db has been initialized, start the containers configured in `docker-compose.dev.yml` by running:
@@ -51,7 +51,7 @@ npm run docker:start-dev
 
 *On subsequent runs, you don't have to re-initialize the DB as it is stored in a volume. All API calls will make changes to the `heartsms-dev` database ONLY.*
 
-Finally, start caddy with the default Caddyfile provided in this repo.This will also generate internal certificates for `api.heart.lan` and `web.heart.lan`:
+Finally, start caddy with the default Caddyfile provided in this repo. This will generate internal certificates for `api.heart.lan` and `web.heart.lan`:
 ```
 caddy run
 ```
@@ -79,7 +79,7 @@ You can connect to the database at `localhost:3306` with the username and passwo
 
 ## Test suite
 
-Right now the testing is pretty dirty with a *lot* of blind spots, but it seems to work alright enough for now.
+Right now the testing is pretty dirty with a *lot* of blind spots, but it seems to work alright enough for the time being.
 
 First, make sure you have the dev environment running by following the steps above.
 

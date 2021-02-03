@@ -157,7 +157,7 @@ npm run db:init
 
 Once you see the following log message (the logs should stop coming after this), you can `CTRL+C` to stop the container:
 ```
-/usr/sbin/mysqld: ready for connections.
+mysqld: ready for connections.
 ```
 
 You're ready!
