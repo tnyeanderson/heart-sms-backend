@@ -31,7 +31,7 @@ router.route('/login').post(function (req, res) {
         return;
     }
 
-    let sql = "SELECT `account_id` FROM Accounts WHERE username = " + db.escape(req.body.username) + " LIMIT 1";
+    let sql = "SELECT `session_id` FROM Accounts INNER JOIN SessionMap USING (account_id) WHERE username = " + db.escape(req.body.username) + " LIMIT 1";
     
     db.query(sql, res, function (result) {
         if (!result[0]) {
@@ -55,11 +55,22 @@ router.route('/acl').post(function (req, res) {
         return;
     }
 
-    if (req.body.topic === 'heartsms/' + req.body.username) {
-        allow(res);
-    } else {
-        deny(res);
-    }
+    let sql = "SELECT `session_id` FROM Accounts INNER JOIN SessionMap USING (account_id) WHERE username = " + db.escape(req.body.username) + " LIMIT 1";
+    
+    db.query(sql, res, function (result) {
+        if (!result[0]) {
+            deny(res);
+            return;
+        }
+        
+        if (req.body.topic === 'heartsms/' + result[0].session_id) {
+            allow(res);
+        } else {
+            deny(res);
+        }
+    });
+
+    
 });
 
 module.exports = router;

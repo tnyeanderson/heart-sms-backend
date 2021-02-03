@@ -1464,8 +1464,6 @@ describe("heart-sms-backend unit test", function () {
             done();
         });
     });
-    
-    //delay(30000);
 
     it("Clean account", function (done) {
         api
