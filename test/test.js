@@ -59,7 +59,56 @@ describe("heart-sms-backend unit test", function () {
             done();
         });
     });
+
+    it("Fail log in", function (done) {
+        api
+        .post('/accounts/login')
+        .send({
+            "username": "bad",
+            "password": "bad"
+        })
+        .expect("Content-type",/json/)
+        .expect(200)
+        .end(function (err,res) {
+            res.status.should.equal(401);
+            res.body.error.should.equal('username or password incorrect');
+            done();
+        });
+    });
     
+    it("MQTT log in", function (done) {
+        api
+        .post('/mqtt/login')
+        .send({
+            "username": "test@email.com",
+            "password": accountId
+        })
+        .expect("Content-type",/json/)
+        .expect(200)
+        .end(function (err,res) {
+            res.status.should.equal(200);
+            res.body.Ok.should.equal(true);
+            done();
+        });
+    });
+
+    it("MQTT fail log in", function (done) {
+        api
+        .post('/mqtt/login')
+        .send({
+            "username": "bad",
+            "password": "bad"
+        })
+        .expect("Content-type",/json/)
+        .expect(200)
+        .end(function (err,res) {
+            res.status.should.equal(401);
+            res.body.Ok.should.equal(false);
+            res.body.Error.should.equal("username or password incorrect");
+            done();
+        });
+    });
+
     console.log("Waiting to give you time to log in, etc...");
     delay();
     

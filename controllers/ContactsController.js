@@ -15,18 +15,11 @@ router.route('/').get(function (req, res) {
         return;
     }
     
-    let limitStr = '';
-    
-    if (req.query.limit) {
-        limitStr += ' LIMIT ' + db.escape(Number(req.query.limit));
-        if (req.query.offset) {
-            limitStr += ' OFFSET ' + db.escape(Number(req.query.offset));
-        }
-    }
+    let limitStr = db.limitStr(req.query.limit, req.query.offset);
     
     let cols = ['id', 'account_id', 'device_id', 'phone_number', 'name', 'color', 'color_dark', 'color_light', 'color_accent', 'contact_type'];
     
-    let sql = "SELECT " + cols.join(', ') + " FROM " + table + " WHERE " + db.whereAccount(accountId) + limitStr;
+    let sql = `SELECT ${cols.join(', ')} FROM ${table} WHERE ${db.whereAccount(accountId)} ${limitStr}`;
 
     db.query(sql, res, function (result) {
         res.json(result);
@@ -41,18 +34,11 @@ router.route('/simple').get(function (req, res) {
         return;
     }
     
-    let limitStr = '';
-    
-    if (req.query.limit) {
-        limitStr += ' LIMIT ' + db.escape(Number(req.query.limit));
-        if (req.query.offset) {
-            limitStr += ' OFFSET ' + db.escape(Number(req.query.offset));
-        }
-    }
+    let limitStr = db.limitStr(req.query.limit, req.query.offset);
     
     let cols = ['phone_number', 'name', 'id', 'id_matcher', 'color', 'color_accent', 'contact_type'];
     
-    let sql = "SELECT " + cols.join(', ') + " FROM " + table + " WHERE " + db.whereAccount(accountId) + limitStr;
+    let sql = `SELECT ${cols.join(', ')} FROM ${table} WHERE ${db.whereAccount(accountId)} ${limitStr}`;
 
     db.query(sql, res, function (result) {
         res.json(result);
@@ -87,7 +73,7 @@ router.route('/add').post(function (req, res) {
         inserted.push(toInsert);
     });
 
-    let sql = "INSERT INTO " + table + db.insertStr(inserted);
+    let sql = `INSERT INTO ${table} ${db.insertStr(inserted)}`;
         
     db.query(sql, res, function (result) {
         res.json({});
@@ -117,7 +103,7 @@ router.route('/clear').post(function (req, res) {
         return;
     }
     
-    let sql = "DELETE FROM " + table + " WHERE " + db.whereAccount(accountId);
+    let sql = `DELETE FROM ${table} WHERE ${db.whereAccount(accountId)}`;
 
     db.query(sql, res, function (result) {
         res.json({});
@@ -147,7 +133,7 @@ router.route('/update_device_id').post(function (req, res) {
         color_accent: req.body.color_accent
     };
     
-    let sql = "UPDATE " + table + " SET " + db.updateStr(toUpdate) + " WHERE device_id = " + db.escape(Number(req.query.device_id)) + " AND " + db.whereAccount(accountId);
+    let sql = `UPDATE ${table} SET ${db.updateStr(toUpdate)} WHERE device_id = ${db.escape(Number(req.query.device_id))} AND ${db.whereAccount(accountId)}`;
     
 
     db.query(sql, res, function (result) {
@@ -157,7 +143,7 @@ router.route('/update_device_id').post(function (req, res) {
         // TODO: this is inefficient, but we need the contact_type
         let fields = ["device_id", "phone_number", "name", "color", "color_dark", "color_light", "color_accent", "contact_type AS type"];
         
-        let sql = "SELECT " + db.selectFields(fields) + " FROM " + table + " WHERE device_id = " + db.escape(Number(req.query.device_id)) + " AND " + db.whereAccount(accountId) + " LIMIT 1";
+        let sql = `SELECT ${db.selectFields(fields)} FROM ${table} WHERE device_id = ${db.escape(Number(req.query.device_id))} AND ${db.whereAccount(accountId)} LIMIT 1`;
         
         db.query(sql, res, function (result) {
             stream.sendMessage(accountId, 'updated_contact', result[0]);
@@ -179,7 +165,7 @@ router.route('/remove_device_id').post(function (req, res) {
         return;        
     }
     
-    let sql = "DELETE FROM " + table + " WHERE " + db.whereAccount(accountId) + " AND device_id = " + db.escape(req.query.device_id);
+    let sql = `DELETE FROM ${table} WHERE ${db.whereAccount(accountId)} AND device_id = ${db.escape(req.query.device_id)}`;
     
 
     db.query(sql, res, function (result) {
@@ -208,7 +194,7 @@ router.route('/remove_ids/:ids').post(function (req, res) {
         whereId.push('id = ' + db.escape(Number(id)));
     });
     
-    let sql = "DELETE FROM " + table + " WHERE " + db.whereAccount(accountId) + " AND (" + whereId.join(' OR ') + ")";
+    let sql = `DELETE FROM ${table} WHERE ${db.whereAccount(accountId)} AND ( ${whereId.join(' OR ')} )`;
 
     db.query(sql, res, function (result) {
         res.json({});

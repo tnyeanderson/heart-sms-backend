@@ -15,7 +15,7 @@ router.route('/').get(function (req, res) {
         return;
     }
     
-    let sql = "SELECT * FROM " + table + " WHERE " + db.whereAccount(accountId);
+    let sql = `SELECT * FROM ${table} WHERE ${db.whereAccount(accountId)}`;
     
 
     db.query(sql, res, function (result) {
@@ -32,7 +32,7 @@ router.route('/:deviceConversationId').get(function (req, res) {
         return;
     }
     
-    let sql = "SELECT * FROM " + table + " WHERE device_conversation_id = " + db.escape(Number(req.params.deviceConversationId)) + " AND " + db.whereAccount(accountId);
+    let sql = `SELECT * FROM ${table} WHERE device_conversation_id = ${db.escape(Number(req.params.deviceConversationId))} AND ${db.whereAccount(accountId)}`;
     
 
     db.query(sql, res, function (result) {
@@ -63,7 +63,7 @@ router.route('/add').post(function (req, res) {
         inserted.push(toInsert);
     });
 
-    let sql = "INSERT INTO " + table + db.insertStr(inserted);
+    let sql = `INSERT INTO ${table} ${db.insertStr(inserted)}`;
         
     db.query(sql, res, function (result) {
         res.json({});
@@ -91,7 +91,7 @@ router.route('/remove/:deviceConversationId').post(function (req, res) {
         return;
     }
     
-    let sql = "DELETE FROM " + table + " WHERE device_conversation_id = " + db.escape(Number(req.params.deviceConversationId)) + " AND " + db.whereAccount(accountId);
+    let sql = `DELETE FROM ${table} WHERE device_conversation_id = ${db.escape(Number(req.params.deviceConversationId))} AND ${db.whereAccount(accountId)}`;
 
     db.query(sql, res, function (result) {
         res.json({});
@@ -122,14 +122,14 @@ router.route('/update/:deviceId').post(function (req, res) {
         mime_type: req.body.mime_type
     };
     
-    let sql = "UPDATE " + table + " SET " + db.updateStr(toUpdate) + " WHERE device_id = " + db.escape(Number(req.params.deviceId)) + " AND " + db.whereAccount(accountId);
+    let sql = `UPDATE ${table} SET ${db.updateStr(toUpdate)} WHERE device_id = ${db.escape(Number(req.params.deviceId))} AND ${db.whereAccount(accountId)}`;
 
     db.query(sql, res, function (result) {
         res.json({});
         
         // TODO: This is inefficient. but we need all the data
         let fields = ["device_id AS id", "device_conversation_id AS conversation_id", "data", "mime_type"];
-        let sql = "SELECT " + db.selectFields(fields) + " FROM " + table + " WHERE device_id = " + db.escape(Number(req.params.deviceId)) + " AND " + db.whereAccount(accountId) + " LIMIT 1";
+        let sql = `SELECT ${db.selectFields(fields)} FROM ${table} WHERE device_id = ${db.escape(Number(req.params.deviceId))} AND ${db.whereAccount(accountId)} LIMIT 1`;
         db.query(sql, res, function (result) {
             stream.sendMessage(accountId, 'replaced_drafts', result[0]);
         });
@@ -155,7 +155,7 @@ router.route('/replace/:deviceConversationId').post(function (req, res) {
             data: item.data
         };
         
-        sqls.push("UPDATE " + table + " SET " + db.updateStr(toUpdate) + " WHERE device_conversation_id = " + db.escape(Number(req.params.deviceConversationId)) + " AND " + db.whereAccount(accountId));
+        sqls.push(`UPDATE ${table} SET ${db.updateStr(toUpdate)} WHERE device_conversation_id = ${db.escape(Number(req.params.deviceConversationId))} AND ${db.whereAccount(accountId)}`);
     });
 
     db.queries(sqls, res, function (result) {

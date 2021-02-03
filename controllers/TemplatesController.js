@@ -15,7 +15,7 @@ router.route('/').get(function (req, res) {
         return;
     }
     
-    let sql = "SELECT * FROM " + table + " WHERE " + db.whereAccount(accountId);
+    let sql = `SELECT * FROM ${table} WHERE ${db.whereAccount(accountId)}`;
     
 
     db.query(sql, res, function (result) {
@@ -44,7 +44,7 @@ router.route('/add').post(function (req, res) {
         inserted.push(toInsert);
     });
 
-    let sql = "INSERT INTO " + table + db.insertStr(inserted);
+    let sql = `INSERT INTO ${table} ${db.insertStr(inserted)}`;
         
     db.query(sql, res, function (result) {
         res.json({});
@@ -67,7 +67,7 @@ router.route('/remove/:deviceId').post(function (req, res) {
         return;
     }
     
-    let sql = "DELETE FROM " + table + " WHERE device_id = " + db.escape(Number(req.params.deviceId)) + " AND " + db.whereAccount(accountId);
+    let sql = `DELETE FROM ${table} WHERE device_id = ${db.escape(Number(req.params.deviceId))} AND ${db.whereAccount(accountId)}`;
     
 
     db.query(sql, res, function (result) {
@@ -95,7 +95,7 @@ router.route('/update/:deviceId').post(function (req, res) {
         text: req.body.text
     };
     
-    let sql = "UPDATE " + table + " SET " + db.updateStr(toUpdate) + " WHERE device_id = " + db.escape(Number(req.params.deviceId)) + " AND " + db.whereAccount(accountId);
+    let sql = `UPDATE ${table} SET ${db.updateStr(toUpdate)} WHERE device_id = ${db.escape(Number(req.params.deviceId))} AND ${db.whereAccount(accountId)}`;
 
     db.query(sql, res, function (result) {
         res.json({});

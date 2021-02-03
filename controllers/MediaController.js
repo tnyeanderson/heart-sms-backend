@@ -5,12 +5,6 @@ const errors = require('../utils/errors');
 const stream = require('./StreamController');
 const util = require('../utils/util');
 
-
-function addMedia (res, account_id, message_id, data) {
-    
-}
-
-
 router.route('/add').post(function (req, res) {
     let accountId = util.getAccountId(req);
     
@@ -30,7 +24,7 @@ router.route('/add').post(function (req, res) {
         data: req.body.data
     }
     
-    let sql = "INSERT INTO Media " + db.insertStr([toInsert]);
+    let sql = `INSERT INTO Media ${db.insertStr([toInsert])}`;
     
 
     db.query(sql, res, function (result) {
@@ -46,7 +40,7 @@ router.route('/:messageId').get(function (req, res) {
         return;
     }
     
-    let sql = "SELECT * FROM Media WHERE message_id = " + db.escape(Number(req.params.messageId)) + " AND " + db.whereAccount(accountId) + " LIMIT 1";
+    let sql = `SELECT * FROM Media WHERE message_id = ${db.escape(Number(req.params.messageId))} AND ${db.whereAccount(accountId)} LIMIT 1`;
     
 
     db.query(sql, res, function (result) {

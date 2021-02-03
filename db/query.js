@@ -10,6 +10,19 @@ let Query = {
     whereAccount: function (accountId) {
         return "account_id = " + Query.translateSessionToAccount(accountId) + " ";
     },
+
+    limitStr: function (limit, offset) {
+        let out = '';
+    
+        if (limit) {
+            out += ` LIMIT ${db.escape(Number(limit))}`;
+            if (offset) {
+                out += ` OFFSET ${db.escape(Number(offset))}`;
+            }
+        }
+
+        return out;
+    },
     
     escape: function (item) {
         return mysql.escape(item);

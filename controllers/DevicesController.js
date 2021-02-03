@@ -15,7 +15,7 @@ router.route('/').get(function (req, res) {
         return;
     }
     
-    let sql = "SELECT * FROM " + table + " WHERE " + db.whereAccount(accountId);
+    let sql = `SELECT * FROM ${table} WHERE ${db.whereAccount(accountId)}`;
     
 
     db.query(sql, res, function (result) {
@@ -41,7 +41,7 @@ router.route('/add').post(function (req, res) {
         fcm_token: req.body.device.fcm_token
     };
     
-    sql = "INSERT INTO " + table + db.insertStr([toInsert]);
+    sql = `INSERT INTO ${table} ${db.insertStr([toInsert])}`;
         
     db.query(sql, res, function (result) {
         res.json({});
@@ -58,7 +58,7 @@ router.route('/remove/:id').post(function (req, res) {
     }
 
     // Remove the device
-    let sql = "DELETE FROM " + table + " WHERE id = " + db.escape(Number(req.params.id)) + " AND " + db.whereAccount(accountId);
+    let sql = `DELETE FROM ${table} WHERE id = ${db.escape(Number(req.params.id))} AND ${db.whereAccount(accountId)}`;
     
 
     db.query(sql, res, function (result) {
@@ -80,7 +80,7 @@ router.route('/update/:id').post(function (req, res) {
         name: req.query.name
     };
     
-    let sql = "UPDATE " + table + " SET " + db.updateStr(toUpdate) + " WHERE id = " + db.escape(Number(req.params.id)) + " AND " + db.whereAccount(accountId);
+    let sql = `UPDATE ${table} SET ${db.updateStr(toUpdate)} WHERE id = ${db.escape(Number(req.params.id))} AND ${db.whereAccount(accountId)}`;
     
 
     db.query(sql, res, function (result) {
@@ -103,7 +103,7 @@ router.route('/update_primary').post(function (req, res) {
     }
     
     // Calls the MYSQL stored procedure
-    let sql = "CALL UpdatePrimaryDevice(" + db.escape(accountId) + ", " + db.escape(Number(req.query.new_primary_device_id)) + ")";
+    let sql = `CALL UpdatePrimaryDevice( ${db.escape(accountId)} , ${db.escape(Number(req.query.new_primary_device_id))} )`;
     
     db.query(sql, res, function (result) {
         res.json({});

@@ -15,21 +15,14 @@ router.route('/').get(function (req, res) {
         return;
     }
     
-    let limitStr = '';
+    let limitStr = db.limitStr(req.query.limit, req.query.offset);
     let whereConversationStr = '';
     
     if (req.query.conversation_id) {
         whereConversationStr = " AND device_conversation_id = " + db.escape(req.query.conversation_id);
     }
     
-    if (req.query.limit) {
-        limitStr += ' LIMIT ' + db.escape(Number(req.query.limit));
-        if (req.query.offset) {
-            limitStr += ' OFFSET ' + db.escape(Number(req.query.offset));
-        }
-    }
-    
-    let sql = "SELECT * FROM " + table + " WHERE " + db.whereAccount(accountId) + whereConversationStr + " ORDER BY timestamp DESC " + limitStr;
+    let sql = `SELECT * FROM ${table} WHERE ${db.whereAccount(accountId)} ${whereConversationStr} ORDER BY timestamp DESC ${limitStr}`;
 
     db.query(sql, res, function (result) {
         res.json(result);
@@ -45,7 +38,7 @@ router.route('/remove/:deviceId').post(function (req, res) {
         return;
     }
     
-    let sql = "DELETE FROM " + table + " WHERE device_id = " + db.escape(Number(req.params.deviceId)) + " AND " + db.whereAccount(accountId);
+    let sql = `DELETE FROM ${table} WHERE device_id = ${db.escape(Number(req.params.deviceId))} AND ${db.whereAccount(accountId)}`;
 
     db.query(sql, res, function (result) {
         res.json({});
@@ -88,7 +81,7 @@ router.route('/add').post(function (req, res) {
         inserted.push(toInsert);
     });
 
-    let sql = "INSERT INTO " + table + db.insertStr(inserted);
+    let sql = `INSERT INTO ${table} ${db.insertStr(inserted)}`;
         
     db.query(sql, res, function (result) {
         res.json({});
@@ -123,7 +116,7 @@ router.route('/update/:deviceId').post(function (req, res) {
         seen: req.body.seen
     };
     
-    let sql = "UPDATE " + table + " SET " + db.updateStr(toUpdate) + " WHERE device_id = " + db.escape(Number(req.params.deviceId)) + " AND " + db.whereAccount(accountId);
+    let sql = `UPDATE ${table} SET ${db.updateStr(toUpdate)} WHERE device_id = ${db.escape(Number(req.params.deviceId))} AND ${db.whereAccount(accountId)}`;
 
     db.query(sql, res, function (result) {
         res.json({});
@@ -159,7 +152,7 @@ router.route('/update_type/:deviceId').post(function (req, res) {
         message_type: req.query.message_type
     };
     
-    let sql = "UPDATE " + table + " SET " + db.updateStr(toUpdate) + " WHERE device_id = " + db.escape(Number(req.params.deviceId)) + " AND " + db.whereAccount(accountId);
+    let sql = `UPDATE ${table} SET ${db.updateStr(toUpdate)} WHERE device_id = ${db.escape(Number(req.params.deviceId))} AND ${db.whereAccount(accountId)}`;
 
     db.query(sql, res, function (result) {
         res.json({});
@@ -186,7 +179,7 @@ router.route('/cleanup').post(function (req, res) {
         return;
     }
     
-    let sql = "DELETE FROM " + table + " WHERE timestamp < " + db.escape(req.query.timestamp) + " AND " + db.whereAccount(accountId);
+    let sql = `DELETE FROM ${table} WHERE timestamp < ${db.escape(req.query.timestamp)} AND ${db.whereAccount(accountId)}`;
 
     db.query(sql, res, function (result) {
         res.json({});
