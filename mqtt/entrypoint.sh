@@ -41,6 +41,12 @@ auth_opt_http_getuser_uri /api/v1/mqtt/login
 auth_opt_http_aclcheck_uri /api/v1/mqtt/acl
 auth_opt_http_response_mode json
 
+# Cache
+auth_opt_cache true
+auth_opt_cache_reset true
+auth_opt_auth_cache_seconds 60
+auth_opt_acl_cache_seconds 60
+
 EOF
 
 

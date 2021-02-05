@@ -2,7 +2,7 @@
 ## pulse-sms-backend
 
 ### Efficiency
-- [ ] Authentication cache for MQTT
+- [x] Authentication cache for MQTT
 
 ### Security
 
