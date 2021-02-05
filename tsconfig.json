@@ -1,10 +1,14 @@
 {
-    "compilerOptions": {
-      "outDir": "./dist",
-      "allowJs": false,
-      "target": "es5",
-      "esModuleInterop": true
-    },
-    "include": ["./**/*"],
-    "exclude": ["./test", "./dist"]
-  }
+  "compilerOptions": {
+    "outDir": "./dist",
+    "target": "es5",
+    "esModuleInterop": true
+  },
+  "include": [
+    "./**/*"
+  ],
+  "exclude": [
+    "./test",
+    "./dist"
+  ]
+}
