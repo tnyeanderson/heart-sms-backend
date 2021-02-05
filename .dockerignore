@@ -1,3 +1,4 @@
+dist/
 certs/
 docs/
 mqtt/
@@ -7,7 +8,7 @@ test/
 .dockerignore
 .gitignore
 Caddyfile
-docker-compose.yml
+docker-compose*.yml
 Dockerfile
 README.md
 TODO.md

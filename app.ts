@@ -1,22 +1,23 @@
-const express = require('express');
+import express, { Router, json } from 'express';
+import cors from 'cors';
+import requireall from 'require-all';
+
 const app = express();
-const router = express.Router();
-const cors = require('cors');
+const router = Router();
 
-
-function getUrl (path) {
+function getUrl (path: String) {
     return '/api/v1' + path;
 }
 
 
 // Import Controllers
-const controllers = require('require-all')(__dirname + '/controllers');
+const controllers = requireall({ dirname: __dirname + '/controllers' });
 
 // Allow cross-site requests
 app.use(cors());
 
 // Parse JSON in request body
-app.use(express.json())
+app.use(json())
 
 // Define routes to controllers
 app.use(getUrl('/accounts'),           controllers.AccountsController);
@@ -37,5 +38,5 @@ app.use(getUrl('/scheduled_messages'), controllers.ScheduledMessagesController);
 app.use(getUrl('/templates'),          controllers.TemplatesController);
 
 
-module.exports = app;
+export default app;
  

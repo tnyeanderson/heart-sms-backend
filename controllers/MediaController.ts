@@ -1,9 +1,9 @@
-const express = require('express');
+import express from 'express';
+import db from '../db/query';
+import errors from '../utils/errors';
+import util from '../utils/util';
+
 const router = express.Router();
-const db = require('../db/query');
-const errors = require('../utils/errors');
-const stream = require('./StreamController');
-const util = require('../utils/util');
 
 router.route('/add').post(function (req, res) {
     let accountId = util.getAccountId(req);

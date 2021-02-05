@@ -4,9 +4,10 @@
   "description": "Backend for HeartSMS, a fork of PulseSMS",
   "main": "server.js",
   "scripts": {
-    "test": "NODE_ENV=test env-cmd -f ./.db.env mocha --exit",
-    "start": "NODE_ENV=production node server.js",
-    "start-dev": "NODE_ENV=dev node server.js",
+    "compile": "tsc",
+    "test": "cd dist && NODE_ENV=test env-cmd -f ./.db.env mocha --exit",
+    "start": "cd dist && NODE_ENV=production node server.js",
+    "start-dev": "cd dist && NODE_ENV=dev node server.js",
     "build-dev": "npm run docker:build && npm run db:build && npm run mqtt:build",
     "docker:start-dev": "sudo docker-compose -f docker-compose.dev.yml up -d",
     "docker:build": "sudo docker build -t heartsms/heart-sms-backend:dev .",
@@ -43,13 +44,21 @@
     "mysql": "^2.18.1",
     "require-all": "^3.0.0",
     "url": "^0.11.0",
-    "uuid": "^8.3.2",
-    "ws": "^7.4.1"
+    "uuid": "^8.3.2"
   },
   "devDependencies": {
+    "@types/cors": "^2.8.9",
+    "@types/express": "^4.17.11",
+    "@types/mocha": "^8.2.0",
+    "@types/mysql": "^2.15.17",
+    "@types/postlight__mercury-parser": "^2.2.3",
+    "@types/require-all": "^3.0.1",
+    "@types/supertest": "^2.0.10",
+    "@types/uuid": "^8.3.0",
     "env-cmd": "^10.1.0",
     "mocha": "^8.2.1",
     "should": "^13.2.3",
-    "supertest": "^6.0.1"
+    "supertest": "^6.1.3",
+    "typescript": "^4.1.3"
   }
 }

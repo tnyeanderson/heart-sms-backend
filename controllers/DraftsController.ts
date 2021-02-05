@@ -1,9 +1,11 @@
-const express = require('express');
+import express from 'express';
+import db from '../db/query';
+import errors from '../utils/errors';
+import stream from './StreamController';
+import util from '../utils/util';
+import * as DraftsPayloads from '../models/payloads/DraftsPayloads';
+
 const router = express.Router();
-const db = require('../db/query');
-const errors = require('../utils/errors');
-const stream = require('./StreamController');
-const util = require('../utils/util');
 
 const table = "Drafts"
 
@@ -49,9 +51,9 @@ router.route('/add').post(function (req, res) {
         return;
     }
     
-    let inserted = [];
+    let inserted: any[] = [];
     
-    req.body.drafts.forEach(function (item) {
+    req.body.drafts.forEach(function (item: any) {
         let toInsert = {
             account_id: accountId,
             device_id: item.device_id,
@@ -69,15 +71,15 @@ router.route('/add').post(function (req, res) {
         res.json({});
         
         // Send websocket message
-        inserted.forEach(function (item) {
-            let origKeys = ['device_id', 'device_conversation_id'];
-            let newKeys = ['id', 'conversation_id'];
+        inserted.forEach(function (item: any) {
+            let payload = new DraftsPayloads.added_draft(
+                item.device_id,
+                item.device_conversation_id,
+                item.data,
+                item.mime_type
+            )
             
-            let msg = util.renameKeys(item, origKeys, newKeys);
-            
-            delete msg.account_id;
-            
-            stream.sendMessage(accountId, 'added_draft', msg);
+            stream.sendMessage(accountId, 'added_draft', payload);
         });
     });
 });
@@ -97,12 +99,12 @@ router.route('/remove/:deviceConversationId').post(function (req, res) {
         res.json({});
         
         // Send websocket message
-        let msg = {
-            id: Number(req.params.deviceConversationId),
-            android_device: req.query.android_device
-        };
+        let payload = new DraftsPayloads.removed_drafts(
+            Number(req.params.deviceConversationId),
+            String(req.query.android_device)
+        );
         
-        stream.sendMessage(accountId, 'removed_drafts', msg);
+        stream.sendMessage(accountId, 'removed_drafts', payload);
     });
 });
 
@@ -131,7 +133,14 @@ router.route('/update/:deviceId').post(function (req, res) {
         let fields = ["device_id AS id", "device_conversation_id AS conversation_id", "data", "mime_type"];
         let sql = `SELECT ${db.selectFields(fields)} FROM ${table} WHERE device_id = ${db.escape(Number(req.params.deviceId))} AND ${db.whereAccount(accountId)} LIMIT 1`;
         db.query(sql, res, function (result) {
-            stream.sendMessage(accountId, 'replaced_drafts', result[0]);
+            let payload = new DraftsPayloads.replaced_drafts(
+                result[0].device_id,
+                result[0].device_conversation_id,
+                result[0].data,
+                result[0].mime_type
+            );
+
+            stream.sendMessage(accountId, 'replaced_drafts', payload);
         });
     });
 });
@@ -145,9 +154,9 @@ router.route('/replace/:deviceConversationId').post(function (req, res) {
         return;
     }
     
-    let sqls = [];
+    let sqls: string[] = [];
     
-    req.body.drafts.forEach(item => {
+    req.body.drafts.forEach((item: any) => {
         let toUpdate = {
             device_id: item.device_id,
             device_conversation_id: item.device_conversation_id,
@@ -158,18 +167,21 @@ router.route('/replace/:deviceConversationId').post(function (req, res) {
         sqls.push(`UPDATE ${table} SET ${db.updateStr(toUpdate)} WHERE device_conversation_id = ${db.escape(Number(req.params.deviceConversationId))} AND ${db.whereAccount(accountId)}`);
     });
 
-    db.queries(sqls, res, function (result) {
+    let sql = sqls.join(' ');
+
+    db.query(sql, res, function (result) {
         res.json({});
         
         // Send websocket message
-        req.body.drafts.forEach(function (item) {
-            let origKeys = ['device_id', 'device_conversation_id'];
+        req.body.drafts.forEach(function (item: any) {
+            let payload = new DraftsPayloads.replaced_drafts(
+                item.device_id,
+                item.device_conversation_id,
+                item.data,
+                item.mime_type
+            );
             
-            let newKeys = ['id', 'conversation_id'];
-            
-            let msg = util.renameKeys(item, origKeys, newKeys);
-            
-            stream.sendMessage(accountId, 'replaced_drafts', msg);
+            stream.sendMessage(accountId, 'replaced_drafts', payload);
         });
     });
 });

@@ -136,30 +136,30 @@ We should:
   - [x] Web client
 
 ## Websockets
-Firebase messages are being scrapped for pure websockets. Here are the firebase actions from the Android app, and their websocket implementation status (untested):
+Firebase messages are being scrapped for MQTT. Here are the firebase actions from the Android app, and their typescript implementation status (untested):
 
 - [x] removed_account
-- [ ] updated_account
+- [ ] ? updated_account
 - [x] cleaned_account
 - [x] added_message
 - [x] update_message_type
 - [x] updated_message
 - [x] removed_message
 - [x] cleanup_messages
-- [x] cleanup_conversation_messages
+- [ ] cleanup_conversation_messages
 - [x] added_contact
 - [x] updated_contact
 - [x] removed_contact
 - [x] removed_contact_by_id
-- [x] added_conversation
-- [x] update_conversation_snippet
-- [x] update_conversation_title
-- [x] updated_conversation
-- [x] removed_conversation
-- [x] read_conversation
-- [x] seen_conversation
-- [x] archive_conversation
-- [x] seen_conversations
+- [ ] added_conversation
+- [ ] update_conversation_snippet
+- [ ] update_conversation_title
+- [ ] updated_conversation
+- [ ] removed_conversation
+- [ ] read_conversation
+- [ ] seen_conversation
+- [ ] archive_conversation
+- [ ] seen_conversations
 - [x] added_draft
 - [x] replaced_drafts
 - [x] removed_drafts
@@ -169,8 +169,8 @@ Firebase messages are being scrapped for pure websockets. Here are the firebase 
 - [x] updated_scheduled_message
 - [x] removed_scheduled_message
 - [x] added_folder
-- [x] add_conversation_to_folder
-- [x] remove_conversation_from_folder
+- [ ] add_conversation_to_folder
+- [ ] remove_conversation_from_folder
 - [x] updated_folder
 - [x] removed_folder
 - [x] added_template
@@ -179,7 +179,7 @@ Firebase messages are being scrapped for pure websockets. Here are the firebase 
 - [x] added_auto_reply
 - [x] updated_auto_reply
 - [x] removed_auto_reply
-- [ ] update_setting
+- [ ] ? update_setting
 - [x] dismissed_notification
 - [x] # update_subscription
 - [x] update_primary_device

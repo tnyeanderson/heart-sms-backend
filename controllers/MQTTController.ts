@@ -1,20 +1,20 @@
+import express, { Response } from 'express';
+import db from '../db/query';
+import errors from '../utils/errors';
+import stream from './StreamController';
+
 // https://github.com/rabbitmq/rabbitmq-server/tree/master/deps/rabbitmq_auth_backend_http#what-must-my-web-server-do
 
-const express = require('express');
 const router = express.Router();
-const db = require('../db/query');
-const errors = require('../utils/errors');
-const crypto = require('crypto');
-const stream = require('./StreamController');
 
-function deny (res) {
+function deny (res: Response) {
     res.status(401).json({
         Ok: false,
         Error: errors.auth.error
     });
 }
 
-function allow (res) {
+function allow (res: Response) {
     res.json({
         Ok: true
     });

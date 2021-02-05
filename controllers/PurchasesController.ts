@@ -1,7 +1,6 @@
-const express = require('express');
+import express from 'express';
+
 const router = express.Router();
-const db = require('../db/query');
-const errors = require('../utils/errors');
 
 // Not implemented because we don't care about purchases. Everyone has a lifetime subscription.
 

@@ -1,11 +1,13 @@
-const express = require('express');
-const router = express.Router();
-const db = require('../db/query');
-const errors = require('../utils/errors');
-const stream = require('./StreamController');
-const util = require('../utils/util');
+import express from 'express';
+import db from '../db/query';
+import errors from '../utils/errors';
+import stream from './StreamController';
+import util from '../utils/util';
+import * as TemplatesPayloads from '../models/payloads/TemplatesPayloads';
 
-const table = "AutoReplies"
+const router = express.Router();
+
+const table = "Templates"
 
 router.route('/').get(function (req, res) {
     let accountId = util.getAccountId(req);
@@ -31,16 +33,14 @@ router.route('/add').post(function (req, res) {
         res.json(errors.invalidAccount);
         return;
     }
-
-    let inserted = [];
     
-    req.body.auto_replies.forEach(function (item) {
+    let inserted: any[] = [];
+    
+    req.body.templates.forEach(function (item: any) {
         let toInsert = {
             account_id: accountId,
             device_id: item.device_id,
-            reply_type: item.reply_type,
-            pattern: item.pattern,
-            response: item.response
+            text: item.text
         };
         
         inserted.push(toInsert);
@@ -53,13 +53,12 @@ router.route('/add').post(function (req, res) {
         
         // Send websocket message
         inserted.forEach(function (item) {
-            let toKeep = ['device_id', 'reply_type', 'pattern', 'response'];
+            let payload = new TemplatesPayloads.added_template(
+                item.device_id,
+                item.text
+            )
             
-            let msg = util.keepOnlyKeys(item, toKeep);
-            
-            msg = util.renameKeys(msg, ['reply_type'], ['type']);
-            
-            stream.sendMessage(accountId, 'added_auto_reply', msg);
+            stream.sendMessage(accountId, 'added_template', payload);
         });
     });
 });
@@ -80,11 +79,11 @@ router.route('/remove/:deviceId').post(function (req, res) {
         res.json({});
         
         // Send websocket message
-        let msg = {
-            id: Number(req.params.deviceId)
-        };
+        let payload = new TemplatesPayloads.removed_template(
+            Number(req.params.deviceId)
+        );
         
-        stream.sendMessage(accountId, 'removed_auto_reply', msg);
+        stream.sendMessage(accountId, 'removed_template', payload);
     });
 });
 
@@ -98,25 +97,23 @@ router.route('/update/:deviceId').post(function (req, res) {
     }
     
     let toUpdate = {
-        reply_type: req.body.type,
-        pattern: req.body.pattern,
-        response: req.body.response
+        text: req.body.text
     };
     
     let sql = `UPDATE ${table} SET ${db.updateStr(toUpdate)} WHERE device_id = ${db.escape(Number(req.params.deviceId))} AND ${db.whereAccount(accountId)}`;
-    
 
     db.query(sql, res, function (result) {
         res.json({});
         
         // Send websocket message
-        let toKeep = ['type', 'pattern', 'response'];
+        let toKeep = ['device_id', 'text'];
             
-        let msg = util.keepOnlyKeys(req.body, toKeep);
+        let payload = new TemplatesPayloads.updated_template(
+            Number(req.params.deviceId),
+            String(req.body.text)
+        );
         
-        msg.device_id = req.params.deviceId;
-            
-        stream.sendMessage(accountId, 'updated_auto_reply', msg);
+        stream.sendMessage(accountId, 'updated_template', payload);
     });
 });
 

@@ -1,9 +1,11 @@
-const express = require('express');
+import express from 'express';
+import db from '../db/query';
+import errors from '../utils/errors';
+import stream from './StreamController';
+import util from '../utils/util';
+import * as ConversationsPayloads from '../models/payloads/ConversationsPayloads';
+
 const router = express.Router();
-const db = require('../db/query');
-const errors = require('../utils/errors');
-const stream = require('./StreamController');
-const util = require('../utils/util');
 
 const table = 'Conversations'
 
@@ -17,7 +19,7 @@ router.route('/').get(function (req, res) {
         return;
     }
     
-    let limitStr = db.limitStr(req.query.limit, req.query.offset);
+    let limitStr = db.limitStr(Number(req.query.limit), Number(req.query.offset));
     
     let sql = `SELECT * FROM ${table} WHERE ${db.whereAccount(accountId)} ORDER BY timestamp DESC ${limitStr}`;
 
@@ -67,7 +69,7 @@ router.route('/index_public_unarchived').get(function (req, res) {
         return;
     }
     
-    let limitStr = db.limitStr(req.query.limit, req.query.offset);
+    let limitStr = db.limitStr(Number(req.query.limit), Number(req.query.offset));
     
     let sql = `SELECT * FROM ${table} WHERE archive = false AND private_notifications = false AND ${db.whereAccount(accountId)} ORDER BY timestamp DESC ${limitStr}`;
 
@@ -85,7 +87,7 @@ router.route('/index_public_unread').get(function (req, res) {
         return;
     }
     
-    let limitStr = db.limitStr(req.query.limit, req.query.offset);
+    let limitStr = db.limitStr(Number(req.query.limit), Number(req.query.offset));
     
     let sql = `SELECT * FROM ${table} WHERE ${db.escapeId("read")} = false AND private_notifications = false AND ${db.whereAccount(accountId)} ORDER BY timestamp DESC ${limitStr}`;
 
@@ -135,9 +137,9 @@ router.route('/add').post(function (req, res) {
         return;
     }
     
-    let inserted = [];
+    let inserted: any[] = [];
     
-    req.body.conversations.forEach(function (item) {
+    req.body.conversations.forEach(function (item: any) {
         let toInsert = {
             account_id: accountId,
             device_id: item.device_id,
@@ -171,10 +173,29 @@ router.route('/add').post(function (req, res) {
         
         // Send websocket message
         inserted.forEach(function (item) {
-            delete item.image_uri;
-            delete item.account_id;
+            let payload = new ConversationsPayloads.added_conversation(
+                item.device_id,
+                item.folder_id,
+                item.color,
+                item.color_dark,
+                item.color_light,
+                item.color_accent,
+                item.led_color,
+                item.pinned,
+                item.read,
+                item.timestamp,
+                item.title,
+                item.phone_numbers,
+                item.snippet,
+                item.id_matcher,
+                item.mute,
+                item.archive,
+                item.private_notifications,
+                item.ringtone,
+                item.image_uri
+            );
             
-            stream.sendMessage(accountId, 'added_conversation', item);
+            stream.sendMessage(accountId, 'added_conversation', payload);
         });
     });
 });
@@ -209,14 +230,33 @@ router.route('/update/:deviceId').post(function (req, res) {
 
     db.query(sql, res, function (result) {
         res.json({});
-        
+
         // TODO: This is inefficient but we have to have all the data :(
         let fields = ["device_id AS id", "color", "color_dark", "color_light", "color_accent", "led_color", "pinned", "read", "title", "snippet", "ringtone", "mute", "archive", "private_notifications"];
         
         let sql = `SELECT ${db.selectFields(fields)} FROM ${table} WHERE device_id = ${db.escape(Number(req.params.deviceId))} AND ${db.whereAccount(accountId)} LIMIT 1`;
         
         db.query(sql, res, function (result) {
-            stream.sendMessage(accountId, 'updated_conversation', result[0]);
+            if (result[0]) {
+                var payload = new ConversationsPayloads.updated_conversation(
+                    result[0].id,
+                    result[0].color,
+                    result[0].color_dark,
+                    result[0].color_light,
+                    result[0].color_accent,
+                    result[0].led_color,
+                    result[0].pinned,
+                    result[0].read,
+                    result[0].title,
+                    result[0].snippet,
+                    result[0].mute,
+                    result[0].archive,
+                    result[0].private_notifications,
+                    result[0].ringtone
+                );
+
+                stream.sendMessage(accountId, 'updated_conversation', payload);
+            }
         });
     });
 });
@@ -243,15 +283,15 @@ router.route('/update_snippet/:deviceId').post(function (req, res) {
         res.json({});
         
         // Send websocket message
-        let msg = {
-            id: Number(req.params.deviceId),
-            read: req.body.read,
-            timestamp: req.body.timestamp,
-            snippet: req.body.snippet,
-            archive: req.body.archive
-        };
+        let payload = new ConversationsPayloads.update_conversation_snippet(
+            Number(req.params.deviceId),
+            req.body.read,
+            Number(req.body.timestamp),
+            req.body.snippet,
+            req.body.archive
+        );
         
-        stream.sendMessage(accountId, 'update_conversation_snippet', msg);
+        stream.sendMessage(accountId, 'update_conversation_snippet', payload);
     });
 });
 
@@ -279,12 +319,12 @@ router.route('/update_title/:deviceId').post(function (req, res) {
         res.json({});
         
         // Send websocket message
-        let msg = {
-            id: Number(req.params.deviceId),
-            title: req.query.title
-        };
+        let payload = new ConversationsPayloads.update_conversation_title(
+            Number(req.params.deviceId),
+            String(req.query.title)
+        );
         
-        stream.sendMessage(accountId, 'update_conversation_title', msg);
+        stream.sendMessage(accountId, 'update_conversation_title', payload);
     });
 });
 
@@ -303,11 +343,11 @@ router.route('/remove/:deviceId').post(function (req, res) {
         res.json({});
         
         // Send websocket message
-        let msg = {
-            id: Number(req.params.deviceId)
-        };
+        let payload = new ConversationsPayloads.removed_conversation(
+            Number(req.params.deviceId)
+        );
         
-        stream.sendMessage(accountId, 'removed_conversation', msg);
+        stream.sendMessage(accountId, 'removed_conversation', payload);
     });
 });
 
@@ -326,12 +366,12 @@ router.route('/read/:deviceId').post(function (req, res) {
         res.json({});
         
         // Send websocket message
-        let msg = {
-            id: Number(req.params.deviceId),
-            android_device: req.query.android_device
-        };
+        let payload = new ConversationsPayloads.read_conversation(
+            Number(req.params.deviceId),
+            String(req.query.android_device)
+        );
         
-        stream.sendMessage(accountId, 'read_conversation', msg);
+        stream.sendMessage(accountId, 'read_conversation', payload);
     });
 });
 
@@ -350,11 +390,11 @@ router.route('/seen/:deviceConversationId').post(function (req, res) {
         res.json({});
         
         // Send websocket message
-        let msg = {
-            id: Number(req.params.deviceConversationId)
-        };
+        let payload = new ConversationsPayloads.seen_conversation(
+            Number(req.params.deviceConversationId)
+        );
         
-        stream.sendMessage(accountId, 'seen_conversation', msg);
+        stream.sendMessage(accountId, 'seen_conversation', payload);
     });
 });
 
@@ -371,9 +411,11 @@ router.route('/seen').post(function (req, res) {
 
     db.query(sql, res, function (result) {
         res.json({});
+
+        let payload = new ConversationsPayloads.seen_conversations();
         
         // Send websocket message
-        stream.sendMessage(accountId, 'seen_conversations', {});
+        stream.sendMessage(accountId, 'seen_conversations', payload);
     });
 });
 
@@ -392,12 +434,12 @@ router.route('/archive/:deviceId').post(function (req, res) {
         res.json({});
         
         // Send websocket message
-        let msg = {
-            id: Number(req.params.deviceId),
-            archive: true
-        };
+        let payload = new ConversationsPayloads.archive_conversation(
+            Number(req.params.deviceId),
+            true
+        );
         
-        stream.sendMessage(accountId, 'archive_conversation', msg);
+        stream.sendMessage(accountId, 'archive_conversation', payload);
     });
 });
 
@@ -416,12 +458,12 @@ router.route('/unarchive/:deviceId').post(function (req, res) {
         res.json({});
         
         // Send websocket message
-        let msg = {
-            id: Number(req.params.deviceId),
-            archive: false
-        };
+        let payload = new ConversationsPayloads.archive_conversation(
+            Number(req.params.deviceId),
+            false
+        );
         
-        stream.sendMessage(accountId, 'archive_conversation', msg);
+        stream.sendMessage(accountId, 'archive_conversation', payload);
     });
 });
 
@@ -445,12 +487,12 @@ router.route('/add_to_folder/:deviceId').post(function (req, res) {
         res.json({});
         
         // Send websocket message
-        let msg = {
-            id: Number(req.params.deviceId),
-            folder_id: Number(req.query.folder_id)
-        };
+        let payload = new ConversationsPayloads.add_conversation_to_folder(
+            Number(req.params.deviceId),
+            Number(req.query.folder_id)
+        );
         
-        stream.sendMessage(accountId, 'add_conversation_to_folder', msg);
+        stream.sendMessage(accountId, 'add_conversation_to_folder', payload);
     });
 });
 
@@ -469,11 +511,11 @@ router.route('/remove_from_folder/:deviceId').post(function (req, res) {
         res.json({});
         
         // Send websocket message
-        let msg = {
-            id: Number(req.params.deviceId)
-        };
+        let payload = new ConversationsPayloads.remove_conversation_from_folder(
+            Number(req.params.deviceId)
+        );
         
-        stream.sendMessage(accountId, 'remove_conversation_from_folder', msg);
+        stream.sendMessage(accountId, 'remove_conversation_from_folder', payload);
     });
 });
 
@@ -491,16 +533,18 @@ router.route('/cleanup_messages').post(function (req, res) {
         return;
     }
     
-    let sql = `DELETE FROM Messages WHERE device_conversation_id = ${db.escape(req.query.conversation_id)} AND timestamp < ${db.escape(req.query.timestamp)} AND ${db.whereAccount(accountId)}`;
+    let sql = `DELETE FROM Messages WHERE device_conversation_id = ${db.escape(Number(req.query.conversation_id))} AND timestamp < ${db.escape(Number(req.query.timestamp))} AND ${db.whereAccount(accountId)}`;
 
     db.query(sql, res, function (result) {
         res.json({});
         
+        let payload = new ConversationsPayloads.cleanup_conversation_messages(
+            Number(req.query.timestamp),
+            String(req.query.conversation_id)
+        );
+
         // Send websocket message
-        stream.sendMessage(accountId, 'cleanup_conversation_messages', {
-            timestamp: req.query.timestamp,
-            conversation_id: req.query.conversation_id
-        });
+        stream.sendMessage(accountId, 'cleanup_conversation_messages', payload);
     });
 });
 

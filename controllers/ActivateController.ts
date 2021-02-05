@@ -1,7 +1,7 @@
-const express = require('express');
+import express from 'express';
+import db from '../db/query';
+
 const router = express.Router();
-const db = require('../db/query');
-const errors = require('../utils/errors');
 
 router.route('/').get(function (req, res) {
     let sql = "SELECT 1";

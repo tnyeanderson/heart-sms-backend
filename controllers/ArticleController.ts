@@ -1,7 +1,8 @@
-const express = require('express');
+import express from 'express';
+import errors from '../utils/errors';
+import Mercury from '@postlight/mercury-parser';
+
 const router = express.Router();
-const errors = require('../utils/errors');
-const Mercury = require('@postlight/mercury-parser');
 
 router.route('/').get(function (req, res) {
     if (!req.body.url) {

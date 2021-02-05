@@ -1,9 +1,11 @@
-const express = require('express');
+import express from 'express';
+import db from '../db/query';
+import errors from '../utils/errors';
+import stream from './StreamController';
+import util from '../utils/util';
+import * as BlacklistsPayloads from '../models/payloads/BlacklistsPayloads';
+
 const router = express.Router();
-const db = require('../db/query');
-const errors = require('../utils/errors');
-const stream = require('./StreamController');
-const util = require('../utils/util');
 
 const table = "Blacklists"
 
@@ -32,9 +34,9 @@ router.route('/add').post(function (req, res) {
         return;
     }
     
-    let inserted = [];
+    let inserted: any[] = [];
     
-    req.body.blacklists.forEach(function (item) {
+    req.body.blacklists.forEach(function (item: any) {
         let toInsert = {
             account_id: accountId,
             device_id: item.device_id,
@@ -51,15 +53,14 @@ router.route('/add').post(function (req, res) {
         res.json({});
         
         // Send websocket message
-        inserted.forEach(function (item) {
-            let origKeys = ['device_id'];
-            let newKeys = ['id'];
+        inserted.forEach(function (item: any) {
+            let payload = new BlacklistsPayloads.added_blacklist(
+                item.device_id,
+                item.phone_number,
+                item.phrase
+            );
             
-            let msg = util.renameKeys(item, origKeys, newKeys);
-            
-            delete msg.account_id;
-            
-            stream.sendMessage(accountId, 'added_blacklist', msg);
+            stream.sendMessage(accountId, 'added_blacklist', payload);
         });
     });
 });
@@ -80,11 +81,11 @@ router.route('/remove/:deviceId').post(function (req, res) {
         res.json({});
         
         // Send websocket message
-        let msg = {
-            id: Number(req.params.deviceId)
-        };
+        let payload = new BlacklistsPayloads.removed_blacklist(
+            Number(req.params.deviceId)
+        );
         
-        stream.sendMessage(accountId, 'removed_blacklist', msg);
+        stream.sendMessage(accountId, 'removed_blacklist', payload);
     });
 });
 

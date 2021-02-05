@@ -1,42 +1,46 @@
-const mysql = require('mysql');
-const poolConf = require('../db/connect');
-const util = require('../utils/util');
+import { Response } from "express";
+import { FieldInfo, Pool, queryCallback } from "mysql";
+import errors from "../utils/errors";
+import mysql from 'mysql';
+import connection from '../db/connect';
+import util from '../utils/util';
 
-let pool  = mysql.createPool(poolConf());
-let multiquerypool  = mysql.createPool(poolConf({multipleStatements: true}));
+let pool: Pool  = mysql.createPool(connection());
+
+type HeartQueryCallback = (result: FieldInfo[] | any[]) => any;
 
 let Query = {
     
-    whereAccount: function (accountId) {
+    whereAccount: function (accountId: string) {
         return "account_id = " + Query.translateSessionToAccount(accountId) + " ";
     },
 
-    limitStr: function (limit, offset) {
+    limitStr: function (limit: number, offset: number) {
         let out = '';
     
         if (limit) {
-            out += ` LIMIT ${db.escape(Number(limit))}`;
+            out += ` LIMIT ${Query.escape(limit)}`;
             if (offset) {
-                out += ` OFFSET ${db.escape(Number(offset))}`;
+                out += ` OFFSET ${Query.escape(offset)}`;
             }
         }
 
         return out;
     },
     
-    escape: function (item) {
+    escape: function (item: string | string[] | number | boolean) {
         return mysql.escape(item);
     },
 
-    escapeId: function (item) {
+    escapeId: function (item: string) {
         return mysql.escapeId(item);
     },
 
-    translateSessionToAccount: function (sessionId) {
+    translateSessionToAccount: function (sessionId: string) {
         return "TRANSLATE_SESSION_ID(" + Query.escape(sessionId) + ")";
     },
     
-    query: function (sql, res, callback) {
+    query: function (sql: string, res: Response, callback: HeartQueryCallback) {
         if (util.env.dev()) {
             console.log(sql, ';', '\n');
         }
@@ -45,40 +49,17 @@ let Query = {
                 console.log(err);
                 
                 if (res.status) {
-                    res.status(400).json({
-                        error: "Could not query database"
-                    });
+                    res.status(400).json(errors.databaseError);
                 }
                 
-                return
+                return;
             }
             callback(result);
         });
     },
     
-    queries: function (sqls, res, callback) {
-        let sql = sqls.join('; ');
-        if (util.env.dev()) {
-            console.log(sql, ';', '\n');
-        }
-        multiquerypool.query(sql, function (err, result) {
-            if (err) {
-                console.log(err);
-                
-                if (res.status) {
-                    res.status(400).json({
-                        error: "Could not query database"
-                    });
-                }
-                
-                return
-            }
-            callback(result);
-        });
-    },
-    
-    selectFields: function (fields) {
-        let out = [];
+    selectFields: function (fields: string[]) {
+        let out: string[] = [];
         
         fields.forEach(field => {
             let parts = field.split(" AS ");
@@ -95,9 +76,9 @@ let Query = {
         return out.join(', ');
     },
     
-    insertStr: function (toInsert) {
-        let cols = [];
-        let vals = [];
+    insertStr: function (toInsert: any) {
+        let cols: string[] = [];
+        let vals: any[] = [];
         let out = "";
 
         // Get column names from the first object to insert
@@ -106,8 +87,8 @@ let Query = {
         });
         
         // For each item to insert, push to vals
-        toInsert.forEach(item => {
-            let val = [];
+        toInsert.forEach((item: any) => {
+            let val: string[] = [];
 
             Object.keys(item).forEach(key => {
                 if (key == 'account_id') {
@@ -123,8 +104,8 @@ let Query = {
 
         out += " (" + cols.join(", ") + ") VALUES ";
 
-        let valStr = [];
-        vals.forEach(val => {
+        let valStr: string[] = [];
+        vals.forEach((val: string[]) => {
             valStr.push(" (" + val.join(", ") + ") ");
         });
 
@@ -133,10 +114,10 @@ let Query = {
         return out;
     },
     
-    updateStr: function (toUpdate) {
-        let out = [];
+    updateStr: function (toUpdate: any) {
+        let out: any[] = [];
         
-        Object.keys(toUpdate).forEach(key => {
+        Object.keys(toUpdate).forEach((key: string) => {
             if (toUpdate[key] != undefined) {
                 out.push(Query.escapeId(key) + " = " + Query.escape(toUpdate[key]));
             }
@@ -145,10 +126,10 @@ let Query = {
         return out.join(", ");
     },
 
-    escapeAll: function (toEscape) {
-        let out = [];
+    escapeAll: function (toEscape: any) {
+        let out: any[] = [];
 
-        toEscape.forEach(item => {
+        toEscape.forEach((item: any) => {
             out.push(Query.escape(item));
         });
 
@@ -157,4 +138,4 @@ let Query = {
 
 }
 
-module.exports = Query;
+export = Query;

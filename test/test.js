@@ -7,8 +7,6 @@ const should = require("should");
 // This agent refers to PORT where program is runninng.
 const api = supertest.agent("http://localhost:5000/api/v1");
 
-// UNIT test begin
-
 let accountId = '';
 let contactsToRemove = [];
 
@@ -20,6 +18,8 @@ function delay(interval = 3000) {
 
    }).timeout(interval + 100) // The extra 100ms should guarantee the test will not fail due to exceeded timeout
 }
+
+// UNIT test begin
 
 describe("heart-sms-backend unit test", function () {
 

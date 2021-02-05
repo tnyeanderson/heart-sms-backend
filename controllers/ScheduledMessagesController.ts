@@ -1,9 +1,11 @@
-const express = require('express');
+import express from 'express';
+import db from '../db/query';
+import errors from '../utils/errors';
+import stream from './StreamController';
+import util from '../utils/util';
+import * as ScheduledMessagesPayloads from '../models/payloads/ScheduledMessagesPayloads';
+
 const router = express.Router();
-const db = require('../db/query');
-const errors = require('../utils/errors');
-const stream = require('./StreamController');
-const util = require('../utils/util');
 
 const table = "ScheduledMessages"
 
@@ -32,9 +34,9 @@ router.route('/add').post(function (req, res) {
         return;
     }
     
-    let inserted = [];
+    let inserted: any[] = [];
     
-    req.body.scheduled_messages.forEach(function (item) {
+    req.body.scheduled_messages.forEach(function (item: any) {
         let toInsert = {
             account_id: accountId,
             device_id: item.device_id,
@@ -56,14 +58,17 @@ router.route('/add').post(function (req, res) {
         
         // Send websocket message
         inserted.forEach(function (item) {
-            let origKeys = ['device_id'];
-            let newKeys = ['id'];
+            let payload = new ScheduledMessagesPayloads.added_scheduled_message(
+                item.device_id,
+                item.to,
+                item.data,
+                item.mime_type,
+                item.timestamp,
+                item.title,
+                item.repeat
+            );
             
-            let msg = util.renameKeys(item, origKeys, newKeys);
-            
-            delete msg.account_id;
-            
-            stream.sendMessage(accountId, 'added_scheduled_message', msg);
+            stream.sendMessage(accountId, 'added_scheduled_message', payload);
         });
     });
 });
@@ -84,11 +89,11 @@ router.route('/remove/:deviceId').post(function (req, res) {
         res.json({});
         
         // Send websocket message
-        let msg = {
-            id: Number(req.params.deviceId)
-        };
+        let payload = new ScheduledMessagesPayloads.removed_scheduled_message(
+            Number(req.params.deviceId)
+        );
         
-        stream.sendMessage(accountId, 'removed_scheduled_message', msg);
+        stream.sendMessage(accountId, 'removed_scheduled_message', payload);
     });
 });
 
@@ -119,7 +124,19 @@ router.route('/update/:deviceId').post(function (req, res) {
         let fields = ["device_id AS id", "to", "data", "mime_type", "timestamp", "title", "repeat"];
         let sql = `SELECT ${db.selectFields(fields)} FROM ${table} WHERE device_id = ${db.escape(Number(req.params.deviceId))} AND ${db.whereAccount(accountId)} LIMIT 1`;
         db.query(sql, res, function (result) {
-            stream.sendMessage(accountId, 'updated_scheduled_message', result[0]);
+            if (result[0]) {
+                let payload = new ScheduledMessagesPayloads.updated_scheduled_message(
+                    result[0].id,
+                    result[0].to,
+                    result[0].data,
+                    result[0].mime_type,
+                    result[0].timestamp,
+                    result[0].title,
+                    result[0].repeat
+                );
+
+                stream.sendMessage(accountId, 'updated_scheduled_message', payload);
+            }
         });
     });
 });

@@ -1,11 +1,13 @@
-const express = require('express');
-const router = express.Router();
-const db = require('../db/query');
-const errors = require('../utils/errors');
-const stream = require('./StreamController');
-const util = require('../utils/util');
+import express from 'express';
+import db from '../db/query';
+import errors from '../utils/errors';
+import stream from './StreamController';
+import util from '../utils/util';
+import * as FoldersPayloads from '../models/payloads/FoldersPayloads';
 
-const table = "Templates"
+const router = express.Router();
+
+const table = "Folders"
 
 router.route('/').get(function (req, res) {
     let accountId = util.getAccountId(req);
@@ -32,13 +34,17 @@ router.route('/add').post(function (req, res) {
         return;
     }
     
-    let inserted = [];
+    let inserted: any[] = [];
     
-    req.body.templates.forEach(function (item) {
+    req.body.folders.forEach(function (item: any) {
         let toInsert = {
             account_id: accountId,
             device_id: item.device_id,
-            text: item.text
+            name: item.name,
+            color: item.color,
+            color_dark: item.color_dark,
+            color_light: item.color_light,
+            color_accent: item.color_accent
         };
         
         inserted.push(toInsert);
@@ -51,9 +57,16 @@ router.route('/add').post(function (req, res) {
         
         // Send websocket message
         inserted.forEach(function (item) {
-            delete item.account_id;
+            let payload = new FoldersPayloads.added_folder(
+                item.device_id,
+                item.name,
+                item.color,
+                item.color_dark,
+                item.color_light,
+                item.color_accent
+            )
             
-            stream.sendMessage(accountId, 'added_template', item);
+            stream.sendMessage(accountId, 'added_folder', payload);
         });
     });
 });
@@ -67,18 +80,19 @@ router.route('/remove/:deviceId').post(function (req, res) {
         return;
     }
     
+    // Delete the folder
     let sql = `DELETE FROM ${table} WHERE device_id = ${db.escape(Number(req.params.deviceId))} AND ${db.whereAccount(accountId)}`;
     
 
     db.query(sql, res, function (result) {
         res.json({});
+
+        let payload = new FoldersPayloads.removed_folder(
+            Number(req.params.deviceId)
+        );
         
         // Send websocket message
-        let msg = {
-            id: Number(req.params.deviceId)
-        };
-        
-        stream.sendMessage(accountId, 'removed_template', msg);
+        stream.sendMessage(accountId, 'removed_folder', payload);
     });
 });
 
@@ -92,23 +106,28 @@ router.route('/update/:deviceId').post(function (req, res) {
     }
     
     let toUpdate = {
-        text: req.body.text
+        name: req.body.name,
+        color: req.body.color,
+        color_dark: req.body.color_dark,
+        color_light: req.body.color_light,
+        color_accent: req.body.color_accent
     };
     
     let sql = `UPDATE ${table} SET ${db.updateStr(toUpdate)} WHERE device_id = ${db.escape(Number(req.params.deviceId))} AND ${db.whereAccount(accountId)}`;
 
     db.query(sql, res, function (result) {
         res.json({});
-        
-        // Send websocket message
-        let toKeep = ['device_id', 'text'];
+
+        let payload = new FoldersPayloads.updated_folder(
+            Number(req.params.deviceId),
+            toUpdate.name,
+            toUpdate.color,
+            toUpdate.color_dark,
+            toUpdate.color_light,
+            toUpdate.color_accent
+        )
             
-        let msg = {
-            device_id: Number(req.params.deviceId),
-            text: req.body.text
-        };
-        
-        stream.sendMessage(accountId, 'updated_template', msg);
+        stream.sendMessage(accountId, 'updated_folder', payload);
     });
 });
 

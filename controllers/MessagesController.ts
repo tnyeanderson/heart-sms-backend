@@ -1,9 +1,11 @@
-const express = require('express');
+import express from 'express';
+import db from '../db/query';
+import errors from '../utils/errors';
+import stream from './StreamController';
+import util from '../utils/util';
+import * as MessagesPayloads from '../models/payloads/MessagesPayloads';
+
 const router = express.Router();
-const db = require('../db/query');
-const errors = require('../utils/errors');
-const stream = require('./StreamController');
-const util = require('../utils/util');
 
 const table = 'Messages';
 
@@ -15,11 +17,11 @@ router.route('/').get(function (req, res) {
         return;
     }
     
-    let limitStr = db.limitStr(req.query.limit, req.query.offset);
+    let limitStr = db.limitStr(Number(req.query.limit), Number(req.query.offset));
     let whereConversationStr = '';
     
     if (req.query.conversation_id) {
-        whereConversationStr = " AND device_conversation_id = " + db.escape(req.query.conversation_id);
+        whereConversationStr = " AND device_conversation_id = " + db.escape(Number(req.query.conversation_id));
     }
     
     let sql = `SELECT * FROM ${table} WHERE ${db.whereAccount(accountId)} ${whereConversationStr} ORDER BY timestamp DESC ${limitStr}`;
@@ -42,11 +44,13 @@ router.route('/remove/:deviceId').post(function (req, res) {
 
     db.query(sql, res, function (result) {
         res.json({});
+
+        let payload = new MessagesPayloads.removed_message(
+            Number(req.params.deviceId)
+        );
         
         // Send websocket message
-        stream.sendMessage(accountId, 'removed_message', {
-            id: req.params.deviceId
-        });
+        stream.sendMessage(accountId, 'removed_message', payload);
     });
 });
 
@@ -59,9 +63,9 @@ router.route('/add').post(function (req, res) {
         return;
     }
     
-    let inserted = [];
+    let inserted: any[] = [];
     
-    req.body.messages.forEach(function (item) {
+    req.body.messages.forEach(function (item: any) {
         let toInsert = {
             account_id: accountId,
             device_id: item.device_id,
@@ -87,15 +91,23 @@ router.route('/add').post(function (req, res) {
         res.json({});
         
         // Send websocket message
-        inserted.forEach(function (item) {
-            let origKeys = ['device_id', 'device_conversation_id', 'message_type', 'message_from'];
-            let replaceWith = ['id', 'conversation_id', 'type', 'from'];
+        inserted.forEach(function (item: any) {
+            let payload = new MessagesPayloads.added_message(
+                item.device_id,
+                item.device_conversation_id,
+                item.message_type,
+                item.data,
+                item.timestamp,
+                item.mime_type,
+                item.read,
+                item.seen,
+                item.message_from,
+                item.color,
+                item.sent_device,
+                item.sim_stamp
+            );
             
-            let msg = util.renameKeys(item, origKeys, replaceWith);
-            
-            delete msg.account_id;
-            
-            stream.sendMessage(accountId, 'added_message', msg);
+            stream.sendMessage(accountId, 'added_message', payload);
         });
     });
 });
@@ -122,15 +134,15 @@ router.route('/update/:deviceId').post(function (req, res) {
         res.json({});
         
         // Send websocket message
-        let msg = {
-            id: Number(req.params.deviceId),
-            type: req.body.type,
-            timestamp: req.body.timestamp,
-            read: req.body.read,
-            seen: req.body.seen
-        };
+        let payload = new MessagesPayloads.updated_message(
+            Number(req.params.deviceId),
+            toUpdate.message_type,
+            toUpdate.timestamp,
+            toUpdate.read,
+            toUpdate.seen
+        );
         
-        stream.sendMessage(accountId, 'updated_message', msg);
+        stream.sendMessage(accountId, 'updated_message', payload);
     });
 });
 
@@ -157,11 +169,13 @@ router.route('/update_type/:deviceId').post(function (req, res) {
     db.query(sql, res, function (result) {
         res.json({});
         
+        let payload = new MessagesPayloads.update_message_type(
+            String(req.params.deviceId),
+            String(req.query.message_type)
+        )
+
         // Send websocket message
-        stream.sendMessage(accountId, 'update_message_type', {
-            id: req.params.deviceId,
-            message_type: Number(req.query.message_type)
-        });
+        stream.sendMessage(accountId, 'update_message_type', payload);
     });
 });
 
@@ -179,15 +193,17 @@ router.route('/cleanup').post(function (req, res) {
         return;
     }
     
-    let sql = `DELETE FROM ${table} WHERE timestamp < ${db.escape(req.query.timestamp)} AND ${db.whereAccount(accountId)}`;
+    let sql = `DELETE FROM ${table} WHERE timestamp < ${db.escape(Number(req.query.timestamp))} AND ${db.whereAccount(accountId)}`;
 
     db.query(sql, res, function (result) {
         res.json({});
+
+        let payload = new MessagesPayloads.cleanup_messages(
+            Number(req.query.timestamp)
+        )
         
         // Send websocket message
-        stream.sendMessage(accountId, 'cleanup_messages', {
-            timestamp: req.query.timestamp
-        });
+        stream.sendMessage(accountId, 'cleanup_messages', payload);
     });
 });
 
@@ -200,10 +216,16 @@ router.route('/forward_to_phone').post(function (req, res) {
         return;
     }
     
-    delete req.body.account_id;
+    let payload = new MessagesPayloads.forward_to_phone(
+        String(req.body.to),
+        String(req.body.message),
+        Number(req.body.sent_device),
+        String(req.body.mime_type),
+        Number(req.body.message_id)
+    );
     
     // Send websocket message
-    stream.sendMessage(accountId, 'forward_to_phone', req.body);
+    stream.sendMessage(accountId, 'forward_to_phone', payload);
     
     res.json({});
 });

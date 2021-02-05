@@ -1,10 +1,12 @@
-const express = require('express');
+import express from 'express';
+import db from '../db/query';
+import errors from '../utils/errors';
+import util from '../utils/util';
+import crypto from 'crypto';
+import stream from './StreamController';
+import * as AccountsPayloads from '../models/payloads/AccountsPayloads';
+
 const router = express.Router();
-const db = require('../db/query');
-const errors = require('../utils/errors');
-const util = require('../utils/util');
-const crypto = require('crypto');
-const stream = require('./StreamController');
 
 router.route('/').get(function (req, res) {
     res.json(errors.notImplemented);
@@ -110,11 +112,13 @@ router.route('/remove_account').post(function (req, res) {
         res.json({
             "success": "account deleted"
         });
+
+        let payload = new AccountsPayloads.removed_account(
+            accountId
+        );
         
         // Send websocket message
-        stream.sendMessage(accountId, 'removed_account', {
-            id: accountId
-        });
+        stream.sendMessage(accountId, 'removed_account', payload);
     });
 });
 
@@ -158,11 +162,13 @@ router.route('/clean_account').post(function (req, res) {
         res.json({
             "success": "account cleaned"
         });
+
+        let payload = new AccountsPayloads.cleaned_account(
+            accountId
+        );
         
         // Send websocket message
-        stream.sendMessage(accountId, 'cleaned_account', {
-            id: accountId
-        });
+        stream.sendMessage(accountId, 'cleaned_account', payload);
     });
 });
 
@@ -192,12 +198,12 @@ router.route('/dismissed_notification').post(function (req, res) {
         return;
     }
     
-    let msg = {
-        id: req.query.id,
-        device_id: req.query.device_id
-    }
+    let payload = new AccountsPayloads.dismissed_notification(
+        String(req.query.id),
+        String(req.query.device_id)
+    );
     
-    stream.sendMessage(accountId, 'dismissed_notification', msg);
+    stream.sendMessage(accountId, 'dismissed_notification', payload);
     
     res.json({});
 });

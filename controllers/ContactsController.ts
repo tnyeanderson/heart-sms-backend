@@ -1,9 +1,11 @@
-const express = require('express');
+import express from 'express';
+import db from '../db/query';
+import errors from '../utils/errors';
+import stream from './StreamController';
+import util from '../utils/util';
+import * as ContactsPayloads from '../models/payloads/ContactsPayloads';
+
 const router = express.Router();
-const db = require('../db/query');
-const errors = require('../utils/errors');
-const stream = require('./StreamController');
-const util = require('../utils/util');
 
 const table = 'Contacts';
 
@@ -15,7 +17,7 @@ router.route('/').get(function (req, res) {
         return;
     }
     
-    let limitStr = db.limitStr(req.query.limit, req.query.offset);
+    let limitStr = db.limitStr(Number(req.query.limit), Number(req.query.offset));
     
     let cols = ['id', 'account_id', 'device_id', 'phone_number', 'name', 'color', 'color_dark', 'color_light', 'color_accent', 'contact_type'];
     
@@ -34,7 +36,7 @@ router.route('/simple').get(function (req, res) {
         return;
     }
     
-    let limitStr = db.limitStr(req.query.limit, req.query.offset);
+    let limitStr = db.limitStr(Number(req.query.limit), Number(req.query.offset));
     
     let cols = ['phone_number', 'name', 'id', 'id_matcher', 'color', 'color_accent', 'contact_type'];
     
@@ -54,9 +56,9 @@ router.route('/add').post(function (req, res) {
         return;
     }
     
-    let inserted = [];
+    let inserted: any[] = [];
     
-    req.body.contacts.forEach(function (item) {
+    req.body.contacts.forEach(function (item: any) {
         let toInsert = {
             account_id: accountId,
             device_id: item.device_id,
@@ -79,17 +81,18 @@ router.route('/add').post(function (req, res) {
         res.json({});
         
         // Send websocket message
-        inserted.forEach(function (item) {
-            let origKeys = ['contact_type'];
-            let replaceWith = ['type'];
+        inserted.forEach(function (item: any) {
+            let payload = new ContactsPayloads.added_contact(
+                item.phone_number,
+                item.name,
+                item.color,
+                item.color_dark,
+                item.color_light,
+                item.color_accent,
+                item.contact_type
+            );
             
-            let msg = util.renameKeys(item, origKeys, replaceWith);
-            
-            delete msg.device_id;
-            delete msg.id_matcher;
-            delete msg.account_id;
-            
-            stream.sendMessage(accountId, 'added_contact', msg);
+            stream.sendMessage(accountId, 'added_contact', payload);
         });
     });
 });
@@ -146,7 +149,20 @@ router.route('/update_device_id').post(function (req, res) {
         let sql = `SELECT ${db.selectFields(fields)} FROM ${table} WHERE device_id = ${db.escape(Number(req.query.device_id))} AND ${db.whereAccount(accountId)} LIMIT 1`;
         
         db.query(sql, res, function (result) {
-            stream.sendMessage(accountId, 'updated_contact', result[0]);
+            if (result[0]) {
+                let payload = new ContactsPayloads.updated_contact(
+                    result[0].device_id,
+                    result[0].phone_number,
+                    result[0].name,
+                    result[0].color,
+                    result[0].color_dark,
+                    result[0].color_light,
+                    result[0].color_accent,
+                    result[0].type
+                );
+
+                stream.sendMessage(accountId, 'updated_contact', payload);
+            }
         });
     });
 });
@@ -165,16 +181,18 @@ router.route('/remove_device_id').post(function (req, res) {
         return;        
     }
     
-    let sql = `DELETE FROM ${table} WHERE ${db.whereAccount(accountId)} AND device_id = ${db.escape(req.query.device_id)}`;
+    let sql = `DELETE FROM ${table} WHERE ${db.whereAccount(accountId)} AND device_id = ${db.escape(Number(req.query.device_id))}`;
     
 
     db.query(sql, res, function (result) {
         res.json({});
         
-        // Send websocket message
-        let msg = util.keepOnlyKeys(req.query, ['device_id', 'phone_number']);
+        let payload = new ContactsPayloads.removed_contact(
+            Number(req.query.device_id),
+            String(req.query.phone_number)
+        );
         
-        stream.sendMessage(accountId, 'removed_contact', msg);
+        stream.sendMessage(accountId, 'removed_contact', payload);
     });
 });
 
@@ -187,9 +205,9 @@ router.route('/remove_ids/:ids').post(function (req, res) {
         return;
     }
     
-    let whereId = [];
+    let whereId: string[] = [];
     
-    req.params.ids.split(',').forEach(id => {
+    req.params.ids.split(',').forEach((id: string) => {
         whereId.push(db.escape(Number(id)));
     });
     
@@ -197,11 +215,13 @@ router.route('/remove_ids/:ids').post(function (req, res) {
 
     db.query(sql, res, function (result) {
         res.json({});
+
+        let payload = new ContactsPayloads.removed_contact_by_id(
+            req.params.ids
+        );
         
         // Send websocket message
-        stream.sendMessage(accountId, 'removed_contact_by_id', {
-            id: req.params.ids
-        });
+        stream.sendMessage(accountId, 'removed_contact_by_id', payload);
     });
 });
 

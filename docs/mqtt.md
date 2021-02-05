@@ -117,11 +117,11 @@ Content:
 ```
 {
     "id": STRING,
-    "message_type": INT
+    "message_type": STRING
 }
 ```
 
-*message_type is originally a string here (which is cast to INT in-app)*
+*id and message_type are originally strings according to prod... they are cast to INT in-app*
 
 
 ---
@@ -468,7 +468,7 @@ Content:
 ```
 {
     id: INT,
-    android_device: INT
+    android_device: STRING?
 }
 ```
 

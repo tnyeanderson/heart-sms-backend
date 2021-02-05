@@ -1,15 +1,14 @@
-const mqtt = require('mqtt');
-const url = require('url');
-const db = require('../db/query');
-const util = require('../utils/util');
-const crypto = require('crypto');
+import mqtt, { MqttClient, OnErrorCallback } from 'mqtt';
+import util from '../utils/util';
+import crypto from 'crypto';
+import { BasePayload } from '../models/payloads/BasePayload';
 
-const stream = {
-    socket: null,
-    topicPrefix: 'heartsms/',
-    backendPassword: null,
+class StreamController {
+    socket?: MqttClient;
+    backendPassword?: string;
+    topicPrefix = 'heartsms/';
 
-    init: function () {
+    init () {
         this.backendPassword = (util.env.devOrTest()) ? 'testpassword' : crypto.randomBytes(64).toString('hex');
 
         let username = 'heart-sms-backend';
@@ -27,17 +26,17 @@ const stream = {
         this.socket.on('connect', this.onConnect);
 
         this.socket.on('error', this.onError);
-    },
+    }
 
-    onConnect() {
+    onConnect () {
         console.log("Connected to MQTT broker");
-    },
+    }
 
-    onError(err) {
+    onError (err: Error) {
         console.log("MQTT error: ", err);
-    },
+    }
     
-    sendMessage: function (accountId, operation, content) {
+    sendMessage (accountId: string, operation: string, content: BasePayload) {
         let message = {
             operation: operation,
             content: content
@@ -53,5 +52,6 @@ const stream = {
     }
 }
 
-module.exports = stream;
+export = new StreamController();
+
  

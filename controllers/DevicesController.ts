@@ -1,9 +1,11 @@
-const express = require('express');
+import express from 'express';
+import db from '../db/query';
+import errors from '../utils/errors';
+import stream from './StreamController';
+import util from '../utils/util';
+import * as DevicesPayloads from '../models/payloads/DevicesPayloads';
+
 const router = express.Router();
-const db = require('../db/query');
-const errors = require('../utils/errors');
-const stream = require('./StreamController');
-const util = require('../utils/util');
 
 const table = "Devices"
 
@@ -41,7 +43,7 @@ router.route('/add').post(function (req, res) {
         fcm_token: req.body.device.fcm_token
     };
     
-    sql = `INSERT INTO ${table} ${db.insertStr([toInsert])}`;
+    let sql = `INSERT INTO ${table} ${db.insertStr([toInsert])}`;
         
     db.query(sql, res, function (result) {
         res.json({});
@@ -107,11 +109,13 @@ router.route('/update_primary').post(function (req, res) {
     
     db.query(sql, res, function (result) {
         res.json({});
+
+        let payload = new DevicesPayloads.update_primary_device(
+            String(req.query.new_primary_device_id)
+        );
         
         // Send websocket message
-        stream.sendMessage(accountId, 'update_primary_device', {
-            new_primary_device_id: req.query.new_primary_device_id
-        });
+        stream.sendMessage(accountId, 'update_primary_device', payload);
     });
 });
 
