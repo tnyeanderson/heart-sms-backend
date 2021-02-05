@@ -4,8 +4,8 @@
   "description": "Backend for HeartSMS, a fork of PulseSMS",
   "main": "server.js",
   "scripts": {
-    "compile": "tsc",
-    "test": "cd dist && NODE_ENV=test env-cmd -f ./.db.env mocha --exit",
+    "compile": "tsc --checkJs --strict",
+    "test": "NODE_ENV=test env-cmd -f ./.db.env mocha --exit",
     "start": "cd dist && NODE_ENV=production node server.js",
     "start-dev": "cd dist && NODE_ENV=dev node server.js",
     "build-dev": "npm run docker:build && npm run db:build && npm run mqtt:build",
