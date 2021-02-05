@@ -1,11 +1,11 @@
-const supertest = require("supertest");
-const should = require("should");
+import { agent } from "supertest";
+import should from "should";
 
 // This starts the server and gets the urls object
 //const { urls, server } = require("../server");
 
 // This agent refers to PORT where program is runninng.
-const api = supertest.agent("http://localhost:5000/api/v1");
+const api = agent("http://localhost:5000/api/v1");
 
 let accountId = '';
 let contactsToRemove = [];

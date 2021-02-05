@@ -1,5 +1,5 @@
 import express from 'express';
-import db from '../db/query';
+import db from '../db/query.js';
 
 const router = express.Router();
 
@@ -11,5 +11,5 @@ router.route('/').get(function (req, res) {
     });
 });
 
-module.exports = router;
+export default router;
  

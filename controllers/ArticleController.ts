@@ -1,5 +1,5 @@
 import express from 'express';
-import errors from '../utils/errors';
+import errors from '../utils/errors.js';
 import Mercury from '@postlight/mercury-parser';
 
 const router = express.Router();
@@ -23,5 +23,5 @@ router.route('/').get(function (req, res) {
     });
 });
 
-module.exports = router;
+export default router;
  

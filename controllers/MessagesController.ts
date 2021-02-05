@@ -1,9 +1,9 @@
 import express from 'express';
-import db from '../db/query';
-import errors from '../utils/errors';
-import stream from './StreamController';
-import util from '../utils/util';
-import * as MessagesPayloads from '../models/payloads/MessagesPayloads';
+import db from '../db/query.js';
+import errors from '../utils/errors.js';
+import stream from './StreamController.js';
+import util from '../utils/util.js';
+import * as MessagesPayloads from '../models/payloads/MessagesPayloads.js';
 
 const router = express.Router();
 
@@ -230,5 +230,5 @@ router.route('/forward_to_phone').post(function (req, res) {
     res.json({});
 });
 
-module.exports = router;
+export default router;
  

@@ -1,9 +1,9 @@
 import express from 'express';
-import db from '../db/query';
-import errors from '../utils/errors';
-import stream from './StreamController';
-import util from '../utils/util';
-import * as BlacklistsPayloads from '../models/payloads/BlacklistsPayloads';
+import db from '../db/query.js';
+import errors from '../utils/errors.js';
+import stream from './StreamController.js';
+import util from '../utils/util.js';
+import * as BlacklistsPayloads from '../models/payloads/BlacklistsPayloads.js';
 
 const router = express.Router();
 
@@ -89,5 +89,5 @@ router.route('/remove/:deviceId').post(function (req, res) {
     });
 });
 
-module.exports = router;
+export default router;
  

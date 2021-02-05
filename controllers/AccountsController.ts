@@ -1,10 +1,10 @@
 import express from 'express';
-import db from '../db/query';
-import errors from '../utils/errors';
-import util from '../utils/util';
+import db from '../db/query.js';
+import errors from '../utils/errors.js';
+import util from '../utils/util.js';
 import crypto from 'crypto';
-import stream from './StreamController';
-import * as AccountsPayloads from '../models/payloads/AccountsPayloads';
+import stream from './StreamController.js';
+import * as AccountsPayloads from '../models/payloads/AccountsPayloads.js';
 
 const router = express.Router();
 
@@ -216,4 +216,4 @@ router.route('/update_subscription').post(function (req, res) {
 });
 
 
-module.exports = router;
+export default router;

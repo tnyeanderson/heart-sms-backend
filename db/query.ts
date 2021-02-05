@@ -1,9 +1,9 @@
-import { Response } from "express";
-import { FieldInfo, Pool, queryCallback } from "mysql";
-import errors from "../utils/errors";
+import { Response } from 'express';
+import { FieldInfo, Pool } from 'mysql';
+import errors from '../utils/errors.js';
 import mysql from 'mysql';
-import connection from '../db/connect';
-import util from '../utils/util';
+import connection from '../db/connect.js';
+import util from '../utils/util.js';
 
 let pool: Pool  = mysql.createPool(connection());
 
@@ -138,4 +138,4 @@ let Query = {
 
 }
 
-export = Query;
+export default Query;

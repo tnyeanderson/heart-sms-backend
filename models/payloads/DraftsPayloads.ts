@@ -1,4 +1,4 @@
-import { BasePayload } from "./BasePayload"
+import { BasePayload } from './BasePayload.js';
 
 export class added_draft extends BasePayload {
     constructor (

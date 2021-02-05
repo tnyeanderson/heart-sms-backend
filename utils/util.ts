@@ -22,4 +22,4 @@ const util = {
     }
 }
 
-export = util;
+export default util;

@@ -1,8 +1,9 @@
 {
   "compilerOptions": {
     "outDir": "./dist",
-    "target": "es5",
-    "esModuleInterop": true
+    "target": "es6",
+    "esModuleInterop": true,
+    "moduleResolution": "node"
   },
   "include": [
     "./**/*"

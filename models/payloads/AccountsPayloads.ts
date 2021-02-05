@@ -1,4 +1,4 @@
-import { BasePayload } from "./BasePayload";
+import { BasePayload } from './BasePayload.js';
 
 export class dismissed_notification extends BasePayload {
     constructor (

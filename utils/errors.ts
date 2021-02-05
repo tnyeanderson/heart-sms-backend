@@ -26,4 +26,4 @@ const HeartErrors = {
 
 }
 
-export = HeartErrors;
+export default HeartErrors;

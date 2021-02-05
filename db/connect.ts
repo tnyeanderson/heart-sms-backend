@@ -1,5 +1,5 @@
-import { ConnectionConfig } from "mysql";
-import util from '../utils/util';
+import { ConnectionConfig } from 'mysql';
+import util from '../utils/util.js';
 
 const dbDefaultPass: string = 'TESTPASSWORD2';
 
@@ -46,5 +46,5 @@ const connection = function (extraSettings?: ConnectionConfig) {
     return out;
 }
 
-export = connection;
+export default connection;
     

@@ -1,9 +1,9 @@
 import express from 'express';
-import db from '../db/query';
-import errors from '../utils/errors';
-import stream from './StreamController';
-import util from '../utils/util';
-import * as DevicesPayloads from '../models/payloads/DevicesPayloads';
+import db from '../db/query.js';
+import errors from '../utils/errors.js';
+import stream from './StreamController.js';
+import util from '../utils/util.js';
+import * as DevicesPayloads from '../models/payloads/DevicesPayloads.js';
 
 const router = express.Router();
 
@@ -119,5 +119,5 @@ router.route('/update_primary').post(function (req, res) {
     });
 });
 
-module.exports = router;
+export default router;
  

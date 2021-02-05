@@ -1,7 +1,7 @@
 import mqtt, { MqttClient, OnErrorCallback } from 'mqtt';
-import util from '../utils/util';
+import util from '../utils/util.js';
 import crypto from 'crypto';
-import { BasePayload } from '../models/payloads/BasePayload';
+import { BasePayload } from '../models/payloads/BasePayload.js';
 
 class StreamController {
     socket?: MqttClient;
@@ -52,6 +52,8 @@ class StreamController {
     }
 }
 
-export = new StreamController();
+const streamController = new StreamController();
+
+export default streamController;
 
  

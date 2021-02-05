@@ -1,7 +1,7 @@
 import express, { Response } from 'express';
-import db from '../db/query';
-import errors from '../utils/errors';
-import stream from './StreamController';
+import db from '../db/query.js';
+import errors from '../utils/errors.js';
+import stream from './StreamController.js';
 
 // https://github.com/rabbitmq/rabbitmq-server/tree/master/deps/rabbitmq_auth_backend_http#what-must-my-web-server-do
 
@@ -73,4 +73,4 @@ router.route('/acl').post(function (req, res) {
     
 });
 
-module.exports = router;
+export default router;

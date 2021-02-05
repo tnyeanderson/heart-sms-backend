@@ -9,5 +9,5 @@ router.route('/record').post(function (req, res) {
     res.json({});
 });
 
-module.exports = router;
+export default router;
  

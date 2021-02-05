@@ -1,7 +1,7 @@
 import express from 'express';
-import db from '../db/query';
-import errors from '../utils/errors';
-import util from '../utils/util';
+import db from '../db/query.js';
+import errors from '../utils/errors.js';
+import util from '../utils/util.js';
 
 const router = express.Router();
 
@@ -50,5 +50,5 @@ router.route('/:messageId').get(function (req, res) {
     });
 });
 
-module.exports = router;
+export default router;
  
