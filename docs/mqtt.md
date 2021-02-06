@@ -72,6 +72,16 @@ Content:
 
 
 ### updated_account
+
+Content:
+```
+{
+    "real_name": STRING,
+    "phone_number": STRING
+}
+```
+
+
 ### cleaned_account
 
 Content:

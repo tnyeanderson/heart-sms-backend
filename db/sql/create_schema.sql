@@ -16,21 +16,26 @@ CREATE TABLE IF NOT EXISTS Accounts (
     `real_name` TEXT NULL,
     `salt1` TEXT NOT NULL,
     `salt2` TEXT NOT NULL,
-    `phone_number` TEXT NOT NULL,
+    `phone_number` TEXT NOT NULL
+) ;
+
+CREATE TABLE IF NOT EXISTS Settings (
+    `account_id` INTEGER NOT NULL PRIMARY KEY,
     `base_theme` VARCHAR(12) NOT NULL DEFAULT 'light',
     `passcode` TEXT NULL,
     `rounder_bubbles` BOOLEAN NOT NULL DEFAULT false,
     `use_global_theme` BOOLEAN NOT NULL DEFAULT false,
     `apply_primary_color_to_toolbar` BOOLEAN NOT NULL DEFAULT true,
     `conversation_categories` BOOLEAN NOT NULL DEFAULT true,
-    `message_timestamp` BOOLEAN NOT NULL DEFAULT false,
     `color` INTEGER NOT NULL DEFAULT -1352590,
     `color_dark` INTEGER NOT NULL DEFAULT -4311478,
     `color_light` INTEGER NOT NULL DEFAULT -1,
     `color_accent` INTEGER NOT NULL DEFAULT -10011977,
+    `global_color_theme` VARCHAR(12) NULL DEFAULT 'default',
+    `message_timestamp` BOOLEAN NOT NULL DEFAULT false,
     `subscription_type` INTEGER NOT NULL DEFAULT 3,
     `subscription_expiration` BIGINT NOT NULL DEFAULT 1600789518254,
-    `global_color_theme` VARCHAR(12) NULL DEFAULT 'default'
+    CONSTRAINT FK_Settings_Accounts_account_id FOREIGN KEY (account_id) REFERENCES Accounts (account_id) ON DELETE CASCADE
 ) ;
 
 CREATE TABLE IF NOT EXISTS SessionMap (
@@ -327,6 +332,7 @@ BEGIN
     START TRANSACTION;
     INSERT INTO Accounts  (`username`, `password_hash`, `salt1`, `salt2`, `real_name`, `phone_number`) VALUES (username, passwordHash, salt1, salt2, realName, phoneNumber);
     INSERT INTO SessionMap (`session_id`, `account_id`) VALUES (sessionId, LAST_INSERT_ID());
+    INSERT INTO Settings (`account_id`) VALUES (LAST_INSERT_ID());
     COMMIT;
 END //
 

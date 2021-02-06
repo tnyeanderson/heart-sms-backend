@@ -4,7 +4,7 @@ import errors from '../utils/errors.js';
 import util from '../utils/util.js';
 import crypto from 'crypto';
 import stream from './StreamController.js';
-import users from '../utils/users.js';
+import users from '../helpers/UserHelper.js';
 import * as AccountsPayloads from '../models/payloads/AccountsPayloads.js';
 
 const router = express.Router();
@@ -14,8 +14,9 @@ router.route('/').get(function (req, res) {
 });
 
 router.route('/login').post(function (req, res) {
-    let sql = `SELECT * FROM Accounts INNER JOIN SessionMap USING (account_id) WHERE username = ${db.escape(req.body.username)} LIMIT 1`;
-    
+    let fields = ['account_id', 'session_id', 'password_hash', 'real_name AS name', 'salt1', 'salt2', 'phone_number', 'base_theme', 'passcode', 'rounder_bubbles', 'use_global_theme', 'apply_primary_color_to_toolbar', 'conversation_categories', 'color', 'color_dark', 'color_light', 'color_accent', 'global_color_theme', 'message_timestamp', 'subscription_type', 'subscription_expiration'];
+    let sql = `SELECT ${db.selectFields(fields)} FROM Accounts INNER JOIN SessionMap USING (account_id) INNER JOIN Settings USING (account_id) WHERE username = ${db.escape(req.body.username)} LIMIT 1`;
+
     db.query(sql, res, function (result) {
         if (!result[0]) {
             res.status(401).json(errors.auth);
@@ -188,7 +189,7 @@ router.route('/settings').get(function (req, res) {
     
     let fields = ["base_theme", "global_color_theme", "rounder_bubbles", "color", "color_dark", "color_light", "color_accent", "use_global_theme", "apply_primary_color_to_toolbar", "passcode", "subscription_type", "message_timestamp", "conversation_categories"];
     
-    let sql = `SELECT ${db.selectFields(fields)} FROM Accounts WHERE ${db.whereAccount(accountId)} LIMIT 1`;
+    let sql = `SELECT ${db.selectFields(fields)} FROM Settings WHERE ${db.whereAccount(accountId)} LIMIT 1`;
     
     db.query(sql, res, function (result) {
         res.json(result[0] || null);

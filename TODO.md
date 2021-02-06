@@ -26,7 +26,7 @@ Checked means "test written and passing", tilde means the endpoint sends an MQTT
 - [x] accounts/count
 - [x] accounts/settings
 - [ ] accounts/update_setting
-- [ ] ~ accounts/dismissed_notification
+- [x] ~ accounts/dismissed_notification
 - [ ] activate
 - [x] auto_replies/
 - [x] auto_replies/add

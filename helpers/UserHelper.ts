@@ -1,4 +1,4 @@
-class UserManager {
+class UserHelper {
     allowed: string[] = [];
     allowAll = false;
 
@@ -24,6 +24,6 @@ class UserManager {
     }
 }
 
-const userManager = new UserManager();
+const userHelper = new UserHelper();
 
-export default userManager;
+export default userHelper;

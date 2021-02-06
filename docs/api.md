@@ -353,7 +353,7 @@ Always returns `{}` for compatibility.
 
 ### `/activate`
 
-Method: POST
+Method: GET
 
 Parameters: `activation_code=STRING`
 
