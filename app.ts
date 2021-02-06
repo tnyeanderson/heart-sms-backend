@@ -1,4 +1,4 @@
-import express, { Router, json } from 'express';
+import express, { Router, json, Request, Response } from 'express';
 import cors from 'cors';
 import requireall from 'require-all';
 import path from 'path';
@@ -38,6 +38,8 @@ app.use(cors());
 // Parse JSON in request body
 app.use(json())
 
+
+
 // Define routes to controllers
 app.use(getUrl('/accounts'),           AccountsController);
 app.use(getUrl('/activate'),           ActivateController);
@@ -56,6 +58,11 @@ app.use(getUrl('/purchases'),          PurchasesController);
 app.use(getUrl('/scheduled_messages'), ScheduledMessagesController);
 app.use(getUrl('/templates'),          TemplatesController);
 
+// Log requests with no endpoint
+app.use((req: Request, res: Response, next) => {
+    console.log("ERROR: unhandled path in request: ", req.path);
+    next(); // Passing the request to the next handler in the stack.
+});
 
 export default app;
  

@@ -17,6 +17,8 @@ The API container (`heart-sms-backend`) is used by clients (phones, web clients,
 
 The web client also makes calls to the API, but since browsers can't use MQTT directly, a websocket endpoint is included in `heart-sms-mqtt` for web clients to connect to.
 
+Finally, there is an `/article` endpoint which uses `@postlight/mercury-parser`. This is called from the android app in lieu of Klinker's article api, and aims to make articles more readable when viewed in the app. 
+
 ## Services, endpoints, and ports
 
 | Description | External Port | Internal port | Reverse Proxy Endpoints           | Container         |

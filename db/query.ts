@@ -5,6 +5,9 @@ import mysql from 'mysql';
 import connection from '../db/connect.js';
 import util from '../utils/util.js';
 
+// Set to true to debug SQL queries during development
+let log_queries = false;
+
 let pool: Pool  = mysql.createPool(connection());
 
 type HeartQueryCallback = (result: FieldInfo[] | any[]) => any;
@@ -41,7 +44,7 @@ let Query = {
     },
     
     query: function (sql: string, res: Response, callback: HeartQueryCallback) {
-        if (util.env.dev()) {
+        if (log_queries && util.env.dev()) {
             console.log(sql, ';', '\n');
         }
         pool.query(sql, function (err, result) {
