@@ -1,7 +1,5 @@
 import express, { Router, json, Request, Response } from 'express';
 import cors from 'cors';
-import requireall from 'require-all';
-import path from 'path';
 
 // Controllers
 import AccountsController from './controllers/AccountsController.js';

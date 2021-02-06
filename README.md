@@ -1,6 +1,6 @@
 # heart-sms-backend
 
-This project provides a database and API backend for HeartSMS, a fork of PulseSMS. Written in NodeJS.
+This project provides a database and API backend for HeartSMS, a fork of PulseSMS. Written with NodeJS.
 
 **Heart** is a text messaging app for android that lets you text from your browser on any computer. Whenever you receive or send a text on your phone, it is encrypted (along with certain metadata) on the client, sent to the backend (this repo), and stored in a database. The web client can use this database via its associated API (plus MQTT messaging) to read and respond to SMS messages in real time from any modern browser. When you hit send in the browser, it sends a request to your android phone to actually send the message. This means that you keep your phone number.
 
@@ -46,6 +46,13 @@ This project uses 4 bespoke containers to make configuration easy. Just create/e
 
 If you want to build the production containers yourself (might be a good idea if you are testing certain things because I don't have CI/CD in place... yet), you can do so in the following way:
 
+### Build backend, mqtt, and database
+
+Creates all containers with tag `:dev`
+```
+npm run build-dev
+```
+
 ### heart-sms-backend
 
 From project root, run:
@@ -66,17 +73,17 @@ This will create a container tagged `heartsms/heart-sms-web:dev`.
 
 ### heart-sms-db
 ```
-cd ./db
-
-sudo docker build -t heartsms/heart-sms-db:dev .
+npm run db:build
 ```
+
+This will create a container tagged `heartsms/heart-sms-db:dev`.
 
 ### heart-sms-mqtt
 ```
-cd ./mqtt
-
-sudo docker build -t heartsms/heart-sms-mqtt:dev .
+npm run mqtt:build
 ```
+
+This will create a container tagged `heartsms/heart-sms-mqtt:dev`.
 
 
 ## The following is from TChilderhose (edited)

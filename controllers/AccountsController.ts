@@ -4,6 +4,7 @@ import errors from '../utils/errors.js';
 import util from '../utils/util.js';
 import crypto from 'crypto';
 import stream from './StreamController.js';
+import users from '../utils/users.js';
 import * as AccountsPayloads from '../models/payloads/AccountsPayloads.js';
 
 const router = express.Router();
@@ -49,6 +50,11 @@ router.route('/signup').post(function (req, res) {
 
     if (!req.body.name) {
         res.json(errors.missingParam);
+        return;
+    }
+
+    if (!users.isAllowed(req.body.name)) {
+        res.json(errors.userNotAllowed);
         return;
     }
 

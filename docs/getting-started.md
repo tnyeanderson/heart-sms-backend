@@ -114,6 +114,16 @@ HEART_API_URL=api.heart.lan
 HEART_WEBSOCKETS_URL=api.heart.lan
 HEART_MQTT_URL=api.heart.lan   # OR mqtt.heart.lan
 HEART_USE_SSL=true
+
+# Limit user signups
+# Wildcard (allow all users): *
+# Or specify each user separated commas (no spaces)
+HEART_ALLOWED_USERS=*
+```
+
+You can limit which usernames can be used to sign up to HeartSMS. For instance:
+```
+HEART_ALLOWED_USERS=test@email.com,user2,alphatester@email.com
 ```
 
 **Make sure the permissions for your .env and certificate files are appropriate on the host!**

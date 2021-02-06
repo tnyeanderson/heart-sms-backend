@@ -8,6 +8,10 @@ const HeartErrors = {
         "error": "user already exists"
     },
 
+    userNotAllowed: {
+        "error": "username is not allowed"
+    },
+
     auth: {
         "error": "username or password incorrect"
     },

@@ -5,8 +5,8 @@
   "main": "server.js",
   "type": "module",
   "scripts": {
-    "compile": "tsc --strict",
-    "lint": "tsc --strict --noEmit",
+    "compile": "tsc",
+    "lint": "tsc --noEmit",
     "test": "NODE_ENV=test env-cmd -f ./.db.env mocha --exit",
     "start": "cd dist && NODE_ENV=production node server.js",
     "start-dev": "cd dist && NODE_ENV=dev node server.js",
@@ -39,13 +39,10 @@
   "homepage": "https://github.com/tnyeanderson/heart-sms-backend#readme",
   "dependencies": {
     "@postlight/mercury-parser": "^2.2.0",
-    "body-parser": "^1.19.0",
     "cors": "^2.8.5",
     "express": "^4.17.1",
     "mqtt": "^4.2.6",
     "mysql": "^2.18.1",
-    "require-all": "^3.0.0",
-    "url": "^0.11.0",
     "uuid": "^8.3.2"
   },
   "devDependencies": {
@@ -54,7 +51,6 @@
     "@types/mocha": "^8.2.0",
     "@types/mysql": "^2.15.17",
     "@types/postlight__mercury-parser": "^2.2.3",
-    "@types/require-all": "^3.0.1",
     "@types/supertest": "^2.0.10",
     "@types/uuid": "^8.3.0",
     "env-cmd": "^10.1.0",
