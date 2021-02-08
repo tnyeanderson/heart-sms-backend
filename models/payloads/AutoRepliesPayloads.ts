@@ -9,9 +9,9 @@ export class removed_auto_reply extends BasePayload {
 export class added_auto_reply extends BasePayload {
     constructor (
         public device_id: Number,
-        public type: String,
-        public pattern: String,
-        public response: String
+        public type: string,
+        public pattern: string,
+        public response: string
     ) { super() }
 }
 

@@ -1,38 +1,30 @@
 import express from 'express';
 import db from '../db/query.js';
-import errors from '../utils/errors.js';
 import stream from './StreamController.js';
 import util from '../utils/util.js';
 import * as FoldersPayloads from '../models/payloads/FoldersPayloads.js';
+import { BaseResponse } from '../models/responses/BaseResponse.js';
+import { FoldersListResponse } from '../models/responses/FoldersResponses.js';
+import { BaseRequest } from '../models/requests/BaseRequest.js';
 
 const router = express.Router();
 
 const table = "Folders"
 
-router.route('/').get(function (req, res) {
+router.route('/').get(BaseRequest.validate, function (req, res) {
     let accountId = util.getAccountId(req);
-    
-    if (!accountId) {
-        res.json(errors.invalidAccount);
-        return;
-    }
     
     let sql = `SELECT * FROM ${table} WHERE ${db.whereAccount(accountId)}`;
     
 
     db.query(sql, res, function (result) {
-        res.json(result);
+        res.json(FoldersListResponse.getList(result));
     });
 });
 
 
-router.route('/add').post(function (req, res) {
+router.route('/add').post(BaseRequest.validate, function (req, res) {
     let accountId = util.getAccountId(req);
-    
-    if (!accountId) {
-        res.json(errors.invalidAccount);
-        return;
-    }
     
     let inserted: any[] = [];
     
@@ -53,7 +45,7 @@ router.route('/add').post(function (req, res) {
     let sql = `INSERT INTO ${table} ${db.insertStr(inserted)}`;
         
     db.query(sql, res, function (result) {
-        res.json({});
+        res.json(new BaseResponse);
         
         // Send websocket message
         inserted.forEach(function (item) {
@@ -72,20 +64,15 @@ router.route('/add').post(function (req, res) {
 });
 
 
-router.route('/remove/:deviceId').post(function (req, res) {
+router.route('/remove/:deviceId').post(BaseRequest.validate, function (req, res) {
     let accountId = util.getAccountId(req);
-    
-    if (!accountId) {
-        res.json(errors.invalidAccount);
-        return;
-    }
     
     // Delete the folder
     let sql = `DELETE FROM ${table} WHERE device_id = ${db.escape(Number(req.params.deviceId))} AND ${db.whereAccount(accountId)}`;
     
 
     db.query(sql, res, function (result) {
-        res.json({});
+        res.json(new BaseResponse);
 
         let payload = new FoldersPayloads.removed_folder(
             Number(req.params.deviceId)
@@ -97,13 +84,8 @@ router.route('/remove/:deviceId').post(function (req, res) {
 });
 
 
-router.route('/update/:deviceId').post(function (req, res) {
+router.route('/update/:deviceId').post(BaseRequest.validate, function (req, res) {
     let accountId = util.getAccountId(req);
-    
-    if (!accountId) {
-        res.json(errors.invalidAccount);
-        return;
-    }
     
     let toUpdate = {
         name: req.body.name,
@@ -116,7 +98,7 @@ router.route('/update/:deviceId').post(function (req, res) {
     let sql = `UPDATE ${table} SET ${db.updateStr(toUpdate)} WHERE device_id = ${db.escape(Number(req.params.deviceId))} AND ${db.whereAccount(accountId)}`;
 
     db.query(sql, res, function (result) {
-        res.json({});
+        res.json(new BaseResponse);
 
         let payload = new FoldersPayloads.updated_folder(
             Number(req.params.deviceId),

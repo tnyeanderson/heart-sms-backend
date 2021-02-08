@@ -1,38 +1,30 @@
 import express from 'express';
 import db from '../db/query.js';
-import errors from '../utils/errors.js';
 import stream from './StreamController.js';
 import util from '../utils/util.js';
 import * as TemplatesPayloads from '../models/payloads/TemplatesPayloads.js';
+import { BaseResponse } from '../models/responses/BaseResponse.js';
+import { TemplatesListResponse } from '../models/responses/TemplatesResponses.js';
+import { BaseRequest } from '../models/requests/BaseRequest.js';
 
 const router = express.Router();
 
 const table = "Templates"
 
-router.route('/').get(function (req, res) {
+router.route('/').get(BaseRequest.validate, function (req, res) {
     let accountId = util.getAccountId(req);
-    
-    if (!accountId) {
-        res.json(errors.invalidAccount);
-        return;
-    }
     
     let sql = `SELECT * FROM ${table} WHERE ${db.whereAccount(accountId)}`;
     
 
     db.query(sql, res, function (result) {
-        res.json(result);
+        res.json(TemplatesListResponse.getList(result));
     });
 });
 
 
-router.route('/add').post(function (req, res) {
+router.route('/add').post(BaseRequest.validate, function (req, res) {
     let accountId = util.getAccountId(req);
-    
-    if (!accountId) {
-        res.json(errors.invalidAccount);
-        return;
-    }
     
     let inserted: any[] = [];
     
@@ -49,7 +41,7 @@ router.route('/add').post(function (req, res) {
     let sql = `INSERT INTO ${table} ${db.insertStr(inserted)}`;
         
     db.query(sql, res, function (result) {
-        res.json({});
+        res.json(new BaseResponse);
         
         // Send websocket message
         inserted.forEach(function (item) {
@@ -64,19 +56,14 @@ router.route('/add').post(function (req, res) {
 });
 
 
-router.route('/remove/:deviceId').post(function (req, res) {
+router.route('/remove/:deviceId').post(BaseRequest.validate, function (req, res) {
     let accountId = util.getAccountId(req);
-    
-    if (!accountId) {
-        res.json(errors.invalidAccount);
-        return;
-    }
     
     let sql = `DELETE FROM ${table} WHERE device_id = ${db.escape(Number(req.params.deviceId))} AND ${db.whereAccount(accountId)}`;
     
 
     db.query(sql, res, function (result) {
-        res.json({});
+        res.json(new BaseResponse);
         
         // Send websocket message
         let payload = new TemplatesPayloads.removed_template(
@@ -88,13 +75,8 @@ router.route('/remove/:deviceId').post(function (req, res) {
 });
 
 
-router.route('/update/:deviceId').post(function (req, res) {
+router.route('/update/:deviceId').post(BaseRequest.validate, function (req, res) {
     let accountId = util.getAccountId(req);
-    
-    if (!accountId) {
-        res.json(errors.invalidAccount);
-        return;
-    }
     
     let toUpdate = {
         text: req.body.text
@@ -103,7 +85,7 @@ router.route('/update/:deviceId').post(function (req, res) {
     let sql = `UPDATE ${table} SET ${db.updateStr(toUpdate)} WHERE device_id = ${db.escape(Number(req.params.deviceId))} AND ${db.whereAccount(accountId)}`;
 
     db.query(sql, res, function (result) {
-        res.json({});
+        res.json(new BaseResponse);
         
         // Send websocket message
         let toKeep = ['device_id', 'text'];

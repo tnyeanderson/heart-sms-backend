@@ -2,8 +2,8 @@ import { BasePayload } from './BasePayload.js';
 
 export class added_contact extends BasePayload {
     constructor (
-        public phone_number: String,
-        public name: String,
+        public phone_number: string,
+        public name: string,
         public color: Number,
         public color_dark: Number,
         public color_light: Number,
@@ -16,8 +16,8 @@ export class added_contact extends BasePayload {
 export class updated_contact extends BasePayload {
     constructor (
         public device_id: Number,
-        public phone_number: String,
-        public name: String,
+        public phone_number: string,
+        public name: string,
         public color: Number,
         public color_dark: Number,
         public color_light: Number,
@@ -30,13 +30,13 @@ export class updated_contact extends BasePayload {
 export class removed_contact extends BasePayload {
     constructor (
         public device_id: Number,
-        public phone_number: String
+        public phone_number: string
     ) { super() }
 }
 
 
 export class removed_contact_by_id extends BasePayload {
     constructor (
-        public id: String
+        public id: string
     ) { super() }
 }

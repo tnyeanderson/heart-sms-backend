@@ -3,7 +3,7 @@ import { BasePayload } from './BasePayload.js';
 export class added_folder extends BasePayload {
     constructor (
         public device_id: Number,
-        public name: String,
+        public name: string,
         public color: Number,
         public color_dark: Number,
         public color_light: Number,

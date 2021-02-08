@@ -4,8 +4,8 @@ export class added_draft extends BasePayload {
     constructor (
         public id: Number,
         public conversation_id: Number,
-        public data: String,
-        public mime_type: String
+        public data: string,
+        public mime_type: string
     ) { super() }
 }
 
@@ -13,7 +13,7 @@ export class added_draft extends BasePayload {
 export class removed_drafts extends BasePayload {
     constructor (
         public id: Number,
-        public android_device?: String
+        public android_device?: string
     ) { super() }
 }
 

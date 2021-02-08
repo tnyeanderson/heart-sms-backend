@@ -12,15 +12,15 @@ export class added_conversation extends BasePayload {
         public pinned: Boolean,
         public read: Boolean,
         public timestamp: Number,
-        public title: String,
-        public phone_numbers: String,
-        public snippet: String,
-        public id_matcher: String,
+        public title: string,
+        public phone_numbers: string,
+        public snippet: string,
+        public id_matcher: string,
         public mute: Boolean,
         public archive: Boolean,
         public private_notifications: Boolean,
-        public ringtone?: String,
-        public image_uri?: String,
+        public ringtone?: string,
+        public image_uri?: string,
     ) { super() }
 }
 
@@ -35,12 +35,12 @@ export class updated_conversation extends BasePayload {
         public led_color: Number,
         public pinned: Boolean,
         public read: Boolean,
-        public title: String,
-        public snippet: String,
+        public title: string,
+        public snippet: string,
         public mute: Boolean,
         public archive: Boolean,
         public private_notifications: Boolean,
-        public ringtone?: String
+        public ringtone?: string
     ) { super() }
 }
 
@@ -50,7 +50,7 @@ export class update_conversation_snippet extends BasePayload {
         public id: Number,
         public read: Boolean,
         public timestamp: Number,
-        public snippet: String,
+        public snippet: string,
         public archive: Boolean
     ) { super() }
 }
@@ -59,7 +59,7 @@ export class update_conversation_snippet extends BasePayload {
 export class update_conversation_title extends BasePayload {
     constructor (
         public id: Number,
-        public title: String
+        public title: string
     ) { super() }
 }
 
@@ -67,7 +67,7 @@ export class update_conversation_title extends BasePayload {
 export class read_conversation extends BasePayload {
     constructor (
         public id: Number,
-        public android_device?: String
+        public android_device?: string
     ) { super() }
 }
 
@@ -91,7 +91,7 @@ export class add_conversation_to_folder extends BasePayload {
 export class cleanup_conversation_messages extends BasePayload {
     constructor (
         public timestamp: Number,
-        public conversation_id: String
+        public conversation_id: string
     ) { super() }
 }
 

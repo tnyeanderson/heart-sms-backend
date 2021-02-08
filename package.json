@@ -39,6 +39,7 @@
   "homepage": "https://github.com/tnyeanderson/heart-sms-backend#readme",
   "dependencies": {
     "@postlight/mercury-parser": "^2.2.0",
+    "class-transformer": "^0.3.2",
     "cors": "^2.8.5",
     "express": "^4.17.1",
     "mqtt": "^4.2.6",

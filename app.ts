@@ -22,7 +22,7 @@ import TemplatesController from './controllers/TemplatesController.js';
 const app = express();
 const router = Router();
 
-function getUrl (path: String) {
+function getUrl (path: string) {
     return '/api/v1' + path;
 }
 

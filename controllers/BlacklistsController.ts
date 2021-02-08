@@ -1,39 +1,32 @@
 import express from 'express';
 import db from '../db/query.js';
-import errors from '../utils/errors.js';
 import stream from './StreamController.js';
 import util from '../utils/util.js';
 import * as BlacklistsPayloads from '../models/payloads/BlacklistsPayloads.js';
+import { BlacklistListResponse } from '../models/responses/BlacklistsResponses.js';
+import { BaseResponse } from '../models/responses/BaseResponse.js';
+import { BaseRequest } from '../models/requests/BaseRequest.js';
+
 
 const router = express.Router();
 
 const table = "Blacklists"
 
-router.route('/').get(function (req, res) {
+router.route('/').get(BaseRequest.validate, function (req, res) {
     let accountId = util.getAccountId(req);
-    
-    if (!accountId) {
-        res.json(errors.invalidAccount);
-        return;
-    }
     
     let sql = `SELECT * FROM ${table} WHERE ${db.whereAccount(accountId)}`;
     
 
     db.query(sql, res, function (result) {
-        res.json(result);
+        res.json(BlacklistListResponse.getList(result));
     });
 });
 
 
-router.route('/add').post(function (req, res) {
+router.route('/add').post(BaseRequest.validate, function (req, res) {
     let accountId = util.getAccountId(req);
-    
-    if (!accountId) {
-        res.json(errors.invalidAccount);
-        return;
-    }
-    
+
     let inserted: any[] = [];
     
     req.body.blacklists.forEach(function (item: any) {
@@ -50,7 +43,7 @@ router.route('/add').post(function (req, res) {
     let sql = `INSERT INTO ${table} ${db.insertStr(inserted)}`;
         
     db.query(sql, res, function (result) {
-        res.json({});
+        res.json(new BaseResponse);
         
         // Send websocket message
         inserted.forEach(function (item: any) {
@@ -66,19 +59,14 @@ router.route('/add').post(function (req, res) {
 });
 
 
-router.route('/remove/:deviceId').post(function (req, res) {
+router.route('/remove/:deviceId').post(BaseRequest.validate, function (req, res) {
     let accountId = util.getAccountId(req);
-    
-    if (!accountId) {
-        res.json(errors.invalidAccount);
-        return;
-    }
     
     let sql = `DELETE FROM ${table} WHERE device_id = ${db.escape(Number(req.params.deviceId))} AND ${db.whereAccount(accountId)}`;
     
 
     db.query(sql, res, function (result) {
-        res.json({});
+        res.json(new BaseResponse);
         
         // Send websocket message
         let payload = new BlacklistsPayloads.removed_blacklist(

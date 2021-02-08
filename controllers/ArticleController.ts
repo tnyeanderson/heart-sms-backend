@@ -1,25 +1,18 @@
 import express from 'express';
-import errors from '../utils/errors.js';
 import Mercury from '@postlight/mercury-parser';
+import { MissingParamError } from '../models/responses/ErrorResponses.js';
+import { ArticleResponse } from '../models/responses/ArticleResponses.js';
 
 const router = express.Router();
 
 router.route('/').get(function (req, res) {
     if (!req.body.url) {
-        res.json(errors.missingParam);
+        res.json(new MissingParamError);
         return;
     }
     
     Mercury.parse(req.body.url).then(result => {
-        let out = {
-            title: result.title,
-            description: result.excerpt,
-            image_url: result.lead_image_url,
-            domain: result.domain,
-            web_url: result.url
-        }
-        
-        res.json(out);
+        res.json(ArticleResponse.fromResult([result]));
     });
 });
 

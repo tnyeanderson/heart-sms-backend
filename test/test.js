@@ -146,6 +146,24 @@ describe("heart-sms-backend unit test", function () {
             done();
         });
     });
+
+    /*
+    it("Get article", function (done) {
+        api
+        .get('/article')
+        .send({
+            "url": "https://www.reuters.com/article/us-facebook-apple-idUSKBN28Q2LG"
+        })
+        .expect("Content-type",/json/)
+        .expect(200)
+        .end(function (err,res) {
+            res.status.should.equal(200);
+            res.body.title.should.equal('Facebook accuses Apple of anticompetitive behavior over privacy changes');
+            done();
+        });
+        
+    });
+    */
     
     it("Add auto replies", function (done) {
         api
@@ -1506,6 +1524,21 @@ describe("heart-sms-backend unit test", function () {
         .expect(200)
         .end(function (err,res) {
             res.status.should.equal(200);
+            done();
+        });
+    });
+
+    it("Dismissed notification", function (done) {
+        api
+        .post('/accounts/dismissed_notification')
+        .query({
+            "account_id": accountId
+        })
+        .expect("Content-type",/json/)
+        .expect(200)
+        .end(function (err,res) {
+            res.status.should.equal(200);
+            Object.keys(res.body).length.should.equal(0);
             done();
         });
     });

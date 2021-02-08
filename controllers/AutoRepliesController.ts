@@ -1,38 +1,31 @@
 import express from 'express';
 import db from '../db/query.js';
-import errors from '../utils/errors.js';
 import stream from './StreamController.js';
 import util from '../utils/util.js';
 import * as AutoRepliesPayloads from '../models/payloads/AutoRepliesPayloads.js';
+import { BaseResponse } from '../models/responses/BaseResponse.js';
+import { BasePayload } from '../models/payloads/BasePayload.js';
+import { AutoRepliesListResponse } from '../models/responses/AutoRepliesResponses.js';
+import { BaseRequest } from '../models/requests/BaseRequest.js';
 
 const router = express.Router();
 
 const table = "AutoReplies"
 
-router.route('/').get(function (req, res) {
+router.route('/').get(BaseRequest.validate, function (req, res) {
     let accountId = util.getAccountId(req);
-    
-    if (!accountId) {
-        res.json(errors.invalidAccount);
-        return;
-    }
     
     let sql = `SELECT * FROM ${table} WHERE ${db.whereAccount(accountId)}`;
     
 
     db.query(sql, res, function (result) {
-        res.json(result);
+        res.json(AutoRepliesListResponse.getList(result));
     });
 });
 
 
-router.route('/add').post(function (req, res) {
+router.route('/add').post(BaseRequest.validate, function (req, res) {
     let accountId = util.getAccountId(req);
-    
-    if (!accountId) {
-        res.json(errors.invalidAccount);
-        return;
-    }
 
     let inserted: any[] = [];
     
@@ -51,11 +44,11 @@ router.route('/add').post(function (req, res) {
     let sql = `INSERT INTO ${table} ${db.insertStr(inserted)}`;
         
     db.query(sql, res, function (result) {
-        res.json({});
+        res.json(new BaseResponse);
         
         // Send websocket message
         inserted.forEach(function (item) {
-            let payload = new AutoRepliesPayloads.updated_auto_reply(
+            let payload = new AutoRepliesPayloads.added_auto_reply(
                 item.device_id,
                 item.reply_type,
                 item.pattern,
@@ -68,19 +61,14 @@ router.route('/add').post(function (req, res) {
 });
 
 
-router.route('/remove/:deviceId').post(function (req, res) {
+router.route('/remove/:deviceId').post(BaseRequest.validate, function (req, res) {
     let accountId = util.getAccountId(req);
-    
-    if (!accountId) {
-        res.json(errors.invalidAccount);
-        return;
-    }
     
     let sql = `DELETE FROM ${table} WHERE device_id = ${db.escape(Number(req.params.deviceId))} AND ${db.whereAccount(accountId)}`;
     
 
     db.query(sql, res, function (result) {
-        res.json({});
+        res.json(new BaseResponse);
         
         // Send websocket message
         let payload = new AutoRepliesPayloads.removed_auto_reply(
@@ -92,13 +80,8 @@ router.route('/remove/:deviceId').post(function (req, res) {
 });
 
 
-router.route('/update/:deviceId').post(function (req, res) {
+router.route('/update/:deviceId').post(BaseRequest.validate, function (req, res) {
     let accountId = util.getAccountId(req);
-    
-    if (!accountId) {
-        res.json(errors.invalidAccount);
-        return;
-    }
     
     let toUpdate = {
         reply_type: req.body.type,
@@ -110,9 +93,9 @@ router.route('/update/:deviceId').post(function (req, res) {
     
 
     db.query(sql, res, function (result) {
-        res.json({});
+        res.json(new BasePayload);
         
-        let payload = new AutoRepliesPayloads.added_auto_reply(
+        let payload = new AutoRepliesPayloads.updated_auto_reply(
             Number(req.params.deviceId),
             toUpdate.reply_type,
             toUpdate.pattern,

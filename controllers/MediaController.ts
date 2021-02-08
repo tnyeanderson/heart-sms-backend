@@ -1,20 +1,18 @@
 import express from 'express';
 import db from '../db/query.js';
-import errors from '../utils/errors.js';
 import util from '../utils/util.js';
+import { MissingParamError } from '../models/responses/ErrorResponses.js';
+import { BaseResponse } from '../models/responses/BaseResponse.js';
+import { MediaGetResponse } from '../models/responses/MediaResponses.js';
+import { BaseRequest } from '../models/requests/BaseRequest.js';
 
 const router = express.Router();
 
-router.route('/add').post(function (req, res) {
+router.route('/add').post(BaseRequest.validate, function (req, res) {
     let accountId = util.getAccountId(req);
     
-    if (!accountId) {
-        res.json(errors.invalidAccount);
-        return;
-    }
-    
     if (!req.body.message_id || !req.body.data) {
-        res.json(errors.missingParam);
+        res.json(new MissingParamError);
         return
     }
     
@@ -28,25 +26,18 @@ router.route('/add').post(function (req, res) {
     
 
     db.query(sql, res, function (result) {
-        res.json({});
+        res.json(new BaseResponse);
     });
 });
 
-router.route('/:messageId').get(function (req, res) {
+router.route('/:messageId').get(BaseRequest.validate, function (req, res) {
     let accountId = util.getAccountId(req);
-    
-    if (!accountId) {
-        res.json(errors.invalidAccount);
-        return;
-    }
     
     let sql = `SELECT * FROM Media WHERE message_id = ${db.escape(Number(req.params.messageId))} AND ${db.whereAccount(accountId)} LIMIT 1`;
     
 
     db.query(sql, res, function (result) {
-        res.json({
-            data: result[0].data.toString()
-        });
+        res.json(new MediaGetResponse(result[0].data.toString()));
     });
 });
 

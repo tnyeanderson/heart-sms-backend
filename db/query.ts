@@ -1,9 +1,9 @@
 import { Response } from 'express';
 import { FieldInfo, Pool } from 'mysql';
-import errors from '../utils/errors.js';
 import mysql from 'mysql';
 import connection from '../db/connect.js';
 import util from '../utils/util.js';
+import { DatabaseError } from '../models/responses/ErrorResponses.js';
 
 // Set to true to debug SQL queries during development
 let log_queries = false;
@@ -52,7 +52,7 @@ let Query = {
                 console.log(err);
                 
                 if (res.status) {
-                    res.status(400).json(errors.databaseError);
+                    res.status(400).json(new DatabaseError);
                 }
                 
                 return;

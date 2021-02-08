@@ -3,8 +3,8 @@ import { BasePayload } from './BasePayload.js';
 export class added_blacklist extends BasePayload {
     constructor (
         public id: Number,
-        public phone_number: String,
-        public phrase: String
+        public phone_number: string,
+        public phrase: string
     ) { super() }
 }
 

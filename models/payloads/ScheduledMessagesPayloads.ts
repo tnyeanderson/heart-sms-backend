@@ -10,11 +10,11 @@ export class removed_scheduled_message extends BasePayload {
 export class added_scheduled_message extends BasePayload {
     constructor (
         public id: Number,
-        public to: String,
-        public data: String,
-        public mime_type: String,
+        public to: string,
+        public data: string,
+        public mime_type: string,
         public timestamp: Number,
-        public title: String,
+        public title: string,
         public repeat: Number
     ) { super() }
 }

@@ -1,21 +1,19 @@
 import express from 'express';
 import db from '../db/query.js';
-import errors from '../utils/errors.js';
 import stream from './StreamController.js';
 import util from '../utils/util.js';
 import * as MessagesPayloads from '../models/payloads/MessagesPayloads.js';
+import { MissingParamError } from '../models/responses/ErrorResponses.js';
+import { BaseResponse } from '../models/responses/BaseResponse.js';
+import { MessagesListResponse } from '../models/responses/MessagesResponses.js';
+import { BaseRequest } from '../models/requests/BaseRequest.js';
 
 const router = express.Router();
 
 const table = 'Messages';
 
-router.route('/').get(function (req, res) {
+router.route('/').get(BaseRequest.validate, function (req, res) {
     let accountId = util.getAccountId(req);
-    
-    if (!accountId) {
-        res.json(errors.invalidAccount);
-        return;
-    }
     
     let limitStr = db.limitStr(Number(req.query.limit), Number(req.query.offset));
     let whereConversationStr = '';
@@ -27,23 +25,18 @@ router.route('/').get(function (req, res) {
     let sql = `SELECT * FROM ${table} WHERE ${db.whereAccount(accountId)} ${whereConversationStr} ORDER BY timestamp DESC ${limitStr}`;
 
     db.query(sql, res, function (result) {
-        res.json(result);
+        res.json(MessagesListResponse.getList(result));
     });
 });
 
 
-router.route('/remove/:deviceId').post(function (req, res) {
+router.route('/remove/:deviceId').post(BaseRequest.validate, function (req, res) {
     let accountId = util.getAccountId(req);
-    
-    if (!accountId) {
-        res.json(errors.invalidAccount);
-        return;
-    }
     
     let sql = `DELETE FROM ${table} WHERE device_id = ${db.escape(Number(req.params.deviceId))} AND ${db.whereAccount(accountId)}`;
 
     db.query(sql, res, function (result) {
-        res.json({});
+        res.json(new BaseResponse);
 
         let payload = new MessagesPayloads.removed_message(
             Number(req.params.deviceId)
@@ -55,13 +48,8 @@ router.route('/remove/:deviceId').post(function (req, res) {
 });
 
 
-router.route('/add').post(function (req, res) {
+router.route('/add').post(BaseRequest.validate, function (req, res) {
     let accountId = util.getAccountId(req);
-    
-    if (!accountId) {
-        res.json(errors.invalidAccount);
-        return;
-    }
     
     let inserted: any[] = [];
     
@@ -88,7 +76,7 @@ router.route('/add').post(function (req, res) {
     let sql = `INSERT INTO ${table} ${db.insertStr(inserted)}`;
         
     db.query(sql, res, function (result) {
-        res.json({});
+        res.json(new BaseResponse);
         
         // Send websocket message
         inserted.forEach(function (item: any) {
@@ -113,13 +101,8 @@ router.route('/add').post(function (req, res) {
 });
 
 
-router.route('/update/:deviceId').post(function (req, res) {
+router.route('/update/:deviceId').post(BaseRequest.validate, function (req, res) {
     let accountId = util.getAccountId(req);
-    
-    if (!accountId) {
-        res.json(errors.invalidAccount);
-        return;
-    }
     
     let toUpdate = {
         message_type: req.body.type,
@@ -131,7 +114,7 @@ router.route('/update/:deviceId').post(function (req, res) {
     let sql = `UPDATE ${table} SET ${db.updateStr(toUpdate)} WHERE device_id = ${db.escape(Number(req.params.deviceId))} AND ${db.whereAccount(accountId)}`;
 
     db.query(sql, res, function (result) {
-        res.json({});
+        res.json(new BaseResponse);
         
         // Send websocket message
         let payload = new MessagesPayloads.updated_message(
@@ -147,16 +130,11 @@ router.route('/update/:deviceId').post(function (req, res) {
 });
 
 
-router.route('/update_type/:deviceId').post(function (req, res) {
+router.route('/update_type/:deviceId').post(BaseRequest.validate, function (req, res) {
     let accountId = util.getAccountId(req);
     
-    if (!accountId) {
-        res.json(errors.invalidAccount);
-        return;
-    }
-    
     if (!req.query.message_type) {
-        res.json(errors.missingParam);
+        res.json(new MissingParamError);
         return;
     }
     
@@ -167,7 +145,7 @@ router.route('/update_type/:deviceId').post(function (req, res) {
     let sql = `UPDATE ${table} SET ${db.updateStr(toUpdate)} WHERE device_id = ${db.escape(Number(req.params.deviceId))} AND ${db.whereAccount(accountId)}`;
 
     db.query(sql, res, function (result) {
-        res.json({});
+        res.json(new BaseResponse);
         
         let payload = new MessagesPayloads.update_message_type(
             String(req.params.deviceId),
@@ -180,23 +158,18 @@ router.route('/update_type/:deviceId').post(function (req, res) {
 });
 
 
-router.route('/cleanup').post(function (req, res) {
+router.route('/cleanup').post(BaseRequest.validate, function (req, res) {
     let accountId = util.getAccountId(req);
     
-    if (!accountId) {
-        res.json(errors.invalidAccount);
-        return;
-    }
-    
     if (!req.query.timestamp) {
-        res.json(errors.missingParam);
+        res.json(new MissingParamError);
         return;
     }
     
     let sql = `DELETE FROM ${table} WHERE timestamp < ${db.escape(Number(req.query.timestamp))} AND ${db.whereAccount(accountId)}`;
 
     db.query(sql, res, function (result) {
-        res.json({});
+        res.json(new BaseResponse);
 
         let payload = new MessagesPayloads.cleanup_messages(
             Number(req.query.timestamp)
@@ -208,13 +181,8 @@ router.route('/cleanup').post(function (req, res) {
 });
 
 
-router.route('/forward_to_phone').post(function (req, res) {
+router.route('/forward_to_phone').post(BaseRequest.validate, function (req, res) {
     let accountId = util.getAccountId(req);
-    
-    if (!accountId) {
-        res.json(errors.invalidAccount);
-        return;
-    }
     
     let payload = new MessagesPayloads.forward_to_phone(
         String(req.body.to),
@@ -227,7 +195,7 @@ router.route('/forward_to_phone').post(function (req, res) {
     // Send websocket message
     stream.sendMessage(accountId, 'forward_to_phone', payload);
     
-    res.json({});
+    res.json(new BaseResponse);
 });
 
 export default router;

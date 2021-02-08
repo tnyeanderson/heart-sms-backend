@@ -1,9 +1,12 @@
 import express from 'express';
 import db from '../db/query.js';
-import errors from '../utils/errors.js';
 import stream from './StreamController.js';
 import util from '../utils/util.js';
 import * as ConversationsPayloads from '../models/payloads/ConversationsPayloads.js';
+import { MissingParamError } from '../models/responses/ErrorResponses.js';
+import { ConversationsListResponse } from '../models/responses/ConversationsResponses.js';
+import { BaseResponse } from '../models/responses/BaseResponse.js';
+import { BaseRequest } from '../models/requests/BaseRequest.js';
 
 const router = express.Router();
 
@@ -11,131 +14,91 @@ const table = 'Conversations'
 
 const notInFolder = " (folder_id IS NULL OR folder_id < 0) ";
 
-router.route('/').get(function (req, res) {
+router.route('/').get(BaseRequest.validate, function (req, res) {
     let accountId = util.getAccountId(req);
-    
-    if (!accountId) {
-        res.json(errors.invalidAccount);
-        return;
-    }
     
     let limitStr = db.limitStr(Number(req.query.limit), Number(req.query.offset));
     
     let sql = `SELECT * FROM ${table} WHERE ${db.whereAccount(accountId)} ORDER BY timestamp DESC ${limitStr}`;
 
     db.query(sql, res, function (result) {
-        res.json(result);
+        res.json(ConversationsListResponse.getList(result));
     });
 });
 
 
-router.route('/index_archived').get(function (req, res) {
+router.route('/index_archived').get(BaseRequest.validate, function (req, res) {
     let accountId = util.getAccountId(req);
-    
-    if (!accountId) {
-        res.json(errors.invalidAccount);
-        return;
-    }
     
     let sql = `SELECT * FROM ${table} WHERE archive = true AND ${notInFolder} AND ${db.whereAccount(accountId)} ORDER BY timestamp DESC`;
 
     db.query(sql, res, function (result) {
-        res.json(result);
+        res.json(ConversationsListResponse.getList(result));
     });
 });
 
 
-router.route('/index_private').get(function (req, res) {
+router.route('/index_private').get(BaseRequest.validate, function (req, res) {
     let accountId = util.getAccountId(req);
-    
-    if (!accountId) {
-        res.json(errors.invalidAccount);
-        return;
-    }
     
     let sql = `SELECT * FROM ${table} WHERE private_notifications = true AND ${notInFolder} AND ${db.whereAccount(accountId)} ORDER BY timestamp DESC`;
 
     db.query(sql, res, function (result) {
-        res.json(result);
+        res.json(ConversationsListResponse.getList(result));
     });
 });
 
 
-router.route('/index_public_unarchived').get(function (req, res) {
+router.route('/index_public_unarchived').get(BaseRequest.validate, function (req, res) {
     let accountId = util.getAccountId(req);
-    
-    if (!accountId) {
-        res.json(errors.invalidAccount);
-        return;
-    }
     
     let limitStr = db.limitStr(Number(req.query.limit), Number(req.query.offset));
     
     let sql = `SELECT * FROM ${table} WHERE archive = false AND private_notifications = false AND ${db.whereAccount(accountId)} ORDER BY timestamp DESC ${limitStr}`;
 
     db.query(sql, res, function (result) {
-        res.json(result);
+        res.json(ConversationsListResponse.getList(result));
     });
 });
 
 
-router.route('/index_public_unread').get(function (req, res) {
+router.route('/index_public_unread').get(BaseRequest.validate, function (req, res) {
     let accountId = util.getAccountId(req);
-    
-    if (!accountId) {
-        res.json(errors.invalidAccount);
-        return;
-    }
     
     let limitStr = db.limitStr(Number(req.query.limit), Number(req.query.offset));
     
     let sql = `SELECT * FROM ${table} WHERE ${db.escapeId("read")} = false AND private_notifications = false AND ${db.whereAccount(accountId)} ORDER BY timestamp DESC ${limitStr}`;
 
     db.query(sql, res, function (result) {
-        res.json(result);
+        res.json(ConversationsListResponse.getList(result));
     });
 });
 
 
-router.route('/:deviceId').get(function (req, res) {
+router.route('/:deviceId').get(BaseRequest.validate, function (req, res) {
     let accountId = util.getAccountId(req);
-    
-    if (!accountId) {
-        res.json(errors.invalidAccount);
-        return;
-    }
     
     let sql = `SELECT * FROM ${table} WHERE device_id = ${db.escape(Number(req.params.deviceId))} AND ${db.whereAccount(accountId)} LIMIT 1`;
 
     db.query(sql, res, function (result) {
-        res.json(result[0] || null);
+        res.json(ConversationsListResponse.fromResult(result));
     });
 });
 
 
-router.route('/folder/:folderId').get(function (req, res) {
+router.route('/folder/:folderId').get(BaseRequest.validate, function (req, res) {
     let accountId = util.getAccountId(req);
-    
-    if (!accountId) {
-        res.json(errors.invalidAccount);
-        return;
-    }
     
     let sql = `SELECT * FROM ${table} WHERE folder_id = ${db.escape(Number(req.params.folderId))} AND ${db.whereAccount(accountId)}`;
 
     db.query(sql, res, function (result) {
-        res.json(result);
+        res.json(ConversationsListResponse.getList(result));
     });
 });
 
 
-router.route('/add').post(function (req, res) {
+router.route('/add').post(BaseRequest.validate, function (req, res) {
     let accountId = util.getAccountId(req);
-    
-    if (!accountId) {
-        res.json(errors.invalidAccount);
-        return;
-    }
     
     let inserted: any[] = [];
     
@@ -169,7 +132,7 @@ router.route('/add').post(function (req, res) {
     let sql = `INSERT INTO ${table} ${db.insertStr(inserted)}`;
         
     db.query(sql, res, function (result) {
-        res.json({});
+        res.json(new BaseResponse);
         
         // Send websocket message
         inserted.forEach(function (item) {
@@ -201,13 +164,8 @@ router.route('/add').post(function (req, res) {
 });
 
 
-router.route('/update/:deviceId').post(function (req, res) {
+router.route('/update/:deviceId').post(BaseRequest.validate, function (req, res) {
     let accountId = util.getAccountId(req);
-    
-    if (!accountId) {
-        res.json(errors.invalidAccount);
-        return;
-    }
     
     let toUpdate = {
         color: req.body.color,
@@ -229,7 +187,7 @@ router.route('/update/:deviceId').post(function (req, res) {
     let sql = `UPDATE ${table} SET ${db.updateStr(toUpdate)} WHERE device_id = ${db.escape(Number(req.params.deviceId))} AND ${db.whereAccount(accountId)}`;
 
     db.query(sql, res, function (result) {
-        res.json({});
+        res.json(new BaseResponse)
 
         // TODO: This is inefficient but we have to have all the data :(
         let fields = ["device_id AS id", "color", "color_dark", "color_light", "color_accent", "led_color", "pinned", "read", "title", "snippet", "ringtone", "mute", "archive", "private_notifications"];
@@ -262,13 +220,8 @@ router.route('/update/:deviceId').post(function (req, res) {
 });
 
 
-router.route('/update_snippet/:deviceId').post(function (req, res) {
+router.route('/update_snippet/:deviceId').post(BaseRequest.validate, function (req, res) {
     let accountId = util.getAccountId(req);
-    
-    if (!accountId) {
-        res.json(errors.invalidAccount);
-        return;
-    }
     
     let toUpdate = {
         read: req.body.read,
@@ -280,7 +233,7 @@ router.route('/update_snippet/:deviceId').post(function (req, res) {
     let sql = `UPDATE ${table} SET ${db.updateStr(toUpdate)} WHERE device_id = ${db.escape(Number(req.params.deviceId))} AND ${db.whereAccount(accountId)}`;
 
     db.query(sql, res, function (result) {
-        res.json({});
+        res.json(new BaseResponse)
         
         // Send websocket message
         let payload = new ConversationsPayloads.update_conversation_snippet(
@@ -296,16 +249,11 @@ router.route('/update_snippet/:deviceId').post(function (req, res) {
 });
 
 
-router.route('/update_title/:deviceId').post(function (req, res) {
+router.route('/update_title/:deviceId').post(BaseRequest.validate, function (req, res) {
     let accountId = util.getAccountId(req);
     
-    if (!accountId) {
-        res.json(errors.invalidAccount);
-        return;
-    }
-    
     if (!req.query.title) {
-        res.json(errors.missingParam);
+        res.json(new MissingParamError);
         return;
     }
     
@@ -316,7 +264,7 @@ router.route('/update_title/:deviceId').post(function (req, res) {
     let sql = `UPDATE ${table} SET ${db.updateStr(toUpdate)} WHERE device_id = ${db.escape(Number(req.params.deviceId))} AND ${db.whereAccount(accountId)}`;
 
     db.query(sql, res, function (result) {
-        res.json({});
+        res.json(new BaseResponse)
         
         // Send websocket message
         let payload = new ConversationsPayloads.update_conversation_title(
@@ -329,18 +277,13 @@ router.route('/update_title/:deviceId').post(function (req, res) {
 });
 
 
-router.route('/remove/:deviceId').post(function (req, res) {
+router.route('/remove/:deviceId').post(BaseRequest.validate, function (req, res) {
     let accountId = util.getAccountId(req);
-    
-    if (!accountId) {
-        res.json(errors.invalidAccount);
-        return;
-    }
     
     let sql = `DELETE FROM ${table} WHERE device_id = ${db.escape(Number(req.params.deviceId))} AND ${db.whereAccount(accountId)}`;
 
     db.query(sql, res, function (result) {
-        res.json({});
+        res.json(new BaseResponse)
         
         // Send websocket message
         let payload = new ConversationsPayloads.removed_conversation(
@@ -352,18 +295,13 @@ router.route('/remove/:deviceId').post(function (req, res) {
 });
 
 
-router.route('/read/:deviceId').post(function (req, res) {
+router.route('/read/:deviceId').post(BaseRequest.validate, function (req, res) {
     let accountId = util.getAccountId(req);
-    
-    if (!accountId) {
-        res.json(errors.invalidAccount);
-        return;
-    }
     
     let sql = `UPDATE ${table} SET ${db.escapeId("read")} = true WHERE device_id = ${db.escape(Number(req.params.deviceId))} AND ${db.whereAccount(accountId)}`;
 
     db.query(sql, res, function (result) {
-        res.json({});
+        res.json(new BaseResponse)
         
         // Send websocket message
         let payload = new ConversationsPayloads.read_conversation(
@@ -376,18 +314,13 @@ router.route('/read/:deviceId').post(function (req, res) {
 });
 
 
-router.route('/seen/:deviceConversationId').post(function (req, res) {
+router.route('/seen/:deviceConversationId').post(BaseRequest.validate, function (req, res) {
     let accountId = util.getAccountId(req);
-    
-    if (!accountId) {
-        res.json(errors.invalidAccount);
-        return;
-    }
     
     let sql = `UPDATE Messages SET seen = true WHERE device_conversation_id = ${db.escape(Number(req.params.deviceConversationId))} AND ${db.whereAccount(accountId)}`;
 
     db.query(sql, res, function (result) {
-        res.json({});
+        res.json(new BaseResponse)
         
         // Send websocket message
         let payload = new ConversationsPayloads.seen_conversation(
@@ -399,18 +332,13 @@ router.route('/seen/:deviceConversationId').post(function (req, res) {
 });
 
 
-router.route('/seen').post(function (req, res) {
+router.route('/seen').post(BaseRequest.validate, function (req, res) {
     let accountId = util.getAccountId(req);
-    
-    if (!accountId) {
-        res.json(errors.invalidAccount);
-        return;
-    }
     
     let sql = `UPDATE Messages SET seen = true WHERE ${db.whereAccount(accountId)}`;
 
     db.query(sql, res, function (result) {
-        res.json({});
+        res.json(new BaseResponse)
 
         let payload = new ConversationsPayloads.seen_conversations();
         
@@ -420,18 +348,13 @@ router.route('/seen').post(function (req, res) {
 });
 
 
-router.route('/archive/:deviceId').post(function (req, res) {
+router.route('/archive/:deviceId').post(BaseRequest.validate, function (req, res) {
     let accountId = util.getAccountId(req);
-    
-    if (!accountId) {
-        res.json(errors.invalidAccount);
-        return;
-    }
     
     let sql = `UPDATE ${table} SET archive = true, folder_id = -1 WHERE device_id = ${db.escape(Number(req.params.deviceId))} AND ${db.whereAccount(accountId)}`;
 
     db.query(sql, res, function (result) {
-        res.json({});
+        res.json(new BaseResponse)
         
         // Send websocket message
         let payload = new ConversationsPayloads.archive_conversation(
@@ -444,18 +367,13 @@ router.route('/archive/:deviceId').post(function (req, res) {
 });
 
 
-router.route('/unarchive/:deviceId').post(function (req, res) {
+router.route('/unarchive/:deviceId').post(BaseRequest.validate, function (req, res) {
     let accountId = util.getAccountId(req);
-    
-    if (!accountId) {
-        res.json(errors.invalidAccount);
-        return;
-    }
     
     let sql = `UPDATE ${table} SET archive = false, folder_id = -1 WHERE device_id = ${db.escape(Number(req.params.deviceId))} AND ${db.whereAccount(accountId)}`;
 
     db.query(sql, res, function (result) {
-        res.json({});
+        res.json(new BaseResponse)
         
         // Send websocket message
         let payload = new ConversationsPayloads.archive_conversation(
@@ -468,23 +386,18 @@ router.route('/unarchive/:deviceId').post(function (req, res) {
 });
 
 
-router.route('/add_to_folder/:deviceId').post(function (req, res) {
+router.route('/add_to_folder/:deviceId').post(BaseRequest.validate, function (req, res) {
     let accountId = util.getAccountId(req);
     
-    if (!accountId) {
-        res.json(errors.invalidAccount);
-        return;
-    }
-    
     if (!req.query.folder_id) {
-        res.json(errors.missingParam);
+        res.json(new MissingParamError);
         return;
     }
     
     let sql = `UPDATE ${table} SET folder_id = ${db.escape(Number(req.query.folder_id))} WHERE device_id = ${db.escape(Number(req.params.deviceId))} AND ${db.whereAccount(accountId)}`;
 
     db.query(sql, res, function (result) {
-        res.json({});
+        res.json(new BaseResponse)
         
         // Send websocket message
         let payload = new ConversationsPayloads.add_conversation_to_folder(
@@ -497,18 +410,13 @@ router.route('/add_to_folder/:deviceId').post(function (req, res) {
 });
 
 
-router.route('/remove_from_folder/:deviceId').post(function (req, res) {
+router.route('/remove_from_folder/:deviceId').post(BaseRequest.validate, function (req, res) {
     let accountId = util.getAccountId(req);
-    
-    if (!accountId) {
-        res.json(errors.invalidAccount);
-        return;
-    }
     
     let sql = `UPDATE ${table} SET folder_id = -1 WHERE device_id = ${db.escape(Number(req.params.deviceId))} AND ${db.whereAccount(accountId)}`;
 
     db.query(sql, res, function (result) {
-        res.json({});
+        res.json(new BaseResponse)
         
         // Send websocket message
         let payload = new ConversationsPayloads.remove_conversation_from_folder(
@@ -520,23 +428,18 @@ router.route('/remove_from_folder/:deviceId').post(function (req, res) {
 });
 
 
-router.route('/cleanup_messages').post(function (req, res) {
+router.route('/cleanup_messages').post(BaseRequest.validate, function (req, res) {
     let accountId = util.getAccountId(req);
     
-    if (!accountId) {
-        res.json(errors.invalidAccount);
-        return;
-    }
-    
     if (!req.query.timestamp || !req.query.conversation_id) {
-        res.json(errors.missingParam);
+        res.json(new MissingParamError);
         return;
     }
     
     let sql = `DELETE FROM Messages WHERE device_conversation_id = ${db.escape(Number(req.query.conversation_id))} AND timestamp < ${db.escape(Number(req.query.timestamp))} AND ${db.whereAccount(accountId)}`;
 
     db.query(sql, res, function (result) {
-        res.json({});
+        res.json(new BaseResponse)
         
         let payload = new ConversationsPayloads.cleanup_conversation_messages(
             Number(req.query.timestamp),

@@ -10,7 +10,7 @@ export class removed_template extends BasePayload {
 export class added_template extends BasePayload {
     constructor (
         public device_id: Number,
-        public text: String
+        public text: string
     ) { super() }
 }
 

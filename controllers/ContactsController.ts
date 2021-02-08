@@ -1,21 +1,19 @@
 import express from 'express';
 import db from '../db/query.js';
-import errors from '../utils/errors.js';
 import stream from './StreamController.js';
 import util from '../utils/util.js';
 import * as ContactsPayloads from '../models/payloads/ContactsPayloads.js';
+import { MissingParamError } from '../models/responses/ErrorResponses.js';
+import { ContactsListResponse, ContactsSimpleListResponse } from '../models/responses/ContactsResponses.js';
+import { BaseResponse } from '../models/responses/BaseResponse.js';
+import { BaseRequest } from '../models/requests/BaseRequest.js';
 
 const router = express.Router();
 
 const table = 'Contacts';
 
-router.route('/').get(function (req, res) {
+router.route('/').get(BaseRequest.validate, function (req, res) {
     let accountId = util.getAccountId(req);
-    
-    if (!accountId) {
-        res.json(errors.invalidAccount);
-        return;
-    }
     
     let limitStr = db.limitStr(Number(req.query.limit), Number(req.query.offset));
     
@@ -24,17 +22,12 @@ router.route('/').get(function (req, res) {
     let sql = `SELECT ${db.selectFields(cols)} FROM ${table} WHERE ${db.whereAccount(accountId)} ${limitStr}`;
 
     db.query(sql, res, function (result) {
-        res.json(result);
+        res.json(ContactsListResponse.getList(result));
     });
 });
 
-router.route('/simple').get(function (req, res) {
+router.route('/simple').get(BaseRequest.validate, function (req, res) {
     let accountId = util.getAccountId(req);
-    
-    if (!accountId) {
-        res.json(errors.invalidAccount);
-        return;
-    }
     
     let limitStr = db.limitStr(Number(req.query.limit), Number(req.query.offset));
     
@@ -43,18 +36,13 @@ router.route('/simple').get(function (req, res) {
     let sql = `SELECT ${db.selectFields(cols)} FROM ${table} WHERE ${db.whereAccount(accountId)} ${limitStr}`;
 
     db.query(sql, res, function (result) {
-        res.json(result);
+        res.json(ContactsSimpleListResponse.getList(result));
     });
 });
 
 
-router.route('/add').post(function (req, res) {
+router.route('/add').post(BaseRequest.validate, function (req, res) {
     let accountId = util.getAccountId(req);
-    
-    if (!accountId) {
-        res.json(errors.invalidAccount);
-        return;
-    }
     
     let inserted: any[] = [];
     
@@ -78,7 +66,7 @@ router.route('/add').post(function (req, res) {
     let sql = `INSERT INTO ${table} ${db.insertStr(inserted)}`;
         
     db.query(sql, res, function (result) {
-        res.json({});
+        res.json(new BaseResponse);
         
         // Send websocket message
         inserted.forEach(function (item: any) {
@@ -98,32 +86,22 @@ router.route('/add').post(function (req, res) {
 });
 
 
-router.route('/clear').post(function (req, res) {
+router.route('/clear').post(BaseRequest.validate, function (req, res) {
     let accountId = util.getAccountId(req);
-    
-    if (!accountId) {
-        res.json(errors.invalidAccount);
-        return;
-    }
     
     let sql = `DELETE FROM ${table} WHERE ${db.whereAccount(accountId)}`;
 
     db.query(sql, res, function (result) {
-        res.json({});
+        res.json(new BaseResponse);
     });
 });
 
 
-router.route('/update_device_id').post(function (req, res) {
+router.route('/update_device_id').post(BaseRequest.validate, function (req, res) {
     let accountId = util.getAccountId(req);
     
-    if (!accountId) {
-        res.json(errors.invalidAccount);
-        return;
-    }
-    
     if (!req.query.device_id) {
-        res.json(errors.missingParam);
+        res.json(new MissingParamError);
         return;
     }
     
@@ -140,7 +118,7 @@ router.route('/update_device_id').post(function (req, res) {
     
 
     db.query(sql, res, function (result) {
-        res.json({});
+        res.json(new BaseResponse);
         
         
         // TODO: this is inefficient, but we need the contact_type
@@ -168,16 +146,11 @@ router.route('/update_device_id').post(function (req, res) {
 });
 
 
-router.route('/remove_device_id').post(function (req, res) {
+router.route('/remove_device_id').post(BaseRequest.validate, function (req, res) {
     let accountId = util.getAccountId(req);
     
-    if (!accountId) {
-        res.json(errors.invalidAccount);
-        return;
-    }
-    
     if (!req.query.device_id || !req.query.phone_number) {
-        res.json(errors.missingParam);
+        res.json(new MissingParamError);
         return;        
     }
     
@@ -185,7 +158,7 @@ router.route('/remove_device_id').post(function (req, res) {
     
 
     db.query(sql, res, function (result) {
-        res.json({});
+        res.json(new BaseResponse);
         
         let payload = new ContactsPayloads.removed_contact(
             Number(req.query.device_id),
@@ -197,13 +170,8 @@ router.route('/remove_device_id').post(function (req, res) {
 });
 
 
-router.route('/remove_ids/:ids').post(function (req, res) {
+router.route('/remove_ids/:ids').post(BaseRequest.validate, function (req, res) {
     let accountId = util.getAccountId(req);
-    
-    if (!accountId) {
-        res.json(errors.invalidAccount);
-        return;
-    }
     
     let whereId: string[] = [];
     
@@ -214,7 +182,7 @@ router.route('/remove_ids/:ids').post(function (req, res) {
     let sql = `DELETE FROM ${table} WHERE ${db.whereAccount(accountId)} AND ${db.escapeId('id')} in ( ${whereId.join(', ')} )`;
 
     db.query(sql, res, function (result) {
-        res.json({});
+        res.json(new BaseResponse);
 
         let payload = new ContactsPayloads.removed_contact_by_id(
             req.params.ids

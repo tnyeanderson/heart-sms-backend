@@ -1,55 +1,42 @@
 import express from 'express';
 import db from '../db/query.js';
-import errors from '../utils/errors.js';
 import stream from './StreamController.js';
 import util from '../utils/util.js';
 import * as DraftsPayloads from '../models/payloads/DraftsPayloads.js';
+import { BaseResponse } from '../models/responses/BaseResponse.js';
+import { DraftsListResponse } from '../models/responses/DraftsResponses.js';
+import { BaseRequest } from '../models/requests/BaseRequest.js';
 
 const router = express.Router();
 
 const table = "Drafts"
 
-router.route('/').get(function (req, res) {
+router.route('/').get(BaseRequest.validate, function (req, res) {
     let accountId = util.getAccountId(req);
-    
-    if (!accountId) {
-        res.json(errors.invalidAccount);
-        return;
-    }
     
     let sql = `SELECT * FROM ${table} WHERE ${db.whereAccount(accountId)}`;
     
 
     db.query(sql, res, function (result) {
-        res.json(result);
+        res.json(DraftsListResponse.getList(result));
     });
 });
 
 
-router.route('/:deviceConversationId').get(function (req, res) {
+router.route('/:deviceConversationId').get(BaseRequest.validate, function (req, res) {
     let accountId = util.getAccountId(req);
-    
-    if (!accountId) {
-        res.json(errors.invalidAccount);
-        return;
-    }
     
     let sql = `SELECT * FROM ${table} WHERE device_conversation_id = ${db.escape(Number(req.params.deviceConversationId))} AND ${db.whereAccount(accountId)}`;
     
 
     db.query(sql, res, function (result) {
-        res.json(result);
+        res.json(DraftsListResponse.getList(result));
     });
 });
 
 
-router.route('/add').post(function (req, res) {
+router.route('/add').post(BaseRequest.validate, function (req, res) {
     let accountId = util.getAccountId(req);
-    
-    if (!accountId) {
-        res.json(errors.invalidAccount);
-        return;
-    }
     
     let inserted: any[] = [];
     
@@ -68,7 +55,7 @@ router.route('/add').post(function (req, res) {
     let sql = `INSERT INTO ${table} ${db.insertStr(inserted)}`;
         
     db.query(sql, res, function (result) {
-        res.json({});
+        res.json(new BaseResponse);
         
         // Send websocket message
         inserted.forEach(function (item: any) {
@@ -85,18 +72,13 @@ router.route('/add').post(function (req, res) {
 });
 
 
-router.route('/remove/:deviceConversationId').post(function (req, res) {
+router.route('/remove/:deviceConversationId').post(BaseRequest.validate, function (req, res) {
     let accountId = util.getAccountId(req);
-    
-    if (!accountId) {
-        res.json(errors.invalidAccount);
-        return;
-    }
-    
+        
     let sql = `DELETE FROM ${table} WHERE device_conversation_id = ${db.escape(Number(req.params.deviceConversationId))} AND ${db.whereAccount(accountId)}`;
 
     db.query(sql, res, function (result) {
-        res.json({});
+        res.json(new BaseResponse);
         
         // Send websocket message
         let payload = new DraftsPayloads.removed_drafts(
@@ -109,15 +91,10 @@ router.route('/remove/:deviceConversationId').post(function (req, res) {
 });
 
 
-router.route('/update/:deviceId').post(function (req, res) {
+router.route('/update/:deviceId').post(BaseRequest.validate, function (req, res) {
     let accountId = util.getAccountId(req);
     
     console.log("*************** /drafts/update called!!!!!! **********************");
-    
-    if (!accountId) {
-        res.json(errors.invalidAccount);
-        return;
-    }
     
     let toUpdate = {
         data: req.body.data,
@@ -127,7 +104,7 @@ router.route('/update/:deviceId').post(function (req, res) {
     let sql = `UPDATE ${table} SET ${db.updateStr(toUpdate)} WHERE device_id = ${db.escape(Number(req.params.deviceId))} AND ${db.whereAccount(accountId)}`;
 
     db.query(sql, res, function (result) {
-        res.json({});
+        res.json(new BaseResponse);
         
         // TODO: This is inefficient. but we need all the data
         let fields = ["device_id AS id", "device_conversation_id AS conversation_id", "data", "mime_type"];
@@ -146,13 +123,8 @@ router.route('/update/:deviceId').post(function (req, res) {
 });
 
 
-router.route('/replace/:deviceConversationId').post(function (req, res) {
+router.route('/replace/:deviceConversationId').post(BaseRequest.validate, function (req, res) {
     let accountId = util.getAccountId(req);
-    
-    if (!accountId) {
-        res.json(errors.invalidAccount);
-        return;
-    }
     
     let sqls: string[] = [];
     
@@ -170,7 +142,7 @@ router.route('/replace/:deviceConversationId').post(function (req, res) {
     let sql = sqls.join(' ');
 
     db.query(sql, res, function (result) {
-        res.json({});
+        res.json(new BaseResponse);
         
         // Send websocket message
         req.body.drafts.forEach(function (item: any) {

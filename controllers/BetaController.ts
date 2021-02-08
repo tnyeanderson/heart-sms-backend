@@ -1,4 +1,5 @@
 import express from 'express';
+import { BaseResponse } from '../models/responses/BaseResponse.js';
 
 const router = express.Router();
 
@@ -6,13 +7,13 @@ const router = express.Router();
 
 router.route('/register').post(function (req, res) {
     // Respond for compatibility
-    res.json({});
+    res.json(new BaseResponse);
 });
 
 
 router.route('/remove').post(function (req, res) {
     // Respond for compatibility
-    res.json({});
+    res.json(new BaseResponse);
 });
 
 

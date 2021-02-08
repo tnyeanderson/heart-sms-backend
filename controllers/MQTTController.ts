@@ -1,6 +1,6 @@
 import express, { Response } from 'express';
 import db from '../db/query.js';
-import errors from '../utils/errors.js';
+import { MQTTAllowResponse, MQTTDenyResponse } from '../models/responses/MQTTResponses.js';
 import stream from './StreamController.js';
 
 // https://github.com/rabbitmq/rabbitmq-server/tree/master/deps/rabbitmq_auth_backend_http#what-must-my-web-server-do
@@ -8,16 +8,11 @@ import stream from './StreamController.js';
 const router = express.Router();
 
 function deny (res: Response) {
-    res.status(401).json({
-        Ok: false,
-        Error: errors.auth.error
-    });
+    res.status(401).json(new MQTTDenyResponse);
 }
 
 function allow (res: Response) {
-    res.json({
-        Ok: true
-    });
+    res.json(new MQTTAllowResponse);
 }
 
 

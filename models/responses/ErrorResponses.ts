@@ -1,0 +1,41 @@
+import { BaseResponse } from "./BaseResponse.js"
+
+export class ErrorResponse extends BaseResponse {
+    constructor(
+        public error: string
+    ) { super() }
+}
+
+export class InvalidAccountError extends ErrorResponse {
+    constructor() { super('account id invalid') }
+}
+
+
+export class DuplicateUserError extends ErrorResponse {
+    constructor() { super('user already exists') }
+}
+
+
+export class UserNotAllowedError extends ErrorResponse {
+    constructor() { super('username is not allowed') }
+}
+
+
+export class AuthError extends ErrorResponse {
+    constructor() { super('username or password incorrect') }
+}
+
+
+export class NotImplementedError extends ErrorResponse {
+    constructor() { super('not implemented') }
+}
+
+
+export class MissingParamError extends ErrorResponse {
+    constructor() { super('missing required parameter') }
+}
+
+
+export class DatabaseError extends ErrorResponse {
+    constructor() { super('could not query database') }
+}

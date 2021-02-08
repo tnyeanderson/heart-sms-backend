@@ -1,16 +1,19 @@
 import express from 'express';
 import db from '../db/query.js';
-import errors from '../utils/errors.js';
 import util from '../utils/util.js';
 import crypto from 'crypto';
 import stream from './StreamController.js';
 import users from '../helpers/UserHelper.js';
 import * as AccountsPayloads from '../models/payloads/AccountsPayloads.js';
+import * as AccountsResponses from '../models/responses/AccountsResponses.js';
+import { NotImplementedError, MissingParamError, DuplicateUserError, UserNotAllowedError, AuthError, ErrorResponse } from '../models/responses/ErrorResponses.js';
+import { BaseResponse } from '../models/responses/BaseResponse.js';
+import { BaseRequest } from '../models/requests/BaseRequest.js';
 
 const router = express.Router();
 
 router.route('/').get(function (req, res) {
-    res.json(errors.notImplemented);
+    res.json(new NotImplementedError);
 });
 
 router.route('/login').post(function (req, res) {
@@ -19,7 +22,7 @@ router.route('/login').post(function (req, res) {
 
     db.query(sql, res, function (result) {
         if (!result[0]) {
-            res.status(401).json(errors.auth);
+            res.status(401).json(new AuthError);
             return;
         }
         
@@ -28,16 +31,11 @@ router.route('/login').post(function (req, res) {
             let testhash = derivedHash.toString('hex');
 
             if (testhash.length && result[0].password_hash == testhash) {
-                delete result[0].password_hash;
-                delete result[0].username;
+                let response = AccountsResponses.LoginResponse.fromResult(result);
     
-                // Replace account_id with session_id
-                result[0].account_id = result[0].session_id;
-                delete result[0].session_id;
-    
-                res.json(result[0]);
+                res.json(response);
             } else {
-                res.status(401).json(errors.auth);
+                res.status(401).json(new AuthError);
             }
         });
     });
@@ -50,12 +48,12 @@ router.route('/signup').post(function (req, res) {
     let salt2 = crypto.randomBytes(64).toString('hex');
 
     if (!req.body.name) {
-        res.json(errors.missingParam);
+        res.json(new MissingParamError);
         return;
     }
 
     if (!users.isAllowed(req.body.name)) {
-        res.json(errors.userNotAllowed);
+        res.json(new UserNotAllowedError);
         return;
     }
 
@@ -65,7 +63,7 @@ router.route('/signup').post(function (req, res) {
     db.query(validate_username, res, function (result) {
         if (result[0] && result[0].username === req.body.name) {
             // User exists
-            res.json(errors.duplicateUser);
+            res.json(new DuplicateUserError);
             return;
         } else {
             doSignup();
@@ -89,15 +87,9 @@ router.route('/signup').post(function (req, res) {
 
             db.query(sql, res, function (result) {
                 if (result[1] && result[1].affectedRows === 0 && result[0][0].error) {
-                    res.json({
-                        error: result[0][0].error
-                    })
+                    res.json(new ErrorResponse(result[0][0].error));
                 } else {
-                    res.json({
-                        account_id: account_id,
-                        salt1: salt1,
-                        salt2: salt2
-                    });
+                    res.json(new AccountsResponses.SignupResponse(account_id, salt1, salt2));
                 }
             });
         });
@@ -105,20 +97,13 @@ router.route('/signup').post(function (req, res) {
 });
 
 
-router.route('/remove_account').post(function (req, res) {
+router.route('/remove_account').post(BaseRequest.validate, function (req, res) {
     let accountId = util.getAccountId(req);
-    
-    if (!accountId) {
-        res.json(errors.invalidAccount);
-        return;
-    }
     
     let sql = `DELETE FROM Accounts WHERE ${db.whereAccount(accountId)} LIMIT 1`;
     
     db.query(sql, res, function (result) {
-        res.json({
-            "success": "account deleted"
-        });
+        res.json(new AccountsResponses.RemoveAccountResponse());
 
         let payload = new AccountsPayloads.removed_account(
             accountId
@@ -130,13 +115,8 @@ router.route('/remove_account').post(function (req, res) {
 });
 
 
-router.route('/count').get(function (req, res) {
+router.route('/count').get(BaseRequest.validate, function (req, res) {
     let accountId = util.getAccountId(req);
-    
-    if (!accountId) {
-        res.json(errors.invalidAccount);
-        return;
-    }
     
     let tables = ["Devices", "Messages", "Conversations", "Drafts", "ScheduledMessages", "Blacklists", "Contacts", "Templates", "Folders", "AutoReplies"];
     let colNames = ["device_count", "message_count", "conversation_count", "draft_count", "scheduled_count", "blacklist_count", "contact_count", "template_count", "folder_count", "auto_reply_count"];
@@ -150,25 +130,19 @@ router.route('/count').get(function (req, res) {
     sql = sql.substring(0, sql.lastIndexOf(","));
     
     db.query(sql, res, function (result) {
-        res.json(result[0]);
+        let response = AccountsResponses.CountResponse.fromResult(result);
+        res.json(response);
     });
 });
 
-router.route('/clean_account').post(function (req, res) {
+router.route('/clean_account').post(BaseRequest.validate, function (req, res) {
     let accountId = util.getAccountId(req);
-    
-    if (!accountId) {
-        res.json(errors.invalidAccount);
-        return;
-    }
     
     // Calls the "CleanAccount" mysql stored procedure
     let sql = `CALL CleanAccount( ${db.escape(accountId)} )`;
     
     db.query(sql, res, function (result) {
-        res.json({
-            "success": "account cleaned"
-        });
+        res.json(new AccountsResponses.CleanAccountResponse());
 
         let payload = new AccountsPayloads.cleaned_account(
             accountId
@@ -179,31 +153,22 @@ router.route('/clean_account').post(function (req, res) {
     });
 });
 
-router.route('/settings').get(function (req, res) {
+router.route('/settings').get(BaseRequest.validate, function (req, res) {
     let accountId = util.getAccountId(req);
-    
-    if (!accountId) {
-        res.json(errors.invalidAccount);
-        return;
-    }
     
     let fields = ["base_theme", "global_color_theme", "rounder_bubbles", "color", "color_dark", "color_light", "color_accent", "use_global_theme", "apply_primary_color_to_toolbar", "passcode", "subscription_type", "message_timestamp", "conversation_categories"];
     
     let sql = `SELECT ${db.selectFields(fields)} FROM Settings WHERE ${db.whereAccount(accountId)} LIMIT 1`;
     
     db.query(sql, res, function (result) {
-        res.json(result[0] || null);
+        let response = AccountsResponses.SettingsResponse.fromResult(result);
+        res.json(response);
     });
 });
 
 
-router.route('/dismissed_notification').post(function (req, res) {
+router.route('/dismissed_notification').post(BaseRequest.validate, function (req, res) {
     let accountId = util.getAccountId(req);
-    
-    if (!accountId) {
-        res.json(errors.invalidAccount);
-        return;
-    }
     
     let payload = new AccountsPayloads.dismissed_notification(
         String(req.query.id),
@@ -212,14 +177,14 @@ router.route('/dismissed_notification').post(function (req, res) {
     
     stream.sendMessage(accountId, 'dismissed_notification', payload);
     
-    res.json({});
+    res.json(new BaseResponse);
 });
 
 
-router.route('/update_subscription').post(function (req, res) {
+router.route('/update_subscription').post(BaseRequest.validate, function (req, res) {
     // Not implemented because everyone gets a lifetime subscription!
     // Respond for compatibility
-    res.json({});
+    res.json(new BaseResponse);
 });
 
 

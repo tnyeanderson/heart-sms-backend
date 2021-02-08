@@ -1,4 +1,5 @@
 import express from 'express';
+import { BaseResponse } from '../models/responses/BaseResponse.js';
 
 const router = express.Router();
 
@@ -6,7 +7,7 @@ const router = express.Router();
 
 router.route('/record').post(function (req, res) {
     // Respond for compatibility
-    res.json({});
+    res.json(new BaseResponse);
 });
 
 export default router;

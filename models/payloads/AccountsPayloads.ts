@@ -2,15 +2,15 @@ import { BasePayload } from './BasePayload.js';
 
 export class dismissed_notification extends BasePayload {
     constructor (
-        public id: String,
-        public device_id?: String
+        public id: string,
+        public device_id?: string
     ) { super() }
 }
 
 
 export class cleaned_account extends BasePayload {
     constructor (
-        public id: String
+        public id: string
     ) { super() }
 }
 

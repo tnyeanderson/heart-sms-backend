@@ -34,16 +34,7 @@ const baseSettings: ConnectionConfig = {
 }
 
 const connection = function (extraSettings?: ConnectionConfig) {
-    let out = baseSettings;
-    
-    if (extraSettings) {
-        Object.keys(extraSettings).forEach((key: string) => {
-            // @ts-ignore
-            out[key] = extraSettings[key];
-        });
-    }
-    
-    return out;
+    return Object.assign({}, baseSettings, extraSettings);
 }
 
 export default connection;

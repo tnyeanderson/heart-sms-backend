@@ -1,38 +1,31 @@
 import express from 'express';
 import db from '../db/query.js';
-import errors from '../utils/errors.js';
 import stream from './StreamController.js';
 import util from '../utils/util.js';
 import * as DevicesPayloads from '../models/payloads/DevicesPayloads.js';
+import { MissingParamError } from '../models/responses/ErrorResponses.js';
+import { BaseResponse } from '../models/responses/BaseResponse.js';
+import { DevicesListResponse } from '../models/responses/DevicesResponses.js';
+import { BaseRequest } from '../models/requests/BaseRequest.js';
 
 const router = express.Router();
 
 const table = "Devices"
 
-router.route('/').get(function (req, res) {
+router.route('/').get(BaseRequest.validate, function (req, res) {
     let accountId = util.getAccountId(req);
-    
-    if (!accountId) {
-        res.json(errors.invalidAccount);
-        return;
-    }
     
     let sql = `SELECT * FROM ${table} WHERE ${db.whereAccount(accountId)}`;
     
 
     db.query(sql, res, function (result) {
-        res.json(result);
+        res.json(DevicesListResponse.getList(result));
     });
 });
 
 
-router.route('/add').post(function (req, res) {
+router.route('/add').post(BaseRequest.validate, function (req, res) {
     let accountId = util.getAccountId(req);
-    
-    if (!accountId) {
-        res.json(errors.invalidAccount);
-        return;
-    }
 
     let toInsert = {
         account_id: accountId,
@@ -46,36 +39,26 @@ router.route('/add').post(function (req, res) {
     let sql = `INSERT INTO ${table} ${db.insertStr([toInsert])}`;
         
     db.query(sql, res, function (result) {
-        res.json({});
+        res.json(new BaseResponse);
     });
 });
 
 
-router.route('/remove/:id').post(function (req, res) {
+router.route('/remove/:id').post(BaseRequest.validate, function (req, res) {
     let accountId = util.getAccountId(req);
-    
-    if (!accountId) {
-        res.json(errors.invalidAccount);
-        return;
-    }
 
     // Remove the device
     let sql = `DELETE FROM ${table} WHERE id = ${db.escape(Number(req.params.id))} AND ${db.whereAccount(accountId)}`;
     
 
     db.query(sql, res, function (result) {
-        res.json({});
+        res.json(new BaseResponse);
     });
 });
 
 
-router.route('/update/:id').post(function (req, res) {
+router.route('/update/:id').post(BaseRequest.validate, function (req, res) {
     let accountId = util.getAccountId(req);
-    
-    if (!accountId) {
-        res.json(errors.invalidAccount);
-        return;
-    }
     
     let toUpdate = {
         fcm_token: req.query.fcm_token,
@@ -86,21 +69,16 @@ router.route('/update/:id').post(function (req, res) {
     
 
     db.query(sql, res, function (result) {
-        res.json({});
+        res.json(new BaseResponse);
     });
 });
 
 
-router.route('/update_primary').post(function (req, res) {
+router.route('/update_primary').post(BaseRequest.validate, function (req, res) {
     let accountId = util.getAccountId(req);
     
-    if (!accountId) {
-        res.json(errors.invalidAccount);
-        return;
-    }
-    
     if (!req.query.new_primary_device_id) {
-        res.json(errors.missingParam);
+        res.json(new MissingParamError);
         return;
     }
     
@@ -108,7 +86,7 @@ router.route('/update_primary').post(function (req, res) {
     let sql = `CALL UpdatePrimaryDevice( ${db.escape(accountId)} , ${db.escape(Number(req.query.new_primary_device_id))} )`;
     
     db.query(sql, res, function (result) {
-        res.json({});
+        res.json(new BaseResponse);
 
         let payload = new DevicesPayloads.update_primary_device(
             String(req.query.new_primary_device_id)

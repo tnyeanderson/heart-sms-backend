@@ -5,12 +5,12 @@ export class added_message extends BasePayload {
         public id: Number,
         public conversation_id: Number,
         public type: Number,
-        public data: String,
+        public data: string,
         public timestamp: Number,
-        public mime_type: String,
+        public mime_type: string,
         public read: Boolean,
         public seen: Boolean,
-        public from: String,
+        public from: string,
         public color: Number,
         public sent_device: Number,
         public sim_stamp: Number
@@ -31,8 +31,8 @@ export class updated_message extends BasePayload {
 
 export class update_message_type extends BasePayload {
     constructor (
-        public id: String,
-        public message_type: String
+        public id: string,
+        public message_type: string
     ) { super() }
 }
 
@@ -53,10 +53,10 @@ export class cleanup_messages extends BasePayload {
 
 export class forward_to_phone extends BasePayload {
     constructor (
-        public to: String,
-        public message: String,
+        public to: string,
+        public message: string,
         public sent_device: Number,
-        public mime_type?: String,
+        public mime_type?: string,
         public message_id?: Number
     ) { super() }
 }
