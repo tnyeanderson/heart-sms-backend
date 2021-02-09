@@ -1532,7 +1532,8 @@ describe("heart-sms-backend unit test", function () {
         api
         .post('/accounts/dismissed_notification')
         .query({
-            "account_id": accountId
+            "account_id": accountId,
+            "id": 1
         })
         .expect("Content-type",/json/)
         .expect(200)

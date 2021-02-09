@@ -12,7 +12,7 @@ const router = express.Router();
 
 const table = "AutoReplies"
 
-router.route('/').get(BaseRequest.validate, function (req, res) {
+router.route('/').get((req, res, next) => BaseRequest.handler(req, res, next), function (req, res) {
     let accountId = util.getAccountId(req);
     
     let sql = `SELECT * FROM ${table} WHERE ${db.whereAccount(accountId)}`;
@@ -24,7 +24,7 @@ router.route('/').get(BaseRequest.validate, function (req, res) {
 });
 
 
-router.route('/add').post(BaseRequest.validate, function (req, res) {
+router.route('/add').post((req, res, next) => BaseRequest.handler(req, res, next), function (req, res) {
     let accountId = util.getAccountId(req);
 
     let inserted: any[] = [];
@@ -61,7 +61,7 @@ router.route('/add').post(BaseRequest.validate, function (req, res) {
 });
 
 
-router.route('/remove/:deviceId').post(BaseRequest.validate, function (req, res) {
+router.route('/remove/:deviceId').post((req, res, next) => BaseRequest.handler(req, res, next), function (req, res) {
     let accountId = util.getAccountId(req);
     
     let sql = `DELETE FROM ${table} WHERE device_id = ${db.escape(Number(req.params.deviceId))} AND ${db.whereAccount(accountId)}`;
@@ -80,7 +80,7 @@ router.route('/remove/:deviceId').post(BaseRequest.validate, function (req, res)
 });
 
 
-router.route('/update/:deviceId').post(BaseRequest.validate, function (req, res) {
+router.route('/update/:deviceId').post((req, res, next) => BaseRequest.handler(req, res, next), function (req, res) {
     let accountId = util.getAccountId(req);
     
     let toUpdate = {

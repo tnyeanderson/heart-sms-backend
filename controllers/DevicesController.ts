@@ -12,7 +12,7 @@ const router = express.Router();
 
 const table = "Devices"
 
-router.route('/').get(BaseRequest.validate, function (req, res) {
+router.route('/').get((req, res, next) => BaseRequest.handler(req, res, next), function (req, res) {
     let accountId = util.getAccountId(req);
     
     let sql = `SELECT * FROM ${table} WHERE ${db.whereAccount(accountId)}`;
@@ -24,7 +24,7 @@ router.route('/').get(BaseRequest.validate, function (req, res) {
 });
 
 
-router.route('/add').post(BaseRequest.validate, function (req, res) {
+router.route('/add').post((req, res, next) => BaseRequest.handler(req, res, next), function (req, res) {
     let accountId = util.getAccountId(req);
 
     let toInsert = {
@@ -44,7 +44,7 @@ router.route('/add').post(BaseRequest.validate, function (req, res) {
 });
 
 
-router.route('/remove/:id').post(BaseRequest.validate, function (req, res) {
+router.route('/remove/:id').post((req, res, next) => BaseRequest.handler(req, res, next), function (req, res) {
     let accountId = util.getAccountId(req);
 
     // Remove the device
@@ -57,7 +57,7 @@ router.route('/remove/:id').post(BaseRequest.validate, function (req, res) {
 });
 
 
-router.route('/update/:id').post(BaseRequest.validate, function (req, res) {
+router.route('/update/:id').post((req, res, next) => BaseRequest.handler(req, res, next), function (req, res) {
     let accountId = util.getAccountId(req);
     
     let toUpdate = {
@@ -74,7 +74,7 @@ router.route('/update/:id').post(BaseRequest.validate, function (req, res) {
 });
 
 
-router.route('/update_primary').post(BaseRequest.validate, function (req, res) {
+router.route('/update_primary').post((req, res, next) => BaseRequest.handler(req, res, next), function (req, res) {
     let accountId = util.getAccountId(req);
     
     if (!req.query.new_primary_device_id) {

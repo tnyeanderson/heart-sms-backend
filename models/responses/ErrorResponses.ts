@@ -32,7 +32,7 @@ export class NotImplementedError extends ErrorResponse {
 
 
 export class MissingParamError extends ErrorResponse {
-    constructor() { super('missing required parameter') }
+    constructor(param?: string) { super(`missing required parameter ${param}`) }
 }
 
 

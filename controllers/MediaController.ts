@@ -8,7 +8,7 @@ import { BaseRequest } from '../models/requests/BaseRequest.js';
 
 const router = express.Router();
 
-router.route('/add').post(BaseRequest.validate, function (req, res) {
+router.route('/add').post((req, res, next) => BaseRequest.handler(req, res, next), function (req, res) {
     let accountId = util.getAccountId(req);
     
     if (!req.body.message_id || !req.body.data) {
@@ -30,7 +30,7 @@ router.route('/add').post(BaseRequest.validate, function (req, res) {
     });
 });
 
-router.route('/:messageId').get(BaseRequest.validate, function (req, res) {
+router.route('/:messageId').get((req, res, next) => BaseRequest.handler(req, res, next), function (req, res) {
     let accountId = util.getAccountId(req);
     
     let sql = `SELECT * FROM Media WHERE message_id = ${db.escape(Number(req.params.messageId))} AND ${db.whereAccount(accountId)} LIMIT 1`;

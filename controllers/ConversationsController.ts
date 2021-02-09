@@ -14,7 +14,7 @@ const table = 'Conversations'
 
 const notInFolder = " (folder_id IS NULL OR folder_id < 0) ";
 
-router.route('/').get(BaseRequest.validate, function (req, res) {
+router.route('/').get((req, res, next) => BaseRequest.handler(req, res, next), function (req, res) {
     let accountId = util.getAccountId(req);
     
     let limitStr = db.limitStr(Number(req.query.limit), Number(req.query.offset));
@@ -27,7 +27,7 @@ router.route('/').get(BaseRequest.validate, function (req, res) {
 });
 
 
-router.route('/index_archived').get(BaseRequest.validate, function (req, res) {
+router.route('/index_archived').get((req, res, next) => BaseRequest.handler(req, res, next), function (req, res) {
     let accountId = util.getAccountId(req);
     
     let sql = `SELECT * FROM ${table} WHERE archive = true AND ${notInFolder} AND ${db.whereAccount(accountId)} ORDER BY timestamp DESC`;
@@ -38,7 +38,7 @@ router.route('/index_archived').get(BaseRequest.validate, function (req, res) {
 });
 
 
-router.route('/index_private').get(BaseRequest.validate, function (req, res) {
+router.route('/index_private').get((req, res, next) => BaseRequest.handler(req, res, next), function (req, res) {
     let accountId = util.getAccountId(req);
     
     let sql = `SELECT * FROM ${table} WHERE private_notifications = true AND ${notInFolder} AND ${db.whereAccount(accountId)} ORDER BY timestamp DESC`;
@@ -49,7 +49,7 @@ router.route('/index_private').get(BaseRequest.validate, function (req, res) {
 });
 
 
-router.route('/index_public_unarchived').get(BaseRequest.validate, function (req, res) {
+router.route('/index_public_unarchived').get((req, res, next) => BaseRequest.handler(req, res, next), function (req, res) {
     let accountId = util.getAccountId(req);
     
     let limitStr = db.limitStr(Number(req.query.limit), Number(req.query.offset));
@@ -62,7 +62,7 @@ router.route('/index_public_unarchived').get(BaseRequest.validate, function (req
 });
 
 
-router.route('/index_public_unread').get(BaseRequest.validate, function (req, res) {
+router.route('/index_public_unread').get((req, res, next) => BaseRequest.handler(req, res, next), function (req, res) {
     let accountId = util.getAccountId(req);
     
     let limitStr = db.limitStr(Number(req.query.limit), Number(req.query.offset));
@@ -75,7 +75,7 @@ router.route('/index_public_unread').get(BaseRequest.validate, function (req, re
 });
 
 
-router.route('/:deviceId').get(BaseRequest.validate, function (req, res) {
+router.route('/:deviceId').get((req, res, next) => BaseRequest.handler(req, res, next), function (req, res) {
     let accountId = util.getAccountId(req);
     
     let sql = `SELECT * FROM ${table} WHERE device_id = ${db.escape(Number(req.params.deviceId))} AND ${db.whereAccount(accountId)} LIMIT 1`;
@@ -86,7 +86,7 @@ router.route('/:deviceId').get(BaseRequest.validate, function (req, res) {
 });
 
 
-router.route('/folder/:folderId').get(BaseRequest.validate, function (req, res) {
+router.route('/folder/:folderId').get((req, res, next) => BaseRequest.handler(req, res, next), function (req, res) {
     let accountId = util.getAccountId(req);
     
     let sql = `SELECT * FROM ${table} WHERE folder_id = ${db.escape(Number(req.params.folderId))} AND ${db.whereAccount(accountId)}`;
@@ -97,7 +97,7 @@ router.route('/folder/:folderId').get(BaseRequest.validate, function (req, res) 
 });
 
 
-router.route('/add').post(BaseRequest.validate, function (req, res) {
+router.route('/add').post((req, res, next) => BaseRequest.handler(req, res, next), function (req, res) {
     let accountId = util.getAccountId(req);
     
     let inserted: any[] = [];
@@ -164,7 +164,7 @@ router.route('/add').post(BaseRequest.validate, function (req, res) {
 });
 
 
-router.route('/update/:deviceId').post(BaseRequest.validate, function (req, res) {
+router.route('/update/:deviceId').post((req, res, next) => BaseRequest.handler(req, res, next), function (req, res) {
     let accountId = util.getAccountId(req);
     
     let toUpdate = {
@@ -220,7 +220,7 @@ router.route('/update/:deviceId').post(BaseRequest.validate, function (req, res)
 });
 
 
-router.route('/update_snippet/:deviceId').post(BaseRequest.validate, function (req, res) {
+router.route('/update_snippet/:deviceId').post((req, res, next) => BaseRequest.handler(req, res, next), function (req, res) {
     let accountId = util.getAccountId(req);
     
     let toUpdate = {
@@ -249,7 +249,7 @@ router.route('/update_snippet/:deviceId').post(BaseRequest.validate, function (r
 });
 
 
-router.route('/update_title/:deviceId').post(BaseRequest.validate, function (req, res) {
+router.route('/update_title/:deviceId').post((req, res, next) => BaseRequest.handler(req, res, next), function (req, res) {
     let accountId = util.getAccountId(req);
     
     if (!req.query.title) {
@@ -277,7 +277,7 @@ router.route('/update_title/:deviceId').post(BaseRequest.validate, function (req
 });
 
 
-router.route('/remove/:deviceId').post(BaseRequest.validate, function (req, res) {
+router.route('/remove/:deviceId').post((req, res, next) => BaseRequest.handler(req, res, next), function (req, res) {
     let accountId = util.getAccountId(req);
     
     let sql = `DELETE FROM ${table} WHERE device_id = ${db.escape(Number(req.params.deviceId))} AND ${db.whereAccount(accountId)}`;
@@ -295,7 +295,7 @@ router.route('/remove/:deviceId').post(BaseRequest.validate, function (req, res)
 });
 
 
-router.route('/read/:deviceId').post(BaseRequest.validate, function (req, res) {
+router.route('/read/:deviceId').post((req, res, next) => BaseRequest.handler(req, res, next), function (req, res) {
     let accountId = util.getAccountId(req);
     
     let sql = `UPDATE ${table} SET ${db.escapeId("read")} = true WHERE device_id = ${db.escape(Number(req.params.deviceId))} AND ${db.whereAccount(accountId)}`;
@@ -314,7 +314,7 @@ router.route('/read/:deviceId').post(BaseRequest.validate, function (req, res) {
 });
 
 
-router.route('/seen/:deviceConversationId').post(BaseRequest.validate, function (req, res) {
+router.route('/seen/:deviceConversationId').post((req, res, next) => BaseRequest.handler(req, res, next), function (req, res) {
     let accountId = util.getAccountId(req);
     
     let sql = `UPDATE Messages SET seen = true WHERE device_conversation_id = ${db.escape(Number(req.params.deviceConversationId))} AND ${db.whereAccount(accountId)}`;
@@ -332,7 +332,7 @@ router.route('/seen/:deviceConversationId').post(BaseRequest.validate, function 
 });
 
 
-router.route('/seen').post(BaseRequest.validate, function (req, res) {
+router.route('/seen').post((req, res, next) => BaseRequest.handler(req, res, next), function (req, res) {
     let accountId = util.getAccountId(req);
     
     let sql = `UPDATE Messages SET seen = true WHERE ${db.whereAccount(accountId)}`;
@@ -348,7 +348,7 @@ router.route('/seen').post(BaseRequest.validate, function (req, res) {
 });
 
 
-router.route('/archive/:deviceId').post(BaseRequest.validate, function (req, res) {
+router.route('/archive/:deviceId').post((req, res, next) => BaseRequest.handler(req, res, next), function (req, res) {
     let accountId = util.getAccountId(req);
     
     let sql = `UPDATE ${table} SET archive = true, folder_id = -1 WHERE device_id = ${db.escape(Number(req.params.deviceId))} AND ${db.whereAccount(accountId)}`;
@@ -367,7 +367,7 @@ router.route('/archive/:deviceId').post(BaseRequest.validate, function (req, res
 });
 
 
-router.route('/unarchive/:deviceId').post(BaseRequest.validate, function (req, res) {
+router.route('/unarchive/:deviceId').post((req, res, next) => BaseRequest.handler(req, res, next), function (req, res) {
     let accountId = util.getAccountId(req);
     
     let sql = `UPDATE ${table} SET archive = false, folder_id = -1 WHERE device_id = ${db.escape(Number(req.params.deviceId))} AND ${db.whereAccount(accountId)}`;
@@ -386,7 +386,7 @@ router.route('/unarchive/:deviceId').post(BaseRequest.validate, function (req, r
 });
 
 
-router.route('/add_to_folder/:deviceId').post(BaseRequest.validate, function (req, res) {
+router.route('/add_to_folder/:deviceId').post((req, res, next) => BaseRequest.handler(req, res, next), function (req, res) {
     let accountId = util.getAccountId(req);
     
     if (!req.query.folder_id) {
@@ -410,7 +410,7 @@ router.route('/add_to_folder/:deviceId').post(BaseRequest.validate, function (re
 });
 
 
-router.route('/remove_from_folder/:deviceId').post(BaseRequest.validate, function (req, res) {
+router.route('/remove_from_folder/:deviceId').post((req, res, next) => BaseRequest.handler(req, res, next), function (req, res) {
     let accountId = util.getAccountId(req);
     
     let sql = `UPDATE ${table} SET folder_id = -1 WHERE device_id = ${db.escape(Number(req.params.deviceId))} AND ${db.whereAccount(accountId)}`;
@@ -428,7 +428,7 @@ router.route('/remove_from_folder/:deviceId').post(BaseRequest.validate, functio
 });
 
 
-router.route('/cleanup_messages').post(BaseRequest.validate, function (req, res) {
+router.route('/cleanup_messages').post((req, res, next) => BaseRequest.handler(req, res, next), function (req, res) {
     let accountId = util.getAccountId(req);
     
     if (!req.query.timestamp || !req.query.conversation_id) {

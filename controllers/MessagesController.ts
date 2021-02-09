@@ -12,7 +12,7 @@ const router = express.Router();
 
 const table = 'Messages';
 
-router.route('/').get(BaseRequest.validate, function (req, res) {
+router.route('/').get((req, res, next) => BaseRequest.handler(req, res, next), function (req, res) {
     let accountId = util.getAccountId(req);
     
     let limitStr = db.limitStr(Number(req.query.limit), Number(req.query.offset));
@@ -30,7 +30,7 @@ router.route('/').get(BaseRequest.validate, function (req, res) {
 });
 
 
-router.route('/remove/:deviceId').post(BaseRequest.validate, function (req, res) {
+router.route('/remove/:deviceId').post((req, res, next) => BaseRequest.handler(req, res, next), function (req, res) {
     let accountId = util.getAccountId(req);
     
     let sql = `DELETE FROM ${table} WHERE device_id = ${db.escape(Number(req.params.deviceId))} AND ${db.whereAccount(accountId)}`;
@@ -48,7 +48,7 @@ router.route('/remove/:deviceId').post(BaseRequest.validate, function (req, res)
 });
 
 
-router.route('/add').post(BaseRequest.validate, function (req, res) {
+router.route('/add').post((req, res, next) => BaseRequest.handler(req, res, next), function (req, res) {
     let accountId = util.getAccountId(req);
     
     let inserted: any[] = [];
@@ -101,7 +101,7 @@ router.route('/add').post(BaseRequest.validate, function (req, res) {
 });
 
 
-router.route('/update/:deviceId').post(BaseRequest.validate, function (req, res) {
+router.route('/update/:deviceId').post((req, res, next) => BaseRequest.handler(req, res, next), function (req, res) {
     let accountId = util.getAccountId(req);
     
     let toUpdate = {
@@ -130,7 +130,7 @@ router.route('/update/:deviceId').post(BaseRequest.validate, function (req, res)
 });
 
 
-router.route('/update_type/:deviceId').post(BaseRequest.validate, function (req, res) {
+router.route('/update_type/:deviceId').post((req, res, next) => BaseRequest.handler(req, res, next), function (req, res) {
     let accountId = util.getAccountId(req);
     
     if (!req.query.message_type) {
@@ -158,7 +158,7 @@ router.route('/update_type/:deviceId').post(BaseRequest.validate, function (req,
 });
 
 
-router.route('/cleanup').post(BaseRequest.validate, function (req, res) {
+router.route('/cleanup').post((req, res, next) => BaseRequest.handler(req, res, next), function (req, res) {
     let accountId = util.getAccountId(req);
     
     if (!req.query.timestamp) {
@@ -181,7 +181,7 @@ router.route('/cleanup').post(BaseRequest.validate, function (req, res) {
 });
 
 
-router.route('/forward_to_phone').post(BaseRequest.validate, function (req, res) {
+router.route('/forward_to_phone').post((req, res, next) => BaseRequest.handler(req, res, next), function (req, res) {
     let accountId = util.getAccountId(req);
     
     let payload = new MessagesPayloads.forward_to_phone(

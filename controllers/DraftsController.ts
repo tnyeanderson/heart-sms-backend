@@ -11,7 +11,7 @@ const router = express.Router();
 
 const table = "Drafts"
 
-router.route('/').get(BaseRequest.validate, function (req, res) {
+router.route('/').get((req, res, next) => BaseRequest.handler(req, res, next), function (req, res) {
     let accountId = util.getAccountId(req);
     
     let sql = `SELECT * FROM ${table} WHERE ${db.whereAccount(accountId)}`;
@@ -23,7 +23,7 @@ router.route('/').get(BaseRequest.validate, function (req, res) {
 });
 
 
-router.route('/:deviceConversationId').get(BaseRequest.validate, function (req, res) {
+router.route('/:deviceConversationId').get((req, res, next) => BaseRequest.handler(req, res, next), function (req, res) {
     let accountId = util.getAccountId(req);
     
     let sql = `SELECT * FROM ${table} WHERE device_conversation_id = ${db.escape(Number(req.params.deviceConversationId))} AND ${db.whereAccount(accountId)}`;
@@ -35,7 +35,7 @@ router.route('/:deviceConversationId').get(BaseRequest.validate, function (req, 
 });
 
 
-router.route('/add').post(BaseRequest.validate, function (req, res) {
+router.route('/add').post((req, res, next) => BaseRequest.handler(req, res, next), function (req, res) {
     let accountId = util.getAccountId(req);
     
     let inserted: any[] = [];
@@ -72,7 +72,7 @@ router.route('/add').post(BaseRequest.validate, function (req, res) {
 });
 
 
-router.route('/remove/:deviceConversationId').post(BaseRequest.validate, function (req, res) {
+router.route('/remove/:deviceConversationId').post((req, res, next) => BaseRequest.handler(req, res, next), function (req, res) {
     let accountId = util.getAccountId(req);
         
     let sql = `DELETE FROM ${table} WHERE device_conversation_id = ${db.escape(Number(req.params.deviceConversationId))} AND ${db.whereAccount(accountId)}`;
@@ -91,7 +91,7 @@ router.route('/remove/:deviceConversationId').post(BaseRequest.validate, functio
 });
 
 
-router.route('/update/:deviceId').post(BaseRequest.validate, function (req, res) {
+router.route('/update/:deviceId').post((req, res, next) => BaseRequest.handler(req, res, next), function (req, res) {
     let accountId = util.getAccountId(req);
     
     console.log("*************** /drafts/update called!!!!!! **********************");
@@ -123,7 +123,7 @@ router.route('/update/:deviceId').post(BaseRequest.validate, function (req, res)
 });
 
 
-router.route('/replace/:deviceConversationId').post(BaseRequest.validate, function (req, res) {
+router.route('/replace/:deviceConversationId').post((req, res, next) => BaseRequest.handler(req, res, next), function (req, res) {
     let accountId = util.getAccountId(req);
     
     let sqls: string[] = [];

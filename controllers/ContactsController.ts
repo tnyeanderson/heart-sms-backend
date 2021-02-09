@@ -12,7 +12,7 @@ const router = express.Router();
 
 const table = 'Contacts';
 
-router.route('/').get(BaseRequest.validate, function (req, res) {
+router.route('/').get((req, res, next) => BaseRequest.handler(req, res, next), function (req, res) {
     let accountId = util.getAccountId(req);
     
     let limitStr = db.limitStr(Number(req.query.limit), Number(req.query.offset));
@@ -26,7 +26,7 @@ router.route('/').get(BaseRequest.validate, function (req, res) {
     });
 });
 
-router.route('/simple').get(BaseRequest.validate, function (req, res) {
+router.route('/simple').get((req, res, next) => BaseRequest.handler(req, res, next), function (req, res) {
     let accountId = util.getAccountId(req);
     
     let limitStr = db.limitStr(Number(req.query.limit), Number(req.query.offset));
@@ -41,7 +41,7 @@ router.route('/simple').get(BaseRequest.validate, function (req, res) {
 });
 
 
-router.route('/add').post(BaseRequest.validate, function (req, res) {
+router.route('/add').post((req, res, next) => BaseRequest.handler(req, res, next), function (req, res) {
     let accountId = util.getAccountId(req);
     
     let inserted: any[] = [];
@@ -86,7 +86,7 @@ router.route('/add').post(BaseRequest.validate, function (req, res) {
 });
 
 
-router.route('/clear').post(BaseRequest.validate, function (req, res) {
+router.route('/clear').post((req, res, next) => BaseRequest.handler(req, res, next), function (req, res) {
     let accountId = util.getAccountId(req);
     
     let sql = `DELETE FROM ${table} WHERE ${db.whereAccount(accountId)}`;
@@ -97,7 +97,7 @@ router.route('/clear').post(BaseRequest.validate, function (req, res) {
 });
 
 
-router.route('/update_device_id').post(BaseRequest.validate, function (req, res) {
+router.route('/update_device_id').post((req, res, next) => BaseRequest.handler(req, res, next), function (req, res) {
     let accountId = util.getAccountId(req);
     
     if (!req.query.device_id) {
@@ -146,7 +146,7 @@ router.route('/update_device_id').post(BaseRequest.validate, function (req, res)
 });
 
 
-router.route('/remove_device_id').post(BaseRequest.validate, function (req, res) {
+router.route('/remove_device_id').post((req, res, next) => BaseRequest.handler(req, res, next), function (req, res) {
     let accountId = util.getAccountId(req);
     
     if (!req.query.device_id || !req.query.phone_number) {
@@ -170,7 +170,7 @@ router.route('/remove_device_id').post(BaseRequest.validate, function (req, res)
 });
 
 
-router.route('/remove_ids/:ids').post(BaseRequest.validate, function (req, res) {
+router.route('/remove_ids/:ids').post((req, res, next) => BaseRequest.handler(req, res, next), function (req, res) {
     let accountId = util.getAccountId(req);
     
     let whereId: string[] = [];
