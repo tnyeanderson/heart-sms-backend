@@ -492,11 +492,13 @@ Parameters: `account_id=STRING`
 Request body: 
 ```
 {
-    "type": STRING,
+    "reply_type": STRING,
     "pattern": STRING,
     "response": STRING
 }
 ```
+
+*NOTE: Original used type instead of reply_type. Changed for consistency*
 
 Response:
 ```
@@ -1321,7 +1323,7 @@ Error:
 ---
 
 
-### `/conversations/seen/{device_id}`
+### `/conversations/seen/{device_conversation_id}`
 
 Method: POST
 
@@ -1753,6 +1755,8 @@ Error:
 
 *Use this instead of /drafts/update*
 
+*NOTE: Though the drafts are in an array, only the first item in the array will be processed. This comes from the webapp where only one item is ever included*
+
 Method: POST
 
 Parameters: `account_id=STRING`
@@ -1767,7 +1771,6 @@ Request body:
             "mime_type": STRING,
             "data": STRING,
         }
-        ...
     ]
 }
 ```
@@ -2082,13 +2085,13 @@ Parameters: `account_id=STRING`
 Request body: 
 ```
 {
-    "type": INT?,
+    "message_type": INT?,
     "timestamp": TIMESTAMP?,
     "read": BOOL?,
     "seen": BOOL?
 }
 ```
-*type refers to message_type*
+*BREAKING: `message_type` was sent as `type` in Pulse*
 
 Response:
 ```

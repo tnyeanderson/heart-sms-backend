@@ -6,7 +6,8 @@ import * as ConversationsPayloads from '../models/payloads/ConversationsPayloads
 import { MissingParamError } from '../models/responses/ErrorResponses.js';
 import { ConversationsListResponse } from '../models/responses/ConversationsResponses.js';
 import { BaseResponse } from '../models/responses/BaseResponse.js';
-import { BaseRequest } from '../models/requests/BaseRequest.js';
+import { AccountIdRequest, DeviceIdRequest, LimitOffsetRequest } from '../models/requests/BaseRequests.js';
+import { ConversationsAddRequest, ConversationsUpdateRequest, ConversationsFolderRequest, ConversationsUpdateSnippetRequest, ConversationsUpdateTitleRequest, ConversationsReadRequest, ConversationsSeenRequest, ConversationsAddToFolderRequest, ConversationsCleanupMessagesRequest } from '../models/requests/ConversationsRequests.js';
 
 const router = express.Router();
 
@@ -14,440 +15,406 @@ const table = 'Conversations'
 
 const notInFolder = " (folder_id IS NULL OR folder_id < 0) ";
 
-router.route('/').get((req, res, next) => BaseRequest.handler(req, res, next), function (req, res) {
-    let accountId = util.getAccountId(req);
-    
-    let limitStr = db.limitStr(Number(req.query.limit), Number(req.query.offset));
-    
-    let sql = `SELECT * FROM ${table} WHERE ${db.whereAccount(accountId)} ORDER BY timestamp DESC ${limitStr}`;
-
-    db.query(sql, res, function (result) {
-        res.json(ConversationsListResponse.getList(result));
-    });
-});
-
-
-router.route('/index_archived').get((req, res, next) => BaseRequest.handler(req, res, next), function (req, res) {
-    let accountId = util.getAccountId(req);
-    
-    let sql = `SELECT * FROM ${table} WHERE archive = true AND ${notInFolder} AND ${db.whereAccount(accountId)} ORDER BY timestamp DESC`;
-
-    db.query(sql, res, function (result) {
-        res.json(ConversationsListResponse.getList(result));
-    });
-});
-
-
-router.route('/index_private').get((req, res, next) => BaseRequest.handler(req, res, next), function (req, res) {
-    let accountId = util.getAccountId(req);
-    
-    let sql = `SELECT * FROM ${table} WHERE private_notifications = true AND ${notInFolder} AND ${db.whereAccount(accountId)} ORDER BY timestamp DESC`;
-
-    db.query(sql, res, function (result) {
-        res.json(ConversationsListResponse.getList(result));
-    });
-});
-
-
-router.route('/index_public_unarchived').get((req, res, next) => BaseRequest.handler(req, res, next), function (req, res) {
-    let accountId = util.getAccountId(req);
-    
-    let limitStr = db.limitStr(Number(req.query.limit), Number(req.query.offset));
-    
-    let sql = `SELECT * FROM ${table} WHERE archive = false AND private_notifications = false AND ${db.whereAccount(accountId)} ORDER BY timestamp DESC ${limitStr}`;
-
-    db.query(sql, res, function (result) {
-        res.json(ConversationsListResponse.getList(result));
-    });
-});
-
-
-router.route('/index_public_unread').get((req, res, next) => BaseRequest.handler(req, res, next), function (req, res) {
-    let accountId = util.getAccountId(req);
-    
-    let limitStr = db.limitStr(Number(req.query.limit), Number(req.query.offset));
-    
-    let sql = `SELECT * FROM ${table} WHERE ${db.escapeId("read")} = false AND private_notifications = false AND ${db.whereAccount(accountId)} ORDER BY timestamp DESC ${limitStr}`;
-
-    db.query(sql, res, function (result) {
-        res.json(ConversationsListResponse.getList(result));
-    });
-});
-
-
-router.route('/:deviceId').get((req, res, next) => BaseRequest.handler(req, res, next), function (req, res) {
-    let accountId = util.getAccountId(req);
-    
-    let sql = `SELECT * FROM ${table} WHERE device_id = ${db.escape(Number(req.params.deviceId))} AND ${db.whereAccount(accountId)} LIMIT 1`;
-
-    db.query(sql, res, function (result) {
-        res.json(ConversationsListResponse.fromResult(result));
-    });
-});
-
-
-router.route('/folder/:folderId').get((req, res, next) => BaseRequest.handler(req, res, next), function (req, res) {
-    let accountId = util.getAccountId(req);
-    
-    let sql = `SELECT * FROM ${table} WHERE folder_id = ${db.escape(Number(req.params.folderId))} AND ${db.whereAccount(accountId)}`;
-
-    db.query(sql, res, function (result) {
-        res.json(ConversationsListResponse.getList(result));
-    });
-});
-
-
-router.route('/add').post((req, res, next) => BaseRequest.handler(req, res, next), function (req, res) {
-    let accountId = util.getAccountId(req);
-    
-    let inserted: any[] = [];
-    
-    req.body.conversations.forEach(function (item: any) {
-        let toInsert = {
-            account_id: accountId,
-            device_id: item.device_id,
-            folder_id: item.folder_id,
-            color: item.color,
-            color_dark: item.color_dark,
-            color_light: item.color_light,
-            color_accent: item.color_accent,
-            led_color: item.led_color,
-            pinned: item.pinned,
-            read: item.read,
-            timestamp: item.timestamp,
-            title: item.title,
-            phone_numbers: item.phone_numbers,
-            snippet: item.snippet,
-            ringtone: item.ringtone,
-            image_uri: item.image_uri,
-            id_matcher: item.id_matcher,
-            mute: item.mute,
-            archive: item.archive,
-            private_notifications: item.private_notifications
-        };
+router.route('/').get(
+    (req, res, next) => LimitOffsetRequest.handler(req, res, next), 
+    function (req, res, next) {
+        let r: LimitOffsetRequest = res.locals.request;
         
-        inserted.push(toInsert);
+        let sql = `SELECT * FROM ${table} WHERE ${r.whereAccount()} ORDER BY timestamp DESC ${r.limitStr()}`;
+
+        db.query(sql, res, function (result) {
+            res.json(ConversationsListResponse.getList(result));
+        });
     });
 
-    let sql = `INSERT INTO ${table} ${db.insertStr(inserted)}`;
+
+router.route('/index_archived').get(
+    (req, res, next) => AccountIdRequest.handler(req, res, next), 
+    function (req, res, next) {
+        let r: AccountIdRequest = res.locals.request;
         
-    db.query(sql, res, function (result) {
-        res.json(new BaseResponse);
+        let sql = `SELECT * FROM ${table} WHERE archive = true AND ${notInFolder} AND ${r.whereAccount()} ORDER BY timestamp DESC`;
+
+        db.query(sql, res, function (result) {
+            res.json(ConversationsListResponse.getList(result));
+        });
+    });
+
+
+router.route('/index_private').get(
+    (req, res, next) => AccountIdRequest.handler(req, res, next), 
+    function (req, res, next) {
+        let r: AccountIdRequest = res.locals.request;
         
-        // Send websocket message
-        inserted.forEach(function (item) {
-            let payload = new ConversationsPayloads.added_conversation(
-                item.device_id,
-                item.folder_id,
-                item.color,
-                item.color_dark,
-                item.color_light,
-                item.color_accent,
-                item.led_color,
-                item.pinned,
-                item.read,
-                item.timestamp,
-                item.title,
-                item.phone_numbers,
-                item.snippet,
-                item.id_matcher,
-                item.mute,
-                item.archive,
-                item.private_notifications,
-                item.ringtone,
-                item.image_uri
+        let sql = `SELECT * FROM ${table} WHERE private_notifications = true AND ${notInFolder} AND ${r.whereAccount()} ORDER BY timestamp DESC`;
+
+        db.query(sql, res, function (result) {
+            res.json(ConversationsListResponse.getList(result));
+        });
+    });
+
+
+router.route('/index_public_unarchived').get(
+    (req, res, next) => LimitOffsetRequest.handler(req, res, next), 
+    function (req, res, next) {
+        let r: LimitOffsetRequest = res.locals.request;
+        
+        let sql = `SELECT * FROM ${table} WHERE archive = false AND private_notifications = false AND ${r.whereAccount()} ORDER BY timestamp DESC ${r.limitStr()}`;
+
+        db.query(sql, res, function (result) {
+            res.json(ConversationsListResponse.getList(result));
+        });
+    });
+
+
+router.route('/index_public_unread').get(
+    (req, res, next) => LimitOffsetRequest.handler(req, res, next), 
+    function (req, res, next) {
+        let r: LimitOffsetRequest = res.locals.request;
+        
+        let sql = `SELECT * FROM ${table} WHERE ${db.escapeId("read")} = false AND private_notifications = false AND ${r.whereAccount()} ORDER BY timestamp DESC ${r.limitStr()}`;
+
+        db.query(sql, res, function (result) {
+            res.json(ConversationsListResponse.getList(result));
+        });
+    });
+
+
+router.route('/:device_id').get(
+    (req, res, next) => DeviceIdRequest.handler(req, res, next), 
+    function (req, res, next) {
+        let r: DeviceIdRequest = res.locals.request;
+        
+        let sql = `SELECT * FROM ${table} WHERE device_id = ${db.escape(Number(r.device_id))} AND ${r.whereAccount()} LIMIT 1`;
+
+        db.query(sql, res, function (result) {
+            res.json(ConversationsListResponse.fromResult(result));
+        });
+    });
+
+
+router.route('/folder/:folder_id').get(
+    (req, res, next) => ConversationsFolderRequest.handler(req, res, next), 
+    function (req, res, next) {
+        let r: ConversationsFolderRequest = res.locals.request;
+        
+        let sql = `SELECT * FROM ${table} WHERE folder_id = ${db.escape(Number(r.folder_id))} AND ${r.whereAccount()}`;
+
+        db.query(sql, res, function (result) {
+            res.json(ConversationsListResponse.getList(result));
+        });
+    });
+
+
+router.route('/add').post(
+    (req, res, next) => ConversationsAddRequest.handler(req, res, next), 
+    function (req, res, next) {
+        let r: ConversationsAddRequest = res.locals.request;
+        
+        let inserted = r.conversations.map((item) => {
+            return Object.assign({ account_id: r.account_id }, item,);
+        });
+
+        let sql = `INSERT INTO ${table} ${db.insertStr(inserted)}`;
+
+        db.query(sql, res, function (result) {
+            res.json(new BaseResponse);
+
+            // Send websocket message
+            inserted.forEach(function (item) {
+                let payload = new ConversationsPayloads.added_conversation(
+                    item.device_id,
+                    item.folder_id,
+                    item.color,
+                    item.color_dark,
+                    item.color_light,
+                    item.color_accent,
+                    item.led_color,
+                    item.pinned,
+                    item.read,
+                    item.timestamp,
+                    item.title,
+                    item.phone_numbers,
+                    item.snippet,
+                    item.id_matcher,
+                    item.mute,
+                    item.archive,
+                    item.private_notifications,
+                    item.ringtone,
+                    item.image_uri
+                );
+                
+                stream.sendMessage(r.account_id, 'added_conversation', payload);
+            });
+        });
+    });
+
+
+router.route('/update/:device_id').post(
+    (req, res, next) => ConversationsUpdateRequest.handler(req, res, next),
+    function (req, res, next) {
+        let r: ConversationsUpdateRequest = res.locals.request;
+
+        let sql = `UPDATE ${table} SET ${r.updateStr()} WHERE device_id = ${db.escape(Number(r.device_id))} AND ${r.whereAccount()}`;
+
+        db.query(sql, res, function (result) {
+            res.json(new BaseResponse)
+
+            // TODO: This is inefficient but we have to have all the data :(
+            let fields = ["device_id AS id", "color", "color_dark", "color_light", "color_accent", "led_color", "pinned", "read", "title", "snippet", "ringtone", "mute", "archive", "private_notifications"];
+
+            let sql = `SELECT ${db.selectFields(fields)} FROM ${table} WHERE device_id = ${db.escape(Number(r.device_id))} AND ${r.whereAccount()} LIMIT 1`;
+
+            db.query(sql, res, function (result) {
+                if (result[0]) {
+                    var payload = new ConversationsPayloads.updated_conversation(
+                        result[0].id,
+                        result[0].color,
+                        result[0].color_dark,
+                        result[0].color_light,
+                        result[0].color_accent,
+                        result[0].led_color,
+                        result[0].pinned,
+                        result[0].read,
+                        result[0].title,
+                        result[0].snippet,
+                        result[0].mute,
+                        result[0].archive,
+                        result[0].private_notifications,
+                        result[0].ringtone
+                    );
+
+                    stream.sendMessage(r.account_id, 'updated_conversation', payload);
+                }
+            });
+        });
+    });
+
+
+router.route('/update_snippet/:device_id').post(
+    (req, res, next) => ConversationsUpdateSnippetRequest.handler(req, res, next), 
+    function (req, res, next) {
+        let r: ConversationsUpdateSnippetRequest = res.locals.request;
+
+        let sql = `UPDATE ${table} SET ${r.updateStr()} WHERE device_id = ${db.escape(Number(r.device_id))} AND ${r.whereAccount()}`;
+
+        db.query(sql, res, function (result) {
+            res.json(new BaseResponse)
+
+            // Send websocket message
+            let payload = new ConversationsPayloads.update_conversation_snippet(
+                Number(r.device_id),
+                r.read,
+                Number(r.timestamp),
+                r.snippet,
+                r.archive
             );
             
-            stream.sendMessage(accountId, 'added_conversation', payload);
+            stream.sendMessage(r.account_id, 'update_conversation_snippet', payload);
         });
     });
-});
 
 
-router.route('/update/:deviceId').post((req, res, next) => BaseRequest.handler(req, res, next), function (req, res) {
-    let accountId = util.getAccountId(req);
-    
-    let toUpdate = {
-        color: req.body.color,
-        color_dark: req.body.color_dark,
-        color_light: req.body.color_light,
-        color_accent: req.body.color_accent,
-        led_color: req.body.led_color,
-        pinned: req.body.pinned,
-        read: req.body.read,
-        timestamp: req.body.timestamp,
-        title: req.body.title,
-        snippet: req.body.snippet,
-        ringtone: req.body.ringtone,
-        mute: req.body.mute,
-        archive: req.body.archive,
-        private_notifications: req.body.private_notifications
-    };
-    
-    let sql = `UPDATE ${table} SET ${db.updateStr(toUpdate)} WHERE device_id = ${db.escape(Number(req.params.deviceId))} AND ${db.whereAccount(accountId)}`;
+router.route('/update_title/:device_id').post(
+    (req, res, next) => ConversationsUpdateTitleRequest.handler(req, res, next), 
+    function (req, res, next) {
+        let r: ConversationsUpdateTitleRequest = res.locals.request;
 
-    db.query(sql, res, function (result) {
-        res.json(new BaseResponse)
+        let sql = `UPDATE ${table} SET ${r.updateStr()} WHERE device_id = ${db.escape(Number(r.device_id))} AND ${r.whereAccount()}`;
 
-        // TODO: This is inefficient but we have to have all the data :(
-        let fields = ["device_id AS id", "color", "color_dark", "color_light", "color_accent", "led_color", "pinned", "read", "title", "snippet", "ringtone", "mute", "archive", "private_notifications"];
-        
-        let sql = `SELECT ${db.selectFields(fields)} FROM ${table} WHERE device_id = ${db.escape(Number(req.params.deviceId))} AND ${db.whereAccount(accountId)} LIMIT 1`;
-        
         db.query(sql, res, function (result) {
-            if (result[0]) {
-                var payload = new ConversationsPayloads.updated_conversation(
-                    result[0].id,
-                    result[0].color,
-                    result[0].color_dark,
-                    result[0].color_light,
-                    result[0].color_accent,
-                    result[0].led_color,
-                    result[0].pinned,
-                    result[0].read,
-                    result[0].title,
-                    result[0].snippet,
-                    result[0].mute,
-                    result[0].archive,
-                    result[0].private_notifications,
-                    result[0].ringtone
-                );
+            res.json(new BaseResponse)
 
-                stream.sendMessage(accountId, 'updated_conversation', payload);
-            }
+            // Send websocket message
+            let payload = new ConversationsPayloads.update_conversation_title(
+                Number(r.device_id),
+                String(r.title)
+            );
+            
+            stream.sendMessage(r.account_id, 'update_conversation_title', payload);
         });
     });
-});
 
 
-router.route('/update_snippet/:deviceId').post((req, res, next) => BaseRequest.handler(req, res, next), function (req, res) {
-    let accountId = util.getAccountId(req);
-    
-    let toUpdate = {
-        read: req.body.read,
-        timestamp: req.body.timestamp,
-        snippet: req.body.snippet,
-        archive: req.body.archive
-    };
-    
-    let sql = `UPDATE ${table} SET ${db.updateStr(toUpdate)} WHERE device_id = ${db.escape(Number(req.params.deviceId))} AND ${db.whereAccount(accountId)}`;
-
-    db.query(sql, res, function (result) {
-        res.json(new BaseResponse)
+router.route('/remove/:device_id').post(
+    (req, res, next) => DeviceIdRequest.handler(req, res, next), 
+    function (req, res, next) {
+        let r: DeviceIdRequest = res.locals.request;
         
-        // Send websocket message
-        let payload = new ConversationsPayloads.update_conversation_snippet(
-            Number(req.params.deviceId),
-            req.body.read,
-            Number(req.body.timestamp),
-            req.body.snippet,
-            req.body.archive
-        );
-        
-        stream.sendMessage(accountId, 'update_conversation_snippet', payload);
+        let sql = `DELETE FROM ${table} WHERE device_id = ${db.escape(Number(r.device_id))} AND ${r.whereAccount()}`;
+
+        db.query(sql, res, function (result) {
+            res.json(new BaseResponse)
+
+            // Send websocket message
+            let payload = new ConversationsPayloads.removed_conversation(
+                Number(r.device_id)
+            );
+            
+            stream.sendMessage(r.account_id, 'removed_conversation', payload);
+        });
     });
-});
 
 
-router.route('/update_title/:deviceId').post((req, res, next) => BaseRequest.handler(req, res, next), function (req, res) {
-    let accountId = util.getAccountId(req);
-    
-    if (!req.query.title) {
-        res.json(new MissingParamError);
-        return;
-    }
-    
-    let toUpdate = {
-        title: req.query.title
-    };
-    
-    let sql = `UPDATE ${table} SET ${db.updateStr(toUpdate)} WHERE device_id = ${db.escape(Number(req.params.deviceId))} AND ${db.whereAccount(accountId)}`;
-
-    db.query(sql, res, function (result) {
-        res.json(new BaseResponse)
+router.route('/read/:device_id').post(
+    (req, res, next) => ConversationsReadRequest.handler(req, res, next), 
+    function (req, res, next) {
+        let r: ConversationsReadRequest = res.locals.request;
         
-        // Send websocket message
-        let payload = new ConversationsPayloads.update_conversation_title(
-            Number(req.params.deviceId),
-            String(req.query.title)
-        );
-        
-        stream.sendMessage(accountId, 'update_conversation_title', payload);
+        let sql = `UPDATE ${table} SET ${db.escapeId("read")} = true WHERE device_id = ${db.escape(Number(r.device_id))} AND ${r.whereAccount()}`;
+
+        db.query(sql, res, function (result) {
+            res.json(new BaseResponse)
+
+            // Send websocket message
+            let payload = new ConversationsPayloads.read_conversation(
+                Number(r.device_id),
+                String(r.android_device)
+            );
+            
+            stream.sendMessage(r.account_id, 'read_conversation', payload);
+        });
     });
-});
 
 
-router.route('/remove/:deviceId').post((req, res, next) => BaseRequest.handler(req, res, next), function (req, res) {
-    let accountId = util.getAccountId(req);
-    
-    let sql = `DELETE FROM ${table} WHERE device_id = ${db.escape(Number(req.params.deviceId))} AND ${db.whereAccount(accountId)}`;
-
-    db.query(sql, res, function (result) {
-        res.json(new BaseResponse)
+router.route('/seen/:device_conversation_id').post(
+    (req, res, next) => ConversationsSeenRequest.handler(req, res, next), 
+    function (req, res, next) {
+        let r: ConversationsSeenRequest = res.locals.request
         
-        // Send websocket message
-        let payload = new ConversationsPayloads.removed_conversation(
-            Number(req.params.deviceId)
-        );
-        
-        stream.sendMessage(accountId, 'removed_conversation', payload);
+        let sql = `UPDATE Messages SET seen = true WHERE device_conversation_id = ${db.escape(Number(r.device_conversation_id))} AND ${r.whereAccount()}`;
+
+        db.query(sql, res, function (result) {
+            res.json(new BaseResponse)
+
+            // Send websocket message
+            let payload = new ConversationsPayloads.seen_conversation(
+                Number(r.device_conversation_id)
+            );
+            
+            stream.sendMessage(r.account_id, 'seen_conversation', payload);
+        });
     });
-});
 
 
-router.route('/read/:deviceId').post((req, res, next) => BaseRequest.handler(req, res, next), function (req, res) {
-    let accountId = util.getAccountId(req);
-    
-    let sql = `UPDATE ${table} SET ${db.escapeId("read")} = true WHERE device_id = ${db.escape(Number(req.params.deviceId))} AND ${db.whereAccount(accountId)}`;
-
-    db.query(sql, res, function (result) {
-        res.json(new BaseResponse)
+router.route('/seen').post(
+    (req, res, next) => AccountIdRequest.handler(req, res, next), 
+    function (req, res, next) {
+        let r: AccountIdRequest = res.locals.request;
         
-        // Send websocket message
-        let payload = new ConversationsPayloads.read_conversation(
-            Number(req.params.deviceId),
-            String(req.query.android_device)
-        );
-        
-        stream.sendMessage(accountId, 'read_conversation', payload);
+        let sql = `UPDATE Messages SET seen = true WHERE ${r.whereAccount()}`;
+
+        db.query(sql, res, function (result) {
+            res.json(new BaseResponse)
+
+            let payload = new ConversationsPayloads.seen_conversations();
+
+            // Send websocket message
+            stream.sendMessage(r.account_id, 'seen_conversations', payload);
+        });
     });
-});
 
 
-router.route('/seen/:deviceConversationId').post((req, res, next) => BaseRequest.handler(req, res, next), function (req, res) {
-    let accountId = util.getAccountId(req);
-    
-    let sql = `UPDATE Messages SET seen = true WHERE device_conversation_id = ${db.escape(Number(req.params.deviceConversationId))} AND ${db.whereAccount(accountId)}`;
-
-    db.query(sql, res, function (result) {
-        res.json(new BaseResponse)
+router.route('/archive/:device_id').post(
+    (req, res, next) => DeviceIdRequest.handler(req, res, next), 
+    function (req, res, next) {
+        let r: DeviceIdRequest = res.locals.request;
         
-        // Send websocket message
-        let payload = new ConversationsPayloads.seen_conversation(
-            Number(req.params.deviceConversationId)
-        );
-        
-        stream.sendMessage(accountId, 'seen_conversation', payload);
+        let sql = `UPDATE ${table} SET archive = true, folder_id = -1 WHERE device_id = ${db.escape(Number(r.device_id))} AND ${r.whereAccount()}`;
+
+        db.query(sql, res, function (result) {
+            res.json(new BaseResponse)
+
+            // Send websocket message
+            let payload = new ConversationsPayloads.archive_conversation(
+                Number(r.device_id),
+                true
+            );
+            
+            stream.sendMessage(r.account_id, 'archive_conversation', payload);
+        });
     });
-});
 
 
-router.route('/seen').post((req, res, next) => BaseRequest.handler(req, res, next), function (req, res) {
-    let accountId = util.getAccountId(req);
-    
-    let sql = `UPDATE Messages SET seen = true WHERE ${db.whereAccount(accountId)}`;
-
-    db.query(sql, res, function (result) {
-        res.json(new BaseResponse)
-
-        let payload = new ConversationsPayloads.seen_conversations();
+router.route('/unarchive/:device_id').post(
+    (req, res, next) => DeviceIdRequest.handler(req, res, next), 
+    function (req, res, next) {
+        let r: DeviceIdRequest = res.locals.request;
         
-        // Send websocket message
-        stream.sendMessage(accountId, 'seen_conversations', payload);
+        let sql = `UPDATE ${table} SET archive = false, folder_id = -1 WHERE device_id = ${db.escape(Number(r.device_id))} AND ${r.whereAccount()}`;
+
+        db.query(sql, res, function (result) {
+            res.json(new BaseResponse)
+
+            // Send websocket message
+            let payload = new ConversationsPayloads.archive_conversation(
+                Number(r.device_id),
+                false
+            );
+            
+            stream.sendMessage(r.account_id, 'archive_conversation', payload);
+        });
     });
-});
 
 
-router.route('/archive/:deviceId').post((req, res, next) => BaseRequest.handler(req, res, next), function (req, res) {
-    let accountId = util.getAccountId(req);
-    
-    let sql = `UPDATE ${table} SET archive = true, folder_id = -1 WHERE device_id = ${db.escape(Number(req.params.deviceId))} AND ${db.whereAccount(accountId)}`;
+router.route('/add_to_folder/:device_id').post(
+    (req, res, next) => ConversationsAddToFolderRequest.handler(req, res, next), 
+    function (req, res, next) {
+        let r: ConversationsAddToFolderRequest = res.locals.request;
 
-    db.query(sql, res, function (result) {
-        res.json(new BaseResponse)
-        
-        // Send websocket message
-        let payload = new ConversationsPayloads.archive_conversation(
-            Number(req.params.deviceId),
-            true
-        );
-        
-        stream.sendMessage(accountId, 'archive_conversation', payload);
+        let sql = `UPDATE ${table} SET folder_id = ${db.escape(Number(r.folder_id))} WHERE device_id = ${db.escape(Number(r.device_id))} AND ${r.whereAccount()}`;
+
+        db.query(sql, res, function (result) {
+            res.json(new BaseResponse)
+
+            // Send websocket message
+            let payload = new ConversationsPayloads.add_conversation_to_folder(
+                Number(r.device_id),
+                Number(r.folder_id)
+            );
+            
+            stream.sendMessage(r.account_id, 'add_conversation_to_folder', payload);
+        });
     });
-});
 
 
-router.route('/unarchive/:deviceId').post((req, res, next) => BaseRequest.handler(req, res, next), function (req, res) {
-    let accountId = util.getAccountId(req);
-    
-    let sql = `UPDATE ${table} SET archive = false, folder_id = -1 WHERE device_id = ${db.escape(Number(req.params.deviceId))} AND ${db.whereAccount(accountId)}`;
-
-    db.query(sql, res, function (result) {
-        res.json(new BaseResponse)
+router.route('/remove_from_folder/:device_id').post(
+    (req, res, next) => DeviceIdRequest.handler(req, res, next), 
+    function (req, res, next) {
+        let r: DeviceIdRequest = res.locals.request;
         
-        // Send websocket message
-        let payload = new ConversationsPayloads.archive_conversation(
-            Number(req.params.deviceId),
-            false
-        );
-        
-        stream.sendMessage(accountId, 'archive_conversation', payload);
+        let sql = `UPDATE ${table} SET folder_id = -1 WHERE device_id = ${db.escape(Number(r.device_id))} AND ${r.whereAccount()}`;
+
+        db.query(sql, res, function (result) {
+            res.json(new BaseResponse)
+
+            // Send websocket message
+            let payload = new ConversationsPayloads.remove_conversation_from_folder(
+                Number(r.device_id)
+            );
+            
+            stream.sendMessage(r.account_id, 'remove_conversation_from_folder', payload);
+        });
     });
-});
 
 
-router.route('/add_to_folder/:deviceId').post((req, res, next) => BaseRequest.handler(req, res, next), function (req, res) {
-    let accountId = util.getAccountId(req);
+router.route('/cleanup_messages').post(
+    (req, res, next) => ConversationsCleanupMessagesRequest.handler(req, res, next), 
+    function (req, res, next) {
+    let r: ConversationsCleanupMessagesRequest = res.locals.request;
     
-    if (!req.query.folder_id) {
-        res.json(new MissingParamError);
-        return;
-    }
-    
-    let sql = `UPDATE ${table} SET folder_id = ${db.escape(Number(req.query.folder_id))} WHERE device_id = ${db.escape(Number(req.params.deviceId))} AND ${db.whereAccount(accountId)}`;
-
-    db.query(sql, res, function (result) {
-        res.json(new BaseResponse)
-        
-        // Send websocket message
-        let payload = new ConversationsPayloads.add_conversation_to_folder(
-            Number(req.params.deviceId),
-            Number(req.query.folder_id)
-        );
-        
-        stream.sendMessage(accountId, 'add_conversation_to_folder', payload);
-    });
-});
-
-
-router.route('/remove_from_folder/:deviceId').post((req, res, next) => BaseRequest.handler(req, res, next), function (req, res) {
-    let accountId = util.getAccountId(req);
-    
-    let sql = `UPDATE ${table} SET folder_id = -1 WHERE device_id = ${db.escape(Number(req.params.deviceId))} AND ${db.whereAccount(accountId)}`;
-
-    db.query(sql, res, function (result) {
-        res.json(new BaseResponse)
-        
-        // Send websocket message
-        let payload = new ConversationsPayloads.remove_conversation_from_folder(
-            Number(req.params.deviceId)
-        );
-        
-        stream.sendMessage(accountId, 'remove_conversation_from_folder', payload);
-    });
-});
-
-
-router.route('/cleanup_messages').post((req, res, next) => BaseRequest.handler(req, res, next), function (req, res) {
-    let accountId = util.getAccountId(req);
-    
-    if (!req.query.timestamp || !req.query.conversation_id) {
-        res.json(new MissingParamError);
-        return;
-    }
-    
-    let sql = `DELETE FROM Messages WHERE device_conversation_id = ${db.escape(Number(req.query.conversation_id))} AND timestamp < ${db.escape(Number(req.query.timestamp))} AND ${db.whereAccount(accountId)}`;
+    let sql = `DELETE FROM Messages WHERE device_conversation_id = ${db.escape(Number(r.conversation_id))} AND timestamp < ${db.escape(Number(r.timestamp))} AND ${r.whereAccount()}`;
 
     db.query(sql, res, function (result) {
         res.json(new BaseResponse)
         
         let payload = new ConversationsPayloads.cleanup_conversation_messages(
-            Number(req.query.timestamp),
-            String(req.query.conversation_id)
+            Number(r.timestamp),
+            String(r.conversation_id)
         );
 
         // Send websocket message
-        stream.sendMessage(accountId, 'cleanup_conversation_messages', payload);
+        stream.sendMessage(r.account_id, 'cleanup_conversation_messages', payload);
     });
 });
 

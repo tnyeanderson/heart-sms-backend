@@ -5,123 +5,110 @@ import util from '../utils/util.js';
 import * as ScheduledMessagesPayloads from '../models/payloads/ScheduledMessagesPayloads.js';
 import { BaseResponse } from '../models/responses/BaseResponse.js';
 import { ScheduledMessagesListResponse } from '../models/responses/ScheduledMessagesResponses.js';
-import { BaseRequest } from '../models/requests/BaseRequest.js';
+import { AccountIdRequest, DeviceIdRequest, UpdateDeviceIdRequest } from '../models/requests/BaseRequests.js';
+import { ScheduledMessagesAddRequest, ScheduledMessagesUpdateRequest } from '../models/requests/ScheduledMessagesRequests.js';
 
 const router = express.Router();
 
 const table = "ScheduledMessages"
 
-router.route('/').get((req, res, next) => BaseRequest.handler(req, res, next), function (req, res) {
-    let accountId = util.getAccountId(req);
-    
-    let sql = `SELECT * FROM ${table} WHERE ${db.whereAccount(accountId)}`;
-    
-
-    db.query(sql, res, function (result) {
-        res.json(ScheduledMessagesListResponse.getList(result));
-    });
-});
-
-
-router.route('/add').post((req, res, next) => BaseRequest.handler(req, res, next), function (req, res) {
-    let accountId = util.getAccountId(req);
-    
-    let inserted: any[] = [];
-    
-    req.body.scheduled_messages.forEach(function (item: any) {
-        let toInsert = {
-            account_id: accountId,
-            device_id: item.device_id,
-            to: item.to,
-            data: item.data,
-            mime_type: item.mime_type,
-            timestamp: item.timestamp,
-            title: item.title,
-            repeat: item.repeat
-        };
+router.route('/').get(
+    (req, res, next) => AccountIdRequest.handler(req, res, next), 
+    function (req, res, next) {
+        let r: AccountIdRequest = res.locals.request;
         
-        inserted.push(toInsert);
+        let sql = `SELECT * FROM ${table} WHERE ${r.whereAccount()}`;
+        
+
+        db.query(sql, res, function (result) {
+            res.json(ScheduledMessagesListResponse.getList(result));
+        });
     });
 
-    let sql = `INSERT INTO ${table} ${db.insertStr(inserted)}`;
+
+router.route('/add').post(
+    (req, res, next) => ScheduledMessagesAddRequest.handler(req, res, next), 
+    function (req, res, next) {
+        let r: ScheduledMessagesAddRequest = res.locals.request;
         
-    db.query(sql, res, function (result) {
-        res.json(new BaseResponse);
+        let inserted = r.scheduled_messages.map((item) => {
+            return Object.assign({ account_id: r.account_id }, item,);
+        });
+
+        let sql = `INSERT INTO ${table} ${db.insertStr(inserted)}`;
+
+        db.query(sql, res, function (result) {
+            res.json(new BaseResponse);
+
+            // Send websocket message
+            inserted.forEach(function (item) {
+                let payload = new ScheduledMessagesPayloads.added_scheduled_message(
+                    item.device_id,
+                    item.to,
+                    item.data,
+                    item.mime_type,
+                    item.timestamp,
+                    item.title,
+                    item.repeat
+                );
+                
+                stream.sendMessage(r.account_id, 'added_scheduled_message', payload);
+            });
+        });
+    });
+
+
+router.route('/remove/:device_id').post(
+    (req, res, next) => DeviceIdRequest.handler(req, res, next), 
+    function (req, res, next) {
+        let r: DeviceIdRequest = res.locals.request;
         
-        // Send websocket message
-        inserted.forEach(function (item) {
-            let payload = new ScheduledMessagesPayloads.added_scheduled_message(
-                item.device_id,
-                item.to,
-                item.data,
-                item.mime_type,
-                item.timestamp,
-                item.title,
-                item.repeat
+        let sql = `DELETE FROM ${table} WHERE device_id = ${db.escape(Number(r.device_id))} AND ${db.whereAccount(r.account_id)}`;
+        
+
+        db.query(sql, res, function (result) {
+            res.json(new BaseResponse);
+
+            // Send websocket message
+            let payload = new ScheduledMessagesPayloads.removed_scheduled_message(
+                Number(r.device_id)
             );
             
-            stream.sendMessage(accountId, 'added_scheduled_message', payload);
+            stream.sendMessage(r.account_id, 'removed_scheduled_message', payload);
         });
     });
-});
 
 
-router.route('/remove/:deviceId').post((req, res, next) => BaseRequest.handler(req, res, next), function (req, res) {
-    let accountId = util.getAccountId(req);
-    
-    let sql = `DELETE FROM ${table} WHERE device_id = ${db.escape(Number(req.params.deviceId))} AND ${db.whereAccount(accountId)}`;
-    
+router.route('/update/:device_id').post(
+    (req, res, next) => ScheduledMessagesUpdateRequest.handler(req, res, next), 
+    function (req, res, next) {
+        let r: ScheduledMessagesUpdateRequest = res.locals.request;
 
-    db.query(sql, res, function (result) {
-        res.json(new BaseResponse);
-        
-        // Send websocket message
-        let payload = new ScheduledMessagesPayloads.removed_scheduled_message(
-            Number(req.params.deviceId)
-        );
-        
-        stream.sendMessage(accountId, 'removed_scheduled_message', payload);
-    });
-});
+        let sql = `UPDATE ${table} SET ${r.updateStr()} WHERE device_id = ${db.escape(Number(r.device_id))} AND ${r.whereAccount()}`;
 
-
-router.route('/update/:deviceId').post((req, res, next) => BaseRequest.handler(req, res, next), function (req, res) {
-    let accountId = util.getAccountId(req);
-    
-    let toUpdate = {
-        to: req.body.to,
-        data: req.body.data,
-        mime_type: req.body.mime_type,
-        timestamp: req.body.timestamp,
-        title: req.body.title,
-        repeat: req.body.repeat
-    };
-    
-    let sql = `UPDATE ${table} SET ${db.updateStr(toUpdate)} WHERE device_id = ${db.escape(Number(req.params.deviceId))} AND ${db.whereAccount(accountId)}`;
-
-    db.query(sql, res, function (result) {
-        res.json(new BaseResponse);
-        
-        // TODO: This is inefficient. but we need the data
-        let fields = ["device_id AS id", "to", "data", "mime_type", "timestamp", "title", "repeat"];
-        let sql = `SELECT ${db.selectFields(fields)} FROM ${table} WHERE device_id = ${db.escape(Number(req.params.deviceId))} AND ${db.whereAccount(accountId)} LIMIT 1`;
         db.query(sql, res, function (result) {
-            if (result[0]) {
-                let payload = new ScheduledMessagesPayloads.updated_scheduled_message(
-                    result[0].id,
-                    result[0].to,
-                    result[0].data,
-                    result[0].mime_type,
-                    result[0].timestamp,
-                    result[0].title,
-                    result[0].repeat
-                );
+            res.json(new BaseResponse);
 
-                stream.sendMessage(accountId, 'updated_scheduled_message', payload);
-            }
+            // TODO: This is inefficient. but we need the data
+            let fields = ["device_id AS id", "to", "data", "mime_type", "timestamp", "title", "repeat"];
+            let sql = `SELECT ${db.selectFields(fields)} FROM ${table} WHERE device_id = ${db.escape(Number(r.device_id))} AND ${r.whereAccount()} LIMIT 1`;
+            db.query(sql, res, function (result) {
+                if (result[0]) {
+                    let payload = new ScheduledMessagesPayloads.updated_scheduled_message(
+                        result[0].id,
+                        result[0].to,
+                        result[0].data,
+                        result[0].mime_type,
+                        result[0].timestamp,
+                        result[0].title,
+                        result[0].repeat
+                    );
+
+                    stream.sendMessage(r.account_id, 'updated_scheduled_message', payload);
+                }
+            });
         });
     });
-});
 
 export default router;
  

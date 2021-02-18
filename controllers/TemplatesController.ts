@@ -5,99 +5,94 @@ import util from '../utils/util.js';
 import * as TemplatesPayloads from '../models/payloads/TemplatesPayloads.js';
 import { BaseResponse } from '../models/responses/BaseResponse.js';
 import { TemplatesListResponse } from '../models/responses/TemplatesResponses.js';
-import { BaseRequest } from '../models/requests/BaseRequest.js';
+import { AccountIdRequest, DeviceIdRequest } from '../models/requests/BaseRequests.js';
+import { TemplatesAddRequest, TemplatesUpdateRequest } from '../models/requests/TemplatesRequests.js';
 
 const router = express.Router();
 
 const table = "Templates"
 
-router.route('/').get((req, res, next) => BaseRequest.handler(req, res, next), function (req, res) {
-    let accountId = util.getAccountId(req);
-    
-    let sql = `SELECT * FROM ${table} WHERE ${db.whereAccount(accountId)}`;
-    
-
-    db.query(sql, res, function (result) {
-        res.json(TemplatesListResponse.getList(result));
-    });
-});
-
-
-router.route('/add').post((req, res, next) => BaseRequest.handler(req, res, next), function (req, res) {
-    let accountId = util.getAccountId(req);
-    
-    let inserted: any[] = [];
-    
-    req.body.templates.forEach(function (item: any) {
-        let toInsert = {
-            account_id: accountId,
-            device_id: item.device_id,
-            text: item.text
-        };
+router.route('/').get(
+    (req, res, next) => AccountIdRequest.handler(req, res, next), 
+    function (req, res, next) {
+        let r: AccountIdRequest = res.locals.request;
         
-        inserted.push(toInsert);
-    });
+        let sql = `SELECT * FROM ${table} WHERE ${r.whereAccount()}`;
+        
 
-    let sql = `INSERT INTO ${table} ${db.insertStr(inserted)}`;
-        
-    db.query(sql, res, function (result) {
-        res.json(new BaseResponse);
-        
-        // Send websocket message
-        inserted.forEach(function (item) {
-            let payload = new TemplatesPayloads.added_template(
-                item.device_id,
-                item.text
-            )
-            
-            stream.sendMessage(accountId, 'added_template', payload);
+        db.query(sql, res, function (result) {
+            res.json(TemplatesListResponse.getList(result));
         });
     });
-});
 
 
-router.route('/remove/:deviceId').post((req, res, next) => BaseRequest.handler(req, res, next), function (req, res) {
-    let accountId = util.getAccountId(req);
-    
-    let sql = `DELETE FROM ${table} WHERE device_id = ${db.escape(Number(req.params.deviceId))} AND ${db.whereAccount(accountId)}`;
-    
-
-    db.query(sql, res, function (result) {
-        res.json(new BaseResponse);
+router.route('/add').post(
+    (req, res, next) => TemplatesAddRequest.handler(req, res, next), 
+    function (req, res, next) {
+        let r: TemplatesAddRequest = res.locals.request;
         
-        // Send websocket message
-        let payload = new TemplatesPayloads.removed_template(
-            Number(req.params.deviceId)
-        );
-        
-        stream.sendMessage(accountId, 'removed_template', payload);
+        let inserted = r.templates.map((item) => {
+            return Object.assign({ account_id: r.account_id }, item,);
+        });
+
+        let sql = `INSERT INTO ${table} ${db.insertStr(inserted)}`;
+
+        db.query(sql, res, function (result) {
+            res.json(new BaseResponse);
+
+            // Send websocket message
+            inserted.forEach(function (item) {
+                let payload = new TemplatesPayloads.added_template(
+                    item.device_id,
+                    item.text
+                )
+                
+                stream.sendMessage(r.account_id, 'added_template', payload);
+            });
+        });
     });
-});
 
 
-router.route('/update/:deviceId').post((req, res, next) => BaseRequest.handler(req, res, next), function (req, res) {
-    let accountId = util.getAccountId(req);
-    
-    let toUpdate = {
-        text: req.body.text
-    };
-    
-    let sql = `UPDATE ${table} SET ${db.updateStr(toUpdate)} WHERE device_id = ${db.escape(Number(req.params.deviceId))} AND ${db.whereAccount(accountId)}`;
-
-    db.query(sql, res, function (result) {
-        res.json(new BaseResponse);
+router.route('/remove/:device_id').post(
+    (req, res, next) => DeviceIdRequest.handler(req, res, next), 
+    function (req, res, next) {
+        let r: DeviceIdRequest = res.locals.request;
         
-        // Send websocket message
-        let toKeep = ['device_id', 'text'];
+        let sql = `DELETE FROM ${table} WHERE device_id = ${db.escape(Number(r.device_id))} AND ${r.whereAccount()}`;
+        
+
+        db.query(sql, res, function (result) {
+            res.json(new BaseResponse);
+
+            // Send websocket message
+            let payload = new TemplatesPayloads.removed_template(
+                Number(r.device_id)
+            );
             
-        let payload = new TemplatesPayloads.updated_template(
-            Number(req.params.deviceId),
-            String(req.body.text)
-        );
-        
-        stream.sendMessage(accountId, 'updated_template', payload);
+            stream.sendMessage(r.account_id, 'removed_template', payload);
+        });
     });
-});
+
+
+router.route('/update/:device_id').post(
+    (req, res, next) => TemplatesUpdateRequest.handler(req, res, next), 
+    function (req, res, next) {
+        let r: TemplatesUpdateRequest = res.locals.request;
+
+        let sql = `UPDATE ${table} SET ${r.updateStr()} WHERE device_id = ${db.escape(Number(r.device_id))} AND ${r.whereAccount()}`;
+
+        db.query(sql, res, function (result) {
+            res.json(new BaseResponse);
+
+            // Send websocket message
+            let payload = new TemplatesPayloads.updated_template(
+                Number(r.device_id),
+                String(r.text)
+            );
+            
+            stream.sendMessage(r.account_id, 'updated_template', payload);
+        });
+    });
 
 export default router;
  

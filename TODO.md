@@ -1,6 +1,13 @@
 # TODO
 ## pulse-sms-backend
 
+- [ ] Fix database error response delay
+- [ ] Clean up payloads (stop using constructors)
+- [ ] Add method docs
+- [ ] Better test coverage
+- [ ] Less console logs of text, switch to Errors
+
+
 ### Efficiency
 - [x] Authentication cache for MQTT
 

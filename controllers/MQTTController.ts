@@ -16,34 +16,32 @@ function allow (res: Response) {
 }
 
 
-router.route('/login').post(function (req, res) {
+router.route('/login').post(function (req, res, next) {
     // This is called by mosquitto-go-auth to authenticate the user for messaging
     // It just sends a different result from the /accounts/login endpoint
 
     // Since we control auth, always accept our own requests
     if (req.body.username === 'heart-sms-backend' && req.body.password && req.body.password === stream.backendPassword) {
-        allow(res);
-        return;
+        return allow(res);
     }
 
     let sql = `SELECT ${db.escapeId('session_id')} FROM Accounts INNER JOIN SessionMap USING (account_id) WHERE username = ${db.escape(req.body.username)} LIMIT 1`;
     
     db.query(sql, res, function (result) {
         if (!result[0]) {
-            deny(res);
-            return;
+            return deny(res);
         }
         
         if (req.body.password && req.body.password === result[0].session_id) {
-            allow(res);
+            return allow(res);
         } else {
-            deny(res);
+            return deny(res);
         }
     });
 });
 
 
-router.route('/acl').post(function (req, res) {
+router.route('/acl').post(function (req, res, next) {
     // Since we control auth, always accept our own requests
     if (req.body.username === 'heart-sms-backend') {
         allow(res);

@@ -1,4 +1,4 @@
-import { Expose, plainToClass } from "class-transformer";
+import { Expose } from "class-transformer";
 import { FieldInfo } from "mysql";
 import { BaseResponse } from "./BaseResponse.js";
 

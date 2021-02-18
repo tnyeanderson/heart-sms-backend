@@ -1,5 +1,7 @@
-import express, { Router, json, Request, Response } from 'express';
+import express, { Router, json, Request, Response, NextFunction } from 'express';
 import cors from 'cors';
+import 'reflect-metadata';
+import { BaseError, ErrorResponse, UnhandledPathError } from './models/responses/ErrorResponses.js';
 
 // Controllers
 import AccountsController from './controllers/AccountsController.js';
@@ -58,7 +60,18 @@ app.use(getUrl('/templates'),          TemplatesController);
 
 // Log requests with no endpoint
 app.use((req: Request, res: Response, next) => {
-    console.log("ERROR: unhandled path in request: ", req.path);
+    next(new UnhandledPathError(req.path)); // Passing the request to the next handler in the stack.
+});
+
+// Error handling
+app.use((err: ErrorResponse, req: Request, res: Response, next: NextFunction) => {
+    let message: BaseError = err.msg || new BaseError('unexpected error');
+    console.log(`\n ${JSON.stringify(message)} \n`);
+    if (res.headersSent) {
+        return next(err)
+    }
+    res.status(err.status || 500);
+    res.json(message);
     next(); // Passing the request to the next handler in the stack.
 });
 

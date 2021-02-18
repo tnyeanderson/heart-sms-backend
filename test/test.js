@@ -55,7 +55,7 @@ describe("heart-sms-backend unit test", function () {
         .expect("Content-type",/json/)
         .expect(200)
         .end(function (err,res) {
-            res.status.should.equal(200);
+            res.status.should.equal(400);
             res.body.error.should.equal("user already exists");
             done();
         });
@@ -200,7 +200,7 @@ describe("heart-sms-backend unit test", function () {
             "account_id": accountId
         })
         .send({
-            "type": "updatedtype",
+            "reply_type": "updatedtype",
             "pattern": "updatedpattern",
             "response": "updatedtest"
         })
@@ -1067,7 +1067,7 @@ describe("heart-sms-backend unit test", function () {
             "account_id": accountId
         })
         .send({
-            "type": 4,
+            "message_type": 4,
             "timestamp": 500,
             "read": true,
             "seen": true

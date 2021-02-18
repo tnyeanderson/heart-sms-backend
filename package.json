@@ -8,6 +8,7 @@
     "compile": "tsc",
     "lint": "tsc --noEmit",
     "test": "NODE_ENV=test env-cmd -f ./.db.env mocha --exit",
+    "push-all": "npm run docker:push ; npm run db:push ; npm run mqtt:push",
     "start": "cd dist && NODE_ENV=production node server.js",
     "start-dev": "cd dist && NODE_ENV=dev node server.js",
     "build-dev": "npm run docker:build && npm run db:build && npm run mqtt:build",
@@ -44,6 +45,7 @@
     "express": "^4.17.1",
     "mqtt": "^4.2.6",
     "mysql": "^2.18.1",
+    "reflect-metadata": "^0.1.13",
     "uuid": "^8.3.2"
   },
   "devDependencies": {

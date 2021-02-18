@@ -10,6 +10,6 @@ export class MQTTAllowResponse extends BaseResponse {
 export class MQTTDenyResponse extends BaseResponse {
     constructor(
         public Ok: boolean = false,
-        public Error: String = new AuthError().error
+        public Error: string = new AuthError().msg.error
     ) { super() }
 }

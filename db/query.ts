@@ -45,14 +45,15 @@ let Query = {
     
     query: function (sql: string, res: Response, callback: HeartQueryCallback) {
         if (log_queries && util.env.dev()) {
-            console.log(sql, ';', '\n');
+            console.log(Date.now(), ' - ', sql, ';', '\n');
         }
         pool.query(sql, function (err, result) {
             if (err) {
                 console.log(err);
                 
-                if (res.status) {
-                    res.status(400).json(new DatabaseError);
+                if (res) {
+                    // TODO: Database errors lock up the server for a few seconds
+                    res.json(new DatabaseError);
                 }
                 
                 return;
@@ -79,7 +80,7 @@ let Query = {
         return out.join(', ');
     },
     
-    insertStr: function (toInsert: any) {
+    insertStr: function (toInsert: any[]) {
         let cols: string[] = [];
         let vals: any[] = [];
         let out = "";

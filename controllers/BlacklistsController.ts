@@ -5,77 +5,75 @@ import util from '../utils/util.js';
 import * as BlacklistsPayloads from '../models/payloads/BlacklistsPayloads.js';
 import { BlacklistListResponse } from '../models/responses/BlacklistsResponses.js';
 import { BaseResponse } from '../models/responses/BaseResponse.js';
-import { BaseRequest } from '../models/requests/BaseRequest.js';
+import { AccountIdRequest, DeviceIdRequest } from '../models/requests/BaseRequests.js';
+import { BlacklistsAddRequest } from '../models/requests/BlacklistsRequests.js';
 
 
 const router = express.Router();
 
 const table = "Blacklists"
 
-router.route('/').get((req, res, next) => BaseRequest.handler(req, res, next), function (req, res) {
-    let accountId = util.getAccountId(req);
-    
-    let sql = `SELECT * FROM ${table} WHERE ${db.whereAccount(accountId)}`;
-    
-
-    db.query(sql, res, function (result) {
-        res.json(BlacklistListResponse.getList(result));
-    });
-});
-
-
-router.route('/add').post((req, res, next) => BaseRequest.handler(req, res, next), function (req, res) {
-    let accountId = util.getAccountId(req);
-
-    let inserted: any[] = [];
-    
-    req.body.blacklists.forEach(function (item: any) {
-        let toInsert = {
-            account_id: accountId,
-            device_id: item.device_id,
-            phone_number: item.phone_number,
-            phrase: item.phrase
-        };
+router.route('/').get(
+    (req, res, next) => AccountIdRequest.handler(req, res, next), 
+    function (req, res, next) {
+        let r: AccountIdRequest = res.locals.request;
         
-        inserted.push(toInsert);
-    });
+        let sql = `SELECT * FROM ${table} WHERE ${r.whereAccount()}`;
+        
 
-    let sql = `INSERT INTO ${table} ${db.insertStr(inserted)}`;
-        
-    db.query(sql, res, function (result) {
-        res.json(new BaseResponse);
-        
-        // Send websocket message
-        inserted.forEach(function (item: any) {
-            let payload = new BlacklistsPayloads.added_blacklist(
-                item.device_id,
-                item.phone_number,
-                item.phrase
-            );
-            
-            stream.sendMessage(accountId, 'added_blacklist', payload);
+        db.query(sql, res, function (result) {
+            res.json(BlacklistListResponse.getList(result));
         });
     });
-});
 
 
-router.route('/remove/:deviceId').post((req, res, next) => BaseRequest.handler(req, res, next), function (req, res) {
-    let accountId = util.getAccountId(req);
-    
-    let sql = `DELETE FROM ${table} WHERE device_id = ${db.escape(Number(req.params.deviceId))} AND ${db.whereAccount(accountId)}`;
-    
+router.route('/add').post(
+    (req, res, next) => BlacklistsAddRequest.handler(req, res, next),
+    function (req, res, next) {
+        let r: BlacklistsAddRequest = res.locals.request;
 
-    db.query(sql, res, function (result) {
-        res.json(new BaseResponse);
-        
-        // Send websocket message
-        let payload = new BlacklistsPayloads.removed_blacklist(
-            Number(req.params.deviceId)
-        );
-        
-        stream.sendMessage(accountId, 'removed_blacklist', payload);
+        let inserted = r.blacklists.map((item) => {
+            return Object.assign({ account_id: r.account_id }, item,);
+        });
+
+        let sql = `INSERT INTO ${table} ${db.insertStr(inserted)}`;
+
+        db.query(sql, res, function (result) {
+            res.json(new BaseResponse);
+
+            // Send websocket message
+            inserted.forEach(function (item: any) {
+                let payload = new BlacklistsPayloads.added_blacklist(
+                    item.device_id,
+                    item.phone_number,
+                    item.phrase
+                );
+                
+                stream.sendMessage(r.account_id, 'added_blacklist', payload);
+            });
+        });
     });
-});
+
+
+router.route('/remove/:device_id').post(
+    (req, res, next) => DeviceIdRequest.handler(req, res, next),
+    function (req, res, next) {
+        let r: DeviceIdRequest = res.locals.request;
+        
+        let sql = `DELETE FROM ${table} WHERE device_id = ${db.escape(Number(r.device_id))} AND ${r.whereAccount()}`;
+        
+
+        db.query(sql, res, function (result) {
+            res.json(new BaseResponse);
+
+            // Send websocket message
+            let payload = new BlacklistsPayloads.removed_blacklist(
+                Number(r.device_id)
+            );
+            
+            stream.sendMessage(r.account_id, 'removed_blacklist', payload);
+        });
+    });
 
 export default router;
  
