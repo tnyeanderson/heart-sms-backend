@@ -129,6 +129,39 @@ describe("heart-sms-backend unit test", function () {
         });
     });
 
+    it("MQTT acl", function (done) {
+        api
+        .post('/mqtt/acl')
+        .send({
+            "username": "test@email.com",
+            "topic": 'heartsms/' + accountId
+        })
+        .expect("Content-type",/json/)
+        .expect(200)
+        .end(function (err,res) {
+            res.status.should.equal(200);
+            res.body.Ok.should.equal(true);
+            done();
+        });
+    });
+
+    it("MQTT fail acl", function (done) {
+        api
+        .post('/mqtt/acl')
+        .send({
+            "username": "bad",
+            "topic": "bad"
+        })
+        .expect("Content-type",/json/)
+        .expect(200)
+        .end(function (err,res) {
+            res.status.should.equal(401);
+            res.body.Ok.should.equal(false);
+            res.body.Error.should.equal("username or password incorrect");
+            done();
+        });
+    });
+
     console.log("Waiting to give you time to log in, etc...");
     delay();
     
