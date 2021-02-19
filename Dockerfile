@@ -11,7 +11,10 @@ COPY package*.json ./
 RUN npm install
 
 # Bundle app source
-COPY . .
+COPY api/ api/
+
+# Add tsconfig
+COPY tsconfig.json .
 
 # Compile to dist/
 RUN npm run compile

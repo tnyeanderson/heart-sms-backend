@@ -20,7 +20,10 @@ router.route('/login').post(
     function (req, res, next) {
         let r: LoginRequest = res.locals.request;
 
-        let fields = ['account_id', 'session_id', 'password_hash', 'real_name AS name', 'salt1', 'salt2', 'phone_number', 'base_theme', 'passcode', 'rounder_bubbles', 'use_global_theme', 'apply_primary_color_to_toolbar', 'conversation_categories', 'color', 'color_dark', 'color_light', 'color_accent', 'global_color_theme', 'message_timestamp', 'subscription_type', 'subscription_expiration'];
+        let fields = ['account_id', 'session_id', 'password_hash', 'real_name AS name', 'salt1', 'salt2', 'phone_number', 
+                      'base_theme', 'passcode', 'rounder_bubbles', 'use_global_theme', 'apply_primary_color_to_toolbar', 
+                      'conversation_categories', 'color', 'color_dark', 'color_light', 'color_accent', 'global_color_theme', 
+                      'message_timestamp', 'subscription_type', 'subscription_expiration'];
         let sql = `SELECT ${db.selectFields(fields)} FROM Accounts INNER JOIN SessionMap USING (account_id) INNER JOIN Settings USING (account_id) WHERE username = ${db.escape(r.username)} LIMIT 1`;
 
         db.query(sql, res, function (result) {
@@ -205,7 +208,7 @@ router.route('/update_setting').post(
         }
 
         let sql = `UPDATE Settings SET ${db.escapeId(r.pref)} = ${db.escape(castedValue)} WHERE ${r.whereAccount()}`;
-        console.log(sql);
+
         db.query(sql, res, function (result) {
 
             let payload = new AccountsPayloads.update_setting(

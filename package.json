@@ -2,7 +2,7 @@
   "name": "heart-sms-backend",
   "version": "0.1.0",
   "description": "Backend for HeartSMS, a fork of PulseSMS",
-  "main": "server.js",
+  "main": "api/server.js",
   "type": "module",
   "scripts": {
     "compile": "tsc",
