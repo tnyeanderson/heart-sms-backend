@@ -1,10 +1,6 @@
+import { BaseError } from "../errors/Errors.js"
 import { BaseResponse } from "./BaseResponse.js"
 
-export class BaseError extends Error {
-    constructor(
-        public error: string
-    ) { super() }
-}
 
 export class ErrorResponse {
     constructor(

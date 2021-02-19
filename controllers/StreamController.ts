@@ -2,6 +2,7 @@ import mqtt, { MqttClient, OnErrorCallback } from 'mqtt';
 import util from '../utils/util.js';
 import crypto from 'crypto';
 import { BasePayload } from '../models/payloads/BasePayload.js';
+import { MQTTError, MQTTNotConnectedError } from '../models/errors/Errors.js';
 
 class StreamController {
     socket?: MqttClient;
@@ -33,7 +34,7 @@ class StreamController {
     }
 
     onError (err: Error) {
-        console.log("MQTT error: ", err);
+        console.log(new MQTTError(err));
     }
     
     sendMessage (accountId: string, operation: string, content: BasePayload) {
@@ -47,7 +48,7 @@ class StreamController {
                 qos: 2
             });
         } else {
-            console.log("Not connected to MQTT, can't send message.");
+            console.log(new MQTTNotConnectedError);
         }
     }
 }

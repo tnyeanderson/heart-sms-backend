@@ -1,7 +1,7 @@
 import express, { Router, json, Request, Response, NextFunction } from 'express';
 import cors from 'cors';
 import 'reflect-metadata';
-import { BaseError, ErrorResponse, UnhandledPathError } from './models/responses/ErrorResponses.js';
+import { ErrorResponse, UnhandledPathError } from './models/responses/ErrorResponses.js';
 
 // Controllers
 import AccountsController from './controllers/AccountsController.js';
@@ -20,6 +20,7 @@ import MQTTController from './controllers/MQTTController.js';
 import PurchasesController from './controllers/PurchasesController.js';
 import ScheduledMessagesController from './controllers/ScheduledMessagesController.js';
 import TemplatesController from './controllers/TemplatesController.js';
+import { BaseError } from './models/errors/Errors.js';
 
 const app = express();
 const router = Router();

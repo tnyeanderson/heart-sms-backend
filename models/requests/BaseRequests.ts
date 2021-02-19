@@ -1,7 +1,7 @@
 import { Expose, plainToClass } from "class-transformer";
 import { NextFunction, Request, Response } from "express";
 import util from "../../utils/util.js";
-import { BaseError, ErrorResponse, InvalidAccountError, MissingParamError } from "../responses/ErrorResponses.js";
+import { ErrorResponse, InvalidAccountError, MissingParamError } from "../responses/ErrorResponses.js";
 import db from '../../db/query.js';
 
 /**

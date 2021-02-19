@@ -1,4 +1,5 @@
 import { ConnectionConfig } from 'mysql';
+import { DefaultDatabasePasswordError } from '../models/errors/Errors.js';
 import util from '../utils/util.js';
 
 const dbDefaultPass: string = 'TESTPASSWORD2';
@@ -11,8 +12,9 @@ const dbPass: string = (util.env.test()) ? dbDefaultPass : (process.env.MYSQL_PA
 
 // If we are in production, refuse to use the default password
 if (util.env.prod() && dbPass === dbDefaultPass) {
-    console.log("ERROR: You cannot use the default MYSQL password in production. Change it in .db.env");
-    throw "ERROR: You cannot use the default MYSQL password in production. Change it in .db.env";
+    let defaultPasswordError = new DefaultDatabasePasswordError;
+    console.log(defaultPasswordError);
+    throw defaultPasswordError;
 }
 
 console.log("Using database: " + dbHost + ":" + dbName);
