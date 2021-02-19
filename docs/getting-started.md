@@ -62,7 +62,7 @@ Open ports:
 ## Prerequisites
 
 1. Please make sure you have git, caddy, docker, and docker-compose installed.
-2. You must have a domain name. It is recommended to have a wildcard DNS record to direct all subdomains to your server
+2. You must have a domain name.
 3. You must generate a wildcard certificate signed by a CA for your domain (so it works for the web.* , api.* , and (optional) mqtt.* subdomains). You can use certbot for this.
 
 
@@ -132,7 +132,7 @@ HEART_ALLOWED_USERS=test@email.com,user2,alphatester@email.com
 
 **Caddy**
 
-Update the `Caddyfile` with your own URLs (no need to add a block for `mqtt.heart.lan`). Then, change every `tls internal` line to read:
+Update the `Caddyfile` with your own URLs (no need to add a block for `mqtt.heart.lan`). Then, change the `tls internal` line to read:
 ```
 tls /path/to/cert.crt /path/to/key.key
 ```

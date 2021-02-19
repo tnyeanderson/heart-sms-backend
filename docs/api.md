@@ -4,12 +4,17 @@ WORK IN PROGRESS...
 
 Base url is `/api/v1`
 
-Documented here are the original endpoints, requests, and responses outlined by the android app.
+Documented here are the endpoints, requests, and responses outlined by the android and web apps.
 
-Some differences exist between the current API and the one described in the android app. Including:
+Some differences exist between the current API and the one described in the android app.
+
+These are noted at the relevant endpoints, but Including:
 
 * The `account_id` can be in either the request body or a URL query.
-  * There is inconsistency between clients with where the `account_id` should be placed (in the request body or a query). The web client nearly always uses a query. For this reason, all endpoints that require an `account_id` can have it in either place. Queries are checked first, then the body.
+  * There is inconsistency between clients with where the `account_id` should be placed (in the request body or a query). The web client nearly always uses a query. For this reason, all endpoints that require an `account_id` can have it in either place. 
+  * Queries are checked first, then the body.
+* `/messages/update/:device_id`: `message_type` was originally sent as `type`
+* `/auto_replies/update/:device_id`: `reply_type` was originally sent as `type` 
 
 
 
@@ -461,7 +466,7 @@ Error:
 ---
 
 
-### `/auto_replies/remove/{device_id}`
+### `/auto_replies/remove/:device_id`
 
 Method: POST
 
@@ -483,7 +488,7 @@ Error:
 ---
 
 
-### `/auto_replies/update/{device_id}`
+### `/auto_replies/update/:device_id`
 
 Method: POST
 
@@ -498,7 +503,7 @@ Request body:
 }
 ```
 
-*NOTE: Original used type instead of reply_type. Changed for consistency*
+*BREAKING: Original used `type` instead of `reply_type`. Changed for consistency*
 
 Response:
 ```
@@ -596,7 +601,7 @@ Error:
 ---
 
 
-### `/blacklists/remove/{device_id}`
+### `/blacklists/remove/:device_id`
 
 Method: POST
 
@@ -808,7 +813,7 @@ Error:
 ---
 
 
-### `/contacts/remove_ids/{ids}`
+### `/contacts/remove_ids/:ids`
 
 *ids is a single id or a comma separated list of contact ids (NOT device_ids)*
 
@@ -881,7 +886,7 @@ Error:
 ---
 
 
-### `/conversations/folder/{folder_id}`
+### `/conversations/folder/:folder_id`
 
 *Get conversations in a given folder*
 
@@ -930,7 +935,7 @@ Error:
 ---
 
 
-### `/conversations/{device_id}`
+### `/conversations/:device_id`
 
 Method: GET
 
@@ -1161,7 +1166,7 @@ Error:
 ---
 
 
-### `/conversations/update/{device_id}`
+### `/conversations/update/:device_id`
 
 Method: POST
 
@@ -1201,7 +1206,7 @@ Error:
 ---
 
 
-### `/conversations/update_snippet/{device_id}`
+### `/conversations/update_snippet/:device_id`
 
 Method: POST
 
@@ -1231,7 +1236,7 @@ Error:
 ---
 
 
-### `/conversations/update_title/{device_id}`
+### `/conversations/update_title/:device_id`
 
 Method: POST
 
@@ -1253,7 +1258,7 @@ Error:
 ---
 
 
-### `/conversations/remove/{device_id}`
+### `/conversations/remove/:device_id`
 
 Method: POST
 
@@ -1275,7 +1280,7 @@ Error:
 ---
 
 
-### `/conversations/read/{device_id}`
+### `/conversations/read/:device_id`
 
 Method: POST
 
@@ -1323,7 +1328,7 @@ Error:
 ---
 
 
-### `/conversations/seen/{device_conversation_id}`
+### `/conversations/seen/:device_conversation_id`
 
 Method: POST
 
@@ -1345,7 +1350,7 @@ Error:
 ---
 
 
-### `/conversations/archive/{device_id}`
+### `/conversations/archive/:device_id`
 
 Method: POST
 
@@ -1367,7 +1372,7 @@ Error:
 ---
 
 
-### `/conversations/unarchive/{device_id}`
+### `/conversations/unarchive/:device_id`
 
 Method: POST
 
@@ -1389,7 +1394,7 @@ Error:
 ---
 
 
-### `/conversations/add_to_folder/{device_id}`
+### `/conversations/add_to_folder/:device_id`
 
 Method: POST
 
@@ -1411,7 +1416,7 @@ Error:
 ---
 
 
-### `/conversations/remove_from_folder/{device_id}`
+### `/conversations/remove_from_folder/:device_id`
 
 Method: POST
 
@@ -1532,7 +1537,7 @@ Error:
 ---
 
 
-### `/devices/update/{id}`
+### `/devices/update/:id`
 
 Method: POST
 
@@ -1554,7 +1559,7 @@ Error:
 ---
 
 
-### `/devices/remove/{id}`
+### `/devices/remove/:id`
 
 Method: POST
 
@@ -1630,7 +1635,7 @@ Error:
 ---
 
 
-### `/drafts/{device_conversation_id}`
+### `/drafts/:device_conversation_id`
 
 Method: GET
 
@@ -1697,7 +1702,7 @@ Error:
 ---
 
 
-### `/drafts/update/{device_id}`
+### `/drafts/update/:device_id`
 
 *This is deprecated and less efficient. Android app sends a remove then an add. Web app sends replace*
 
@@ -1727,7 +1732,7 @@ Error:
 ---
 
 
-### `/drafts/remove/{device_conversation_id}`
+### `/drafts/remove/:device_conversation_id`
 
 Method: POST
 
@@ -1751,7 +1756,7 @@ Error:
 ---
 
 
-### `/drafts/replace/{device_conversation_id}`
+### `/drafts/replace/:device_conversation_id`
 
 *Use this instead of /drafts/update*
 
@@ -1863,7 +1868,7 @@ Error:
 ---
 
 
-### `/folders/remove/{device_id}`
+### `/folders/remove/:device_id`
 
 Method: POST
 
@@ -1885,7 +1890,7 @@ Error:
 ---
 
 
-### `/folders/update/{device_id}`
+### `/folders/update/:device_id`
 
 Method: POST
 
@@ -1944,7 +1949,7 @@ Error:
 ---
 
 
-### `/media/{message_id}`
+### `/media/:message_id`
 
 Method: GET
 
@@ -2010,7 +2015,7 @@ Error:
 ---
 
 
-### `/messages/remove/{device_id}`
+### `/messages/remove/:device_id`
 
 Method: POST
 
@@ -2076,7 +2081,7 @@ Error:
 ---
 
 
-### `/messages/update/{device_id}`
+### `/messages/update/:device_id`
 
 Method: POST
 
@@ -2107,7 +2112,7 @@ Error:
 ---
 
 
-### `/messages/update_type/{device_id}`
+### `/messages/update_type/:device_id`
 
 Method: POST
 
@@ -2356,7 +2361,7 @@ Error:
 ---
 
 
-### `/scheduled_messages/update/{device_id}`
+### `/scheduled_messages/update/:device_id`
 
 Method: POST
 
@@ -2388,7 +2393,7 @@ Error:
 ---
 
 
-### `/scheduled_messages/remove/{device_id}`
+### `/scheduled_messages/remove/:device_id`
 
 Method: POST
 
@@ -2476,7 +2481,7 @@ Error:
 ---
 
 
-### `/templates/remove/{device_id}`
+### `/templates/remove/:device_id`
 
 Method: POST
 
@@ -2498,7 +2503,7 @@ Error:
 ---
 
 
-### `/templates/update/{device_id}`
+### `/templates/update/:device_id`
 
 Method: POST
 

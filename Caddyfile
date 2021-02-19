@@ -1,3 +1,12 @@
+(tls) {
+  # CHANGEME: Uncomment the following line and add your cert paths. Comment `tls internal`
+  #tls /path/to/cert.crt /path/to/key.key
+
+  # CHANGEME: Comment this line after adding your own cert
+  tls internal
+}
+
+# CHANGEME: Use your own api URL
 api.heart.lan {
 
   route /api/v1/stream {
@@ -8,14 +17,15 @@ api.heart.lan {
     reverse_proxy http://localhost:5000
   }
  
-  tls internal 
+  import tls 
 }
 
+# CHANGEME: Use your own web URL
 web.heart.lan {
   route /* {
     reverse_proxy http://localhost:8081
   }
 
-  tls internal
+  import tls
 }
  
