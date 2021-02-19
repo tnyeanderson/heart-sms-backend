@@ -2,6 +2,7 @@ import express, { Response } from 'express';
 import db from '../db/query.js';
 import { MQTTAclRequest, MQTTLoginRequest } from '../models/requests/MQTTRequests.js';
 import { MQTTAllowResponse, MQTTDenyResponse } from '../models/responses/MQTTResponses.js';
+import * as util from 'util';
 import stream from './StreamController.js';
 
 // https://github.com/rabbitmq/rabbitmq-server/tree/master/deps/rabbitmq_auth_backend_http#what-must-my-web-server-do

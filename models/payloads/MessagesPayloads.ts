@@ -2,29 +2,29 @@ import { BasePayload } from './BasePayload.js';
 
 export class added_message extends BasePayload {
     constructor (
-        public id: Number,
-        public conversation_id: Number,
-        public type: Number,
+        public id: number,
+        public conversation_id: number,
+        public type: number,
         public data: string,
-        public timestamp: Number,
+        public timestamp: number,
         public mime_type: string,
-        public read: Boolean,
-        public seen: Boolean,
+        public read: boolean,
+        public seen: boolean,
         public from: string,
-        public color: Number,
-        public sent_device: Number,
-        public sim_stamp: Number
+        public color: number,
+        public sent_device: number,
+        public sim_stamp: number
     ) { super() }
 }
 
 
 export class updated_message extends BasePayload {
     constructor (
-        public id: Number,
-        public type: Number,
-        public timestamp: Number,
-        public read: Boolean,
-        public seen: Boolean,
+        public id: number,
+        public type: number,
+        public timestamp: number,
+        public read: boolean,
+        public seen: boolean,
     ) { super() }
 }
 
@@ -39,14 +39,14 @@ export class update_message_type extends BasePayload {
 
 export class removed_message extends BasePayload {
     constructor (
-        public id: Number
+        public id: number
     ) { super() }
 }
 
 
 export class cleanup_messages extends BasePayload {
     constructor (
-        public timestamp: Number
+        public timestamp: number
     ) { super() }
 }
 
@@ -55,8 +55,8 @@ export class forward_to_phone extends BasePayload {
     constructor (
         public to: string,
         public message: string,
-        public sent_device: Number,
+        public sent_device: number,
         public mime_type?: string,
-        public message_id?: Number
+        public message_id?: number
     ) { super() }
 }

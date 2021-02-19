@@ -47,7 +47,7 @@ router.route('/remove/:device_id').post(
             );
             
             // Send websocket message
-            stream.sendMessage(r.account_id, 'removed_message', payload);
+            payload.send(r.account_id);
         });
     });
 
@@ -83,7 +83,7 @@ router.route('/add').post(
                     item.sim_stamp
                 );
                 
-                stream.sendMessage(r.account_id, 'added_message', payload);
+                payload.send(r.account_id);
             });
         });
     });
@@ -108,7 +108,7 @@ router.route('/update/:device_id').post(
                 r.seen
             );
             
-            stream.sendMessage(r.account_id, 'updated_message', payload);
+            payload.send(r.account_id);
         });
     });
 
@@ -129,7 +129,7 @@ router.route('/update_type/:device_id').post(
             )
 
             // Send websocket message
-            stream.sendMessage(r.account_id, 'update_message_type', payload);
+            payload.send(r.account_id);
         });
     });
 
@@ -149,7 +149,7 @@ router.route('/cleanup').post(
             )
             
             // Send websocket message
-            stream.sendMessage(r.account_id, 'cleanup_messages', payload);
+            payload.send(r.account_id);
         });
     });
 
@@ -168,7 +168,7 @@ router.route('/forward_to_phone').post(
         );
         
         // Send websocket message
-        stream.sendMessage(r.account_id, 'forward_to_phone', payload);
+        payload.send(r.account_id);
         
         res.json(new BaseResponse);
     });

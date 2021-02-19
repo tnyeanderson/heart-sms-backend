@@ -4,32 +4,32 @@ export class added_contact extends BasePayload {
     constructor (
         public phone_number: string,
         public name: string,
-        public color: Number,
-        public color_dark: Number,
-        public color_light: Number,
-        public color_accent: Number,
-        public type: Number
+        public color: number,
+        public color_dark: number,
+        public color_light: number,
+        public color_accent: number,
+        public type: number
     ) { super() }
 }
 
 
 export class updated_contact extends BasePayload {
     constructor (
-        public device_id: Number,
+        public device_id: number,
         public phone_number: string,
         public name: string,
-        public color: Number,
-        public color_dark: Number,
-        public color_light: Number,
-        public color_accent: Number,
-        public type: Number
+        public color: number,
+        public color_dark: number,
+        public color_light: number,
+        public color_accent: number,
+        public type: number
     ) { super() }
 }
 
 
 export class removed_contact extends BasePayload {
     constructor (
-        public device_id: Number,
+        public device_id: number,
         public phone_number: string
     ) { super() }
 }

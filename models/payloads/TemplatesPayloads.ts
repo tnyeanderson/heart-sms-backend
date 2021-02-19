@@ -2,14 +2,14 @@ import { BasePayload } from './BasePayload.js';
 
 export class removed_template extends BasePayload {
     constructor (
-        public id: Number
+        public id: number
     ) { super() }
 }
 
 
 export class added_template extends BasePayload {
     constructor (
-        public device_id: Number,
+        public device_id: number,
         public text: string
     ) { super() }
 }

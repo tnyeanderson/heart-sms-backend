@@ -52,7 +52,7 @@ router.route('/add').post(
                     item.repeat
                 );
                 
-                stream.sendMessage(r.account_id, 'added_scheduled_message', payload);
+                payload.send(r.account_id);
             });
         });
     });
@@ -74,7 +74,7 @@ router.route('/remove/:device_id').post(
                 Number(r.device_id)
             );
             
-            stream.sendMessage(r.account_id, 'removed_scheduled_message', payload);
+            payload.send(r.account_id);
         });
     });
 
@@ -104,7 +104,7 @@ router.route('/update/:device_id').post(
                         result[0].repeat
                     );
 
-                    stream.sendMessage(r.account_id, 'updated_scheduled_message', payload);
+                    payload.send(r.account_id);
                 }
             });
         });

@@ -144,7 +144,7 @@ router.route('/add').post(
                     item.image_uri
                 );
                 
-                stream.sendMessage(r.account_id, 'added_conversation', payload);
+                payload.send(r.account_id);
             });
         });
     });
@@ -184,7 +184,7 @@ router.route('/update/:device_id').post(
                         result[0].ringtone
                     );
 
-                    stream.sendMessage(r.account_id, 'updated_conversation', payload);
+                    payload.send(r.account_id);
                 }
             });
         });
@@ -210,7 +210,7 @@ router.route('/update_snippet/:device_id').post(
                 r.archive
             );
             
-            stream.sendMessage(r.account_id, 'update_conversation_snippet', payload);
+            payload.send(r.account_id);
         });
     });
 
@@ -231,7 +231,7 @@ router.route('/update_title/:device_id').post(
                 String(r.title)
             );
             
-            stream.sendMessage(r.account_id, 'update_conversation_title', payload);
+            payload.send(r.account_id);
         });
     });
 
@@ -251,7 +251,7 @@ router.route('/remove/:device_id').post(
                 Number(r.device_id)
             );
             
-            stream.sendMessage(r.account_id, 'removed_conversation', payload);
+            payload.send(r.account_id);
         });
     });
 
@@ -272,7 +272,7 @@ router.route('/read/:device_id').post(
                 String(r.android_device)
             );
             
-            stream.sendMessage(r.account_id, 'read_conversation', payload);
+            payload.send(r.account_id);
         });
     });
 
@@ -292,7 +292,7 @@ router.route('/seen/:device_conversation_id').post(
                 Number(r.device_conversation_id)
             );
             
-            stream.sendMessage(r.account_id, 'seen_conversation', payload);
+            payload.send(r.account_id);
         });
     });
 
@@ -310,7 +310,7 @@ router.route('/seen').post(
             let payload = new ConversationsPayloads.seen_conversations();
 
             // Send websocket message
-            stream.sendMessage(r.account_id, 'seen_conversations', payload);
+            payload.send(r.account_id);
         });
     });
 
@@ -331,7 +331,7 @@ router.route('/archive/:device_id').post(
                 true
             );
             
-            stream.sendMessage(r.account_id, 'archive_conversation', payload);
+            payload.send(r.account_id);
         });
     });
 
@@ -352,7 +352,7 @@ router.route('/unarchive/:device_id').post(
                 false
             );
             
-            stream.sendMessage(r.account_id, 'archive_conversation', payload);
+            payload.send(r.account_id);
         });
     });
 
@@ -373,7 +373,7 @@ router.route('/add_to_folder/:device_id').post(
                 Number(r.folder_id)
             );
             
-            stream.sendMessage(r.account_id, 'add_conversation_to_folder', payload);
+            payload.send(r.account_id);
         });
     });
 
@@ -393,7 +393,7 @@ router.route('/remove_from_folder/:device_id').post(
                 Number(r.device_id)
             );
             
-            stream.sendMessage(r.account_id, 'remove_conversation_from_folder', payload);
+            payload.send(r.account_id);
         });
     });
 
@@ -414,7 +414,7 @@ router.route('/cleanup_messages').post(
         );
 
         // Send websocket message
-        stream.sendMessage(r.account_id, 'cleanup_conversation_messages', payload);
+        payload.send(r.account_id);
     });
 });
 

@@ -94,7 +94,7 @@ router.route('/update_primary').post(
             );
             
             // Send websocket message
-            stream.sendMessage(r.account_id, 'update_primary_device', payload);
+            payload.send(r.account_id);
         });
     });
 

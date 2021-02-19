@@ -49,7 +49,7 @@ router.route('/add').post(
                     item.phrase
                 );
                 
-                stream.sendMessage(r.account_id, 'added_blacklist', payload);
+                payload.send(r.account_id);
             });
         });
     });
@@ -71,7 +71,7 @@ router.route('/remove/:device_id').post(
                 Number(r.device_id)
             );
             
-            stream.sendMessage(r.account_id, 'removed_blacklist', payload);
+            payload.send(r.account_id);
         });
     });
 

@@ -68,7 +68,7 @@ router.route('/add').post(
                     item.contact_type
                 );
                 
-                stream.sendMessage(r.account_id, 'added_contact', payload);
+                payload.send(r.account_id);
             });
         });
     });
@@ -116,7 +116,7 @@ router.route('/update_device_id').post(
                         result[0].type
                     );
 
-                    stream.sendMessage(r.account_id, 'updated_contact', payload);
+                    payload.send(r.account_id);
                 }
             });
         });
@@ -139,7 +139,7 @@ router.route('/remove_device_id').post(
                 String(r.phone_number)
             );
             
-            stream.sendMessage(r.account_id, 'removed_contact', payload);
+            payload.send(r.account_id);
         });
     });
 
@@ -165,7 +165,7 @@ router.route('/remove_ids/:ids').post(
             );
             
             // Send websocket message
-            stream.sendMessage(r.account_id, 'removed_contact_by_id', payload);
+            payload.send(r.account_id);
         });
     });
 

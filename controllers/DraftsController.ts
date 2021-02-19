@@ -63,7 +63,7 @@ router.route('/add').post(
                     item.mime_type
                 )
                 
-                stream.sendMessage(r.account_id, 'added_draft', payload);
+                payload.send(r.account_id);
             });
         });
     });
@@ -85,7 +85,7 @@ router.route('/remove/:device_conversation_id').post(
                 String(r.android_device)
             );
             
-            stream.sendMessage(r.account_id, 'removed_drafts', payload);
+            payload.send(r.account_id);
         });
     });
 
@@ -113,7 +113,7 @@ router.route('/update/:device_id').post(
                     result[0].mime_type
                 );
 
-                stream.sendMessage(r.account_id, 'replaced_drafts', payload);
+                payload.send(r.account_id);
             });
         });
     });
@@ -138,7 +138,7 @@ router.route('/replace/:device_conversation_id').post(
                     item.mime_type
                 );
                 
-                stream.sendMessage(r.account_id, 'replaced_drafts', payload);
+                payload.send(r.account_id);
             });
         });
     });

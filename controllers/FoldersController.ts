@@ -51,7 +51,7 @@ router.route('/add').post(
                     item.color_accent
                 )
                 
-                stream.sendMessage(r.account_id, 'added_folder', payload);
+                payload.send(r.account_id);
             });
         });
     });
@@ -74,7 +74,7 @@ router.route('/remove/:device_id').post(
             );
             
             // Send websocket message
-            stream.sendMessage(r.account_id, 'removed_folder', payload);
+            payload.send(r.account_id);
         });
     });
 
@@ -98,7 +98,7 @@ router.route('/update/:device_id').post(
                 r.color_accent
             )
 
-            stream.sendMessage(r.account_id, 'updated_folder', payload);
+            payload.send(r.account_id);
         });
     });
 

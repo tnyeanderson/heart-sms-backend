@@ -95,7 +95,7 @@ router.route('/remove_account').post(
             );
             
             // Send websocket message
-            stream.sendMessage(r.account_id, 'removed_account', payload);
+            payload.send(r.account_id);
         });
     });
 
@@ -138,7 +138,7 @@ router.route('/clean_account').post(
             );
             
             // Send websocket message
-            stream.sendMessage(r.account_id, 'cleaned_account', payload);
+            payload.send(r.account_id);
         });
     });
 
@@ -168,7 +168,7 @@ router.route('/dismissed_notification').post(
             r.device_id
         );
         
-        stream.sendMessage(r.account_id, 'dismissed_notification', payload);
+        payload.send(r.account_id);
         
         res.json(new BaseResponse);
     });

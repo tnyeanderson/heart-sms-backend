@@ -49,7 +49,7 @@ router.route('/add').post(
                     item.response
                 );
                 
-                stream.sendMessage(r.account_id, 'added_auto_reply', payload);
+                payload.send(r.account_id);
             });
         });
     });
@@ -71,7 +71,7 @@ router.route('/remove/:device_id').post(
                 Number(r.device_id)
             );
 
-            stream.sendMessage(r.account_id, 'removed_auto_reply', payload);
+            payload.send(r.account_id);
         });
     });
 
@@ -93,7 +93,7 @@ router.route('/update/:device_id').post(
                 r.response
             );
 
-            stream.sendMessage(r.account_id, 'updated_auto_reply', payload);
+            payload.send(r.account_id);
         });
     });
 

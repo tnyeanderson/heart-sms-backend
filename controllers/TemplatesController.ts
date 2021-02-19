@@ -47,7 +47,7 @@ router.route('/add').post(
                     item.text
                 )
                 
-                stream.sendMessage(r.account_id, 'added_template', payload);
+                payload.send(r.account_id);
             });
         });
     });
@@ -69,7 +69,7 @@ router.route('/remove/:device_id').post(
                 Number(r.device_id)
             );
             
-            stream.sendMessage(r.account_id, 'removed_template', payload);
+            payload.send(r.account_id);
         });
     });
 
@@ -90,7 +90,7 @@ router.route('/update/:device_id').post(
                 String(r.text)
             );
             
-            stream.sendMessage(r.account_id, 'updated_template', payload);
+            payload.send(r.account_id);
         });
     });
 

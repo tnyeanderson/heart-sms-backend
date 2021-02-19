@@ -2,8 +2,8 @@ import { BasePayload } from './BasePayload.js';
 
 export class added_draft extends BasePayload {
     constructor (
-        public id: Number,
-        public conversation_id: Number,
+        public id: number,
+        public conversation_id: number,
         public data: string,
         public mime_type: string
     ) { super() }
@@ -12,7 +12,7 @@ export class added_draft extends BasePayload {
 
 export class removed_drafts extends BasePayload {
     constructor (
-        public id: Number,
+        public id: number,
         public android_device?: string
     ) { super() }
 }
