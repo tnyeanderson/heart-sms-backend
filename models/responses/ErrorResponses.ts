@@ -1,5 +1,4 @@
 import { BaseError } from "../errors/Errors.js"
-import { BaseResponse } from "./BaseResponse.js"
 
 
 export class ErrorResponse {

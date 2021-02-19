@@ -1,9 +1,9 @@
-import { Request, Response, NextFunction } from "express";
+import { Expose } from "class-transformer";
+import { NextFunction, Request, Response } from "express";
+import db from '../../db/query.js';
+import users from '../../helpers/UserHelper.js';
 import { DuplicateUserError, UserNotAllowedError } from "../responses/ErrorResponses.js";
 import { AccountIdRequest, BaseRequest } from "./BaseRequests.js";
-import users from '../../helpers/UserHelper.js';
-import { Expose } from "class-transformer";
-import db from '../../db/query.js';
 
 
 /**

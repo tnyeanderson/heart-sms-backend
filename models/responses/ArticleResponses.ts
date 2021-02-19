@@ -1,5 +1,4 @@
-import { ParseResult } from "@postlight/mercury-parser";
-import { Expose, plainToClass } from "class-transformer";
+import { Expose } from "class-transformer";
 import { BaseResponse } from "./BaseResponse.js";
 
 export class ArticleResponse extends BaseResponse {

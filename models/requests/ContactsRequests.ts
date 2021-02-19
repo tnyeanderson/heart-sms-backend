@@ -1,6 +1,5 @@
 import { Expose } from "class-transformer";
 import { AccountIdRequest, BaseRequest, HasItemsRequest, UpdateDeviceIdRequest } from "./BaseRequests.js";
-import { Request } from 'express';
 
 
 /**

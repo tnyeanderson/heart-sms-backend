@@ -1,5 +1,4 @@
 import { Expose } from "class-transformer";
-import { FieldInfo } from "mysql";
 import { BaseResponse } from "./BaseResponse.js";
 
 export class AutoRepliesListResponse extends BaseResponse {

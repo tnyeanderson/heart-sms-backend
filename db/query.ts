@@ -1,9 +1,8 @@
 import { Response } from 'express';
-import { FieldInfo, Pool } from 'mysql';
-import mysql from 'mysql';
+import mysql, { FieldInfo, Pool } from 'mysql';
 import connection from '../db/connect.js';
-import util from '../utils/util.js';
 import { DatabaseError } from '../models/responses/ErrorResponses.js';
+import util from '../utils/util.js';
 
 // Set to true to debug SQL queries during development
 let log_queries = false;

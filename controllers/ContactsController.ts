@@ -1,13 +1,10 @@
 import express from 'express';
 import db from '../db/query.js';
-import stream from './StreamController.js';
-import util from '../utils/util.js';
 import * as ContactsPayloads from '../models/payloads/ContactsPayloads.js';
-import { MissingParamError } from '../models/responses/ErrorResponses.js';
-import { ContactsListResponse, ContactsSimpleListResponse } from '../models/responses/ContactsResponses.js';
-import { BaseResponse } from '../models/responses/BaseResponse.js';
 import { AccountIdRequest, LimitOffsetRequest } from '../models/requests/BaseRequests.js';
 import { ContactsAddRequest, ContactsRemoveDeviceIdRequest, ContactsRemoveIdsRequest, ContactsUpdateDeviceIdRequest } from '../models/requests/ContactsRequests.js';
+import { BaseResponse } from '../models/responses/BaseResponse.js';
+import { ContactsListResponse, ContactsSimpleListResponse } from '../models/responses/ContactsResponses.js';
 
 const router = express.Router();
 

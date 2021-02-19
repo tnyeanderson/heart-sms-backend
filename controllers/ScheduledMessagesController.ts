@@ -1,12 +1,10 @@
 import express from 'express';
 import db from '../db/query.js';
-import stream from './StreamController.js';
-import util from '../utils/util.js';
 import * as ScheduledMessagesPayloads from '../models/payloads/ScheduledMessagesPayloads.js';
+import { AccountIdRequest, DeviceIdRequest } from '../models/requests/BaseRequests.js';
+import { ScheduledMessagesAddRequest, ScheduledMessagesUpdateRequest } from '../models/requests/ScheduledMessagesRequests.js';
 import { BaseResponse } from '../models/responses/BaseResponse.js';
 import { ScheduledMessagesListResponse } from '../models/responses/ScheduledMessagesResponses.js';
-import { AccountIdRequest, DeviceIdRequest, UpdateDeviceIdRequest } from '../models/requests/BaseRequests.js';
-import { ScheduledMessagesAddRequest, ScheduledMessagesUpdateRequest } from '../models/requests/ScheduledMessagesRequests.js';
 
 const router = express.Router();
 

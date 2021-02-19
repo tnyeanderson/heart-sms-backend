@@ -1,4 +1,3 @@
-import { Expose } from 'class-transformer';
 import { BaseResponse } from './BaseResponse.js';
 
 export class MediaGetResponse extends BaseResponse {

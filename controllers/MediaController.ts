@@ -1,11 +1,8 @@
 import express from 'express';
 import db from '../db/query.js';
-import util from '../utils/util.js';
-import { MissingParamError } from '../models/responses/ErrorResponses.js';
+import { MediaAddRequest, MediaGetRequest } from '../models/requests/MediaRequests.js';
 import { BaseResponse } from '../models/responses/BaseResponse.js';
 import { MediaGetResponse } from '../models/responses/MediaResponses.js';
-import { AccountIdRequest } from '../models/requests/BaseRequests.js';
-import { MediaAddRequest, MediaGetRequest } from '../models/requests/MediaRequests.js';
 
 const router = express.Router();
 

@@ -1,12 +1,10 @@
 import express from 'express';
 import db from '../db/query.js';
-import stream from './StreamController.js';
-import util from '../utils/util.js';
 import * as TemplatesPayloads from '../models/payloads/TemplatesPayloads.js';
-import { BaseResponse } from '../models/responses/BaseResponse.js';
-import { TemplatesListResponse } from '../models/responses/TemplatesResponses.js';
 import { AccountIdRequest, DeviceIdRequest } from '../models/requests/BaseRequests.js';
 import { TemplatesAddRequest, TemplatesUpdateRequest } from '../models/requests/TemplatesRequests.js';
+import { BaseResponse } from '../models/responses/BaseResponse.js';
+import { TemplatesListResponse } from '../models/responses/TemplatesResponses.js';
 
 const router = express.Router();
 

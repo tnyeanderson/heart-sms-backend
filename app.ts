@@ -1,8 +1,6 @@
-import express, { Router, json, Request, Response, NextFunction } from 'express';
 import cors from 'cors';
+import express, { json, NextFunction, Request, Response, Router } from 'express';
 import 'reflect-metadata';
-import { ErrorResponse, UnhandledPathError } from './models/responses/ErrorResponses.js';
-
 // Controllers
 import AccountsController from './controllers/AccountsController.js';
 import ActivateController from './controllers/ActivateController.js';
@@ -21,6 +19,10 @@ import PurchasesController from './controllers/PurchasesController.js';
 import ScheduledMessagesController from './controllers/ScheduledMessagesController.js';
 import TemplatesController from './controllers/TemplatesController.js';
 import { BaseError } from './models/errors/Errors.js';
+import { ErrorResponse, UnhandledPathError } from './models/responses/ErrorResponses.js';
+
+
+
 
 const app = express();
 const router = Router();

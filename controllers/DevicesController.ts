@@ -1,13 +1,10 @@
 import express from 'express';
 import db from '../db/query.js';
-import stream from './StreamController.js';
-import util from '../utils/util.js';
 import * as DevicesPayloads from '../models/payloads/DevicesPayloads.js';
-import { MissingParamError } from '../models/responses/ErrorResponses.js';
+import { AccountIdRequest } from '../models/requests/BaseRequests.js';
+import { DevicesAddRequest, DevicesRemoveRequest, DevicesUpdatePrimaryRequest, DevicesUpdateRequest } from '../models/requests/DevicesRequests.js';
 import { BaseResponse } from '../models/responses/BaseResponse.js';
 import { DevicesListResponse } from '../models/responses/DevicesResponses.js';
-import { AccountIdRequest, DeviceIdRequest } from '../models/requests/BaseRequests.js';
-import { DevicesAddRequest, DevicesRemoveRequest, DevicesUpdatePrimaryRequest, DevicesUpdateRequest } from '../models/requests/DevicesRequests.js';
 
 const router = express.Router();
 

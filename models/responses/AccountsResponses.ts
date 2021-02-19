@@ -1,5 +1,5 @@
-import { BaseResponse, SuccessResponse } from './BaseResponse.js';
 import { Expose } from 'class-transformer';
+import { BaseResponse, SuccessResponse } from './BaseResponse.js';
 
 export class SignupResponse extends BaseResponse {
     constructor(
