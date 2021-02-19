@@ -32,7 +32,7 @@ Checked means "test written and passing", tilde means the endpoint sends an MQTT
 - [x] accounts/clean_account
 - [x] accounts/count
 - [x] accounts/settings
-- [ ] accounts/update_setting
+- [x] accounts/update_setting
 - [x] ~ accounts/dismissed_notification
 - [ ] activate
 - [x] auto_replies/
@@ -186,7 +186,7 @@ Firebase messages are being scrapped for MQTT. Here are the firebase actions fro
 - [x] added_auto_reply
 - [x] updated_auto_reply
 - [x] removed_auto_reply
-- [ ] ? update_setting
+- [x] update_setting
 - [x] dismissed_notification
 - [x] # update_subscription
 - [x] update_primary_device

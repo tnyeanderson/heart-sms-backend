@@ -2,7 +2,7 @@ import crypto from 'crypto';
 import express from 'express';
 import db from '../db/query.js';
 import * as AccountsPayloads from '../models/payloads/AccountsPayloads.js';
-import { DismissedNotificationRequest, LoginRequest, SignupRequest } from '../models/requests/AccountsRequests.js';
+import { DismissedNotificationRequest, LoginRequest, SignupRequest, UpdateSettingRequest } from '../models/requests/AccountsRequests.js';
 import { AccountIdRequest } from '../models/requests/BaseRequests.js';
 import * as AccountsResponses from '../models/responses/AccountsResponses.js';
 import { BaseResponse } from '../models/responses/BaseResponse.js';
@@ -181,5 +181,45 @@ router.route('/update_subscription').post(
         res.json(new BaseResponse);
     });
 
+
+router.route('/update_setting').post(
+    (req, res, next) => UpdateSettingRequest.handler(req, res, next), 
+    function (req, res, next) {
+        let r: UpdateSettingRequest = res.locals.request;
+        
+        let castedValue: any;
+        
+        // Use the "type" property in the request to cast the "value"
+        switch(r.type) {
+            case 'int':
+            case 'long':
+                castedValue = Number(r.value);
+                break;
+            case 'boolean':
+                // It might be an actual boolean or a string
+                castedValue = (r.value === 'true' || r.value === true) ? true : false;
+                break;
+            default:
+                castedValue = String(r.value);
+                break;
+        }
+
+        let sql = `UPDATE Settings SET ${db.escapeId(r.pref)} = ${db.escape(castedValue)} WHERE ${r.whereAccount()}`;
+        console.log(sql);
+        db.query(sql, res, function (result) {
+
+            let payload = new AccountsPayloads.update_setting(
+                r.pref,
+                r.type,
+                castedValue
+            );
+            
+            payload.send(r.account_id);
+
+            res.json(new BaseResponse);
+        });
+
+        
+    });
 
 export default router;

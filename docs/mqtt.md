@@ -76,6 +76,7 @@ Content:
 Content:
 ```
 {
+    "id": STRING,
     "real_name": STRING,
     "phone_number": STRING
 }
@@ -749,6 +750,15 @@ Content:
 
 
 ### update_setting
+
+Content:
+```
+{
+    pref: STRING,
+    type: STRING,
+    value: ANY
+}
+```
 
 
 

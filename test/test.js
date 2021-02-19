@@ -164,6 +164,63 @@ describe("heart-sms-backend unit test", function () {
 
     console.log("Waiting to give you time to log in, etc...");
     delay();
+
+    it("Update account base_theme string setting", function (done) {
+        api
+        .post('/accounts/update_setting')
+        .query({
+            "account_id": accountId
+        })
+        .send({
+            "pref": "base_theme",
+            "type": "string",
+            "value": "dark"
+        })
+        .expect("Content-type",/json/)
+        .expect(200)
+        .end(function (err,res) {
+            res.status.should.equal(200);
+            done();
+        });
+    });
+
+    it("Update account apply_primary_color_to_toolbar boolean setting", function (done) {
+        api
+        .post('/accounts/update_setting')
+        .query({
+            "account_id": accountId
+        })
+        .send({
+            "pref": "apply_primary_color_to_toolbar",
+            "type": "boolean",
+            "value": "false"
+        })
+        .expect("Content-type",/json/)
+        .expect(200)
+        .end(function (err,res) {
+            res.status.should.equal(200);
+            done();
+        });
+    });
+
+    it("Update account color integer setting", function (done) {
+        api
+        .post('/accounts/update_setting')
+        .query({
+            "account_id": accountId
+        })
+        .send({
+            "pref": "color",
+            "type": "int",
+            "value": "123456"
+        })
+        .expect("Content-type",/json/)
+        .expect(200)
+        .end(function (err,res) {
+            res.status.should.equal(200);
+            done();
+        });
+    });
     
     it("Account settings", function (done) {
         api
@@ -175,7 +232,9 @@ describe("heart-sms-backend unit test", function () {
         .expect(200)
         .end(function (err,res) {
             res.status.should.equal(200);
-            res.body.should.have.property('base_theme');
+            res.body.base_theme.should.equal('dark');
+            res.body.apply_primary_color_to_toolbar.should.equal(false);
+            res.body.color.should.equal(123456);
             done();
         });
     });

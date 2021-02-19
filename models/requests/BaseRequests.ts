@@ -125,6 +125,9 @@ export class BaseRequest {
 export class AccountIdRequest extends BaseRequest {
     @Expose() account_id: string = '';
 
+    /**
+     * Helper method which calls db.whereAccount with the class instance's account_id
+     */
     whereAccount() {
         return db.whereAccount(this.account_id);
     }
@@ -144,6 +147,7 @@ export class HasItemsRequest extends AccountIdRequest {
      */
     static getItemsType() {
         let requestObject: any = new this;
+        // The constructor will return the class from which the first item in the list was instantiated
         return requestObject[this.itemsPropName][0].constructor;
     }
 
@@ -247,6 +251,9 @@ export class UpdateRequest extends AccountIdRequest {
         return out;
     }
 
+    /**
+     * Helper method to generate the update string from toUpdate()
+     */
     updateStr() {
         return db.updateStr(this.toUpdate());
     }
@@ -276,6 +283,9 @@ export class UpdateDeviceIdRequest extends DeviceIdRequest {
         return out;
     }
 
+    /**
+     * Helper method to generate the update string from toUpdate()
+     */
     updateStr() {
         return db.updateStr(this.toUpdate());
     }
@@ -292,6 +302,9 @@ export class LimitOffsetRequest extends AccountIdRequest {
 
     static optional = ['limit', 'offset'];
 
+    /**
+     * Helper method to call db.limitStr()
+     */
     limitStr() {
         return db.limitStr(Number(this.limit), Number(this.offset));
     }

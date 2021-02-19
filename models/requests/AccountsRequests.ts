@@ -62,3 +62,14 @@ export class DismissedNotificationRequest extends AccountIdRequest {
 
     static optional = ['device_id'];
 }
+
+
+/**
+ * accounts/update_setting
+ */
+export class UpdateSettingRequest extends AccountIdRequest {
+    // Query
+    @Expose() pref: string = '';
+	@Expose() type: string = '';
+    @Expose() value: any = {};
+}
