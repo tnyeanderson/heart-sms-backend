@@ -158,6 +158,11 @@ export class HasItemsRequest extends AccountIdRequest {
     static validateItems(req: Request) {
         let prop = this.itemsPropName;
         let items = req.body[prop];
+
+        if (!items || items === []) {
+            return new MissingParamError(prop);
+        } 
+
         let itemsType = this.getItemsType();
 
         for (let i=0, len=items.length; i<len; i++) {

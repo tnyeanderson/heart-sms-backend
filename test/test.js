@@ -15,12 +15,13 @@ let contactsToRemove = [];
 let password = '9bba5c53a0545e0c80184b946153c9f58387e3bd1d4ee35740f29ac2e718b019'
 
 
-function delay(interval = 3000) {
-   return it('should delay', done => 
-   {
-      setTimeout(() => done(), interval)
+function delay(msg = 'should delay', interval = 3000) {
+    return it('should delay', done => 
+    {
+        console.log(msg);
+        setTimeout(() => done(), interval)
 
-   }).timeout(interval + 100) // The extra 100ms should guarantee the test will not fail due to exceeded timeout
+    }).timeout(interval + 100) // The extra 100ms should guarantee the test will not fail due to exceeded timeout
 }
 
 // UNIT test begin
@@ -199,8 +200,7 @@ describe("heart-sms-backend unit test", function () {
         });
     });
 
-    console.log("Waiting to give you time to log in, etc...");
-    delay();
+    delay("Waiting to give you time to log in, etc...");
 
     it("Update account base_theme string setting", function (done) {
         api

@@ -19,9 +19,28 @@ let accountIdRequiredEndpoints = {
         '/accounts/dismissed_notification',
         '/accounts/update_setting',
         '/accounts/clean_account',
-        '/accounts/update_subscription'
+        '/accounts/update_subscription',
+        '/auto_replies/remove/1',
+        '/auto_replies/update/1'
     ]
 };
+
+/**
+ * Endpoints which require a list of items (/add requests)
+ * First item in nested array is the endpoint, second is the name of the items list parameter
+ */
+let itemsRequiredEndpoints = [
+    ['/auto_replies/add', 'auto_replies'],
+    ['/blacklists/add', 'blacklists'],
+    ['/contacts/add', 'contacts'],
+    ['/conversations/add', 'conversations'],
+    ['/drafts/add', 'drafts'],
+    ['/folders/add', 'folders'],
+    ['/messages/add', 'messages'],
+    ['/scheduled_messages/add', 'scheduled_messages'],
+    ['/templates/add', 'templates'],
+
+]
 
 // This agent refers to PORT where program is runninng.
 const api = agent("http://localhost:5000/api/v1");
@@ -74,7 +93,26 @@ describe("heart-sms-backend error handling tests", function () {
                 done();
             });
         });
-    })
+    });
+
+
+    /**
+     * Test POST endpoints that require an items field
+     */ 
+    itemsRequiredEndpoints.forEach(function (endpoint) {
+        it(`Fail to POST ${endpoint[0]} without items ${endpoint[1]}`, function (done) {
+            api
+            .post(endpoint[0])
+            .send({})
+            .expect("Content-type",/json/)
+            .expect(200)
+            .end(function (err,res) {
+                res.status.should.equal(400);
+                res.body.error.should.equal(`missing required parameter ${endpoint[1]}`);
+                done();
+            });
+        });
+    });
 
 
     /**
