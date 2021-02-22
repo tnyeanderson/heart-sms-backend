@@ -48,15 +48,18 @@ router.route('/login').post(
 
 
 router.route('/signup').post(
-    (req, res, next) => SignupRequest.handler(req, res, next), 
+    (req, res, next) => SignupRequest.handler(req, res, next),
+    (req, res, next) => SignupRequest.checkAllowedUser(req, res, next), 
     (req, res, next) => SignupRequest.checkDuplicateUser(req, res, next),
     function (req, res, next) {
         let r: SignupRequest = res.locals.request;
 
+        // Generate 64-character account id and salts
         let account_id = util.createAccountId();
         let salt1 = crypto.randomBytes(64).toString('hex');
         let salt2 = crypto.randomBytes(64).toString('hex');
 
+        // Hash the password with the salt before storing in the database
         crypto.pbkdf2(r.password, salt1, 100000, 64, 'sha512', (err, password_hash) => {
             let values = [
                 account_id,
@@ -72,8 +75,10 @@ router.route('/signup').post(
 
             db.query(sql, res, function (result) {
                 if (result[1] && result[1].affectedRows === 0 && result[0][0].error) {
+                    // user already exists, or some other error during the stored procedure
                     return next(new ErrorResponse(result[0][0].error));
                 } else {
+                    // Signup successful
                     res.json(new AccountsResponses.SignupResponse(account_id, salt1, salt2));
                     return;
                 }

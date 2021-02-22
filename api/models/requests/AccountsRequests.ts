@@ -16,15 +16,29 @@ export class SignupRequest extends BaseRequest {
 	@Expose() phone_number: string = '';
 	@Expose() real_name: string = '';
 
-    static validate (req: Request) {
-        if (req.body.name && !users.isAllowed(req.body.name)) {
-            throw new UserNotAllowedError;
+    /**
+     * Express middleware to check whether a user is in HEART_ALLOWED_USERS
+     * @param req 
+     * @param res 
+     * @param next 
+     */
+    static checkAllowedUser (req: Request, res: Response, next: NextFunction) {
+        // res.locals.request is set from .handler()
+        if (!users.isAllowed(res.locals.request.name)) {
+            return next(new UserNotAllowedError);
         }
 
-        return super.validate(req);
+        return next();
     }
 
+    /**
+     * Express middleware that responds with an error if the user is a duplicate
+     * @param req 
+     * @param res 
+     * @param next 
+     */
     static checkDuplicateUser (req: Request, res: Response, next: NextFunction) {
+        // res.locals.request is set from .handler()
         let r = res.locals.request;
         let validate_username = `SELECT username FROM Accounts WHERE username = ${db.escape(r.name)}`;
     
@@ -35,7 +49,7 @@ export class SignupRequest extends BaseRequest {
                 return next(new DuplicateUserError);
             } else {
                 // Continue to signup
-                next();
+                return next();
             }
         });
     }

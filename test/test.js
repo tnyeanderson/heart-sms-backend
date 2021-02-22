@@ -10,6 +10,10 @@ const api = agent("http://localhost:5000/api/v1");
 let accountId = '';
 let contactsToRemove = [];
 
+// Password is 'tester', this is the SHA256 hash
+// The password is hashed on the client and again on the server to maintain perfect secrecy
+let password = '9bba5c53a0545e0c80184b946153c9f58387e3bd1d4ee35740f29ac2e718b019'
+
 
 function delay(interval = 3000) {
    return it('should delay', done => 
@@ -29,7 +33,7 @@ describe("heart-sms-backend unit test", function () {
         .send({
             "name": "test@email.com",
             // Password is 'tester', this is the SHA256 hash
-            "password": "9bba5c53a0545e0c80184b946153c9f58387e3bd1d4ee35740f29ac2e718b019",
+            "password": password,
             "phone_number": "5555555555",
             "real_name": "testname"
         })
@@ -48,7 +52,7 @@ describe("heart-sms-backend unit test", function () {
         .send({
             "name": "test@email.com",
             // Password is 'tester', this is the SHA256 hash
-            "password": "9bba5c53a0545e0c80184b946153c9f58387e3bd1d4ee35740f29ac2e718b019",
+            "password": password,
             "phone_number": "5555555555",
             "real_name": "testname"
         })
@@ -66,7 +70,7 @@ describe("heart-sms-backend unit test", function () {
         .post('/accounts/login')
         .send({
             "username": "test@email.com",
-            "password": "9bba5c53a0545e0c80184b946153c9f58387e3bd1d4ee35740f29ac2e718b019"
+            "password": password
         })
         .expect("Content-type",/json/)
         .expect(200)
@@ -80,11 +84,27 @@ describe("heart-sms-backend unit test", function () {
         });
     });
 
-    it("Fail log in", function (done) {
+    it("Fail log in (bad username)", function (done) {
         api
         .post('/accounts/login')
         .send({
             "username": "bad",
+            "password": password
+        })
+        .expect("Content-type",/json/)
+        .expect(200)
+        .end(function (err,res) {
+            res.status.should.equal(401);
+            res.body.error.should.equal('username or password incorrect');
+            done();
+        });
+    });
+
+    it("Fail log in (bad password)", function (done) {
+        api
+        .post('/accounts/login')
+        .send({
+            "username": "test@email.com",
             "password": "bad"
         })
         .expect("Content-type",/json/)
@@ -112,11 +132,28 @@ describe("heart-sms-backend unit test", function () {
         });
     });
 
-    it("MQTT fail log in", function (done) {
+    it("MQTT fail log in (bad username)", function (done) {
         api
         .post('/mqtt/login')
         .send({
             "username": "bad",
+            "password": accountId
+        })
+        .expect("Content-type",/json/)
+        .expect(200)
+        .end(function (err,res) {
+            res.status.should.equal(401);
+            res.body.Ok.should.equal(false);
+            res.body.Error.should.equal("username or password incorrect");
+            done();
+        });
+    });
+
+    it("MQTT fail log in (bad password)", function (done) {
+        api
+        .post('/mqtt/login')
+        .send({
+            "username": "test@email.com",
             "password": "bad"
         })
         .expect("Content-type",/json/)

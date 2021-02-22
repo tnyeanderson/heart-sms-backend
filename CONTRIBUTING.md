@@ -61,6 +61,8 @@ caddy run
 
 The `.api.env.example` and `.db.env.example` files are used for configuring the dev environment. Check there for passwords, ports, etc.
 
+In dev, you may only sign up with the `test@email.com` username (so we can run tests for our user whitelist). You can change this in `.api.env.example`, but know that the test will fail until you change it back :)
+
 The login information to test the MQTT broker is shown below. Use an application such as [MQTT Explorer](https://mqtt-explorer.com/) to inspect incoming/outgoing messages. Subscribe to the root topic (`#`), which shows messages from all topics (i.e. messages from all users). Only the `heart-sms-backend` user can subscribe to the root topic.
 
 ```
