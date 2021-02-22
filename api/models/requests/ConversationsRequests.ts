@@ -88,7 +88,7 @@ export class ConversationsUpdateSnippetRequest extends UpdateDeviceIdRequest {
 
 
 /**
- * conversations/update_snippet/:device_id
+ * conversations/update_title/:device_id
  */
 export class ConversationsUpdateTitleRequest extends UpdateDeviceIdRequest {
     // Query
