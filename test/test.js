@@ -1,5 +1,5 @@
-import { agent } from "supertest";
-import should from "should";
+import { agent } from 'supertest';
+import * as assert from 'assert'
 
 // This starts the server and gets the urls object
 //const { urls, server } = require("../server");
@@ -43,6 +43,8 @@ describe("heart-sms-backend unit test", function () {
         .end(function (err,res) {
             res.status.should.equal(200);
             res.body.should.have.property('account_id');
+            res.body.should.have.property('salt1');
+            res.body.should.have.property('salt2');
             done();
         });
     });
@@ -60,7 +62,9 @@ describe("heart-sms-backend unit test", function () {
         .expect(200)
         .end(function (err,res) {
             res.status.should.equal(401);
-            res.body.error.should.equal('username is not allowed');
+            assert.deepStrictEqual(res.body, {
+                error: 'username is not allowed'
+            });
             done();
         });
     });
@@ -79,25 +83,55 @@ describe("heart-sms-backend unit test", function () {
         .expect(200)
         .end(function (err,res) {
             res.status.should.equal(400);
-            res.body.error.should.equal("user already exists");
+            assert.deepStrictEqual(res.body, {
+                error: 'user already exists'
+            });
             done();
         });
     });
     
     it("Log in", function (done) {
-        api
-        .post('/accounts/login')
-        .send({
+        let body = {
             "username": "test@email.com",
             "password": password
-        })
+        }
+
+        api
+        .post('/accounts/login')
+        .send(body)
         .expect("Content-type",/json/)
         .expect(200)
         .end(function (err,res) {
             res.status.should.equal(200);
             res.body.should.have.property('account_id');
+            res.body.should.have.property('salt1');
             res.body.should.have.property('salt2');
+            res.body.should.have.property('subscription_expiration');
+            res.body.account_id.length.should.equal(64);
+            res.body.salt1.length.should.equal(128);
+            res.body.salt2.length.should.equal(128);
             accountId = res.body.account_id;
+            assert.deepStrictEqual(res.body, {
+                "account_id": accountId,
+                "salt1": res.body.salt1,
+                "salt2": res.body.salt2,
+                "phone_number": "5555555555",
+                "name": "testname",
+                "subscription_type": 3,
+                "subscription_expiration": res.body.subscription_expiration,
+                "base_theme": "light",
+                "rounder_bubbles": false,
+                "global_color_theme": "default",
+                "color": -1352590,
+                "color_dark": -4311478,
+                "color_light": -1,
+                "color_accent": -10011977,
+                "use_global_theme": false,
+                "apply_primary_color_to_toolbar": true,
+                "passcode": null,
+                "message_timestamp": false,
+                "conversation_categories": true
+              });
             console.log('\n', "Account ID: ", res.body.account_id, '\n');
             done();
         });
@@ -114,7 +148,9 @@ describe("heart-sms-backend unit test", function () {
         .expect(200)
         .end(function (err,res) {
             res.status.should.equal(401);
-            res.body.error.should.equal('username or password incorrect');
+            assert.deepStrictEqual(res.body, {
+                error: 'username or password incorrect'
+            });
             done();
         });
     });
@@ -130,7 +166,9 @@ describe("heart-sms-backend unit test", function () {
         .expect(200)
         .end(function (err,res) {
             res.status.should.equal(401);
-            res.body.error.should.equal('username or password incorrect');
+            assert.deepStrictEqual(res.body, {
+                error: 'username or password incorrect'
+            });
             done();
         });
     });
@@ -146,7 +184,9 @@ describe("heart-sms-backend unit test", function () {
         .expect(200)
         .end(function (err,res) {
             res.status.should.equal(200);
-            res.body.Ok.should.equal(true);
+            assert.deepStrictEqual(res.body, {
+                Ok: true
+            });
             done();
         });
     });
@@ -162,8 +202,10 @@ describe("heart-sms-backend unit test", function () {
         .expect(200)
         .end(function (err,res) {
             res.status.should.equal(401);
-            res.body.Ok.should.equal(false);
-            res.body.Error.should.equal("username or password incorrect");
+            assert.deepStrictEqual(res.body, {
+                Ok: false,
+                Error: 'username or password incorrect'
+            });
             done();
         });
     });
@@ -179,8 +221,10 @@ describe("heart-sms-backend unit test", function () {
         .expect(200)
         .end(function (err,res) {
             res.status.should.equal(401);
-            res.body.Ok.should.equal(false);
-            res.body.Error.should.equal("username or password incorrect");
+            assert.deepStrictEqual(res.body, {
+                Ok: false,
+                Error: 'username or password incorrect'
+            });
             done();
         });
     });
@@ -196,7 +240,9 @@ describe("heart-sms-backend unit test", function () {
         .expect(200)
         .end(function (err,res) {
             res.status.should.equal(200);
-            res.body.Ok.should.equal(true);
+            assert.deepStrictEqual(res.body, {
+                Ok: true
+            });
             done();
         });
     });
@@ -212,8 +258,10 @@ describe("heart-sms-backend unit test", function () {
         .expect(200)
         .end(function (err,res) {
             res.status.should.equal(401);
-            res.body.Ok.should.equal(false);
-            res.body.Error.should.equal("username or password incorrect");
+            assert.deepStrictEqual(res.body, {
+                Ok: false,
+                Error: 'username or password incorrect'
+            });
             done();
         });
     });
@@ -235,6 +283,7 @@ describe("heart-sms-backend unit test", function () {
         .expect(200)
         .end(function (err,res) {
             res.status.should.equal(200);
+            assert.deepStrictEqual(res.body, {});
             done();
         });
     });
@@ -254,6 +303,7 @@ describe("heart-sms-backend unit test", function () {
         .expect(200)
         .end(function (err,res) {
             res.status.should.equal(200);
+            assert.deepStrictEqual(res.body, {});
             done();
         });
     });
@@ -273,10 +323,12 @@ describe("heart-sms-backend unit test", function () {
         .expect(200)
         .end(function (err,res) {
             res.status.should.equal(200);
+            assert.deepStrictEqual(res.body, {});
             done();
         });
     });
     
+    // TODO: Start here for full response validation
     it("Account settings", function (done) {
         api
         .get('/accounts/settings')
