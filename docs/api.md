@@ -2162,6 +2162,8 @@ Error:
 
 ### `/messages/forward_to_phone`
 
+**TODO: Verify if this is correct**
+
 Method: POST
 
 Parameters: `account_id=STRING`

@@ -37,4 +37,5 @@ export class ScheduledMessagesUpdateRequest extends UpdateDeviceIdRequest {
     @Expose() repeat: number = -1;
 
     static optional = ['to', 'data', 'mime_type', 'timestamp', 'title', 'repeat'];
+    static atLeastOne = true;
 }

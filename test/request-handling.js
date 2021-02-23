@@ -23,7 +23,14 @@ let accountIdRequiredEndpoints = {
         '/conversations/index_public_unread',
         '/conversations/1',
         '/conversations/folder/1',
-        '/devices'
+        '/devices',
+        '/drafts',
+        '/drafts/1',
+        '/folders',
+        '/media/1',
+        '/messages',
+        '/scheduled_messages',
+        '/templates'
     ],
     post: [
         '/accounts/remove_account',
@@ -40,7 +47,10 @@ let accountIdRequiredEndpoints = {
         '/conversations/unarchive/1',
         '/conversations/remove_from_folder/1',
         '/devices/remove/1',
-        
+        '/folders/remove/1',
+        '/messages/remove/1',
+        '/scheduled_messages/remove/1',
+        '/templates/remove/1'
     ]
 };
 
@@ -110,6 +120,56 @@ let requiredPropEndpoints = [
         path: '/devices/update_primary',
         props: ['account_id', 'new_primary_device_id']
     },
+    {
+        path: '/drafts/remove/1',
+        props: ['account_id', 'android_device']
+    },
+    {
+        path: '/drafts/update/1',
+        props: ['account_id', 'data']
+    },
+    {
+        path: '/folders/update/1',
+        props: ['account_id', 'name', 'color', 'color_dark', 'color_light', 'color_accent']
+    },
+    {
+        path: '/media/add',
+        props: ['account_id', 'message_id', 'data']
+    },
+    {
+        path: '/messages/update/1',
+        props: ['account_id'],
+        atLeastOneOther: 'message_type'
+    },
+    {
+        path: '/messages/update_type/1',
+        props: ['account_id', 'message_type']
+    },
+    {
+        path: '/messages/cleanup',
+        props: ['account_id', 'timestamp']
+    },
+    {
+        path: '/messages/forward_to_phone',
+        props: ['account_id', 'to', 'message', 'sent_device']
+    },
+    {
+        path: '/mqtt/login',
+        props: ['username', 'password']
+    },
+    {
+        path: '/mqtt/acl',
+        props: ['username', 'topic']
+    },
+    {
+        path: '/scheduled_messages/update/1',
+        props: ['account_id'],
+        atLeastOneOther: 'to'
+    },
+    {
+        path: '/templates/update/1',
+        props: ['account_id', 'text']
+    }
 ]
 
 /**
@@ -142,6 +202,36 @@ let itemsRequiredEndpoints = [
         path: '/devices/add',
         prop: 'device',
         itemProps: ['id', 'info', 'name', 'primary', 'fcm_token']
+    },
+    {
+        path: '/drafts/add',
+        prop: 'drafts',
+        itemProps: ['device_id', 'device_conversation_id', 'mime_type', 'data']
+    },
+    {
+        path: '/drafts/replace/1',
+        prop: 'drafts',
+        itemProps: ['device_id', 'device_conversation_id', 'mime_type', 'data']
+    },
+    {
+        path: '/folders/add',
+        prop: 'folders',
+        itemProps: ['device_id', 'name', 'color', 'color_dark', 'color_light', 'color_accent']
+    },
+    {
+        path: '/messages/add',
+        prop: 'messages',
+        itemProps: ['device_id', 'device_conversation_id', 'message_type', 'data', 'timestamp', 'mime_type', 'read', 'seen']
+    },
+    {
+        path: '/scheduled_messages/add',
+        prop: 'scheduled_messages',
+        itemProps: ['device_id', 'to', 'data', 'mime_type', 'timestamp', 'title', 'repeat']
+    },
+    {
+        path: '/templates/add',
+        prop: 'templates',
+        itemProps: ['device_id', 'text']
     }
     //['/drafts/add', 'drafts'],
     //['/folders/add', 'folders'],
@@ -167,7 +257,7 @@ function delay(interval = 3000) {
 
 // UNIT test begin
 
-describe("heart-sms-backend error handling tests", function () {
+describe("heart-sms-backend request handling tests", function () {
     /**
      * Test GET endpoints that require an account_id
      */ 
@@ -411,28 +501,6 @@ describe("heart-sms-backend error handling tests", function () {
                     done();
                 });
             });
-        });
-    });
-
-
-
-
-
-    it(`Fail to create user that is not in HEART_ALLOWED_USERS`, function (done) {
-        api
-        .post('/accounts/signup')
-        .send({
-            "name": "usernamenotallowed",
-            "password": "shouldfail",
-            "phone_number": "shouldfail",
-            "real_name": "shouldfail"
-        })
-        .expect("Content-type",/json/)
-        .expect(200)
-        .end(function (err,res) {
-            res.status.should.equal(401);
-            res.body.error.should.equal('username is not allowed');
-            done();
         });
     });
     

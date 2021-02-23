@@ -37,7 +37,6 @@ export class DevicesAddRequest extends AccountIdRequest {
             return new MissingParamError('device');
 
         for (let i=0, len=props.length; i<len; i++) {
-            console.log("Checking ", props[i], toValidate.device[props[i]]);
             if (toValidate.device[props[i]] === undefined || toValidate.device[props[i]] === '') {
                 return new MissingParamError(props[i]);
             }

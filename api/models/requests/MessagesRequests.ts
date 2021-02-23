@@ -86,4 +86,7 @@ export class MessagesForwardToPhoneRequest extends AccountIdRequest {
     @Expose() mime_type: string = '';
     @Expose() message_id: number = -1
     @Expose() sent_device: number = -1
+
+    // TODO: Verify if this is correct
+    static optional = ['mime_type', 'message_id'];
 }

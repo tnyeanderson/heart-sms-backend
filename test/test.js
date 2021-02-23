@@ -47,6 +47,24 @@ describe("heart-sms-backend unit test", function () {
         });
     });
 
+    it(`Fail to create user that is not in HEART_ALLOWED_USERS`, function (done) {
+        api
+        .post('/accounts/signup')
+        .send({
+            "name": "usernamenotallowed",
+            "password": "shouldfail",
+            "phone_number": "shouldfail",
+            "real_name": "shouldfail"
+        })
+        .expect("Content-type",/json/)
+        .expect(200)
+        .end(function (err,res) {
+            res.status.should.equal(401);
+            res.body.error.should.equal('username is not allowed');
+            done();
+        });
+    });
+
     it("Fail to create duplicate user", function (done) {
         api
         .post('/accounts/signup')
