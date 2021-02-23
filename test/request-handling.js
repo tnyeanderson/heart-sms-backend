@@ -1,11 +1,8 @@
 import { agent } from "supertest";
 import should from "should";
 
-// This starts the server and gets the urls object
-//const { urls, server } = require("../server");
-
-// This will be used to store required params to test that missing params is being thrown
-let required;
+// This agent refers to PORT where program is runninng.
+const api = agent("http://localhost:5000/api/v1");
 
 // Endpoints for which an account_id is required
 let accountIdRequiredEndpoints = {
@@ -233,18 +230,7 @@ let itemsRequiredEndpoints = [
         prop: 'templates',
         itemProps: ['device_id', 'text']
     }
-    //['/drafts/add', 'drafts'],
-    //['/folders/add', 'folders'],
-    //['/messages/add', 'messages'],
-    //['/scheduled_messages/add', 'scheduled_messages'],
-    //['/templates/add', 'templates'],
 ]
-
-// This agent refers to PORT where program is runninng.
-const api = agent("http://localhost:5000/api/v1");
-
-let accountId = '';
-let contactsToRemove = [];
 
 
 function delay(interval = 3000) {
