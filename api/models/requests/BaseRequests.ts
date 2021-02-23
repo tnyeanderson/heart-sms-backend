@@ -3,7 +3,22 @@ import { NextFunction, Request, Response } from "express";
 import db from '../../db/query.js';
 import { ErrorResponse, MissingParamError } from "../responses/ErrorResponses.js";
 
+
+
 /**
+ * 
+ * For Request classes, all properties are assigned default values according to their type
+ * This way we can instantiate the class and use its properties for validation
+ * After being validated, class-transformer is used to create instances
+ * The main entrypoint for this is .handler()
+ * 
+ */
+
+
+
+/**
+ * BaseRequest
+ * 
  * Performs schema validation for derived classes
  * Used for requests which do not require an account_id
  */
