@@ -396,7 +396,6 @@ describe("heart-sms-backend error handling tests", function () {
             if (endpoint.prop === 'device') {
                 // Don't wrap item in an array, device is singular here!
                 body[endpoint.prop] = item;
-                console.log(body);
             }
 
             // Run the test
