@@ -10,3 +10,13 @@ export class DevicesListResponse extends BaseResponse {
     @Expose() fcm_token!: string;
     @Expose() ios!: boolean
 }
+
+
+export class DevicesAddResponse extends BaseResponse {
+    @Expose() id!: number;
+
+    constructor(id: number) {
+        super();
+        this.id = id;
+    }
+}

@@ -4,7 +4,7 @@ import * as DevicesPayloads from '../models/payloads/DevicesPayloads.js';
 import { AccountIdRequest } from '../models/requests/BaseRequests.js';
 import { DevicesAddRequest, DevicesRemoveRequest, DevicesUpdatePrimaryRequest, DevicesUpdateRequest } from '../models/requests/DevicesRequests.js';
 import { BaseResponse } from '../models/responses/BaseResponse.js';
-import { DevicesListResponse } from '../models/responses/DevicesResponses.js';
+import { DevicesAddResponse, DevicesListResponse } from '../models/responses/DevicesResponses.js';
 
 const router = express.Router();
 
@@ -41,7 +41,7 @@ router.route('/add').post(
         let sql = `INSERT INTO ${table} ${db.insertStr([toInsert])}`;
 
         db.query(sql, res, function (result) {
-            res.json(new BaseResponse);
+            res.json(new DevicesAddResponse(r.device.id));
         });
     });
 

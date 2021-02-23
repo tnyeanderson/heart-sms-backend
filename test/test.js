@@ -447,6 +447,7 @@ describe("heart-sms-backend unit test", function () {
         .expect(200)
         .end(function (err,res) {
             res.status.should.equal(200);
+            res.body.id.should.equal(1);
             done();
         });
     });

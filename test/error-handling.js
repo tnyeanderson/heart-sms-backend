@@ -22,7 +22,8 @@ let accountIdRequiredEndpoints = {
         '/conversations/index_public_archived',
         '/conversations/index_public_unread',
         '/conversations/1',
-        '/conversations/folder/1'
+        '/conversations/folder/1',
+        '/devices'
     ],
     post: [
         '/accounts/remove_account',
@@ -37,7 +38,9 @@ let accountIdRequiredEndpoints = {
         '/conversations/seen/1',
         '/conversations/archive/1',
         '/conversations/unarchive/1',
-        '/conversations/remove_from_folder/1'
+        '/conversations/remove_from_folder/1',
+        '/devices/remove/1',
+        
     ]
 };
 
@@ -98,6 +101,15 @@ let requiredPropEndpoints = [
         path: '/conversations/cleanup_messages',
         props: ['account_id', 'conversation_id', 'timestamp']
     },
+    {
+        path: '/devices/update/1',
+        props: ['account_id'],
+        atLeastOneOther: 'fcm_token'
+    },
+    {
+        path: '/devices/update_primary',
+        props: ['account_id', 'new_primary_device_id']
+    },
 ]
 
 /**
@@ -125,6 +137,11 @@ let itemsRequiredEndpoints = [
         path: '/conversations/add',
         prop: 'conversations',
         itemProps: ['device_id', 'folder_id', 'color', 'color_dark', 'color_light', 'color_accent', 'led_color', 'pinned', 'read', 'timestamp', 'title', 'phone_numbers', 'snippet', 'id_matcher', 'mute', 'archive', 'private_notifications']
+    },
+    {
+        path: '/devices/add',
+        prop: 'device',
+        itemProps: ['id', 'info', 'name', 'primary', 'fcm_token']
     }
     //['/drafts/add', 'drafts'],
     //['/folders/add', 'folders'],
@@ -267,7 +284,9 @@ describe("heart-sms-backend error handling tests", function () {
         it(`Fail to POST ${endpoint.path} without items ${endpoint.prop}`, function (done) {
             api
             .post(endpoint.path)
-            .send({})
+            .send({
+                account_id: 'should-fail'
+            })
             .expect("Content-type",/json/)
             .expect(200)
             .end(function (err,res) {
@@ -295,6 +314,12 @@ describe("heart-sms-backend error handling tests", function () {
 
             // Add the item to the item properties of the body
             body[endpoint.prop].push(item);
+
+            // devices/add is a special case because it is not sent in an array
+            if (endpoint.prop === 'device') {
+                // Don't wrap item in an array, device is singular here!
+                body[endpoint.prop] = item;
+            }
             
             api
             .post(endpoint.path)
@@ -324,6 +349,12 @@ describe("heart-sms-backend error handling tests", function () {
 
             // Add the item to the item properties of the body
             body[endpoint.prop].push(item);
+
+            // devices/add is a special case because it is not sent in an array
+            if (endpoint.prop === 'device') {
+                // Don't wrap item in an array, device is singular here!
+                body[endpoint.prop] = item;
+            }
 
             // Run the test
             it(`Fail to POST to ${endpoint.path} without at least one optional property`, function (done) {
@@ -361,6 +392,12 @@ describe("heart-sms-backend error handling tests", function () {
             // Add the item to the item properties of the body
             body[endpoint.prop].push(item);
 
+            // devices/add is a special case because it is not sent in an array
+            if (endpoint.prop === 'device') {
+                // Don't wrap item in an array, device is singular here!
+                body[endpoint.prop] = item;
+                console.log(body);
+            }
 
             // Run the test
             it(`Fail to POST ${endpoint.path} without ${endpoint.prop} property ${toBeEmpty}`, function (done) {

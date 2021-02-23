@@ -1,5 +1,6 @@
 import { Expose } from "class-transformer";
 import { Request } from 'express';
+import { MissingParamError } from "../responses/ErrorResponses.js";
 import { AccountIdRequest, BaseRequest, UpdateRequest } from "./BaseRequests.js";
 
 
@@ -17,6 +18,34 @@ class DevicesAddItem extends BaseRequest {
 export class DevicesAddRequest extends AccountIdRequest {
     // Body
     device: DevicesAddItem = new DevicesAddItem;
+
+    /**
+     * devices/add is a special case, in that it is essentially a HasItemsRequest.
+     * However, it only has one item and it is not wrapped in an array (device: {}).
+     * Therefore, this is custom validation function for this endpoint
+     * @param req 
+     */
+    static validate (req: Request) {
+        let props = Object.getOwnPropertyNames(new DevicesAddItem);
+        let toValidate = Object.assign(req.query, req.body, req.params)
+
+        if (toValidate.account_id === undefined || toValidate.account_id === '')
+            // Account
+            return new MissingParamError('account_id');
+        
+        if (toValidate.device === undefined || toValidate.device === [])
+            return new MissingParamError('device');
+
+        for (let i=0, len=props.length; i<len; i++) {
+            console.log("Checking ", props[i], toValidate.device[props[i]]);
+            if (toValidate.device[props[i]] === undefined || toValidate.device[props[i]] === '') {
+                return new MissingParamError(props[i]);
+            }
+        }
+        
+        // Validated
+        return true;
+    }
 
     static create (req: Request) {
         let out = new this;

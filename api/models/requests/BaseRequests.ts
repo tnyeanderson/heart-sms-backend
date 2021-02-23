@@ -142,7 +142,7 @@ export class HasItemsRequest extends AccountIdRequest {
     static itemsPropName: string = '';
 
     /**
-     * Using the first item in the list, get the type of the list items
+     * Using the first item in the list, get the type of the list items.
      * This is why static items properties have e.g. [new BlacklistsAddItem] as the default value
      */
     static getItemsType() {

@@ -1525,7 +1525,9 @@ Request body:
 
 Response:
 ```
-{}
+{
+    "id": INT
+}
 ```
 
 Error:
