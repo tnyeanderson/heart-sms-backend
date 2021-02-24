@@ -266,7 +266,7 @@ describe("heart-sms-backend unit test", function () {
         });
     });
 
-    delay("Waiting to give you time to log in, etc...");
+    //delay("Waiting to give you time to log in, etc...");
 
     it("Update account base_theme string setting", function (done) {
         api
@@ -328,7 +328,6 @@ describe("heart-sms-backend unit test", function () {
         });
     });
     
-    // TODO: Start here for full response validation
     it("Account settings", function (done) {
         api
         .get('/accounts/settings')
@@ -341,7 +340,7 @@ describe("heart-sms-backend unit test", function () {
             res.status.should.equal(200);
             assert.deepStrictEqual(res.body, {
                 "subscription_type": 3,
-                "base_theme": "light",
+                "base_theme": "dark",
                 "rounder_bubbles": false,
                 "global_color_theme": "default",
                 "color": 123456,
@@ -400,6 +399,7 @@ describe("heart-sms-backend unit test", function () {
         .expect(200)
         .end(function (err,res) {
             res.status.should.equal(200);
+            assert.deepStrictEqual(res.body, {});
             done();
         });
     });
@@ -419,6 +419,7 @@ describe("heart-sms-backend unit test", function () {
         .expect(200)
         .end(function (err,res) {
             res.status.should.equal(200);
+            assert.deepStrictEqual(res.body, {});
             done();
         });
     });
@@ -433,10 +434,24 @@ describe("heart-sms-backend unit test", function () {
         .expect(200)
         .end(function (err,res) {
             res.status.should.equal(200);
-            res.body.should.have.lengthOf(2);
-            res.body[0].response.should.equal('updatedtest');
-            res.body[0].pattern.should.equal('updatedpattern');
-            res.body[1].response.should.equal('test2');
+            assert.deepStrictEqual(res.body, [
+                {
+                    "id": res.body[0].id, // Auto incremented, could be any number
+                    "account_id": accountId,
+                    "device_id": 1,
+                    "reply_type": "updatedtype",
+                    "pattern": "updatedpattern",
+                    "response": "updatedtest"
+                },
+                {
+                    "id": res.body[1].id, // Auto incremented, could be any number
+                    "account_id": accountId,
+                    "device_id": 2,
+                    "reply_type": "testtype2",
+                    "pattern": "testpattern2",
+                    "response": "test2"
+                }
+            ]);
             done();
         });
     });
@@ -451,6 +466,7 @@ describe("heart-sms-backend unit test", function () {
         .expect(200)
         .end(function (err,res) {
             res.status.should.equal(200);
+            assert.deepStrictEqual(res.body, {});
             done();
         });
     });
@@ -477,6 +493,7 @@ describe("heart-sms-backend unit test", function () {
         .expect(200)
         .end(function (err,res) {
             res.status.should.equal(200);
+            assert.deepStrictEqual(res.body, {});
             done();
         });
     });
@@ -491,9 +508,22 @@ describe("heart-sms-backend unit test", function () {
         .expect(200)
         .end(function (err,res) {
             res.status.should.equal(200);
-            res.body.should.have.lengthOf(2);
-            res.body[0].phrase.should.equal('testphrase');
-            res.body[1].phrase.should.equal('testphrase2');
+            assert.deepStrictEqual(res.body, [
+                {
+                    "id": res.body[0].id,
+                    "account_id": accountId,
+                    "device_id": 1,
+                    "phone_number": "33333",
+                    "phrase": "testphrase"
+                },
+                {
+                    "id": res.body[1].id,
+                    "account_id": accountId,
+                    "device_id": 2,
+                    "phone_number": "44444",
+                    "phrase": "testphrase2"
+                }
+            ]);
             done();
         });
     });
@@ -508,6 +538,7 @@ describe("heart-sms-backend unit test", function () {
         .expect(200)
         .end(function (err,res) {
             res.status.should.equal(200);
+            assert.deepStrictEqual(res.body, {});
             done();
         });
     });
@@ -529,7 +560,9 @@ describe("heart-sms-backend unit test", function () {
         .expect(200)
         .end(function (err,res) {
             res.status.should.equal(200);
-            res.body.id.should.equal(1);
+            assert.deepStrictEqual(res.body, {
+                "id": 1
+            });
             done();
         });
     });
@@ -551,6 +584,9 @@ describe("heart-sms-backend unit test", function () {
         .expect(200)
         .end(function (err,res) {
             res.status.should.equal(200);
+            assert.deepStrictEqual(res.body, {
+                "id": 2
+            });
             done();
         });
     });
@@ -566,6 +602,7 @@ describe("heart-sms-backend unit test", function () {
         .expect(200)
         .end(function (err,res) {
             res.status.should.equal(200);
+            assert.deepStrictEqual(res.body, {});
             done();
         });
     });
@@ -581,6 +618,7 @@ describe("heart-sms-backend unit test", function () {
         .expect(200)
         .end(function (err,res) {
             res.status.should.equal(200);
+            assert.deepStrictEqual(res.body, {});
             done();
         });
     });
@@ -595,11 +633,26 @@ describe("heart-sms-backend unit test", function () {
         .expect(200)
         .end(function (err,res) {
             res.status.should.equal(200);
-            res.body.should.have.lengthOf(2);
-            res.body[0].primary.should.equal(false);
-            res.body[0].name.should.equal("test");
-            res.body[0].fcm_token.should.equal("newtoken");
-            res.body[1].primary.should.equal(true);
+            assert.deepStrictEqual(res.body, [
+                {
+                    "account_id": accountId,
+                    "id": 1,
+                    "info": "testinfo",
+                    "name": "test",
+                    "primary": false,
+                    "fcm_token": "newtoken",
+                    "ios": false
+                },
+                {
+                    "account_id": accountId,
+                    "id": 2,
+                    "info": "testinfo2",
+                    "name": "test2",
+                    "primary": true,
+                    "fcm_token": "token2",
+                    "ios": false
+                }
+            ]);
             done();
         });
     });
@@ -614,6 +667,7 @@ describe("heart-sms-backend unit test", function () {
         .expect(200)
         .end(function (err,res) {
             res.status.should.equal(200);
+            assert.deepStrictEqual(res.body, {});
             done();
         });
     });
@@ -646,6 +700,7 @@ describe("heart-sms-backend unit test", function () {
         .expect(200)
         .end(function (err,res) {
             res.status.should.equal(200);
+            assert.deepStrictEqual(res.body, {});
             done();
         });
     });
@@ -659,14 +714,15 @@ describe("heart-sms-backend unit test", function () {
         .send({
             "name": "newfolder",
             "color": 5,
-            "color_dark": 6,
-            "color_light": 6,
-            "color_accent": 6
+            "color_dark": 5,
+            "color_light": 5,
+            "color_accent": 5
         })
         .expect("Content-type",/json/)
         .expect(200)
         .end(function (err,res) {
             res.status.should.equal(200);
+            assert.deepStrictEqual(res.body, {});
             done();
         });
     });
@@ -681,12 +737,28 @@ describe("heart-sms-backend unit test", function () {
         .expect(200)
         .end(function (err,res) {
             res.status.should.equal(200);
-            res.body.should.have.lengthOf(2);
-            res.body[0].name.should.equal("newfolder");
-            res.body[0].color.should.equal(5);
-            res.body[0].color_dark.should.equal(6);
-            res.body[1].name.should.equal("foldername2");
-            res.body[1].color.should.equal(6);
+            assert.deepStrictEqual(res.body, [
+                {
+                    "id": res.body[0].id,
+                    "account_id": accountId,
+                    "device_id": 1,
+                    "name": "newfolder",
+                    "color": 5,
+                    "color_dark": 5,
+                    "color_light": 5,
+                    "color_accent": 5
+                },
+                {
+                    "id": res.body[1].id,
+                    "account_id": accountId,
+                    "device_id": 2,
+                    "name": "foldername2",
+                    "color": 6,
+                    "color_dark": 6,
+                    "color_light": 6,
+                    "color_accent": 6
+                }
+            ]);
             done();
         });
     });
@@ -701,6 +773,7 @@ describe("heart-sms-backend unit test", function () {
         .expect(200)
         .end(function (err,res) {
             res.status.should.equal(200);
+            assert.deepStrictEqual(res.body, {});
             done();
         });
     });
@@ -761,6 +834,7 @@ describe("heart-sms-backend unit test", function () {
         .expect(200)
         .end(function (err,res) {
             res.status.should.equal(200);
+            assert.deepStrictEqual(res.body, {});
             done();
         });
     });
@@ -784,6 +858,7 @@ describe("heart-sms-backend unit test", function () {
         .expect(200)
         .end(function (err,res) {
             res.status.should.equal(200);
+            assert.deepStrictEqual(res.body, {});
             done();
         });
     });
@@ -800,6 +875,7 @@ describe("heart-sms-backend unit test", function () {
         .expect(200)
         .end(function (err,res) {
             res.status.should.equal(200);
+            assert.deepStrictEqual(res.body, {});
             done();
         });
     });
@@ -814,10 +890,35 @@ describe("heart-sms-backend unit test", function () {
         .expect(200)
         .end(function (err,res) {
             res.status.should.equal(200);
-            res.body.should.have.lengthOf(3);
-            res.body[0].name.should.equal("newname");
-            res.body[0].phone_number.should.equal("123");
-            res.body[1].name.should.equal("name2");
+            assert.deepStrictEqual(res.body, [
+                {
+                    "id": res.body[0].id,
+                    "phone_number": "123",
+                    "name": "newname",
+                    "id_matcher": "idmatch1",
+                    "color": 456,
+                    "color_accent": 456,
+                    "contact_type": 3
+                },
+                {
+                    "id": res.body[1].id,
+                    "phone_number": "666",
+                    "id_matcher": "idmatch2",
+                    "name": "name2",
+                    "color": 4,
+                    "color_accent": 4,
+                    "contact_type": 4
+                },
+                {
+                    "id": res.body[2].id,
+                    "phone_number": "777",
+                    "id_matcher": "idmatch3",
+                    "name": "name3",
+                    "color": 5,
+                    "color_accent": 5,
+                    "contact_type": 5
+                }
+            ]);
             contactsToRemove.push(res.body[1].id);
             contactsToRemove.push(res.body[2].id);
             done();
@@ -834,6 +935,7 @@ describe("heart-sms-backend unit test", function () {
         .expect(200)
         .end(function (err,res) {
             res.status.should.equal(200);
+            assert.deepStrictEqual(res.body, {});
             done();
         });
     });
@@ -848,10 +950,20 @@ describe("heart-sms-backend unit test", function () {
         .expect(200)
         .end(function (err,res) {
             res.status.should.equal(200);
-            res.body.should.have.lengthOf(1);
-            res.body[0].device_id.should.equal(1);
-            res.body[0].phone_number.should.equal("123");
-            res.body[0].contact_type.should.equal(3);
+            assert.deepStrictEqual(res.body, [
+                {
+                    "id": res.body[0].id,
+                    "account_id": accountId,
+                    "device_id": 1,
+                    "phone_number": "123",
+                    "name": "newname",
+                    "color": 456,
+                    "color_dark": 456,
+                    "color_light": 456,
+                    "color_accent": 456,
+                    "contact_type": 3
+                }
+            ]);
             done();
         });
     });
@@ -866,6 +978,7 @@ describe("heart-sms-backend unit test", function () {
         .expect(200)
         .end(function (err,res) {
             res.status.should.equal(200);
+            assert.deepStrictEqual(res.body, {});
             done();
         });
     });
@@ -944,6 +1057,7 @@ describe("heart-sms-backend unit test", function () {
         .expect(200)
         .end(function (err,res) {
             res.status.should.equal(200);
+            assert.deepStrictEqual(res.body, {});
             done();
         });
     });
@@ -965,6 +1079,7 @@ describe("heart-sms-backend unit test", function () {
         .expect(200)
         .end(function (err,res) {
             res.status.should.equal(200);
+            assert.deepStrictEqual(res.body, {});
             done();
         });
     });
@@ -985,6 +1100,7 @@ describe("heart-sms-backend unit test", function () {
         .expect(200)
         .end(function (err,res) {
             res.status.should.equal(200);
+            assert.deepStrictEqual(res.body, {});
             done();
         });
     });
@@ -1000,6 +1116,7 @@ describe("heart-sms-backend unit test", function () {
         .expect(200)
         .end(function (err,res) {
             res.status.should.equal(200);
+            assert.deepStrictEqual(res.body, {});
             done();
         });
     });
@@ -1014,6 +1131,7 @@ describe("heart-sms-backend unit test", function () {
         .expect(200)
         .end(function (err,res) {
             res.status.should.equal(200);
+            assert.deepStrictEqual(res.body, {});
             done();
         });
     });
@@ -1028,6 +1146,7 @@ describe("heart-sms-backend unit test", function () {
         .expect(200)
         .end(function (err,res) {
             res.status.should.equal(200);
+            assert.deepStrictEqual(res.body, {});
             done();
         });
     });
@@ -1042,6 +1161,7 @@ describe("heart-sms-backend unit test", function () {
         .expect(200)
         .end(function (err,res) {
             res.status.should.equal(200);
+            assert.deepStrictEqual(res.body, {});
             done();
         });
     });
@@ -1057,6 +1177,7 @@ describe("heart-sms-backend unit test", function () {
         .expect(200)
         .end(function (err,res) {
             res.status.should.equal(200);
+            assert.deepStrictEqual(res.body, {});
             done();
         });
     });
@@ -1072,6 +1193,7 @@ describe("heart-sms-backend unit test", function () {
         .expect(200)
         .end(function (err,res) {
             res.status.should.equal(200);
+            assert.deepStrictEqual(res.body, {});
             done();
         });
     });
@@ -1086,6 +1208,7 @@ describe("heart-sms-backend unit test", function () {
         .expect(200)
         .end(function (err,res) {
             res.status.should.equal(200);
+            assert.deepStrictEqual(res.body, {});
             done();
         });
     });
@@ -1100,20 +1223,77 @@ describe("heart-sms-backend unit test", function () {
         .expect(200)
         .end(function (err,res) {
             res.status.should.equal(200);
-            res.body.should.have.lengthOf(3);
-            res.body[0].device_id.should.equal(20);
-            res.body[0].archive.should.equal(false);
-            res.body[0].folder_id.should.equal(-1);
-            res.body[0].snippet.should.equal('updatedsnippet');
-            res.body[0].timestamp.should.equal(1008);
-            res.body[0].title.should.equal('updatedtitle');
-            res.body[1].device_id.should.equal(30);
-            res.body[1].archive.should.equal(true);
-            res.body[2].device_id.should.equal(10);
-            res.body[2].title.should.equal('newtitle');
-            res.body[2].ringtone.should.equal('newringer');
-            res.body[2].mute.should.equal(true);
-            res.body[2].folder_id.should.equal(2);
+            assert.deepStrictEqual(res.body, [
+                {
+                    "id": res.body[0].id,
+                    "account_id": accountId,
+                    "device_id": 20,
+                    "folder_id": -1,
+                    "color": 7,
+                    "color_dark": 7,
+                    "color_light": 7,
+                    "color_accent": 7,
+                    "led_color": 8,
+                    "pinned": true,
+                    "read": true,
+                    "timestamp": 1008,
+                    "title": "updatedtitle",
+                    "phone_numbers": "444,666",
+                    "snippet": "updatedsnippet",
+                    "ringtone": "ringer2",
+                    "id_matcher": "match2",
+                    "image_uri": "image2",
+                    "mute": false,
+                    "archive": false,
+                    "private_notifications": true
+                },
+                {
+                    "id": res.body[1].id,
+                    "account_id": accountId,
+                    "device_id": 30,
+                    "folder_id": -1,
+                    "color": 7,
+                    "color_dark": 7,
+                    "color_light": 7,
+                    "color_accent": 7,
+                    "led_color": 8,
+                    "pinned": false,
+                    "read": true,
+                    "timestamp": 1003,
+                    "title": "testtitle3",
+                    "phone_numbers": "555,333",
+                    "snippet": "testsnippet3",
+                    "id_matcher": "match3",
+                    "ringtone": null,
+                    "image_uri": null,
+                    "mute": false,
+                    "archive": true,
+                    "private_notifications": false
+                },
+                {
+                    "id": res.body[2].id,
+                    "account_id": accountId,
+                    "device_id": 10,
+                    "folder_id": 2,
+                    "color": 7,
+                    "color_dark": 7,
+                    "color_light": 7,
+                    "color_accent": 7,
+                    "led_color": 8,
+                    "pinned": false,
+                    "read": true,
+                    "timestamp": 1000,
+                    "title": "newtitle",
+                    "phone_numbers": "555,666",
+                    "snippet": "newsnippet",
+                    "ringtone": "newringer",
+                    "image_uri": null,
+                    "id_matcher": "match",
+                    "mute": true,
+                    "archive": false,
+                    "private_notifications": false
+                }
+            ]);
             done();
         });
     });
@@ -1128,10 +1308,29 @@ describe("heart-sms-backend unit test", function () {
         .expect(200)
         .end(function (err,res) {
             res.status.should.equal(200);
-            res.body.title.should.equal('newtitle');
-            res.body.ringtone.should.equal('newringer');
-            res.body.mute.should.equal(true);
-            res.body.folder_id.should.equal(2);
+            assert.deepStrictEqual(res.body, {
+                "id": res.body.id,
+                "account_id": accountId,
+                "device_id": 10,
+                "folder_id": 2,
+                "color": 7,
+                "color_dark": 7,
+                "color_light": 7,
+                "color_accent": 7,
+                "led_color": 8,
+                "pinned": false,
+                "read": true,
+                "timestamp": 1000,
+                "title": "newtitle",
+                "phone_numbers": "555,666",
+                "snippet": "newsnippet",
+                "ringtone": "newringer",
+                "image_uri": null,
+                "id_matcher": "match",
+                "mute": true,
+                "archive": false,
+                "private_notifications": false
+            });
             done();
         });
     });
@@ -1146,11 +1345,31 @@ describe("heart-sms-backend unit test", function () {
         .expect(200)
         .end(function (err,res) {
             res.status.should.equal(200);
-            res.body.should.have.lengthOf(1);
-            res.body[0].title.should.equal('newtitle');
-            res.body[0].ringtone.should.equal('newringer');
-            res.body[0].mute.should.equal(true);
-            res.body[0].folder_id.should.equal(2);
+            assert.deepStrictEqual(res.body, [
+                {
+                    "id": res.body[0].id,
+                    "account_id": accountId,
+                    "device_id": 10,
+                    "folder_id": 2,
+                    "color": 7,
+                    "color_dark": 7,
+                    "color_light": 7,
+                    "color_accent": 7,
+                    "led_color": 8,
+                    "pinned": false,
+                    "read": true,
+                    "timestamp": 1000,
+                    "title": "newtitle",
+                    "phone_numbers": "555,666",
+                    "snippet": "newsnippet",
+                    "ringtone": "newringer",
+                    "image_uri": null,
+                    "id_matcher": "match",
+                    "mute": true,
+                    "archive": false,
+                    "private_notifications": false
+                }
+            ]);
             done();
         });
     });
@@ -1165,9 +1384,31 @@ describe("heart-sms-backend unit test", function () {
         .expect(200)
         .end(function (err,res) {
             res.status.should.equal(200);
-            res.body.should.have.lengthOf(1);
-            res.body[0].archive.should.equal(true);
-            res.body[0].device_id.should.equal(30);
+            assert.deepStrictEqual(res.body, [
+                {
+                    "id": res.body[0].id,
+                    "account_id": accountId,
+                    "device_id": 30,
+                    "folder_id": -1,
+                    "color": 7,
+                    "color_dark": 7,
+                    "color_light": 7,
+                    "color_accent": 7,
+                    "led_color": 8,
+                    "pinned": false,
+                    "read": true,
+                    "timestamp": 1003,
+                    "title": "testtitle3",
+                    "phone_numbers": "555,333",
+                    "snippet": "testsnippet3",
+                    "id_matcher": "match3",
+                    "ringtone": null,
+                    "image_uri": null,
+                    "mute": false,
+                    "archive": true,
+                    "private_notifications": false
+                }
+            ]);
             done();
         });
     });
@@ -1182,13 +1423,31 @@ describe("heart-sms-backend unit test", function () {
         .expect(200)
         .end(function (err,res) {
             res.status.should.equal(200);
-            res.body.should.have.lengthOf(1);
-            res.body[0].archive.should.equal(false);
-            res.body[0].private_notifications.should.equal(true);
-            res.body[0].folder_id.should.equal(-1);
-            res.body[0].snippet.should.equal('updatedsnippet');
-            res.body[0].timestamp.should.equal(1008);
-            res.body[0].title.should.equal('updatedtitle');
+            assert.deepStrictEqual(res.body, [
+                {
+                    "id": res.body[0].id,
+                    "account_id": accountId,
+                    "device_id": 20,
+                    "folder_id": -1,
+                    "color": 7,
+                    "color_dark": 7,
+                    "color_light": 7,
+                    "color_accent": 7,
+                    "led_color": 8,
+                    "pinned": true,
+                    "read": true,
+                    "timestamp": 1008,
+                    "title": "updatedtitle",
+                    "phone_numbers": "444,666",
+                    "snippet": "updatedsnippet",
+                    "ringtone": "ringer2",
+                    "id_matcher": "match2",
+                    "image_uri": "image2",
+                    "mute": false,
+                    "archive": false,
+                    "private_notifications": true
+                }
+            ]);
             done();
         });
     });
@@ -1203,13 +1462,31 @@ describe("heart-sms-backend unit test", function () {
         .expect(200)
         .end(function (err,res) {
             res.status.should.equal(200);
-            res.body.should.have.lengthOf(1);
-            res.body[0].private_notifications.should.equal(false);
-            res.body[0].archive.should.equal(false);
-            res.body[0].title.should.equal('newtitle');
-            res.body[0].ringtone.should.equal('newringer');
-            res.body[0].mute.should.equal(true);
-            res.body[0].folder_id.should.equal(2);
+            assert.deepStrictEqual(res.body, [
+                {
+                    "id": res.body[0].id,
+                    "account_id": accountId,
+                    "device_id": 10,
+                    "folder_id": 2,
+                    "color": 7,
+                    "color_dark": 7,
+                    "color_light": 7,
+                    "color_accent": 7,
+                    "led_color": 8,
+                    "pinned": false,
+                    "read": true,
+                    "timestamp": 1000,
+                    "title": "newtitle",
+                    "phone_numbers": "555,666",
+                    "snippet": "newsnippet",
+                    "ringtone": "newringer",
+                    "image_uri": null,
+                    "id_matcher": "match",
+                    "mute": true,
+                    "archive": false,
+                    "private_notifications": false
+                }
+            ]);
             done();
         });
     });
@@ -1268,6 +1545,7 @@ describe("heart-sms-backend unit test", function () {
         .expect(200)
         .end(function (err,res) {
             res.status.should.equal(200);
+            assert.deepStrictEqual(res.body, {});
             done();
         });
     });
@@ -1288,6 +1566,7 @@ describe("heart-sms-backend unit test", function () {
         .expect(200)
         .end(function (err,res) {
             res.status.should.equal(200);
+            assert.deepStrictEqual(res.body, {});
             done();
         });
     });
@@ -1303,6 +1582,7 @@ describe("heart-sms-backend unit test", function () {
         .expect(200)
         .end(function (err,res) {
             res.status.should.equal(200);
+            assert.deepStrictEqual(res.body, {});
             done();
         });
     });
@@ -1317,6 +1597,7 @@ describe("heart-sms-backend unit test", function () {
         .expect(200)
         .end(function (err,res) {
             res.status.should.equal(200);
+            assert.deepStrictEqual(res.body, {});
             done();
         });
     });
@@ -1331,6 +1612,7 @@ describe("heart-sms-backend unit test", function () {
         .expect(200)
         .end(function (err,res) {
             res.status.should.equal(200);
+            assert.deepStrictEqual(res.body, {});
             done();
         });
     });
@@ -1345,15 +1627,56 @@ describe("heart-sms-backend unit test", function () {
         .expect(200)
         .end(function (err,res) {
             res.status.should.equal(200);
-            res.body.should.have.lengthOf(3);
-            res.body[0].seen.should.equal(true);
-            res.body[1].read.should.equal(false);
-            res.body[1].seen.should.equal(true);
-            res.body[1].message_type.should.equal(7);
-            res.body[2].timestamp.should.equal(500);
-            res.body[2].read.should.equal(true);
-            res.body[2].seen.should.equal(true);
-            res.body[2].message_type.should.equal(4);
+            assert.deepStrictEqual(res.body, [
+                {
+                    "id": res.body[0].id,
+                    "account_id": accountId,
+                    "device_id": 3,
+                    "device_conversation_id": 30,
+                    "message_type": 2,
+                    "data": "testdata3",
+                    "timestamp": 3000,
+                    "mime_type": "testmime3",
+                    "read": false,
+                    "seen": true,
+                    "message_from": "testfrom3",
+                    "color": 6,
+                    "sent_device": 15,
+                    "sim_stamp": "teststamp3"
+                },
+                {
+                    "id": res.body[1].id,
+                    "account_id": accountId,
+                    "device_id": 2,
+                    "device_conversation_id": 20,
+                    "message_type": 7,
+                    "data": "testdata2",
+                    "timestamp": 2000,
+                    "mime_type": "testmime2",
+                    "read": false,
+                    "seen": true,
+                    "message_from": "testfrom2",
+                    "color": 6,
+                    "sent_device": 14,
+                    "sim_stamp": "teststamp2"
+                },
+                {
+                    "id": res.body[2].id,
+                    "account_id": accountId,
+                    "device_id": 1,
+                    "device_conversation_id": 10,
+                    "message_type": 4,
+                    "data": "testdata",
+                    "timestamp": 500,
+                    "mime_type": "testmime",
+                    "read": true,
+                    "seen": true,
+                    "message_from": "testfrom",
+                    "color": 6,
+                    "sent_device": 13,
+                    "sim_stamp": "teststamp"
+                },
+            ]);
             done();
         });
     });
@@ -1368,6 +1691,7 @@ describe("heart-sms-backend unit test", function () {
         .expect(200)
         .end(function (err,res) {
             res.status.should.equal(200);
+            assert.deepStrictEqual(res.body, {});
             done();
         });
     });
@@ -1402,6 +1726,7 @@ describe("heart-sms-backend unit test", function () {
         .expect(200)
         .end(function (err,res) {
             res.status.should.equal(200);
+            assert.deepStrictEqual(res.body, {});
             done();
         });
     });
@@ -1419,11 +1744,17 @@ describe("heart-sms-backend unit test", function () {
         .expect(200)
         .end(function (err,res) {
             res.status.should.equal(200);
+            assert.deepStrictEqual(res.body, {});
             done();
         });
     });
     
     it("Replace draft", function (done) {
+        /**
+         * Note the mismatch of 20 in the url param and 30 in the body.
+         * Only the value from the body is used! 20 will be unaffected.
+         * By all accounts, they should match anyway... but it's a good test.
+         */
         api
         .post('/drafts/replace/20')
         .query({
@@ -1434,7 +1765,7 @@ describe("heart-sms-backend unit test", function () {
                 {
                     "device_id": 5,
                     "device_conversation_id": 30,
-                    "data": "newtest2",
+                    "data": "newtest3",
                     "mime_type": "newmime"
                 }
             ]
@@ -1443,6 +1774,7 @@ describe("heart-sms-backend unit test", function () {
         .expect(200)
         .end(function (err,res) {
             res.status.should.equal(200);
+            assert.deepStrictEqual(res.body, {});
             done();
         });
     });
@@ -1457,13 +1789,32 @@ describe("heart-sms-backend unit test", function () {
         .expect(200)
         .end(function (err,res) {
             res.status.should.equal(200);
-            res.body.should.have.lengthOf(3);
-            res.body[0].data.should.equal('newtest');
-            res.body[1].device_id.should.equal(5);
-            res.body[1].device_conversation_id.should.equal(30);
-            res.body[1].data.should.equal("newtest2");
-            res.body[1].mime_type.should.equal("newmime");
-            res.body[2].data.should.equal("test3");
+            assert.deepStrictEqual(res.body, [
+                {
+                    "id": res.body[0].id,
+                    "account_id": accountId,
+                    "device_id": 1,
+                    "device_conversation_id": 10,
+                    "mime_type": "testmime",
+                    "data": "newtest"
+                },
+                {
+                    "id": res.body[1].id,
+                    "account_id": accountId,
+                    "device_id": 2,
+                    "device_conversation_id": 20,
+                    "mime_type": "testmime2",
+                    "data": "test2"
+                },
+                {
+                    "id": res.body[2].id,
+                    "account_id": accountId,
+                    "device_id": 5,
+                    "device_conversation_id": 30,
+                    "mime_type": "newmime",
+                    "data": "newtest3"
+                }
+            ]);
             done();
         });
     });
@@ -1478,9 +1829,16 @@ describe("heart-sms-backend unit test", function () {
         .expect(200)
         .end(function (err,res) {
             res.status.should.equal(200);
-            res.body.should.have.lengthOf(1);
-            res.body[0].data.should.equal('newtest');
-            res.body[0].device_conversation_id.should.equal(10);
+            assert.deepStrictEqual(res.body, [
+                {
+                    "id": res.body[0].id,
+                    "account_id": accountId,
+                    "device_id": 1,
+                    "device_conversation_id": 10,
+                    "mime_type": "testmime",
+                    "data": "newtest"
+                }
+            ]);
             done();
         });
     });
@@ -1496,6 +1854,7 @@ describe("heart-sms-backend unit test", function () {
         .expect(200)
         .end(function (err,res) {
             res.status.should.equal(200);
+            assert.deepStrictEqual(res.body, {});
             done();
         });
     });
@@ -1726,6 +2085,7 @@ describe("heart-sms-backend unit test", function () {
         });
     });
     
+    // This removes the draft as well!
     it("Remove conversation", function (done) {
         api
         .post('/conversations/remove/10')
@@ -1769,7 +2129,8 @@ describe("heart-sms-backend unit test", function () {
             res.body.device_count.should.equal(1);
             res.body.message_count.should.equal(0);
             res.body.conversation_count.should.equal(2);
-            res.body.draft_count.should.equal(0);
+            // Draft 20 remains due to how url params are ignored in drafts/replace
+            res.body.draft_count.should.equal(1);
             res.body.scheduled_count.should.equal(1);
             res.body.blacklist_count.should.equal(1);
             res.body.contact_count.should.equal(0);

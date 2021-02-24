@@ -10,6 +10,11 @@ const router = express.Router();
 
 const table = 'Conversations'
 
+let fields = ['session_id AS account_id', 'id', 'device_id', 'folder_id', 
+            'color', 'color_dark', 'color_light', 'color_accent', 'led_color', 
+            'pinned', 'read', 'timestamp', 'title', 'phone_numbers', 'snippet', 
+            'ringtone', 'image_uri', 'id_matcher', 'mute', 'archive', 'private_notifications'];
+
 const notInFolder = " (folder_id IS NULL OR folder_id < 0) ";
 
 router.route('/').get(
@@ -17,7 +22,7 @@ router.route('/').get(
     function (req, res, next) {
         let r: LimitOffsetRequest = res.locals.request;
         
-        let sql = `SELECT * FROM ${table} WHERE ${r.whereAccount()} ORDER BY timestamp DESC ${r.limitStr()}`;
+        let sql = `SELECT ${db.selectFields(fields)} FROM ${table} INNER JOIN SessionMap USING (account_id) WHERE ${r.whereAccount()} ORDER BY timestamp DESC ${r.limitStr()}`;
 
         db.query(sql, res, function (result) {
             res.json(ConversationsListResponse.getList(result));
@@ -30,7 +35,7 @@ router.route('/index_archived').get(
     function (req, res, next) {
         let r: AccountIdRequest = res.locals.request;
         
-        let sql = `SELECT * FROM ${table} WHERE archive = true AND ${notInFolder} AND ${r.whereAccount()} ORDER BY timestamp DESC`;
+        let sql = `SELECT ${db.selectFields(fields)} FROM ${table} INNER JOIN SessionMap USING (account_id) WHERE archive = true AND ${notInFolder} AND ${r.whereAccount()} ORDER BY timestamp DESC`;
 
         db.query(sql, res, function (result) {
             res.json(ConversationsListResponse.getList(result));
@@ -43,7 +48,7 @@ router.route('/index_private').get(
     function (req, res, next) {
         let r: AccountIdRequest = res.locals.request;
         
-        let sql = `SELECT * FROM ${table} WHERE private_notifications = true AND ${notInFolder} AND ${r.whereAccount()} ORDER BY timestamp DESC`;
+        let sql = `SELECT ${db.selectFields(fields)} FROM ${table} INNER JOIN SessionMap USING (account_id) WHERE private_notifications = true AND ${notInFolder} AND ${r.whereAccount()} ORDER BY timestamp DESC`;
 
         db.query(sql, res, function (result) {
             res.json(ConversationsListResponse.getList(result));
@@ -56,7 +61,7 @@ router.route('/index_public_unarchived').get(
     function (req, res, next) {
         let r: LimitOffsetRequest = res.locals.request;
         
-        let sql = `SELECT * FROM ${table} WHERE archive = false AND private_notifications = false AND ${r.whereAccount()} ORDER BY timestamp DESC ${r.limitStr()}`;
+        let sql = `SELECT ${db.selectFields(fields)} FROM ${table} INNER JOIN SessionMap USING (account_id) WHERE archive = false AND private_notifications = false AND ${r.whereAccount()} ORDER BY timestamp DESC ${r.limitStr()}`;
 
         db.query(sql, res, function (result) {
             res.json(ConversationsListResponse.getList(result));
@@ -69,7 +74,7 @@ router.route('/index_public_unread').get(
     function (req, res, next) {
         let r: LimitOffsetRequest = res.locals.request;
         
-        let sql = `SELECT * FROM ${table} WHERE ${db.escapeId("read")} = false AND private_notifications = false AND ${r.whereAccount()} ORDER BY timestamp DESC ${r.limitStr()}`;
+        let sql = `SELECT ${db.selectFields(fields)} FROM ${table} INNER JOIN SessionMap USING (account_id) WHERE ${db.escapeId("read")} = false AND private_notifications = false AND ${r.whereAccount()} ORDER BY timestamp DESC ${r.limitStr()}`;
 
         db.query(sql, res, function (result) {
             res.json(ConversationsListResponse.getList(result));
@@ -82,7 +87,7 @@ router.route('/:device_id').get(
     function (req, res, next) {
         let r: DeviceIdRequest = res.locals.request;
         
-        let sql = `SELECT * FROM ${table} WHERE device_id = ${db.escape(Number(r.device_id))} AND ${r.whereAccount()} LIMIT 1`;
+        let sql = `SELECT ${db.selectFields(fields)} FROM ${table} INNER JOIN SessionMap USING (account_id) WHERE device_id = ${db.escape(Number(r.device_id))} AND ${r.whereAccount()} LIMIT 1`;
 
         db.query(sql, res, function (result) {
             res.json(ConversationsListResponse.fromResult(result));
@@ -95,7 +100,7 @@ router.route('/folder/:folder_id').get(
     function (req, res, next) {
         let r: ConversationsFolderRequest = res.locals.request;
         
-        let sql = `SELECT * FROM ${table} WHERE folder_id = ${db.escape(Number(r.folder_id))} AND ${r.whereAccount()}`;
+        let sql = `SELECT ${db.selectFields(fields)} FROM ${table} INNER JOIN SessionMap USING (account_id) WHERE folder_id = ${db.escape(Number(r.folder_id))} AND ${r.whereAccount()}`;
 
         db.query(sql, res, function (result) {
             res.json(ConversationsListResponse.getList(result));

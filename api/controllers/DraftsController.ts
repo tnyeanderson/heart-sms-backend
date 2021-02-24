@@ -15,7 +15,9 @@ router.route('/').get(
     function (req, res, next) {
         let r: AccountIdRequest = res.locals.request;
         
-        let sql = `SELECT * FROM ${table} WHERE ${r.whereAccount()}`;
+        let fields = ['session_id AS account_id', 'id', 'device_id', 'device_conversation_id', 'mime_type', 'data'];
+
+        let sql = `SELECT ${db.selectFields(fields)} FROM ${table} INNER JOIN SessionMap USING (account_id) WHERE ${r.whereAccount()}`;
         
 
         db.query(sql, res, function (result) {
@@ -29,7 +31,9 @@ router.route('/:device_conversation_id').get(
     function (req, res, next) {
         let r: DraftsGetDraftRequest = res.locals.request;
         
-        let sql = `SELECT * FROM ${table} WHERE device_conversation_id = ${db.escape(Number(r.device_conversation_id))} AND ${r.whereAccount()}`;
+        let fields = ['session_id AS account_id', 'id', 'device_id', 'device_conversation_id', 'mime_type', 'data'];
+
+        let sql = `SELECT ${db.selectFields(fields)} FROM ${table} INNER JOIN SessionMap USING (account_id) WHERE device_conversation_id = ${db.escape(Number(r.device_conversation_id))} AND ${r.whereAccount()}`;
         
 
         db.query(sql, res, function (result) {
@@ -123,7 +127,8 @@ router.route('/replace/:device_conversation_id').post(
         let r: DraftsReplaceRequest = res.locals.request;
         
         // Only the first item is ever processed
-        let sql = `UPDATE ${table} SET ${db.updateStr(r.drafts[0])} WHERE device_conversation_id = ${db.escape(Number(r.device_conversation_id))} AND ${r.whereAccount()}`;
+        // URL param is ignored, device_conversation_id in the items aray in the body is used
+        let sql = `UPDATE ${table} SET ${db.updateStr(r.drafts[0])} WHERE device_conversation_id = ${db.escape(Number(r.drafts[0].device_conversation_id))} AND ${r.whereAccount()}`;
         db.query(sql, res, function (result) {
             res.json(new BaseResponse);
 

@@ -15,13 +15,18 @@ router.route('/').get(
     function (req, res, next) {
         let r: MessagesGetRequest = res.locals.request;
 
+        let fields = ['session_id AS account_id', 'id', 'device_id', 
+                    'device_conversation_id', 'message_type', 'data', 
+                    'timestamp', 'mime_type', 'read', 'seen', 'message_from', 
+                    'color', 'sent_device', 'sim_stamp'];
+
         let whereConversationStr = '';
         
         if (r.conversation_id) {
             whereConversationStr = ` AND device_conversation_id =  ${db.escape(Number(r.conversation_id))} `;
         }
 
-        let sql = `SELECT * FROM ${table} WHERE ${r.whereAccount()} ${whereConversationStr} ORDER BY timestamp DESC ${r.limitStr()}`;
+        let sql = `SELECT ${db.selectFields(fields)} FROM ${table} INNER JOIN SessionMap USING (account_id) WHERE ${r.whereAccount()} ${whereConversationStr} ORDER BY timestamp DESC ${r.limitStr()}`;
 
         db.query(sql, res, function (result) {
             res.json(MessagesListResponse.getList(result));

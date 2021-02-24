@@ -15,8 +15,10 @@ router.route('/').get(
     (req, res, next) => AccountIdRequest.handler(req, res, next), 
     function (req, res, next) {
         let r: AccountIdRequest = res.locals.request;
+
+        let fields = ['session_id AS account_id', 'id', 'device_id', 'phone_number', 'phrase'];
         
-        let sql = `SELECT * FROM ${table} WHERE ${r.whereAccount()}`;
+        let sql = `SELECT ${db.selectFields(fields)} FROM ${table} INNER JOIN SessionMap USING (account_id) WHERE ${r.whereAccount()}`;
         
 
         db.query(sql, res, function (result) {

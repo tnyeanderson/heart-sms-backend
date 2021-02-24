@@ -991,29 +991,32 @@ Request body: None
 
 Response:
 ```
-{
-    "id": INT,
-    "account_id": STRING,
-    "device_id": INT,
-    "folder_id": INT,
-    "color": INT,
-    "color_dark": INT,
-    "color_light": INT,
-    "color_accent": INT,
-    "led_color": INT,
-    "pinned": BOOL,
-    "read": BOOL,
-    "timestamp": TIMESTAMP,
-    "title": STRING,
-    "phone_numbers": STRING,
-    "snippet": STRING,
-    "ringtone": STRING,
-    "image_uri": STRING,
-    "id_matcher": STRING,
-    "mute": BOOL,
-    "archive": BOOL,
-    "private_notifications": BOOL
-}
+[
+    {
+        "id": INT,
+        "account_id": STRING,
+        "device_id": INT,
+        "folder_id": INT,
+        "color": INT,
+        "color_dark": INT,
+        "color_light": INT,
+        "color_accent": INT,
+        "led_color": INT,
+        "pinned": BOOL,
+        "read": BOOL,
+        "timestamp": TIMESTAMP,
+        "title": STRING,
+        "phone_numbers": STRING,
+        "snippet": STRING,
+        "ringtone": STRING,
+        "image_uri": STRING,
+        "id_matcher": STRING,
+        "mute": BOOL,
+        "archive": BOOL,
+        "private_notifications": BOOL
+    }
+    ...
+]
 ```
 
 Error:
@@ -1035,29 +1038,32 @@ Request body: None
 
 Response:
 ```
-{
-    "id": INT,
-    "account_id": STRING,
-    "device_id": INT,
-    "folder_id": INT,
-    "color": INT,
-    "color_dark": INT,
-    "color_light": INT,
-    "color_accent": INT,
-    "led_color": INT,
-    "pinned": BOOL,
-    "read": BOOL,
-    "timestamp": TIMESTAMP,
-    "title": STRING,
-    "phone_numbers": STRING,
-    "snippet": STRING,
-    "ringtone": STRING,
-    "image_uri": STRING,
-    "id_matcher": STRING,
-    "mute": BOOL,
-    "archive": BOOL,
-    "private_notifications": BOOL
-}
+[
+    {
+        "id": INT,
+        "account_id": STRING,
+        "device_id": INT,
+        "folder_id": INT,
+        "color": INT,
+        "color_dark": INT,
+        "color_light": INT,
+        "color_accent": INT,
+        "led_color": INT,
+        "pinned": BOOL,
+        "read": BOOL,
+        "timestamp": TIMESTAMP,
+        "title": STRING,
+        "phone_numbers": STRING,
+        "snippet": STRING,
+        "ringtone": STRING,
+        "image_uri": STRING,
+        "id_matcher": STRING,
+        "mute": BOOL,
+        "archive": BOOL,
+        "private_notifications": BOOL
+    }
+    ...
+]
 ```
 
 Error:
@@ -1081,29 +1087,32 @@ Request body: None
 
 Response:
 ```
-{
-    "id": INT,
-    "account_id": STRING,
-    "device_id": INT,
-    "folder_id": INT,
-    "color": INT,
-    "color_dark": INT,
-    "color_light": INT,
-    "color_accent": INT,
-    "led_color": INT,
-    "pinned": BOOL,
-    "read": BOOL,
-    "timestamp": TIMESTAMP,
-    "title": STRING,
-    "phone_numbers": STRING,
-    "snippet": STRING,
-    "ringtone": STRING,
-    "image_uri": STRING,
-    "id_matcher": STRING,
-    "mute": BOOL,
-    "archive": BOOL,
-    "private_notifications": BOOL
-}
+[
+    {
+        "id": INT,
+        "account_id": STRING,
+        "device_id": INT,
+        "folder_id": INT,
+        "color": INT,
+        "color_dark": INT,
+        "color_light": INT,
+        "color_accent": INT,
+        "led_color": INT,
+        "pinned": BOOL,
+        "read": BOOL,
+        "timestamp": TIMESTAMP,
+        "title": STRING,
+        "phone_numbers": STRING,
+        "snippet": STRING,
+        "ringtone": STRING,
+        "image_uri": STRING,
+        "id_matcher": STRING,
+        "mute": BOOL,
+        "archive": BOOL,
+        "private_notifications": BOOL
+    }
+    ...
+]
 ```
 
 Error:
@@ -1763,6 +1772,8 @@ Error:
 *Use this instead of /drafts/update*
 
 *NOTE: Though the drafts are in an array, only the first item in the array will be processed. This comes from the webapp where only one item is ever included*
+
+*NOTE 2: Though device_conversation_id is in both the url params and the item body, ONLY the one in the item body is used to identify the row to update*
 
 Method: POST
 

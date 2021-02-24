@@ -15,9 +15,9 @@ router.route('/').get(
     function (req, res, next) {
         let r: LimitOffsetRequest = res.locals.request;
         
-        let cols = ['id', 'account_id', 'device_id', 'phone_number', 'name', 'color', 'color_dark', 'color_light', 'color_accent', 'contact_type'];
+        let cols = ['session_id AS account_id', 'id', 'device_id', 'phone_number', 'name', 'color', 'color_dark', 'color_light', 'color_accent', 'contact_type'];
         
-        let sql = `SELECT ${db.selectFields(cols)} FROM ${table} WHERE ${r.whereAccount()} ${r.limitStr()}`;
+        let sql = `SELECT ${db.selectFields(cols)} FROM ${table} INNER JOIN SessionMap USING (account_id) WHERE ${r.whereAccount()} ${r.limitStr()}`;
 
         db.query(sql, res, function (result) {
             res.json(ContactsListResponse.getList(result));
