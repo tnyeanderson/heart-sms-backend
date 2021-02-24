@@ -13,6 +13,7 @@
 
 ### Efficiency
 - [x] Authentication cache for MQTT
+- [ ] More efficient .whereAccount for joined tables
 
 ### Security
 

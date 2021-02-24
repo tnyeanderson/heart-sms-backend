@@ -6,10 +6,7 @@ import util from './utils/util.js';
 // Get port (5000 default, 5001 if testing)
 const port = (util.env.test()) ? 5001 : (process.env.port || 5000);
 
-const urls = {
-    api: "localhost:" + port
-}
-
+// Create server
 const server = app.listen(port, function () {
     console.log("Server running on port " + port);
 
@@ -17,4 +14,4 @@ const server = app.listen(port, function () {
     stream.init();
 });
 
-export default { server, urls };
+export default { server };

@@ -27,13 +27,13 @@ import { ErrorResponse, UnhandledPathError } from './models/responses/ErrorRespo
 const app = express();
 const router = Router();
 
+/**
+ * Used when defining routes to add the base path to the path
+ * @param path top-level api url path (e.g. '/accounts')
+ */
 function getUrl (path: string) {
     return '/api/v1' + path;
 }
-
-
-// Import Controllers
-//const controllers = requireall({ dirname: path.resolve() + '/controllers' });
 
 // Allow cross-site requests
 app.use(cors());
@@ -68,12 +68,20 @@ app.use((req: Request, res: Response, next) => {
 
 // Error handling
 app.use((err: ErrorResponse, req: Request, res: Response, next: NextFunction) => {
+    // If err.msg is set, use that. Otherwise generate a generic error
     let message: BaseError = err.msg || new BaseError('unexpected error');
+    
+    // Log the error
     console.log(`\n ${JSON.stringify(message)} \n`);
+
+    // Avoid bugs when sending error after res.send() is called
     if (res.headersSent) {
         return next(err)
     }
+
+    // Set status. Default: 500 Internal Server Error
     res.status(err.status || 500);
+    // Send error
     res.json(message);
     next(); // Passing the request to the next handler in the stack.
 });
