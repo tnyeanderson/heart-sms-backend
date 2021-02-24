@@ -339,9 +339,21 @@ describe("heart-sms-backend unit test", function () {
         .expect(200)
         .end(function (err,res) {
             res.status.should.equal(200);
-            res.body.base_theme.should.equal('dark');
-            res.body.apply_primary_color_to_toolbar.should.equal(false);
-            res.body.color.should.equal(123456);
+            assert.deepStrictEqual(res.body, {
+                "subscription_type": 3,
+                "base_theme": "light",
+                "rounder_bubbles": false,
+                "global_color_theme": "default",
+                "color": 123456,
+                "color_dark": -4311478,
+                "color_light": -1,
+                "color_accent": -10011977,
+                "use_global_theme": false,
+                "apply_primary_color_to_toolbar": false,
+                "passcode": null,
+                "message_timestamp": false,
+                "conversation_categories": true
+            });
             done();
         });
     });
