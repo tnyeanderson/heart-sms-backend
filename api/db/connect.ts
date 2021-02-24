@@ -4,6 +4,7 @@ import util from '../utils/util.js';
 
 const dbDefaultPass: string = 'TESTPASSWORD2';
 
+// Get values based on environment, environment variables, or default values
 const dbHost: string = (util.env.test()) ? 'localhost' : (process.env.DB_HOST || 'localhost');
 const dbName: string = (util.env.devOrTest()) ? 'heartsms-dev' : (process.env.MYSQL_DATABASE || 'heartsms');
 const dbPort: number = Number(process.env.MYSQL_PORT) || 3306;
@@ -36,6 +37,7 @@ const baseSettings: ConnectionConfig = {
 }
 
 const connection = function (extraSettings?: ConnectionConfig) {
+    // Return the base config with any extraSettings applied
     return Object.assign({}, baseSettings, extraSettings);
 }
 

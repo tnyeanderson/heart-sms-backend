@@ -3,7 +3,7 @@
 
 - [ ] Fix database error response delay
 - [ ] Clean up payloads (stop using constructors?)
-- [ ] Add method docs
+- [x] Add method docs
 - [ ] Better test coverage
   - [x] Request validation
   - [x] Full response valdation
@@ -13,7 +13,7 @@
 
 ### Efficiency
 - [x] Authentication cache for MQTT
-- [ ] More efficient .whereAccount for joined tables
+- [ ] More efficient .whereAccount for joined tables?
 
 ### Security
 

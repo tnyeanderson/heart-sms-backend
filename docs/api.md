@@ -17,7 +17,7 @@ These are noted at the relevant endpoints, but Including:
 * `/auto_replies/update/:device_id`: `reply_type` was originally sent as `type` 
 
 
-
+>NOTE: The account_id that the user sends with their request is stored in the SessionMap table as a session_id. account_id in the database refers to the auto-incrementing primary key of the Accounts table (used as a foreign key in linked tables). The mysql function TRANSLATE_SESSION_ID() is used to translate the user-provided "account_id" (which is actually a session_id) to an account_id to use in WHERE clauses, insert statements, etc
 
 
 ## Endpoints
