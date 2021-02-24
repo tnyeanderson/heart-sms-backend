@@ -1889,6 +1889,7 @@ describe("heart-sms-backend unit test", function () {
         .expect(200)
         .end(function (err,res) {
             res.status.should.equal(200);
+            assert.deepStrictEqual(res.body, {});
             done();
         });
     });
@@ -1907,6 +1908,7 @@ describe("heart-sms-backend unit test", function () {
         .expect(200)
         .end(function (err,res) {
             res.status.should.equal(200);
+            assert.deepStrictEqual(res.body, {});
             done();
         });
     });
@@ -1921,12 +1923,30 @@ describe("heart-sms-backend unit test", function () {
         .expect(200)
         .end(function (err,res) {
             res.status.should.equal(200);
-            res.body.should.have.lengthOf(2);
-            res.body[0].to.should.equal("888");
-            res.body[0].data.should.equal("newdata");
-            res.body[0].mime_type.should.equal("testmime");
-            res.body[1].to.should.equal("777,333");
-            res.body[1].timestamp.should.equal(123456);
+            assert.deepStrictEqual(res.body, [
+                {
+                    "id": res.body[0].id,
+                    "account_id": accountId,
+                    "device_id": 1,
+                    "to": "888",
+                    "data": "newdata",
+                    "mime_type": "testmime",
+                    "timestamp": 12345,
+                    "title": "title",
+                    "repeat": 1
+                },
+                {
+                    "id": res.body[1].id,
+                    "account_id": accountId,
+                    "device_id": 2,
+                    "to": "777,333",
+                    "data": "testdata2",
+                    "mime_type": "testmime2",
+                    "timestamp": 123456,
+                    "title": "title2",
+                    "repeat": 2
+                }
+            ]);
             done();
         });
     });
@@ -1941,6 +1961,7 @@ describe("heart-sms-backend unit test", function () {
         .expect(200)
         .end(function (err,res) {
             res.status.should.equal(200);
+            assert.deepStrictEqual(res.body, {});
             done();
         });
     });
@@ -1965,6 +1986,7 @@ describe("heart-sms-backend unit test", function () {
         .expect(200)
         .end(function (err,res) {
             res.status.should.equal(200);
+            assert.deepStrictEqual(res.body, {});
             done();
         });
     });
@@ -1982,10 +2004,13 @@ describe("heart-sms-backend unit test", function () {
         .expect(200)
         .end(function (err,res) {
             res.status.should.equal(200);
+            assert.deepStrictEqual(res.body, {});
             done();
         });
     });
     
+
+    // TODO: Start here for full response validation
     it("Get templates", function (done) {
         api
         .get('/templates')
@@ -2015,6 +2040,7 @@ describe("heart-sms-backend unit test", function () {
         .expect(200)
         .end(function (err,res) {
             res.status.should.equal(200);
+            assert.deepStrictEqual(res.body, {});
             done();
         });
     });
