@@ -1,5 +1,5 @@
 import { Expose } from 'class-transformer';
-import { BaseResponse, SuccessResponse } from './BaseResponse.js';
+import { BaseResponse } from './BaseResponse.js';
 
 export class SignupResponse extends BaseResponse {
     constructor(
@@ -7,16 +7,6 @@ export class SignupResponse extends BaseResponse {
         public salt1: string,
         public salt2: string
     ) { super() }
-}
-
-
-export class RemoveAccountResponse extends SuccessResponse {
-    constructor() { super('account deleted') }
-}
-
-
-export class CleanAccountResponse extends SuccessResponse {
-    constructor() { super('account cleaned') }
 }
 
 

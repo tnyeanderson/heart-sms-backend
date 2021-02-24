@@ -2450,7 +2450,13 @@ Request body: UNKNOWN
 
 Response:
 ```
-<UNKNOWN>
+[
+    {
+        "device_id": INT,
+        "text": STRING
+    }
+    ...
+]
 ```
 
 Error:

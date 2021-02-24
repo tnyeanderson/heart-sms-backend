@@ -1,9 +1,6 @@
 import { agent } from 'supertest';
 import * as assert from 'assert'
 
-// This starts the server and gets the urls object
-//const { urls, server } = require("../server");
-
 // This agent refers to PORT where program is runninng.
 const api = agent("http://localhost:5000/api/v1");
 
@@ -103,9 +100,6 @@ describe("heart-sms-backend unit test", function () {
         .expect(200)
         .end(function (err,res) {
             res.status.should.equal(200);
-            res.body.should.have.property('account_id');
-            res.body.should.have.property('salt1');
-            res.body.should.have.property('salt2');
             res.body.should.have.property('subscription_expiration');
             res.body.account_id.length.should.equal(64);
             res.body.salt1.length.should.equal(128);
@@ -2021,11 +2015,16 @@ describe("heart-sms-backend unit test", function () {
         .expect(200)
         .end(function (err,res) {
             res.status.should.equal(200);
-            res.body.should.have.lengthOf(2);
-            res.body[0].device_id.should.equal(1);
-            res.body[0].text.should.equal("newtext");
-            res.body[1].device_id.should.equal(2);
-            res.body[1].text.should.equal("testtext2");
+            assert.deepStrictEqual(res.body, [
+                {
+                    "device_id": 1,
+                    "text": "newtext"
+                },
+                {
+                    "device_id": 2,
+                    "text": "testtext2"
+                }
+            ]);
             done();
         });
     });
@@ -2059,6 +2058,7 @@ describe("heart-sms-backend unit test", function () {
         .expect(200)
         .end(function (err,res) {
             res.status.should.equal(200);
+            assert.deepStrictEqual(res.body, {});
             done();
         });
     });
@@ -2073,7 +2073,9 @@ describe("heart-sms-backend unit test", function () {
         .expect(200)
         .end(function (err,res) {
             res.status.should.equal(200);
-            res.body.data.should.equal("MYFILE");
+            assert.deepStrictEqual(res.body, {
+                "data": "MYFILE"
+            });
             done();
         });
     });
@@ -2091,6 +2093,7 @@ describe("heart-sms-backend unit test", function () {
         .expect(200)
         .end(function (err,res) {
             res.status.should.equal(200);
+            assert.deepStrictEqual(res.body, {});
             done();
         });
     });
@@ -2107,6 +2110,7 @@ describe("heart-sms-backend unit test", function () {
         .expect(200)
         .end(function (err,res) {
             res.status.should.equal(200);
+            assert.deepStrictEqual(res.body, {});
             done();
         });
     });
@@ -2122,6 +2126,7 @@ describe("heart-sms-backend unit test", function () {
         .expect(200)
         .end(function (err,res) {
             res.status.should.equal(200);
+            assert.deepStrictEqual(res.body, {});
             done();
         });
     });
@@ -2137,7 +2142,7 @@ describe("heart-sms-backend unit test", function () {
         .expect(200)
         .end(function (err,res) {
             res.status.should.equal(200);
-            Object.keys(res.body).length.should.equal(0);
+            assert.deepStrictEqual(res.body, {});
             done();
         });
     });
@@ -2152,17 +2157,18 @@ describe("heart-sms-backend unit test", function () {
         .expect(200)
         .end(function (err,res) {
             res.status.should.equal(200);
-            res.body.device_count.should.equal(1);
-            res.body.message_count.should.equal(0);
-            res.body.conversation_count.should.equal(2);
-            // Draft 20 remains due to how url params are ignored in drafts/replace
-            res.body.draft_count.should.equal(1);
-            res.body.scheduled_count.should.equal(1);
-            res.body.blacklist_count.should.equal(1);
-            res.body.contact_count.should.equal(0);
-            res.body.template_count.should.equal(1);
-            res.body.folder_count.should.equal(1);
-            res.body.auto_reply_count.should.equal(1);
+            assert.deepStrictEqual(res.body, {
+                device_count: 1,
+                message_count: 0,
+                conversation_count: 2,
+                draft_count: 1, // Draft 20 remains due to how url params are ignored in drafts/replace
+                scheduled_count: 1,
+                blacklist_count: 1,
+                contact_count: 0,
+                template_count: 1,
+                folder_count: 1,
+                auto_reply_count: 1
+            });
             done();
         });
     });
@@ -2177,6 +2183,7 @@ describe("heart-sms-backend unit test", function () {
         .expect(200)
         .end(function (err,res) {
             res.status.should.equal(200);
+            assert.deepStrictEqual(res.body, {});
             done();
         });
     });
@@ -2191,16 +2198,18 @@ describe("heart-sms-backend unit test", function () {
         .expect(200)
         .end(function (err,res) {
             res.status.should.equal(200);
-            res.body.device_count.should.equal(1);
-            res.body.message_count.should.equal(0);
-            res.body.conversation_count.should.equal(0);
-            res.body.draft_count.should.equal(0);
-            res.body.scheduled_count.should.equal(0);
-            res.body.blacklist_count.should.equal(0);
-            res.body.contact_count.should.equal(0);
-            res.body.template_count.should.equal(0);
-            res.body.folder_count.should.equal(0);
-            res.body.auto_reply_count.should.equal(0);
+            assert.deepStrictEqual(res.body, {
+                device_count: 1,
+                message_count: 0,
+                conversation_count: 0,
+                draft_count: 0,
+                scheduled_count: 0,
+                blacklist_count: 0,
+                contact_count: 0,
+                template_count: 0,
+                folder_count: 0,
+                auto_reply_count: 0
+            });
             done();
         });
     });
@@ -2215,7 +2224,7 @@ describe("heart-sms-backend unit test", function () {
         .expect(200)
         .end(function (err,res) {
             res.status.should.equal(200);
-            res.body.should.have.property('success');
+            assert.deepStrictEqual(res.body, {});
             done();
         });
     });

@@ -15,7 +15,9 @@ router.route('/').get(
     function (req, res, next) {
         let r: AccountIdRequest = res.locals.request;
         
-        let sql = `SELECT * FROM ${table} WHERE ${r.whereAccount()}`;
+        let fields = ['device_id', 'text'];
+
+        let sql = `SELECT ${db.selectFields(fields)} FROM ${table} WHERE ${r.whereAccount()}`;
         
 
         db.query(sql, res, function (result) {

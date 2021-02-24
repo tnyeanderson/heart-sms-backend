@@ -6,7 +6,7 @@
 - [ ] Add method docs
 - [ ] Better test coverage
   - [x] Request validation
-  - [ ] Full response valdation
+  - [x] Full response valdation
   - [ ] All permutations of optional parameters
 - [x] Less console logs of text, switch to Errors
 

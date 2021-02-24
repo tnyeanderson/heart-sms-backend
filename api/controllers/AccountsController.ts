@@ -95,14 +95,14 @@ router.route('/remove_account').post(
         let sql = `DELETE FROM Accounts WHERE ${r.whereAccount()} LIMIT 1`;
         
         db.query(sql, res, function (result) {
-            res.json(new AccountsResponses.RemoveAccountResponse());
-
             let payload = new AccountsPayloads.removed_account(
                 r.account_id
             );
             
             // Send websocket message
             payload.send(r.account_id);
+
+            res.json(new BaseResponse);
         });
     });
 
@@ -138,14 +138,14 @@ router.route('/clean_account').post(
         let sql = `CALL CleanAccount( ${db.escape(r.account_id)} )`;
         
         db.query(sql, res, function (result) {
-            res.json(new AccountsResponses.CleanAccountResponse());
-
             let payload = new AccountsPayloads.cleaned_account(
                 r.account_id
             );
             
             // Send websocket message
             payload.send(r.account_id);
+
+            res.json(new BaseResponse);
         });
     });
 

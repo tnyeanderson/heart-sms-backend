@@ -28,10 +28,3 @@ export class BaseResponse {
         return (result as any[]).map((item: any) => this.fromResult([item]))
     }
 }
-
-
-export class SuccessResponse extends BaseResponse {
-    constructor(
-        public success: string
-    ) { super() }
-}
