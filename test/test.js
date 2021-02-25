@@ -1025,6 +1025,140 @@ describe("heart-sms-backend unit test", function () {
             done();
         });
     });
+
+    it("Get simple contacts LIMIT 2", function (done) {
+        api
+        .get('/contacts/simple')
+        .query({
+            "account_id": accountId,
+            "limit": 2
+        })
+        .expect("Content-type",/json/)
+        .expect(200)
+        .end(function (err,res) {
+            res.status.should.equal(200);
+            assert.deepStrictEqual(res.body, [
+                {
+                    "id": res.body[0].id,
+                    "phone_number": "123",
+                    "name": "newname",
+                    "id_matcher": "idmatch1",
+                    "color": 456,
+                    "color_accent": 456,
+                    "contact_type": 3
+                },
+                {
+                    "id": res.body[1].id,
+                    "phone_number": "666",
+                    "id_matcher": "idmatch2",
+                    "name": "name2",
+                    "color": 4,
+                    "color_accent": 4,
+                    "contact_type": 4
+                }
+            ]);
+            done();
+        });
+    });
+
+
+    it("Get simple contacts LIMIT 1 OFFSET 2", function (done) {
+        api
+        .get('/contacts/simple')
+        .query({
+            "account_id": accountId,
+            "limit": 1,
+            "offset": 2
+        })
+        .expect("Content-type",/json/)
+        .expect(200)
+        .end(function (err,res) {
+            res.status.should.equal(200);
+            assert.deepStrictEqual(res.body, [
+                {
+                    "id": res.body[0].id,
+                    "phone_number": "777",
+                    "id_matcher": "idmatch3",
+                    "name": "name3",
+                    "color": 5,
+                    "color_accent": 5,
+                    "contact_type": 5
+                }
+            ]);
+            done();
+        });
+    });
+
+    it("Get contacts LIMIT 2", function (done) {
+        api
+        .get('/contacts')
+        .query({
+            "account_id": accountId,
+            "limit": 2
+        })
+        .expect("Content-type",/json/)
+        .expect(200)
+        .end(function (err,res) {
+            res.status.should.equal(200);
+            assert.deepStrictEqual(res.body, [
+                {
+                    "id": res.body[0].id,
+                    "account_id": accountId,
+                    "device_id": 1,
+                    "phone_number": "123",
+                    "name": "newname",
+                    "color": 456,
+                    "color_dark": 456,
+                    "color_light": 456,
+                    "color_accent": 456,
+                    "contact_type": 3
+                },
+                {
+                    "id": res.body[1].id,
+                    "account_id": accountId,
+                    "device_id": 2,
+                    "phone_number": "666",
+                    "name": "name2",
+                    "color": 4,
+                    "color_dark": 4,
+                    "color_light": 4,
+                    "color_accent": 4,
+                    "contact_type": 4
+                },
+            ]);
+            done();
+        });
+    });
+
+    it("Get contacts LIMIT 1 OFFSET 2", function (done) {
+        api
+        .get('/contacts')
+        .query({
+            "account_id": accountId,
+            "limit": 1,
+            "offset": 2
+        })
+        .expect("Content-type",/json/)
+        .expect(200)
+        .end(function (err,res) {
+            res.status.should.equal(200);
+            assert.deepStrictEqual(res.body, [
+                {
+                    "id": res.body[0].id,
+                    "account_id": accountId,
+                    "device_id": 3,
+                    "phone_number": "777",
+                    "name": "name3",
+                    "color": 5,
+                    "color_dark": 5,
+                    "color_light": 5,
+                    "color_accent": 5,
+                    "contact_type": 5
+                },
+            ]);
+            done();
+        });
+    });
     
     it("Remove multiple contacts by id", function (done) {
         api
@@ -1398,6 +1532,110 @@ describe("heart-sms-backend unit test", function () {
             done();
         });
     });
+
+    it("Get conversations LIMIT 2", function (done) {
+        api
+        .get('/conversations')
+        .query({
+            "account_id": accountId,
+            "limit": 2
+        })
+        .expect("Content-type",/json/)
+        .expect(200)
+        .end(function (err,res) {
+            res.status.should.equal(200);
+            assert.deepStrictEqual(res.body, [
+                {
+                    "id": res.body[0].id,
+                    "account_id": accountId,
+                    "device_id": 20,
+                    "folder_id": -1,
+                    "color": 7,
+                    "color_dark": 7,
+                    "color_light": 7,
+                    "color_accent": 7,
+                    "led_color": 8,
+                    "pinned": true,
+                    "read": true,
+                    "timestamp": 1008,
+                    "title": "updatedtitle",
+                    "phone_numbers": "444,666",
+                    "snippet": "updatedsnippet",
+                    "ringtone": "ringer2",
+                    "id_matcher": "match2",
+                    "image_uri": "image2",
+                    "mute": false,
+                    "archive": false,
+                    "private_notifications": true
+                },
+                {
+                    "id": res.body[1].id,
+                    "account_id": accountId,
+                    "device_id": 30,
+                    "folder_id": -1,
+                    "color": 7,
+                    "color_dark": 7,
+                    "color_light": 7,
+                    "color_accent": 7,
+                    "led_color": 8,
+                    "pinned": false,
+                    "read": true,
+                    "timestamp": 1003,
+                    "title": "testtitle3",
+                    "phone_numbers": "555,333",
+                    "snippet": "testsnippet3",
+                    "id_matcher": "match3",
+                    "ringtone": null,
+                    "image_uri": null,
+                    "mute": false,
+                    "archive": true,
+                    "private_notifications": false
+                }
+            ]);
+            done();
+        });
+    });
+
+    it("Get conversations LIMIT 1 OFFSET 2", function (done) {
+        api
+        .get('/conversations')
+        .query({
+            "account_id": accountId,
+            "limit": 1,
+            "offset": 2
+        })
+        .expect("Content-type",/json/)
+        .expect(200)
+        .end(function (err,res) {
+            res.status.should.equal(200);
+            assert.deepStrictEqual(res.body, [
+                {
+                    "id": res.body[0].id,
+                    "account_id": accountId,
+                    "device_id": 10,
+                    "folder_id": 2,
+                    "color": 7,
+                    "color_dark": 7,
+                    "color_light": 7,
+                    "color_accent": 7,
+                    "led_color": 8,
+                    "pinned": false,
+                    "read": true,
+                    "timestamp": 1000,
+                    "title": "newtitle",
+                    "phone_numbers": "555,666",
+                    "snippet": "newsnippet",
+                    "ringtone": "newringer",
+                    "image_uri": null,
+                    "id_matcher": "match",
+                    "mute": true,
+                    "archive": false,
+                    "private_notifications": false
+                }
+            ]);
+            done();
+        });
+    });
     
     it("Get conversation by id", function (done) {
         api
@@ -1513,6 +1751,24 @@ describe("heart-sms-backend unit test", function () {
             done();
         });
     });
+
+
+    it("Get archived conversations LIMIT 2 OFFSET 2 (will be empty since there is only one archived conversation)", function (done) {
+        api
+        .get('/conversations/index_archived')
+        .query({
+            "account_id": accountId,
+            "limit": 2,
+            "offset": 2
+        })
+        .expect("Content-type",/json/)
+        .expect(200)
+        .end(function (err,res) {
+            res.status.should.equal(200);
+            assert.deepStrictEqual(res.body, []);
+            done();
+        });
+    });
     
     it("Get private conversations", function (done) {
         api
@@ -1552,6 +1808,23 @@ describe("heart-sms-backend unit test", function () {
             done();
         });
     });
+
+    it("Get private conversations LIMIT 2 OFFSET 2 (will be empty since there is only one private conversation)", function (done) {
+        api
+        .get('/conversations/index_private')
+        .query({
+            "account_id": accountId,
+            "limit": 2,
+            "offset": 2
+        })
+        .expect("Content-type",/json/)
+        .expect(200)
+        .end(function (err,res) {
+            res.status.should.equal(200);
+            assert.deepStrictEqual(res.body, []);
+            done();
+        });
+    });
     
     it("Get non-private and non-archived conversations", function (done) {
         api
@@ -1588,6 +1861,24 @@ describe("heart-sms-backend unit test", function () {
                     "private_notifications": false
                 }
             ]);
+            done();
+        });
+    });
+
+
+    it("Get non-private and non-archived conversations LIMIT 2 OFFSET 2 (will be empty since there is only one matching conversation)", function (done) {
+        api
+        .get('/conversations/index_public_unarchived')
+        .query({
+            "account_id": accountId,
+            "limit": 2,
+            "offset": 2
+        })
+        .expect("Content-type",/json/)
+        .expect(200)
+        .end(function (err,res) {
+            res.status.should.equal(200);
+            assert.deepStrictEqual(res.body, []);
             done();
         });
     });
@@ -1781,6 +2072,91 @@ describe("heart-sms-backend unit test", function () {
             done();
         });
     });
+
+    it("Get messages LIMIT 2", function (done) {
+        api
+        .get('/messages')
+        .query({
+            "account_id": accountId,
+            "limit": 2
+        })
+        .expect("Content-type",/json/)
+        .expect(200)
+        .end(function (err,res) {
+            res.status.should.equal(200);
+            assert.deepStrictEqual(res.body, [
+                {
+                    "id": res.body[0].id,
+                    "account_id": accountId,
+                    "device_id": 3,
+                    "device_conversation_id": 30,
+                    "message_type": 2,
+                    "data": "testdata3",
+                    "timestamp": 3000,
+                    "mime_type": "testmime3",
+                    "read": false,
+                    "seen": true,
+                    "message_from": "testfrom3",
+                    "color": 6,
+                    "sent_device": 15,
+                    "sim_stamp": "teststamp3"
+                },
+                {
+                    "id": res.body[1].id,
+                    "account_id": accountId,
+                    "device_id": 2,
+                    "device_conversation_id": 20,
+                    "message_type": 7,
+                    "data": "testdata2",
+                    "timestamp": 2000,
+                    "mime_type": "testmime2",
+                    "read": false,
+                    "seen": true,
+                    "message_from": "testfrom2",
+                    "color": 6,
+                    "sent_device": 14,
+                    "sim_stamp": "teststamp2"
+                }
+            ]);
+            done();
+        });
+    });
+
+
+    it("Get messages LIMIT 1 OFFSET 2", function (done) {
+        api
+        .get('/messages')
+        .query({
+            "account_id": accountId,
+            "limit": 1,
+            "offset": 2
+        })
+        .expect("Content-type",/json/)
+        .expect(200)
+        .end(function (err,res) {
+            res.status.should.equal(200);
+            assert.deepStrictEqual(res.body, [
+                {
+                    "id": res.body[0].id,
+                    "account_id": accountId,
+                    "device_id": 1,
+                    "device_conversation_id": 10,
+                    "message_type": 4,
+                    "data": "testdata",
+                    "timestamp": 500,
+                    "mime_type": "testmime",
+                    "read": true,
+                    "seen": true,
+                    "message_from": "testfrom",
+                    "color": 6,
+                    "sent_device": 13,
+                    "sim_stamp": "teststamp"
+                },
+            ]);
+            done();
+        });
+    });
+
     
     it("Remove message", function (done) {
         api

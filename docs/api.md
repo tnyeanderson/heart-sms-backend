@@ -14,7 +14,8 @@ These are noted at the relevant endpoints, but Including:
   * There is inconsistency between clients with where the `account_id` should be placed (in the request body or a query). The web client nearly always uses a query. For this reason, all endpoints that require an `account_id` can have it in either place. 
   * Queries are checked first, then the body.
 * `/messages/update/:device_id`: `message_type` was originally sent as `type`
-* `/auto_replies/update/:device_id`: `reply_type` was originally sent as `type` 
+* `/auto_replies/update/:device_id`: `reply_type` was originally sent as `type`
+* `/conversations/index_private` and `/conversations/index_archived` can both now have `limit` + `offset` parameters 
 
 
 >NOTE: The account_id that the user sends with their request is stored in the SessionMap table as a session_id. account_id in the database refers to the auto-incrementing primary key of the Accounts table (used as a foreign key in linked tables). The mysql function TRANSLATE_SESSION_ID() is used to translate the user-provided "account_id" (which is actually a session_id) to an account_id to use in WHERE clauses, insert statements, etc
@@ -985,7 +986,7 @@ Error:
 
 Method: GET
 
-Parameters: `account_id=STRING`
+Parameters: `account_id=STRING`, `limit=INT?`, `offset=INT?`
 
 Request body: None
 
@@ -1032,7 +1033,7 @@ Error:
 
 Method: GET
 
-Parameters: `account_id=STRING`
+Parameters: `account_id=STRING`, `limit=INT?`, `offset=INT?`
 
 Request body: None
 

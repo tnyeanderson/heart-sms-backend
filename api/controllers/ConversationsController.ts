@@ -31,11 +31,11 @@ router.route('/').get(
 
 
 router.route('/index_archived').get(
-    (req, res, next) => AccountIdRequest.handler(req, res, next), 
+    (req, res, next) => LimitOffsetRequest.handler(req, res, next), 
     function (req, res, next) {
-        let r: AccountIdRequest = res.locals.request;
+        let r: LimitOffsetRequest = res.locals.request;
         
-        let sql = `SELECT ${db.selectFields(fields)} FROM ${table} INNER JOIN SessionMap USING (account_id) WHERE archive = true AND ${notInFolder} AND ${r.whereAccount()} ORDER BY timestamp DESC`;
+        let sql = `SELECT ${db.selectFields(fields)} FROM ${table} INNER JOIN SessionMap USING (account_id) WHERE archive = true AND ${notInFolder} AND ${r.whereAccount()} ORDER BY timestamp DESC ${r.limitStr()}`;
 
         db.query(sql, res, function (result) {
             res.json(ConversationsListResponse.getList(result));
@@ -44,11 +44,11 @@ router.route('/index_archived').get(
 
 
 router.route('/index_private').get(
-    (req, res, next) => AccountIdRequest.handler(req, res, next), 
+    (req, res, next) => LimitOffsetRequest.handler(req, res, next), 
     function (req, res, next) {
-        let r: AccountIdRequest = res.locals.request;
+        let r: LimitOffsetRequest = res.locals.request;
         
-        let sql = `SELECT ${db.selectFields(fields)} FROM ${table} INNER JOIN SessionMap USING (account_id) WHERE private_notifications = true AND ${notInFolder} AND ${r.whereAccount()} ORDER BY timestamp DESC`;
+        let sql = `SELECT ${db.selectFields(fields)} FROM ${table} INNER JOIN SessionMap USING (account_id) WHERE private_notifications = true AND ${notInFolder} AND ${r.whereAccount()} ORDER BY timestamp DESC ${r.limitStr()}`;
 
         db.query(sql, res, function (result) {
             res.json(ConversationsListResponse.getList(result));
