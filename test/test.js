@@ -580,13 +580,18 @@ describe("heart-sms-backend unit test", function () {
             "blacklists": [
                 {
                     "device_id": 1,
-                    "phone_number": "33333",
                     "phrase": "testphrase"
+                    // phone_number optional
                 },
                 {
                     "device_id": 2,
-                    "phone_number": "44444",
-                    "phrase": "testphrase2"
+                    // phrase optional
+                    "phone_number": "44444"
+                },
+                {
+                    "device_id": 3,
+                    "phone_number": "55555",
+                    "phrase": "testphrase3"
                 }
             ]
         })
@@ -614,7 +619,7 @@ describe("heart-sms-backend unit test", function () {
                     "id": res.body[0].id,
                     "account_id": accountId,
                     "device_id": 1,
-                    "phone_number": "33333",
+                    "phone_number":  null,
                     "phrase": "testphrase"
                 },
                 {
@@ -622,7 +627,14 @@ describe("heart-sms-backend unit test", function () {
                     "account_id": accountId,
                     "device_id": 2,
                     "phone_number": "44444",
-                    "phrase": "testphrase2"
+                    "phrase": null
+                },
+                {
+                    "id": res.body[2].id,
+                    "account_id": accountId,
+                    "device_id": 3,
+                    "phone_number": "55555",
+                    "phrase": "testphrase3"
                 }
             ]);
             done();
@@ -2629,6 +2641,23 @@ describe("heart-sms-backend unit test", function () {
             done();
         });
     });
+
+    it("Dismissed notification with device_id", function (done) {
+        api
+        .post('/accounts/dismissed_notification')
+        .query({
+            "account_id": accountId,
+            "id": 1,
+            "device_id": 3
+        })
+        .expect("Content-type",/json/)
+        .expect(200)
+        .end(function (err,res) {
+            res.status.should.equal(200);
+            assert.deepStrictEqual(res.body, {});
+            done();
+        });
+    });
     
     it("Account stats", function (done) {
         api
@@ -2646,7 +2675,7 @@ describe("heart-sms-backend unit test", function () {
                 conversation_count: 2,
                 draft_count: 1, // Draft 20 remains due to how url params are ignored in drafts/replace
                 scheduled_count: 1,
-                blacklist_count: 1,
+                blacklist_count: 2,
                 contact_count: 0,
                 template_count: 1,
                 folder_count: 1,
