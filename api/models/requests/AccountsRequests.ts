@@ -2,7 +2,8 @@ import { Expose } from "class-transformer";
 import { NextFunction, Request, Response } from "express";
 import db from '../../db/query.js';
 import users from '../../helpers/UserHelper.js';
-import { DuplicateUserError, UserNotAllowedError } from "../responses/ErrorResponses.js";
+import { BaseError } from "../errors/Errors.js";
+import { DuplicateUserError, ErrorResponse, MissingParamError, ParamTypeError, UserNotAllowedError } from "../responses/ErrorResponses.js";
 import { AccountIdRequest, BaseRequest } from "./BaseRequests.js";
 
 
@@ -85,5 +86,59 @@ export class UpdateSettingRequest extends AccountIdRequest {
     // Query
     @Expose() pref: string = '';
 	@Expose() type: string = '';
-    @Expose() value: any = {};
+    @Expose() value: any = undefined;
+
+    static validate (req: Request) {
+        let validated = super.validate(req);
+
+        let toValidate = Object.assign(req.query, req.body, req.params)
+        let v = toValidate.value;
+
+        let expectedType = toValidate.type;
+        let uncastedType = typeof v;
+        
+
+        if (validated instanceof ErrorResponse) {
+            // Super did not validate. Return its error
+            return validated;
+        }
+
+        switch (uncastedType) {
+            case 'string': // Should always be a string because it's in the query, but it might not be
+            case 'number':
+            case 'boolean':
+                // Allowed
+                break;
+            default:
+                // Other types are not allowed
+                return new ParamTypeError('value');
+        }
+
+        // Can it cast?
+        switch (expectedType) {
+            case 'int':
+            case 'long':
+                if (isNaN(Number(v))) {
+                    return new ParamTypeError('value');
+                }
+                break;
+            case 'boolean':
+                if ( !( // NOT
+                    v === true || 
+                    v === false || 
+                    v === 'true' ||  
+                    v === 'false' ||  
+                    v === 0 || 
+                    v === 1
+                )) {
+                    return new ParamTypeError('value')
+                }
+            default:
+                // the rest are cast as strings and work no matter what
+                break;
+        }
+
+        // Validated
+        return true;
+    }
 }

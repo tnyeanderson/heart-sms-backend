@@ -83,11 +83,12 @@ let Query = {
         }
         pool.query(sql, function (err, result) {
             if (err) {
+                let dbError = new DatabaseError;
                 console.log(err);
                 
                 if (res) {
                     // TODO: Database errors lock up the server for a few seconds
-                    res.json(new DatabaseError);
+                    res.status(dbError.status!).json(dbError.msg);
                 }
                 
                 return;

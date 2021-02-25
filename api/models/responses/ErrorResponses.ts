@@ -43,6 +43,11 @@ export class MissingParamError extends ErrorResponse {
 }
 
 
+export class ParamTypeError extends ErrorResponse {
+    constructor(param?: string) { super(new BaseError(`parameter ${param || ''} has the wrong type`), 400) }
+}
+
+
 export class DatabaseError extends ErrorResponse {
     constructor() { super(new BaseError('could not query database'), 500) }
 }

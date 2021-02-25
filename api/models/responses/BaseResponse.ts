@@ -15,7 +15,7 @@ export class BaseResponse {
      * @param result Array of results, usually from a database or API call
      */
     static fromResult (result: FieldInfo[] | any[]) {
-        return plainToClass(this, result[0], { excludeExtraneousValues: true }); 
+        return plainToClass(this, result[0], { excludeExtraneousValues: true, enableImplicitConversion: true }); 
     }
 
 

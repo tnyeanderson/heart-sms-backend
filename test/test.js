@@ -241,11 +241,30 @@ describe("heart-sms-backend unit test", function () {
         });
     });
 
-    it("MQTT fail acl", function (done) {
+    it("MQTT fail acl (bad username)", function (done) {
         api
         .post('/mqtt/acl')
         .send({
             "username": "bad",
+            "topic": 'heartsms/' + accountId
+        })
+        .expect("Content-type",/json/)
+        .expect(200)
+        .end(function (err,res) {
+            res.status.should.equal(401);
+            assert.deepStrictEqual(res.body, {
+                Ok: false,
+                Error: 'username or password incorrect'
+            });
+            done();
+        });
+    });
+
+    it("MQTT fail acl (bad topic)", function (done) {
+        api
+        .post('/mqtt/acl')
+        .send({
+            "username": "test@email.com",
             "topic": "bad"
         })
         .expect("Content-type",/json/)
@@ -282,6 +301,28 @@ describe("heart-sms-backend unit test", function () {
         });
     });
 
+    it("Fail to update account setting with value that is not a string, number, or boolean", function (done) {
+        api
+        .post('/accounts/update_setting')
+        .query({
+            "account_id": accountId
+        })
+        .send({
+            "pref": "base_theme",
+            "type": "string",
+            "value": [23]
+        })
+        .expect("Content-type",/json/)
+        .expect(200)
+        .end(function (err,res) {
+            res.status.should.equal(400);
+            assert.deepStrictEqual(res.body, {
+                error: 'parameter value has the wrong type'
+            });
+            done();
+        });
+    });
+
     it("Update account apply_primary_color_to_toolbar boolean setting", function (done) {
         api
         .post('/accounts/update_setting')
@@ -302,6 +343,28 @@ describe("heart-sms-backend unit test", function () {
         });
     });
 
+    it("Fail to update account apply_primary_color_to_toolbar boolean setting with uncastable string value", function (done) {
+        api
+        .post('/accounts/update_setting')
+        .query({
+            "account_id": accountId
+        })
+        .send({
+            "pref": "apply_primary_color_to_toolbar",
+            "type": "boolean",
+            "value": "shouldfail"
+        })
+        .expect("Content-type",/json/)
+        .expect(200)
+        .end(function (err,res) {
+            res.status.should.equal(400);
+            assert.deepStrictEqual(res.body, {
+                error: 'parameter value has the wrong type'
+            });
+            done();
+        });
+    });
+
     it("Update account color integer setting", function (done) {
         api
         .post('/accounts/update_setting')
@@ -318,6 +381,50 @@ describe("heart-sms-backend unit test", function () {
         .end(function (err,res) {
             res.status.should.equal(200);
             assert.deepStrictEqual(res.body, {});
+            done();
+        });
+    });
+
+    it("Fail to update account color integer setting (as long) with uncastable string value", function (done) {
+        api
+        .post('/accounts/update_setting')
+        .query({
+            "account_id": accountId
+        })
+        .send({
+            "pref": "color",
+            "type": "long", // int and long should have identical results
+            "value": "shouldfail"
+        })
+        .expect("Content-type",/json/)
+        .expect(200)
+        .end(function (err,res) {
+            res.status.should.equal(400);
+            assert.deepStrictEqual(res.body, {
+                error: 'parameter value has the wrong type'
+            });
+            done();
+        });
+    });
+
+    it("Fail to update account color integer setting with wrong type string that does not match database", function (done) {
+        api
+        .post('/accounts/update_setting')
+        .query({
+            "account_id": accountId
+        })
+        .send({
+            "pref": "color",
+            "type": "string", // Should be int
+            "value": "shouldfail"
+        })
+        .expect("Content-type",/json/)
+        .expect(200)
+        .end(function (err,res) {
+            res.status.should.equal(500);
+            assert.deepStrictEqual(res.body, {
+                error: 'could not query database'
+            });
             done();
         });
     });
