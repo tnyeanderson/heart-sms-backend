@@ -975,6 +975,47 @@ describe("heart-sms-backend unit test", function () {
             done();
         });
     });
+
+
+    it("Update contact phone number only", function (done) {
+        api
+        .post('/contacts/update_device_id')
+        .query({
+            "account_id": accountId,
+            "device_id": 2
+        })
+        .send({
+            "phone_number": "666666",
+        })
+        .expect("Content-type",/json/)
+        .expect(200)
+        .end(function (err,res) {
+            res.status.should.equal(200);
+            assert.deepStrictEqual(res.body, {});
+            done();
+        });
+    });
+
+
+    it("Update contact name only", function (done) {
+        api
+        .post('/contacts/update_device_id')
+        .query({
+            "account_id": accountId,
+            "device_id": 3
+        })
+        .send({
+            "name": "newname3",
+        })
+        .expect("Content-type",/json/)
+        .expect(200)
+        .end(function (err,res) {
+            res.status.should.equal(200);
+            assert.deepStrictEqual(res.body, {});
+            done();
+        });
+    });
+
     
     it("Remove contact", function (done) {
         api
@@ -1015,7 +1056,7 @@ describe("heart-sms-backend unit test", function () {
                 },
                 {
                     "id": res.body[1].id,
-                    "phone_number": "666",
+                    "phone_number": "666666",
                     "id_matcher": "idmatch2",
                     "name": "name2",
                     "color": 4,
@@ -1026,7 +1067,7 @@ describe("heart-sms-backend unit test", function () {
                     "id": res.body[2].id,
                     "phone_number": "777",
                     "id_matcher": "idmatch3",
-                    "name": "name3",
+                    "name": "newname3",
                     "color": 5,
                     "color_accent": 5,
                     "contact_type": 5
@@ -1061,7 +1102,7 @@ describe("heart-sms-backend unit test", function () {
                 },
                 {
                     "id": res.body[1].id,
-                    "phone_number": "666",
+                    "phone_number": "666666",
                     "id_matcher": "idmatch2",
                     "name": "name2",
                     "color": 4,
@@ -1091,7 +1132,7 @@ describe("heart-sms-backend unit test", function () {
                     "id": res.body[0].id,
                     "phone_number": "777",
                     "id_matcher": "idmatch3",
-                    "name": "name3",
+                    "name": "newname3",
                     "color": 5,
                     "color_accent": 5,
                     "contact_type": 5
@@ -1129,7 +1170,7 @@ describe("heart-sms-backend unit test", function () {
                     "id": res.body[1].id,
                     "account_id": accountId,
                     "device_id": 2,
-                    "phone_number": "666",
+                    "phone_number": "666666",
                     "name": "name2",
                     "color": 4,
                     "color_dark": 4,
@@ -1160,7 +1201,7 @@ describe("heart-sms-backend unit test", function () {
                     "account_id": accountId,
                     "device_id": 3,
                     "phone_number": "777",
-                    "name": "name3",
+                    "name": "newname3",
                     "color": 5,
                     "color_dark": 5,
                     "color_light": 5,
@@ -1237,7 +1278,6 @@ describe("heart-sms-backend unit test", function () {
             "account_id": accountId,
             "conversations": [
                 {
-                    "account_id": accountId,
                     "device_id": 10,
                     "folder_id": -1,
                     "color": 7,
@@ -1246,7 +1286,7 @@ describe("heart-sms-backend unit test", function () {
                     "color_accent": 7,
                     "led_color": 8,
                     "pinned": false,
-                    "read": true,
+                    "read": false,
                     "timestamp": 1000,
                     "title": "testtitle",
                     "phone_numbers": "555,666",
@@ -1257,7 +1297,6 @@ describe("heart-sms-backend unit test", function () {
                     "private_notifications": false
                 },
                 {
-                    "account_id": accountId,
                     "device_id": 20,
                     "folder_id": -1,
                     "color": 7,
@@ -1272,14 +1311,12 @@ describe("heart-sms-backend unit test", function () {
                     "phone_numbers": "444,666",
                     "snippet": "testsnippet2",
                     "ringtone": "ringer2",
-                    "image_uri": "image2",
                     "id_matcher": "match2",
                     "mute": false,
                     "archive": true,
                     "private_notifications": true
                 },
                 {
-                    "account_id": accountId,
                     "device_id": 30,
                     "folder_id": -1,
                     "color": 7,
@@ -1293,7 +1330,28 @@ describe("heart-sms-backend unit test", function () {
                     "title": "testtitle3",
                     "phone_numbers": "555,333",
                     "snippet": "testsnippet3",
+                    "image_uri": "image3",
                     "id_matcher": "match3",
+                    "mute": false,
+                    "archive": false,
+                    "private_notifications": false
+                },
+                {
+                    "device_id": 40,
+                    "folder_id": -1,
+                    "color": 8,
+                    "color_dark": 8,
+                    "color_light": 8,
+                    "color_accent": 8,
+                    "led_color": 9,
+                    "pinned": false,
+                    "read": false,
+                    "timestamp": 1111,
+                    "title": "testtitle4",
+                    "phone_numbers": "567,123",
+                    "snippet": "testsnippet4",
+                    "image_uri": "image4",
+                    "id_matcher": "match4",
                     "mute": false,
                     "archive": false,
                     "private_notifications": false
@@ -1309,7 +1367,7 @@ describe("heart-sms-backend unit test", function () {
         });
     });
     
-    it("Update conversation", function (done) {
+    it("Update conversation with optional properties", function (done) {
         api
         .post('/conversations/update/10')
         .query({
@@ -1318,7 +1376,6 @@ describe("heart-sms-backend unit test", function () {
         .send({
             "title": "newtitle",
             "snippet": "newsnippet",
-            "ringtone": "newringer",
             "mute": true,
             "archive": true,
         })
@@ -1330,8 +1387,108 @@ describe("heart-sms-backend unit test", function () {
             done();
         });
     });
+
+    it("Update throwaway conversation with optional properties", function (done) {
+        api
+        .post('/conversations/update/40')
+        .query({
+            "account_id": accountId
+        })
+        .send({
+            "color": 9,
+            "color_dark": 9,
+            "color_light": 9,
+            "color_accent": 9,
+            "led_color": 10,
+            "pinned": true,
+            "read": true,
+        })
+        .expect("Content-type",/json/)
+        .expect(200)
+        .end(function (err,res) {
+            res.status.should.equal(200);
+            assert.deepStrictEqual(res.body, {});
+            done();
+        });
+    });
+
+    it("Update throwaway conversation with different optional properties", function (done) {
+        api
+        .post('/conversations/update/40')
+        .query({
+            "account_id": accountId
+        })
+        .send({
+            "timestamp": 22222,
+            "title": "testtitle44",
+            "snippet": "testsnippet44",
+            "mute": true,
+            "archive": true,
+            "private_notifications": true
+        })
+        .expect("Content-type",/json/)
+        .expect(200)
+        .end(function (err,res) {
+            res.status.should.equal(200);
+            assert.deepStrictEqual(res.body, {});
+            done();
+        });
+    });
+
+    it("Get throwaway conversation to verify updated values", function (done) {
+        api
+        .get('/conversations/40')
+        .query({
+            "account_id": accountId
+        })
+        .expect("Content-type",/json/)
+        .expect(200)
+        .end(function (err,res) {
+            res.status.should.equal(200);
+            assert.deepStrictEqual(res.body, {
+                "id": res.body.id,
+                "account_id": accountId,
+                "device_id": 40,
+                "folder_id": -1,
+                "color": 9,
+                "color_dark": 9,
+                "color_light": 9,
+                "color_accent": 9,
+                "led_color": 10,
+                "pinned": true,
+                "read": true,
+                "timestamp": 22222,
+                "title": "testtitle44",
+                "phone_numbers": "567,123",
+                "snippet": "testsnippet44",
+                "ringtone": null,
+                "image_uri": "image4",
+                "id_matcher": "match4",
+                "mute": true,
+                "archive": true,
+                "private_notifications": true
+            });
+            done();
+        });
+    });
+
+    it("Remove throwaway conversation", function (done) {
+        api
+        .post('/conversations/remove/40')
+        .query({
+            "account_id": accountId
+        })
+        .expect("Content-type",/json/)
+        .expect(200)
+        .end(function (err,res) {
+            res.status.should.equal(200);
+            assert.deepStrictEqual(res.body, {});
+            done();
+        });
+    });
+
     
-    it("Update conversation snippet", function (done) {
+    it("Update conversation snippet with optional properties", function (done) {
         api
         .post('/conversations/update_snippet/20')
         .query({
@@ -1339,7 +1496,24 @@ describe("heart-sms-backend unit test", function () {
         })
         .send({
             "read": true,
-            "timestamp": 1008,
+            "timestamp": 1008
+        })
+        .expect("Content-type",/json/)
+        .expect(200)
+        .end(function (err,res) {
+            res.status.should.equal(200);
+            assert.deepStrictEqual(res.body, {});
+            done();
+        });
+    });
+
+    it("Update conversation snippet with different optional properties", function (done) {
+        api
+        .post('/conversations/update_snippet/20')
+        .query({
+            "account_id": accountId
+        })
+        .send({
             "snippet": "updatedsnippet",
             "archive": false
         })
@@ -1368,11 +1542,27 @@ describe("heart-sms-backend unit test", function () {
         });
     });
     
-    it("Update conversation read", function (done) {
+    it("Update conversation read (without android_device)", function (done) {
         api
         .post('/conversations/read/30')
         .query({
             "account_id": accountId
+        })
+        .expect("Content-type",/json/)
+        .expect(200)
+        .end(function (err,res) {
+            res.status.should.equal(200);
+            assert.deepStrictEqual(res.body, {});
+            done();
+        });
+    });
+
+    it("Update conversation read (with android_device)", function (done) {
+        api
+        .post('/conversations/read/10')
+        .query({
+            "account_id": accountId,
+            "android_device": 1
         })
         .expect("Content-type",/json/)
         .expect(200)
@@ -1489,7 +1679,7 @@ describe("heart-sms-backend unit test", function () {
                     "snippet": "updatedsnippet",
                     "ringtone": "ringer2",
                     "id_matcher": "match2",
-                    "image_uri": "image2",
+                    "image_uri": null,
                     "mute": false,
                     "archive": false,
                     "private_notifications": true
@@ -1512,7 +1702,7 @@ describe("heart-sms-backend unit test", function () {
                     "snippet": "testsnippet3",
                     "id_matcher": "match3",
                     "ringtone": null,
-                    "image_uri": null,
+                    "image_uri": "image3",
                     "mute": false,
                     "archive": true,
                     "private_notifications": false
@@ -1533,7 +1723,7 @@ describe("heart-sms-backend unit test", function () {
                     "title": "newtitle",
                     "phone_numbers": "555,666",
                     "snippet": "newsnippet",
-                    "ringtone": "newringer",
+                    "ringtone": null,
                     "image_uri": null,
                     "id_matcher": "match",
                     "mute": true,
@@ -1575,7 +1765,7 @@ describe("heart-sms-backend unit test", function () {
                     "snippet": "updatedsnippet",
                     "ringtone": "ringer2",
                     "id_matcher": "match2",
-                    "image_uri": "image2",
+                    "image_uri": null,
                     "mute": false,
                     "archive": false,
                     "private_notifications": true
@@ -1598,7 +1788,7 @@ describe("heart-sms-backend unit test", function () {
                     "snippet": "testsnippet3",
                     "id_matcher": "match3",
                     "ringtone": null,
-                    "image_uri": null,
+                    "image_uri": "image3",
                     "mute": false,
                     "archive": true,
                     "private_notifications": false
@@ -1637,7 +1827,7 @@ describe("heart-sms-backend unit test", function () {
                     "title": "newtitle",
                     "phone_numbers": "555,666",
                     "snippet": "newsnippet",
-                    "ringtone": "newringer",
+                    "ringtone": null,
                     "image_uri": null,
                     "id_matcher": "match",
                     "mute": true,
@@ -1675,7 +1865,7 @@ describe("heart-sms-backend unit test", function () {
                 "title": "newtitle",
                 "phone_numbers": "555,666",
                 "snippet": "newsnippet",
-                "ringtone": "newringer",
+                "ringtone": null,
                 "image_uri": null,
                 "id_matcher": "match",
                 "mute": true,
@@ -1713,7 +1903,7 @@ describe("heart-sms-backend unit test", function () {
                     "title": "newtitle",
                     "phone_numbers": "555,666",
                     "snippet": "newsnippet",
-                    "ringtone": "newringer",
+                    "ringtone": null,
                     "image_uri": null,
                     "id_matcher": "match",
                     "mute": true,
@@ -1754,7 +1944,7 @@ describe("heart-sms-backend unit test", function () {
                     "snippet": "testsnippet3",
                     "id_matcher": "match3",
                     "ringtone": null,
-                    "image_uri": null,
+                    "image_uri": "image3",
                     "mute": false,
                     "archive": true,
                     "private_notifications": false
@@ -1811,7 +2001,7 @@ describe("heart-sms-backend unit test", function () {
                     "snippet": "updatedsnippet",
                     "ringtone": "ringer2",
                     "id_matcher": "match2",
-                    "image_uri": "image2",
+                    "image_uri": null,
                     "mute": false,
                     "archive": false,
                     "private_notifications": true
@@ -1865,7 +2055,7 @@ describe("heart-sms-backend unit test", function () {
                     "title": "newtitle",
                     "phone_numbers": "555,666",
                     "snippet": "newsnippet",
-                    "ringtone": "newringer",
+                    "ringtone": null,
                     "image_uri": null,
                     "id_matcher": "match",
                     "mute": true,
