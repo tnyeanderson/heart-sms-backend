@@ -1,5 +1,6 @@
 import { agent } from 'supertest';
-import * as assert from 'assert'
+import * as assert from 'assert';
+import { checkMsg, socket } from './mqtt-test.js';
 
 // This agent refers to PORT where program is runninng.
 const api = agent("http://localhost:5000/api/v1");
@@ -282,16 +283,24 @@ describe("heart-sms-backend unit test", function () {
     //delay("Waiting to give you time to log in, etc...");
 
     it("Update account base_theme string setting", function (done) {
+        checkMsg(accountId, {
+            operation: 'update_setting',
+            content: {
+                "pref": "base_theme",
+                "type": "string",
+                "value": "dark"
+            }
+        });
+        
         api
         .post('/accounts/update_setting')
         .query({
-            "account_id": accountId
-        })
-        .send({
+            "account_id": accountId,
             "pref": "base_theme",
             "type": "string",
             "value": "dark"
         })
+        .send()
         .expect("Content-type",/json/)
         .expect(200)
         .end(function (err,res) {
@@ -305,12 +314,12 @@ describe("heart-sms-backend unit test", function () {
         api
         .post('/accounts/update_setting')
         .query({
-            "account_id": accountId
+            "account_id": accountId,
+            "pref": "base_theme",
+            "type": "string"
         })
         .send({
-            "pref": "base_theme",
-            "type": "string",
-            "value": [23]
+            "value": [23] // Has to be in the body to not be a string
         })
         .expect("Content-type",/json/)
         .expect(200)
@@ -324,16 +333,24 @@ describe("heart-sms-backend unit test", function () {
     });
 
     it("Update account apply_primary_color_to_toolbar boolean setting", function (done) {
+        checkMsg(accountId, {
+            operation: 'update_setting',
+            content: {
+                "pref": "apply_primary_color_to_toolbar",
+                "type": "boolean",
+                "value": false
+            }
+        });
+        
         api
         .post('/accounts/update_setting')
         .query({
-            "account_id": accountId
-        })
-        .send({
+            "account_id": accountId,
             "pref": "apply_primary_color_to_toolbar",
             "type": "boolean",
             "value": "false"
         })
+        .send()
         .expect("Content-type",/json/)
         .expect(200)
         .end(function (err,res) {
@@ -347,13 +364,12 @@ describe("heart-sms-backend unit test", function () {
         api
         .post('/accounts/update_setting')
         .query({
-            "account_id": accountId
-        })
-        .send({
+            "account_id": accountId,
             "pref": "apply_primary_color_to_toolbar",
             "type": "boolean",
             "value": "shouldfail"
         })
+        .send()
         .expect("Content-type",/json/)
         .expect(200)
         .end(function (err,res) {
@@ -366,16 +382,24 @@ describe("heart-sms-backend unit test", function () {
     });
 
     it("Update account color integer setting", function (done) {
+        checkMsg(accountId, {
+            operation: 'update_setting',
+            content: {
+                "pref": "color",
+                "type": "int",
+                "value": 123456
+            }
+        });
+        
         api
         .post('/accounts/update_setting')
         .query({
-            "account_id": accountId
-        })
-        .send({
+            "account_id": accountId,
             "pref": "color",
             "type": "int",
             "value": "123456"
         })
+        .send()
         .expect("Content-type",/json/)
         .expect(200)
         .end(function (err,res) {
@@ -389,13 +413,12 @@ describe("heart-sms-backend unit test", function () {
         api
         .post('/accounts/update_setting')
         .query({
-            "account_id": accountId
-        })
-        .send({
+            "account_id": accountId,
             "pref": "color",
             "type": "long", // int and long should have identical results
             "value": "shouldfail"
         })
+        .send()
         .expect("Content-type",/json/)
         .expect(200)
         .end(function (err,res) {
@@ -411,13 +434,12 @@ describe("heart-sms-backend unit test", function () {
         api
         .post('/accounts/update_setting')
         .query({
-            "account_id": accountId
-        })
-        .send({
+            "account_id": accountId,
             "pref": "color",
             "type": "string", // Should be int
             "value": "shouldfail"
         })
+        .send()
         .expect("Content-type",/json/)
         .expect(200)
         .end(function (err,res) {
@@ -2979,6 +3001,13 @@ describe("heart-sms-backend unit test", function () {
     });
 
     it("Clean account", function (done) {
+        checkMsg(accountId, {
+            operation: 'cleaned_account',
+            content: {
+                id: accountId
+            }
+        });
+
         api
         .post('/accounts/clean_account')
         .query({
@@ -3042,5 +3071,10 @@ describe("heart-sms-backend unit test", function () {
             res.status.should.equal(404);
             done();
         });
+    });
+
+    it("should close mqtt socket",function(done){
+        socket.end();
+        done();
     });
 }); 
