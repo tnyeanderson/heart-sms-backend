@@ -218,7 +218,7 @@ let itemsRequiredEndpoints = [
     {
         path: '/messages/add',
         prop: 'messages',
-        itemProps: ['device_id', 'device_conversation_id', 'message_type', 'data', 'timestamp', 'mime_type', 'read', 'seen']
+        itemProps: ['device_id', 'device_conversation_id', 'message_type', 'data', 'timestamp', 'mime_type', 'read', 'seen', 'sent_device']
     },
     {
         path: '/scheduled_messages/add',

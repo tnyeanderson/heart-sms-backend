@@ -63,7 +63,7 @@ router.route('/add').post(
             return Object.assign({ account_id: r.account_id }, item,);
         });
 
-        let sql = `INSERT INTO ${table} ${db.insertStr(inserted)}`;
+        let sql = `INSERT IGNORE INTO ${table} ${db.insertStr(inserted)}`;
 
         db.query(sql, res, function (result) {
             res.json(new BaseResponse);

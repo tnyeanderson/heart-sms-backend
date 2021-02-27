@@ -27,12 +27,12 @@ class MessagesAddItem extends BaseRequest {
     @Expose() mime_type: string = '';
     @Expose() read: boolean = false;
     @Expose() seen: boolean = false;
+    @Expose() sent_device: number = -1;
     @Expose() message_from: string = '';
     @Expose() color: number = -1;
-    @Expose() sent_device: number = -1;
     @Expose() sim_stamp: string = '';
 
-    static optional = ['message_from', 'color', 'sent_device', 'sim_stamp'];
+    static optional = ['message_from', 'color', 'sim_stamp'];
 }
 
 export class MessagesAddRequest extends HasItemsRequest {
@@ -87,6 +87,7 @@ export class MessagesForwardToPhoneRequest extends AccountIdRequest {
     @Expose() message_id: number = -1
     @Expose() sent_device: number = -1
 
+    // TODO: Write tests
     // TODO: Verify if this is correct
     static optional = ['mime_type', 'message_id'];
 }

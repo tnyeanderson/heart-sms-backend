@@ -2071,9 +2071,9 @@ Request body:
             "mime_type": STRING,
             "read": BOOL,
             "seen": BOOL,
+            "sent_device": INT,
             "message_from": STRING?,
             "color": INT?,
-            "sent_device": INT?,
             "sim_stamp": STRING?
         }
         ...

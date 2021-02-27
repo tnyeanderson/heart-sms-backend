@@ -704,12 +704,28 @@ describe("heart-sms-backend unit test", function () {
         });
     });
     
-    it("Update device", function (done) {
+    it("Update device (fcm_token)", function (done) {
         api
         .post('/devices/update/1')
         .query({
             "account_id": accountId,
             "fcm_token": "newtoken"
+        })
+        .expect("Content-type",/json/)
+        .expect(200)
+        .end(function (err,res) {
+            res.status.should.equal(200);
+            assert.deepStrictEqual(res.body, {});
+            done();
+        });
+    });
+
+    it("Update device (name)", function (done) {
+        api
+        .post('/devices/update/2')
+        .query({
+            "account_id": accountId,
+            "name": "newname"
         })
         .expect("Content-type",/json/)
         .expect(200)
@@ -760,7 +776,7 @@ describe("heart-sms-backend unit test", function () {
                     "account_id": accountId,
                     "id": 2,
                     "info": "testinfo2",
-                    "name": "test2",
+                    "name": "newname",
                     "primary": true,
                     "fcm_token": "token2",
                     "ios": false
@@ -2114,8 +2130,6 @@ describe("heart-sms-backend unit test", function () {
                     "mime_type": "testmime2",
                     "read": false,
                     "seen": false,
-                    "message_from": "testfrom2",
-                    "color": 6,
                     "sent_device": 14,
                     "sim_stamp": "teststamp2"
                 },
@@ -2129,11 +2143,30 @@ describe("heart-sms-backend unit test", function () {
                     "read": false,
                     "seen": false,
                     "message_from": "testfrom3",
+                    "sent_device": -1,
                     "color": 6,
-                    "sent_device": 15,
-                    "sim_stamp": "teststamp3"
                 }
             ]
+        })
+        .expect("Content-type",/json/)
+        .expect(200)
+        .end(function (err,res) {
+            console.log(res.body);
+            res.status.should.equal(200);
+            assert.deepStrictEqual(res.body, {});
+            done();
+        });
+    });
+    
+    it("Update message without optional properties", function (done) {
+        api
+        .post('/messages/update/1')
+        .query({
+            "account_id": accountId
+        })
+        .send({
+            "message_type": 4,
+            "timestamp": 500,
         })
         .expect("Content-type",/json/)
         .expect(200)
@@ -2143,16 +2176,14 @@ describe("heart-sms-backend unit test", function () {
             done();
         });
     });
-    
-    it("Update message", function (done) {
+
+    it("Update message with other optional properties", function (done) {
         api
         .post('/messages/update/1')
         .query({
             "account_id": accountId
         })
         .send({
-            "message_type": 4,
-            "timestamp": 500,
             "read": true,
             "seen": true
         })
@@ -2210,6 +2241,39 @@ describe("heart-sms-backend unit test", function () {
             done();
         });
     });
+
+    it("Get message by conversation_id", function (done) {
+        api
+        .get('/messages')
+        .query({
+            "account_id": accountId,
+            "conversation_id": 20
+        })
+        .expect("Content-type",/json/)
+        .expect(200)
+        .end(function (err,res) {
+            res.status.should.equal(200);
+            assert.deepStrictEqual(res.body, [
+                {
+                    "id": res.body[0].id,
+                    "account_id": accountId,
+                    "device_id": 2,
+                    "device_conversation_id": 20,
+                    "message_type": 7,
+                    "data": "testdata2",
+                    "timestamp": 2000,
+                    "mime_type": "testmime2",
+                    "read": false,
+                    "seen": true,
+                    "message_from": null,
+                    "color": null,
+                    "sent_device": 14,
+                    "sim_stamp": "teststamp2"
+                },
+            ]);
+            done();
+        });
+    });
     
     it("Get messages", function (done) {
         api
@@ -2235,8 +2299,8 @@ describe("heart-sms-backend unit test", function () {
                     "seen": true,
                     "message_from": "testfrom3",
                     "color": 6,
-                    "sent_device": 15,
-                    "sim_stamp": "teststamp3"
+                    "sent_device": -1,
+                    "sim_stamp": null
                 },
                 {
                     "id": res.body[1].id,
@@ -2249,8 +2313,8 @@ describe("heart-sms-backend unit test", function () {
                     "mime_type": "testmime2",
                     "read": false,
                     "seen": true,
-                    "message_from": "testfrom2",
-                    "color": 6,
+                    "message_from":null,
+                    "color": null,
                     "sent_device": 14,
                     "sim_stamp": "teststamp2"
                 },
@@ -2300,8 +2364,8 @@ describe("heart-sms-backend unit test", function () {
                     "seen": true,
                     "message_from": "testfrom3",
                     "color": 6,
-                    "sent_device": 15,
-                    "sim_stamp": "teststamp3"
+                    "sent_device": -1,
+                    "sim_stamp": null
                 },
                 {
                     "id": res.body[1].id,
@@ -2314,8 +2378,8 @@ describe("heart-sms-backend unit test", function () {
                     "mime_type": "testmime2",
                     "read": false,
                     "seen": true,
-                    "message_from": "testfrom2",
-                    "color": 6,
+                    "message_from": null,
+                    "color": null,
                     "sent_device": 14,
                     "sim_stamp": "teststamp2"
                 }
@@ -2427,6 +2491,25 @@ describe("heart-sms-backend unit test", function () {
             done();
         });
     });
+
+    it("Update draft (with mime_type)", function (done) {
+        api
+        .post('/drafts/update/2')
+        .query({
+            "account_id": accountId
+        })
+        .send({
+            "data": "newtest2",
+            "mime_type": "newmime2"
+        })
+        .expect("Content-type",/json/)
+        .expect(200)
+        .end(function (err,res) {
+            res.status.should.equal(200);
+            assert.deepStrictEqual(res.body, {});
+            done();
+        });
+    });
     
     it("Replace draft", function (done) {
         /**
@@ -2482,8 +2565,8 @@ describe("heart-sms-backend unit test", function () {
                     "account_id": accountId,
                     "device_id": 2,
                     "device_conversation_id": 20,
-                    "mime_type": "testmime2",
-                    "data": "test2"
+                    "mime_type": "newmime2",
+                    "data": "newtest2"
                 },
                 {
                     "id": res.body[2].id,
@@ -2581,7 +2664,28 @@ describe("heart-sms-backend unit test", function () {
         })
         .send({
             "to": "888",
-            "data": "newdata"
+            "data": "newdata",
+            "mime_type": "newmime"
+        })
+        .expect("Content-type",/json/)
+        .expect(200)
+        .end(function (err,res) {
+            res.status.should.equal(200);
+            assert.deepStrictEqual(res.body, {});
+            done();
+        });
+    });
+
+    it("Update scheduled message with other optional properties", function (done) {
+        api
+        .post('/scheduled_messages/update/2')
+        .query({
+            "account_id": accountId
+        })
+        .send({
+            "timestamp": 654321,
+            "title": "newtitle",
+            "repeat": 22
         })
         .expect("Content-type",/json/)
         .expect(200)
@@ -2609,7 +2713,7 @@ describe("heart-sms-backend unit test", function () {
                     "device_id": 1,
                     "to": "888",
                     "data": "newdata",
-                    "mime_type": "testmime",
+                    "mime_type": "newmime",
                     "timestamp": 12345,
                     "title": "title",
                     "repeat": 1
@@ -2621,9 +2725,9 @@ describe("heart-sms-backend unit test", function () {
                     "to": "777,333",
                     "data": "testdata2",
                     "mime_type": "testmime2",
-                    "timestamp": 123456,
-                    "title": "title2",
-                    "repeat": 2
+                    "timestamp": 654321,
+                    "title": "newtitle",
+                    "repeat": 22
                 }
             ]);
             done();
@@ -2689,7 +2793,6 @@ describe("heart-sms-backend unit test", function () {
     });
     
 
-    // TODO: Start here for full response validation
     it("Get templates", function (done) {
         api
         .get('/templates')
@@ -2933,7 +3036,7 @@ describe("heart-sms-backend unit test", function () {
 
     it("should return 404",function(done){
         api
-        .get("/random")
+        .get("/shouldfail")
         .expect(404)
         .end(function(err,res){
             res.status.should.equal(404);
