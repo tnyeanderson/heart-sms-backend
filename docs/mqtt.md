@@ -110,13 +110,13 @@ Content:
     "mime_type": STRING,
     "read": BOOL,
     "seen": BOOL,
-    "from": STRING,
-    "color": INT,
-    "sent_device": INT,
-    "sim_stamp": INT
+    "from": STRING?,
+    "color": INT?,
+    "sent_device": INT?,
+    "sim_stamp": STRING?
 }
 ```
-
+*NOTE: sim_stamp is sent by firebase but never parsed in any clients*
 
 
 ---
@@ -146,10 +146,11 @@ Content:
     "id": INT,
     "type": INT,
     "timestamp": TIMESTAMP,
-    "read": BOOL,
-    "seen": BOOL
+    "read": BOOL?,
+    "seen": BOOL?
 }
 ```
+*NOTE: read and seen are sent (even as nullable) by firebase but are not parsed anywhere*
 
 
 
@@ -355,7 +356,7 @@ Content:
     "read": BOOL,
     "title": STRING,
     "snippet": STRING,
-    "ringtone": STRING,
+    "ringtone": STRING?,
     "mute": BOOL,
     "archive": BOOL,
     "private_notifications": BOOL
@@ -502,6 +503,7 @@ Content:
     "phrase": STRING
 }
 ```
+*TODO: should optional params phone_number and phrase be empty strings or null when not set?*
 
 
 

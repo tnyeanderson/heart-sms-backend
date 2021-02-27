@@ -1,6 +1,6 @@
 import { agent } from 'supertest';
 import * as assert from 'assert';
-import { checkMsg, socket } from './mqtt-test.js';
+import { expectMsg, msgCount, msgTested, socket } from './mqtt-test.js';
 
 // This agent refers to PORT where program is runninng.
 const api = agent("http://localhost:5000/api/v1");
@@ -14,10 +14,12 @@ let password = '9bba5c53a0545e0c80184b946153c9f58387e3bd1d4ee35740f29ac2e718b019
 
 
 function delay(msg = 'should delay', interval = 3000) {
-    return it('should delay', done => 
+    return it(`should delay ${interval/1000}s`, done => 
     {
         console.log(msg);
-        setTimeout(() => done(), interval)
+        setTimeout(() => {
+            done();
+        }, interval)
 
     }).timeout(interval + 100) // The extra 100ms should guarantee the test will not fail due to exceeded timeout
 }
@@ -25,6 +27,15 @@ function delay(msg = 'should delay', interval = 3000) {
 // UNIT test begin
 
 describe("heart-sms-backend unit test", function () {
+
+    beforeEach(function (done) {
+        let delay = 50;
+
+        // Wait between api requests so mqtt testing works
+        setTimeout(() => {
+            done();
+        }, delay)
+    })
 
     it("Create new user", function (done) {
         api
@@ -283,7 +294,7 @@ describe("heart-sms-backend unit test", function () {
     //delay("Waiting to give you time to log in, etc...");
 
     it("Update account base_theme string setting", function (done) {
-        checkMsg(accountId, {
+        expectMsg(accountId, {
             operation: 'update_setting',
             content: {
                 "pref": "base_theme",
@@ -333,7 +344,7 @@ describe("heart-sms-backend unit test", function () {
     });
 
     it("Update account apply_primary_color_to_toolbar boolean setting", function (done) {
-        checkMsg(accountId, {
+        expectMsg(accountId, {
             operation: 'update_setting',
             content: {
                 "pref": "apply_primary_color_to_toolbar",
@@ -382,7 +393,7 @@ describe("heart-sms-backend unit test", function () {
     });
 
     it("Update account color integer setting", function (done) {
-        checkMsg(accountId, {
+        expectMsg(accountId, {
             operation: 'update_setting',
             content: {
                 "pref": "color",
@@ -499,6 +510,24 @@ describe("heart-sms-backend unit test", function () {
     */
     
     it("Add auto replies", function (done) {
+        expectMsg(accountId, {
+            operation: "added_auto_reply",
+            content: {
+                "device_id": 1,
+                "type": "testtype",
+                "pattern": "testpattern",
+                "response": "test"
+            }
+        }, () => expectMsg(accountId, {
+            operation: "added_auto_reply",
+            content: {
+                "device_id": 2,
+                "type": "testtype2",
+                "pattern": "testpattern2",
+                "response": "test2"
+            }
+        }));
+
         api
         .post('/auto_replies/add')
         .send({
@@ -528,6 +557,16 @@ describe("heart-sms-backend unit test", function () {
     });
     
     it("Update auto reply", function (done) {
+        expectMsg(accountId, {
+            operation: "updated_auto_reply",
+            content: {
+                "device_id": 1,
+                "type": "updatedtype",
+                "pattern": "updatedpattern",
+                "response": "updatedtest"
+            }
+        });
+
         api
         .post('/auto_replies/update/1')
         .query({
@@ -580,6 +619,12 @@ describe("heart-sms-backend unit test", function () {
     });
     
     it("Remove auto reply", function (done) {
+        expectMsg(accountId, {
+            operation: "removed_auto_reply",
+            content: {
+                "id": 2
+            }
+        })
         api
         .post('/auto_replies/remove/2')
         .query({
@@ -595,6 +640,29 @@ describe("heart-sms-backend unit test", function () {
     });
     
     it("Add blacklist", function (done) {
+        expectMsg(accountId, {
+            operation: "added_blacklist",
+            content: {
+                "id": 1,
+                "phrase": "testphrase",
+                "phone_number": ''
+            }
+        }, () => expectMsg(accountId, {
+            operation: "added_blacklist",
+            content: {
+                "id": 2,
+                "phrase": '',
+                "phone_number": "44444"
+            }
+        }, () => expectMsg(accountId, {
+            operation: "added_blacklist",
+            content: {
+                "id": 3,
+                "phone_number": "55555",
+                "phrase": "testphrase3"
+            }
+        })));
+
         api
         .post('/blacklists/add')
         .send({
@@ -664,6 +732,13 @@ describe("heart-sms-backend unit test", function () {
     });
     
     it("Remove blacklist", function (done) {
+        expectMsg(accountId, {
+            operation: "removed_blacklist",
+            content: {
+                "id": 2
+            }
+        });
+
         api
         .post('/blacklists/remove/2')
         .query({
@@ -759,6 +834,12 @@ describe("heart-sms-backend unit test", function () {
     });
     
     it("Change primary device", function (done) {
+        expectMsg(accountId, {
+            operation: "update_primary_device",
+            content: {
+                "new_primary_device_id": "2"
+            }
+        })
         api
         .post('/devices/update_primary')
         .query({
@@ -824,6 +905,28 @@ describe("heart-sms-backend unit test", function () {
     });
     
     it("Add folders", function (done) {
+        expectMsg(accountId, {
+            operation: "added_folder",
+            content: {
+                "device_id": 1,
+                "name": "foldername",
+                "color": 6,
+                "color_dark": 6,
+                "color_light": 6,
+                "color_accent": 6
+            }
+        }, () => expectMsg(accountId, {
+            operation: "added_folder",
+            content: {
+                "device_id": 2,
+                "name": "foldername2",
+                "color": 6,
+                "color_dark": 6,
+                "color_light": 6,
+                "color_accent": 6
+            }
+        }));
+
         api
         .post('/folders/add')
         .send({
@@ -857,6 +960,18 @@ describe("heart-sms-backend unit test", function () {
     });
     
     it("Update folder", function (done) {
+        expectMsg(accountId, {
+            operation: "updated_folder",
+            content: {
+                "device_id": 1,
+                "name": "newfolder",
+                "color": 5,
+                "color_dark": 5,
+                "color_light": 5,
+                "color_accent": 5
+            }
+        })
+
         api
         .post('/folders/update/1')
         .query({
@@ -915,6 +1030,12 @@ describe("heart-sms-backend unit test", function () {
     });
     
     it("Remove folder", function (done) {
+        expectMsg(accountId, {
+            operation: "removed_folder",
+            content: {
+                "id": 1
+            }
+        })
         api
         .post('/folders/remove/1')
         .query({
@@ -930,6 +1051,52 @@ describe("heart-sms-backend unit test", function () {
     });
     
     it("Add contacts", function (done) {
+        expectMsg(accountId, {
+            operation: "added_contact",
+            content: {
+                "phone_number": "555",
+                "name": "name1",
+                "color": 3,
+                "color_dark": 3,
+                "color_light": 3,
+                "color_accent": 3,
+                "type": 3
+            }
+        }, () => expectMsg(accountId, {
+            operation: "added_contact",
+            content: {
+                "phone_number": "666",
+                "name": "name2",
+                "color": 4,
+                "color_dark": 4,
+                "color_light": 4,
+                "color_accent": 4,
+                "type": 4
+            }
+        }, () => expectMsg(accountId, {
+            operation: "added_contact",
+            content: {
+                "phone_number": "777",
+                "name": "name3",
+                "color": 5,
+                "color_dark": 5,
+                "color_light": 5,
+                "color_accent": 5,
+                "type": 5
+            }
+        }, () => expectMsg(accountId, {
+            operation: "added_contact",
+            content: {
+                "phone_number": "888",
+                "name": "name4",
+                "color": 6,
+                "color_dark": 6,
+                "color_light": 6,
+                "color_accent": 6,
+                "type": 6
+            }
+        }))));
+
         api
         .post('/contacts/add')
         .send({
@@ -991,6 +1158,20 @@ describe("heart-sms-backend unit test", function () {
     });
     
     it("Update contact", function (done) {
+        expectMsg(accountId, {
+            operation: "updated_contact",
+            content: {
+                "device_id": 1,
+                "phone_number": "123",
+                "name": "newname",
+                "color": 456,
+                "color_dark": 456,
+                "color_light": 456,
+                "color_accent": 456,
+                "type": 3
+            }
+        });
+
         api
         .post('/contacts/update_device_id')
         .query({
@@ -1016,6 +1197,20 @@ describe("heart-sms-backend unit test", function () {
 
 
     it("Update contact phone number only", function (done) {
+        expectMsg(accountId, {
+            operation: "updated_contact",
+            content: {
+                "device_id": 2,
+                "phone_number": "666666",
+                "name": "name2",
+                "color": 4,
+                "color_dark": 4,
+                "color_light": 4,
+                "color_accent": 4,
+                "type": 4
+            }
+        });
+
         api
         .post('/contacts/update_device_id')
         .query({
@@ -1036,6 +1231,20 @@ describe("heart-sms-backend unit test", function () {
 
 
     it("Update contact name only", function (done) {
+        expectMsg(accountId, {
+            operation: "updated_contact",
+            content: {
+                "device_id": 3,
+                "phone_number": "777",
+                "name": "newname3",
+                "color": 5,
+                "color_dark": 5,
+                "color_light": 5,
+                "color_accent": 5,
+                "type": 5
+            }
+        });
+
         api
         .post('/contacts/update_device_id')
         .query({
@@ -1056,6 +1265,14 @@ describe("heart-sms-backend unit test", function () {
 
     
     it("Remove contact", function (done) {
+        expectMsg(accountId, {
+            operation: "removed_contact",
+            content: {
+                "device_id": 4,
+                "phone_number": "888"
+            }
+        });
+
         api
         .post('/contacts/remove_device_id')
         .query({
@@ -1252,8 +1469,15 @@ describe("heart-sms-backend unit test", function () {
     });
     
     it("Remove multiple contacts by id", function (done) {
+        let ids = contactsToRemove.join(',');
+        expectMsg(accountId, {
+            operation: "removed_contact_by_id",
+            content: {
+                "id": ids
+            }
+        })
         api
-        .post('/contacts/remove_ids/' + contactsToRemove.join(','))
+        .post('/contacts/remove_ids/' + ids)
         .query({
             "account_id": accountId
         })
@@ -1310,6 +1534,95 @@ describe("heart-sms-backend unit test", function () {
     });
     
     it("Add conversations", function (done) {
+        expectMsg(accountId, {
+            operation: "added_conversation",
+            content: {
+                "device_id": 10,
+                "folder_id": -1,
+                "color": 7,
+                "color_dark": 7,
+                "color_light": 7,
+                "color_accent": 7,
+                "led_color": 8,
+                "pinned": false,
+                "read": false,
+                "timestamp": 1000,
+                "title": "testtitle",
+                "phone_numbers": "555,666",
+                "snippet": "testsnippet",
+                "id_matcher": "match",
+                "mute": false,
+                "archive": false,
+                "private_notifications": false
+            }
+        }, () => expectMsg(accountId, {
+            operation: "added_conversation",
+            content: {
+                "device_id": 20,
+                "folder_id": -1,
+                "color": 7,
+                "color_dark": 7,
+                "color_light": 7,
+                "color_accent": 7,
+                "led_color": 8,
+                "pinned": true,
+                "read": false,
+                "timestamp": 1002,
+                "title": "testtitle2",
+                "phone_numbers": "444,666",
+                "snippet": "testsnippet2",
+                "ringtone": "ringer2",
+                "id_matcher": "match2",
+                "mute": false,
+                "archive": true,
+                "private_notifications": true
+            }
+        }, () => expectMsg(accountId, {
+            operation: "added_conversation",
+            content: {
+                "device_id": 30,
+                "folder_id": -1,
+                "color": 7,
+                "color_dark": 7,
+                "color_light": 7,
+                "color_accent": 7,
+                "led_color": 8,
+                "pinned": false,
+                "read": false,
+                "timestamp": 1003,
+                "title": "testtitle3",
+                "phone_numbers": "555,333",
+                "snippet": "testsnippet3",
+                "image_uri": "image3",
+                "id_matcher": "match3",
+                "mute": false,
+                "archive": false,
+                "private_notifications": false
+            }
+        }, () => expectMsg(accountId, {
+            operation: "added_conversation",
+            content: {
+                "device_id": 40,
+                "folder_id": -1,
+                "color": 8,
+                "color_dark": 8,
+                "color_light": 8,
+                "color_accent": 8,
+                "led_color": 9,
+                "pinned": false,
+                "read": false,
+                "timestamp": 1111,
+                "title": "testtitle4",
+                "phone_numbers": "567,123",
+                "snippet": "testsnippet4",
+                "image_uri": "image4",
+                "id_matcher": "match4",
+                "mute": false,
+                "archive": false,
+                "private_notifications": false
+            }
+        }))));
+
         api
         .post('/conversations/add')
         .send({
@@ -1406,6 +1719,26 @@ describe("heart-sms-backend unit test", function () {
     });
     
     it("Update conversation with optional properties", function (done) {
+        expectMsg(accountId, {
+            operation: "updated_conversation",
+            content: {
+                "id": 10,
+                "color": 7,
+                "color_dark": 7,
+                "color_light": 7,
+                "color_accent": 7,
+                "led_color": 8,
+                "pinned": false,
+                "read": false,
+                "title": "newtitle",
+                "snippet": "newsnippet",
+                "ringtone": null,
+                "mute": true,
+                "archive": true,
+                "private_notifications": false
+            }
+        });
+        
         api
         .post('/conversations/update/10')
         .query({
@@ -1427,6 +1760,26 @@ describe("heart-sms-backend unit test", function () {
     });
 
     it("Update throwaway conversation with optional properties", function (done) {
+        expectMsg(accountId, {
+            operation: "updated_conversation",
+            content: {
+                "id": 40,
+                "color": 9,
+                "color_dark": 9,
+                "color_light": 9,
+                "color_accent": 9,
+                "led_color": 10,
+                "pinned": true,
+                "read": true,
+                "title": "testtitle4",
+                "snippet": "testsnippet4",
+                "ringtone": null,
+                "mute": false,
+                "archive": false,
+                "private_notifications": false
+            }
+        });
+        
         api
         .post('/conversations/update/40')
         .query({
@@ -1451,6 +1804,26 @@ describe("heart-sms-backend unit test", function () {
     });
 
     it("Update throwaway conversation with different optional properties", function (done) {
+        expectMsg(accountId, {
+            operation: "updated_conversation",
+            content: {
+                "id": 40,
+                "color": 9,
+                "color_dark": 9,
+                "color_light": 9,
+                "color_accent": 9,
+                "led_color": 10,
+                "pinned": true,
+                "read": true,
+                "title": "testtitle44",
+                "snippet": "testsnippet44",
+                "ringtone": null,
+                "mute": true,
+                "archive": true,
+                "private_notifications": true
+            }
+        });
+        
         api
         .post('/conversations/update/40')
         .query({
@@ -1511,6 +1884,12 @@ describe("heart-sms-backend unit test", function () {
     });
 
     it("Remove throwaway conversation", function (done) {
+        expectMsg(accountId, {
+            operation: "removed_conversation",
+            content: {
+                "id": 40
+            }
+        })
         api
         .post('/conversations/remove/40')
         .query({
@@ -1527,6 +1906,17 @@ describe("heart-sms-backend unit test", function () {
 
     
     it("Update conversation snippet with optional properties", function (done) {
+        expectMsg(accountId, {
+            operation: "update_conversation_snippet",
+            content: {
+                "id": 20,
+                "read": true,
+                "timestamp": 1008,
+                "snippet": "testsnippet2",
+                "archive": true
+            }
+        });
+        
         api
         .post('/conversations/update_snippet/20')
         .query({
@@ -1546,6 +1936,17 @@ describe("heart-sms-backend unit test", function () {
     });
 
     it("Update conversation snippet with different optional properties", function (done) {
+        expectMsg(accountId, {
+            operation: "update_conversation_snippet",
+            content: {
+                "id": 20,
+                "read": true,
+                "timestamp": 1008,
+                "snippet": "updatedsnippet",
+                "archive": false
+            }
+        });
+        
         api
         .post('/conversations/update_snippet/20')
         .query({
@@ -1565,6 +1966,14 @@ describe("heart-sms-backend unit test", function () {
     });
     
     it("Update conversation title", function (done) {
+        expectMsg(accountId, {
+            operation: "update_conversation_title",
+            content: {
+                "id": 20,
+                "title": "updatedtitle"
+            }
+        });
+
         api
         .post('/conversations/update_title/20')
         .query({
@@ -1581,6 +1990,13 @@ describe("heart-sms-backend unit test", function () {
     });
     
     it("Update conversation read (without android_device)", function (done) {
+        expectMsg(accountId, {
+            operation: "read_conversation",
+            content: {
+                "id": 30
+            }
+        });
+        
         api
         .post('/conversations/read/30')
         .query({
@@ -1596,6 +2012,14 @@ describe("heart-sms-backend unit test", function () {
     });
 
     it("Update conversation read (with android_device)", function (done) {
+        expectMsg(accountId, {
+            operation: "read_conversation",
+            content: {
+                "id": 10,
+                "android_device": '1'
+            }
+        });
+        
         api
         .post('/conversations/read/10')
         .query({
@@ -1612,6 +2036,14 @@ describe("heart-sms-backend unit test", function () {
     });
     
     it("Update conversation archive", function (done) {
+        expectMsg(accountId, {
+            operation: "archive_conversation",
+            content: {
+                "id": 30,
+                "archive": true
+            }
+        });
+
         api
         .post('/conversations/archive/30')
         .query({
@@ -1627,6 +2059,14 @@ describe("heart-sms-backend unit test", function () {
     });
     
     it("Update conversation unarchive", function (done) {
+        expectMsg(accountId, {
+            operation: "archive_conversation",
+            content: {
+                "id": 10,
+                "archive": false
+            }
+        });
+
         api
         .post('/conversations/unarchive/10')
         .query({
@@ -1642,6 +2082,14 @@ describe("heart-sms-backend unit test", function () {
     });
     
     it("Add conversation to folder", function (done) {
+        expectMsg(accountId, {
+            operation: "add_conversation_to_folder",
+            content: {
+                "id": 10,
+                "folder_id": 2
+            }
+        });
+
         api
         .post('/conversations/add_to_folder/10')
         .query({
@@ -1658,6 +2106,14 @@ describe("heart-sms-backend unit test", function () {
     });
     
     it("Add another conversation to folder", function (done) {
+        expectMsg(accountId, {
+            operation: "add_conversation_to_folder",
+            content: {
+                "id": 20,
+                "folder_id": 2
+            }
+        });
+
         api
         .post('/conversations/add_to_folder/20')
         .query({
@@ -1674,6 +2130,13 @@ describe("heart-sms-backend unit test", function () {
     });
     
     it("Remove conversation from folder", function (done) {
+        expectMsg(accountId, {
+            operation: "remove_conversation_from_folder",
+            content: {
+                "id": 20
+            }
+        });
+
         api
         .post('/conversations/remove_from_folder/20')
         .query({
@@ -2124,6 +2587,53 @@ describe("heart-sms-backend unit test", function () {
     });
     
     it("Add messages", function (done) {
+        expectMsg(accountId, {
+            operation: "added_message",
+            content: {
+                "id": 1,
+                "conversation_id": 10,
+                "type": 2,
+                "data": "testdata",
+                "timestamp": 1000,
+                "mime_type": "testmime",
+                "read": false,
+                "seen": false,
+                "from": "testfrom",
+                "color": 6,
+                "sent_device": 13,
+                "sim_stamp": "teststamp"
+            }
+        }, () => expectMsg(accountId, {
+            operation: "added_message",
+            content: {
+                "id": 2,
+                "conversation_id": 20,
+                "type": 2,
+                "data": "testdata2",
+                "timestamp": 2000,
+                "mime_type": "testmime2",
+                "read": false,
+                "seen": false,
+                "sent_device": 14,
+                "sim_stamp": "teststamp2"
+            }
+        }, () => expectMsg(accountId, {
+            operation: "added_message",
+            content: {
+                "id": 3,
+                "conversation_id": 30,
+                "type": 2,
+                "data": "testdata3",
+                "timestamp": 3000,
+                "mime_type": "testmime3",
+                "read": false,
+                "seen": false,
+                "from": "testfrom3",
+                "sent_device": -1,
+                "color": 6
+            }
+        })));
+
         api
         .post('/messages/add')
         .send({
@@ -2173,14 +2683,22 @@ describe("heart-sms-backend unit test", function () {
         .expect("Content-type",/json/)
         .expect(200)
         .end(function (err,res) {
-            console.log(res.body);
             res.status.should.equal(200);
             assert.deepStrictEqual(res.body, {});
             done();
         });
     });
     
-    it("Update message without optional properties", function (done) {
+    it("Update message with optional properties", function (done) {
+        expectMsg(accountId, {
+            operation: "updated_message",
+            content: {
+                "id": 1,
+                "type": 4,
+                "timestamp": 500,
+            }
+        })
+        
         api
         .post('/messages/update/1')
         .query({
@@ -2200,6 +2718,17 @@ describe("heart-sms-backend unit test", function () {
     });
 
     it("Update message with other optional properties", function (done) {
+        expectMsg(accountId, {
+            operation: "updated_message",
+            content: {
+                "id": 1,
+                "type": 4,
+                "timestamp": 500,
+                "read": true,
+                "seen": true
+            }
+        });
+        
         api
         .post('/messages/update/1')
         .query({
@@ -2219,6 +2748,14 @@ describe("heart-sms-backend unit test", function () {
     });
     
     it("Update message type", function (done) {
+        expectMsg(accountId, {
+            operation: "update_message_type",
+            content: {
+                "id": "2",
+                "message_type": "7"
+            }
+        });
+        
         api
         .post('/messages/update_type/2')
         .query({
@@ -2235,6 +2772,13 @@ describe("heart-sms-backend unit test", function () {
     });
     
     it("Update conversation seen", function (done) {
+        expectMsg(accountId, {
+            operation: "seen_conversation",
+            content: {
+                "id": 30
+            }
+        });
+
         api
         .post('/conversations/seen/30')
         .query({
@@ -2250,6 +2794,11 @@ describe("heart-sms-backend unit test", function () {
     });
     
     it("Mark all conversations seen", function (done) {
+        expectMsg(accountId, {
+            operation: "seen_conversations",
+            content: {}
+        });
+
         api
         .post('/conversations/seen')
         .query({
@@ -2447,6 +2996,13 @@ describe("heart-sms-backend unit test", function () {
 
     
     it("Remove message", function (done) {
+        expectMsg(accountId, {
+            operation: "removed_message",
+            content: {
+                "id": 3
+            }
+        });
+
         api
         .post('/messages/remove/3')
         .query({
@@ -2462,6 +3018,32 @@ describe("heart-sms-backend unit test", function () {
     });
     
     it("Add drafts", function (done) {
+        expectMsg(accountId, {
+            operation: "added_draft",
+            content: {
+                "id": 1,
+                "conversation_id": 10,
+                "mime_type": "testmime",
+                "data": "test"
+            }
+        }, () => expectMsg(accountId, {
+            operation: "added_draft",
+            content: {
+                "id": 2,
+                "conversation_id": 20,
+                "mime_type": "testmime2",
+                "data": "test2"
+            }
+        }, () => expectMsg(accountId, {
+            operation: "added_draft",
+            content: {
+                "id": 3,
+                "conversation_id": 30,
+                "mime_type": "testmime3",
+                "data": "test3"
+            }
+        })));
+
         api
         .post('/drafts/add')
         .send({
@@ -2497,6 +3079,16 @@ describe("heart-sms-backend unit test", function () {
     });
     
     it("Update draft", function (done) {
+        expectMsg(accountId, {
+            operation: "replaced_drafts",
+            content: {
+                "id": 1,
+                "conversation_id": 10,
+                "mime_type": "testmime",
+                "data": "newtest"
+            }
+        });
+
         api
         .post('/drafts/update/1')
         .query({
@@ -2515,6 +3107,16 @@ describe("heart-sms-backend unit test", function () {
     });
 
     it("Update draft (with mime_type)", function (done) {
+        expectMsg(accountId, {
+            operation: "replaced_drafts",
+            content: {
+                "id": 2,
+                "conversation_id": 20,
+                "mime_type": "newmime2",
+                "data": "newtest2"
+            }
+        });
+
         api
         .post('/drafts/update/2')
         .query({
@@ -2534,6 +3136,16 @@ describe("heart-sms-backend unit test", function () {
     });
     
     it("Replace draft", function (done) {
+        expectMsg(accountId, {
+            operation: "replaced_drafts",
+            content: {
+                "id": 5,
+                "conversation_id": 30,
+                "mime_type": "newmime",
+                "data": "newtest3"
+            }
+        });
+
         /**
          * Note the mismatch of 20 in the url param and 30 in the body.
          * Only the value from the body is used! 20 will be unaffected.
@@ -2628,6 +3240,15 @@ describe("heart-sms-backend unit test", function () {
     });
     
     it("Remove draft", function (done) {
+        // TODO: Add a test without android_device
+        expectMsg(accountId, {
+            operation: "removed_drafts",
+            content: {
+                "id": 30,
+                "android_device": "2"
+            }
+        });
+
         api
         .post('/drafts/remove/30')
         .query({
@@ -2644,6 +3265,30 @@ describe("heart-sms-backend unit test", function () {
     });
     
     it("Add scheduled messages", function (done) {
+        expectMsg(accountId, {
+            operation: "added_scheduled_message",
+            content: {
+                "id": 1,
+                "to": "666",
+                "data": "testdata",
+                "mime_type": "testmime",
+                "timestamp": 12345,
+                "title": "title",
+                "repeat": 1
+            }
+        }, () => expectMsg(accountId, {
+            operation: "added_scheduled_message",
+            content: {
+                "id": 2,
+                "to": "777,333",
+                "data": "testdata2",
+                "mime_type": "testmime2",
+                "timestamp": 123456,
+                "title": "title2",
+                "repeat": 2
+            }
+        }));
+
         api
         .post('/scheduled_messages/add')
         .send({
@@ -2679,6 +3324,19 @@ describe("heart-sms-backend unit test", function () {
     });
     
     it("Update scheduled message", function (done) {
+        expectMsg(accountId, {
+            operation: "updated_scheduled_message",
+            content: {
+                "id": 1,
+                "to": "888",
+                "data": "newdata",
+                "mime_type": "newmime",
+                "timestamp": 12345,
+                "title": "title",
+                "repeat": 1
+            }
+        });
+
         api
         .post('/scheduled_messages/update/1')
         .query({
@@ -2699,6 +3357,19 @@ describe("heart-sms-backend unit test", function () {
     });
 
     it("Update scheduled message with other optional properties", function (done) {
+        expectMsg(accountId, {
+            operation: "updated_scheduled_message",
+            content: {
+                "id": 2,
+                "to": "777,333",
+                "data": "testdata2",
+                "mime_type": "testmime2",
+                "timestamp": 654321,
+                "title": "newtitle",
+                "repeat": 22
+            }
+        });
+        
         api
         .post('/scheduled_messages/update/2')
         .query({
@@ -2757,6 +3428,13 @@ describe("heart-sms-backend unit test", function () {
     });
     
     it("Remove scheduled message", function (done) {
+        expectMsg(accountId, {
+            operation: "removed_scheduled_message",
+            content: {
+                "id": 1
+            }
+        });
+
         api
         .post('/scheduled_messages/remove/1')
         .query({
@@ -2772,6 +3450,20 @@ describe("heart-sms-backend unit test", function () {
     });
     
     it("Add templates", function (done) {
+        expectMsg(accountId, {
+            operation: "added_template",
+            content: {
+                "device_id": 1,
+                "text": "testtext"
+            }
+        }, () => expectMsg(accountId, {
+            operation: "added_template",
+            content: {
+                "device_id": 2,
+                "text": "testtext2"
+            }
+        }));
+
         api
         .post('/templates/add')
         .send({
@@ -2797,6 +3489,14 @@ describe("heart-sms-backend unit test", function () {
     });
     
     it("Update template", function (done) {
+        expectMsg(accountId, {
+            operation: "updated_template",
+            content: {
+                "device_id": 1,
+                "text": "newtext"
+            }
+        });
+
         api
         .post('/templates/update/1')
         .query({
@@ -2840,6 +3540,13 @@ describe("heart-sms-backend unit test", function () {
     });
     
     it("Remove template", function (done) {
+        expectMsg(accountId, {
+            operation: "removed_template",
+            content: {
+                "id": 1
+            }
+        })
+
         api
         .post('/templates/remove/1')
         .query({
@@ -2891,6 +3598,14 @@ describe("heart-sms-backend unit test", function () {
     });
     
     it("Cleanup conversation messages", function (done) {
+        expectMsg(accountId, {
+            operation: "cleanup_conversation_messages",
+            content: {
+                "timestamp": 3000,
+                "conversation_id": "20"
+            }
+        });
+
         api
         .post('/conversations/cleanup_messages')
         .query({
@@ -2909,6 +3624,13 @@ describe("heart-sms-backend unit test", function () {
     });
     
     it("Clean up messages", function (done) {
+        expectMsg(accountId, {
+            operation: "cleanup_messages",
+            content: {
+                "timestamp": 1000
+            }
+        });
+
         api
         .post('/messages/cleanup')
         .query({
@@ -2927,6 +3649,13 @@ describe("heart-sms-backend unit test", function () {
     
     // This removes the draft as well!
     it("Remove conversation", function (done) {
+        expectMsg(accountId, {
+            operation: "removed_conversation",
+            content: {
+                "id": 10
+            }
+        });
+
         api
         .post('/conversations/remove/10')
         .query({
@@ -2942,6 +3671,13 @@ describe("heart-sms-backend unit test", function () {
     });
 
     it("Dismissed notification", function (done) {
+        expectMsg(accountId, {
+            operation: "dismissed_notification",
+            content: {
+                id: "1"
+            }
+        });
+
         api
         .post('/accounts/dismissed_notification')
         .query({
@@ -2958,6 +3694,14 @@ describe("heart-sms-backend unit test", function () {
     });
 
     it("Dismissed notification with device_id", function (done) {
+        expectMsg(accountId, {
+            operation: "dismissed_notification",
+            content: {
+                "id": "1",
+                "device_id": "3"
+            }
+        });
+        
         api
         .post('/accounts/dismissed_notification')
         .query({
@@ -3001,7 +3745,7 @@ describe("heart-sms-backend unit test", function () {
     });
 
     it("Clean account", function (done) {
-        checkMsg(accountId, {
+        expectMsg(accountId, {
             operation: 'cleaned_account',
             content: {
                 id: accountId
@@ -3049,6 +3793,13 @@ describe("heart-sms-backend unit test", function () {
     });
 
     it("Delete account", function (done) {
+        expectMsg(accountId, {
+            operation: "removed_account",
+            content: {
+                "id": accountId
+            }
+        });
+
         api
         .post('/accounts/remove_account')
         .query({
@@ -3071,6 +3822,14 @@ describe("heart-sms-backend unit test", function () {
             res.status.should.equal(404);
             done();
         });
+    });
+
+    it("should check total mqtt messages",function(done){
+        // All messages received
+        assert.ok(msgCount == 75);
+        // All messages tested
+        assert.ok(msgTested == msgCount);
+        done();
     });
 
     it("should close mqtt socket",function(done){

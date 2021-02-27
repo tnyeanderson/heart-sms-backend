@@ -13,7 +13,7 @@
   - [x] Request validation
   - [x] Full response valdation
   - [x] All permutations of optional parameters
-  - [ ] MQTT messages testing
+  - [x] MQTT messages testing
 - [x] Less console logs of text, switch to Errors
 
 

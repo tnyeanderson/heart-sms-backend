@@ -203,16 +203,24 @@ router.route('/update_snippet/:device_id').post(
         db.query(sql, res, function (result) {
             res.json(new BaseResponse)
 
-            // Send websocket message
-            let payload = new ConversationsPayloads.update_conversation_snippet(
-                Number(r.device_id),
-                r.read,
-                Number(r.timestamp),
-                r.snippet,
-                r.archive
-            );
-            
-            payload.send(r.account_id);
+            // TODO: This is inefficient but we have to have all the data :(
+            let fields = ["device_id AS id", "read", "timestamp", "snippet", "archive"];
+
+            let sql = `SELECT ${db.selectFields(fields)} FROM ${table} WHERE device_id = ${db.escape(Number(r.device_id))} AND ${r.whereAccount()} LIMIT 1`;
+    
+            db.query(sql, res, function (result) {
+                if (result[0]) {
+                    var payload = new ConversationsPayloads.update_conversation_snippet(
+                        result[0].id,
+                        result[0].read,
+                        result[0].timestamp,
+                        result[0].snippet,
+                        result[0].archive
+                    );
+    
+                    payload.send(r.account_id);
+                }
+            });
         });
     });
 
@@ -271,7 +279,8 @@ router.route('/read/:device_id').post(
             // Send websocket message
             let payload = new ConversationsPayloads.read_conversation(
                 Number(r.device_id),
-                String(r.android_device)
+                // Don't cast to 'undefined' by accident
+                (r.android_device) ? String(r.android_device) : undefined
             );
             
             payload.send(r.account_id);

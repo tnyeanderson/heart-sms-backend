@@ -101,16 +101,25 @@ router.route('/update/:device_id').post(
         db.query(sql, res, function (result) {
             res.json(new BaseResponse);
 
-            // Send websocket message
-            let payload = new MessagesPayloads.updated_message(
-                Number(r.device_id),
-                r.message_type,
-                r.timestamp,
-                r.read,
-                r.seen
-            );
-            
-            payload.send(r.account_id);
+            let fields = ['device_id AS id', 'message_type AS type', 'timestamp'];
+
+            let sql = `SELECT ${db.selectFields(fields)} FROM ${table} WHERE device_id = ${db.escape(Number(r.device_id))} AND ${r.whereAccount()} LIMIT 1`
+
+            // TODO: This is inefficient, but we need to have both message_type and timestamp
+            db.query(sql, res, function (result) {
+                if (result[0]) {
+                    // Send websocket message
+                    let payload = new MessagesPayloads.updated_message(
+                        result[0].id,
+                        result[0].type,
+                        result[0].timestamp,
+                        r.read,
+                        r.seen
+                    );
+                    
+                    payload.send(r.account_id);
+                }
+            });
         });
     });
 

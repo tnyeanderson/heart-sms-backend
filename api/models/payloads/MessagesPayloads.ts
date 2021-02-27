@@ -23,8 +23,8 @@ export class updated_message extends BasePayload {
         public id: number,
         public type: number,
         public timestamp: number,
-        public read: boolean,
-        public seen: boolean,
+        public read?: boolean,
+        public seen?: boolean,
     ) { super() }
 }
 

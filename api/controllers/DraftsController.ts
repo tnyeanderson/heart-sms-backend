@@ -109,8 +109,8 @@ router.route('/update/:device_id').post(
             let sql = `SELECT ${db.selectFields(fields)} FROM ${table} WHERE device_id = ${db.escape(Number(r.device_id))} AND ${r.whereAccount()} LIMIT 1`;
             db.query(sql, res, function (result) {
                 let payload = new DraftsPayloads.replaced_drafts(
-                    result[0].device_id,
-                    result[0].device_conversation_id,
+                    result[0].id,
+                    result[0].conversation_id,
                     result[0].data,
                     result[0].mime_type
                 );
