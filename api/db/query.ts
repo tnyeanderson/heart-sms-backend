@@ -1,5 +1,7 @@
 import { Response } from 'express';
-import mysql, { FieldInfo, Pool } from 'mysql';
+//import mysql, { FieldInfo, Pool } from 'mysql';
+import format from 'pg-format'
+import { Pool, QueryResult } from 'pg';
 import connection from '../db/connect.js';
 import { DatabaseError } from '../models/responses/ErrorResponses.js';
 import util from '../utils/util.js';
@@ -7,9 +9,9 @@ import util from '../utils/util.js';
 // Set to true to debug SQL queries during development
 let log_queries = false;
 
-let pool: Pool  = mysql.createPool(connection());
+let pool: Pool  = new Pool(connection());
 
-type HeartQueryCallback = (result: FieldInfo[] | any[]) => any;
+type HeartQueryCallback = (result: QueryResult | any[]) => any;
 
 let Query = {
     
@@ -47,7 +49,7 @@ let Query = {
      * @param item 
      */
     escape: function (item: string | string[] | number | boolean) {
-        return mysql.escape(item);
+        return format.literal(item);
     },
 
     /**
@@ -55,7 +57,7 @@ let Query = {
      * @param item 
      */
     escapeId: function (item: string) {
-        return mysql.escapeId(item);
+        return format.ident(item);
     },
 
     /**
