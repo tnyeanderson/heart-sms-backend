@@ -282,45 +282,82 @@ $$ LANGUAGE SQL STABLE;
 -- ---------------------------
 -- ---------------------------
 
+-- ---
 -- Messages are sometimes added before a conversation is, so we can't use a FK
-CREATE TRIGGER before_conversation_delete
-BEFORE DELETE
-ON Conversations FOR EACH ROW
+-- ---
+CREATE OR REPLACE FUNCTION before_conversation_delete_func()
+  RETURNS trigger AS
+$$
 BEGIN
     DELETE FROM Messages WHERE Messages.device_conversation_id = OLD.device_id
     AND Messages.account_id = OLD.account_id;
-END //
+END;
+$$
+LANGUAGE 'plpgsql';
 
-
--- Media is sometimes added before a message is, so we can't use a FK
-CREATE TRIGGER before_message_delete
+CREATE TRIGGER before_conversation_delete
 BEFORE DELETE
-ON Messages FOR EACH ROW
+ON Conversations 
+FOR EACH ROW
+EXECUTE PROCEDURE before_conversation_delete_func();
+
+
+-- ---
+-- Media is sometimes added before a message is, so we can't use a FK
+-- ---
+CREATE OR REPLACE FUNCTION before_message_delete_func()
+  RETURNS trigger AS
+$$
 BEGIN
     DELETE FROM Media WHERE Media.message_id = OLD.device_id
     AND Media.account_id = OLD.account_id;
-END //
+END;
+$$
+LANGUAGE 'plpgsql';
 
-
--- Remove conversations from folder before deleting
-CREATE TRIGGER before_folder_delete
+CREATE TRIGGER before_message_delete
 BEFORE DELETE
-ON Folders FOR EACH ROW
+ON Messages 
+FOR EACH ROW
+EXECUTE PROCEDURE before_message_delete_func();
+
+-- ---
+-- Remove conversations from folder before deleting
+-- ---
+CREATE OR REPLACE FUNCTION before_folder_delete_func()
+  RETURNS trigger AS
+$$
 BEGIN
     UPDATE Conversations SET folder_id = -1 WHERE Conversations.folder_id = OLD.device_id 
     AND Conversations.account_id = OLD.account_id;
-END //
+END;
+$$
+LANGUAGE 'plpgsql';
 
-
--- Disassociate device from messages before deleting
-CREATE TRIGGER before_device_delete
+CREATE TRIGGER before_folder_delete
 BEFORE DELETE
-ON Devices FOR EACH ROW
+ON Folders 
+FOR EACH ROW
+EXECUTE PROCEDURE before_folder_delete_func();
+
+-- ---
+-- Disassociate device from messages before deleting
+-- ---
+CREATE OR REPLACE FUNCTION before_device_delete_func()
+  RETURNS trigger AS
+$$
 BEGIN
     UPDATE Messages SET sent_device = -1 WHERE Messages.sent_device = OLD.id 
     AND Messages.account_id = OLD.account_id;
-END //
+END;
+$$
+LANGUAGE 'plpgsql';
 
+CREATE TRIGGER before_device_delete
+BEFORE DELETE
+ON Devices 
+FOR EACH ROW
+EXECUTE PROCEDURE before_device_delete_func();
 
 
 -- ---------------------------
