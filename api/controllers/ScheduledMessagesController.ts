@@ -85,29 +85,24 @@ router.route('/update/:device_id').post(
     function (req, res, next) {
         let r: ScheduledMessagesUpdateRequest = res.locals.request;
 
-        let sql = `UPDATE ${table} SET ${r.updateStr()} WHERE device_id = ${db.escape(Number(r.device_id))} AND ${r.whereAccount()}`;
-
+        let payloadFields = ["device_id AS id", "to", "data", "mime_type", "timestamp", "title", "repeat"];
+        
+        let sql = `UPDATE ${table} SET ${r.updateStr()} WHERE device_id = ${db.escape(Number(r.device_id))} AND ${r.whereAccount()} RETURNING ${db.selectFields(payloadFields)}`;
+        
         db.query(sql, res, function (result) {
             res.json(new BaseResponse);
 
-            // TODO: This is inefficient. but we need the data
-            let fields = ["device_id AS id", "to", "data", "mime_type", "timestamp", "title", "repeat"];
-            let sql = `SELECT ${db.selectFields(fields)} FROM ${table} WHERE device_id = ${db.escape(Number(r.device_id))} AND ${r.whereAccount()} LIMIT 1`;
-            db.query(sql, res, function (result) {
-                if (result[0]) {
-                    let payload = new ScheduledMessagesPayloads.updated_scheduled_message(
-                        result[0].id,
-                        result[0].to,
-                        result[0].data,
-                        result[0].mime_type,
-                        result[0].timestamp,
-                        result[0].title,
-                        result[0].repeat
-                    );
+            let payload = new ScheduledMessagesPayloads.updated_scheduled_message(
+                result[0].id,
+                result[0].to,
+                result[0].data,
+                result[0].mime_type,
+                result[0].timestamp,
+                result[0].title,
+                result[0].repeat
+            );
 
-                    payload.send(r.account_id);
-                }
-            });
+            payload.send(r.account_id);
         });
     });
 

@@ -89,33 +89,27 @@ router.route('/update_device_id').post(
     function (req, res, next) {
         let r: ContactsUpdateDeviceIdRequest = res.locals.request;
 
-        let sql = `UPDATE ${table} SET ${r.updateStr()} WHERE device_id = ${db.escape(Number(r.device_id))} AND ${r.whereAccount()}`;
+        let payloadFields = ["device_id", "phone_number", "name", "color", "color_dark", "color_light", "color_accent", "contact_type AS type"];
+
+        let sql = `UPDATE ${table} SET ${r.updateStr()} WHERE device_id = ${db.escape(Number(r.device_id))} AND ${r.whereAccount()} RETURNING ${db.selectFields(payloadFields)}`;
 
         db.query(sql, res, function (result) {
             res.json(new BaseResponse);
 
+            if (result[0]) {
+                let payload = new ContactsPayloads.updated_contact(
+                    result[0].device_id,
+                    result[0].phone_number,
+                    result[0].name,
+                    result[0].color,
+                    result[0].color_dark,
+                    result[0].color_light,
+                    result[0].color_accent,
+                    result[0].type
+                );
 
-            // TODO: this is inefficient, but we need the contact_type
-            let fields = ["device_id", "phone_number", "name", "color", "color_dark", "color_light", "color_accent", "contact_type AS type"];
-
-            let sql = `SELECT ${db.selectFields(fields)} FROM ${table} WHERE device_id = ${db.escape(Number(r.device_id))} AND ${r.whereAccount()} LIMIT 1`;
-
-            db.query(sql, res, function (result) {
-                if (result[0]) {
-                    let payload = new ContactsPayloads.updated_contact(
-                        result[0].device_id,
-                        result[0].phone_number,
-                        result[0].name,
-                        result[0].color,
-                        result[0].color_dark,
-                        result[0].color_light,
-                        result[0].color_accent,
-                        result[0].type
-                    );
-
-                    payload.send(r.account_id);
-                }
-            });
+                payload.send(r.account_id);
+            }
         });
     });
 

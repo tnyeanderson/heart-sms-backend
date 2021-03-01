@@ -99,24 +99,21 @@ router.route('/update/:device_id').post(
         
         console.log("*************** /drafts/update called!!!!!! **********************");
 
-        let sql = `UPDATE ${table} SET ${r.updateStr()} WHERE device_id = ${db.escape(Number(r.device_id))} AND ${r.whereAccount()}`;
+        let payloadFields = ["device_id AS id", "device_conversation_id AS conversation_id", "data", "mime_type"];
+
+        let sql = `UPDATE ${table} SET ${r.updateStr()} WHERE device_id = ${db.escape(Number(r.device_id))} AND ${r.whereAccount()} RETURNING ${db.selectFields(payloadFields)}`;
 
         db.query(sql, res, function (result) {
             res.json(new BaseResponse);
 
-            // TODO: This is inefficient. but we need all the data
-            let fields = ["device_id AS id", "device_conversation_id AS conversation_id", "data", "mime_type"];
-            let sql = `SELECT ${db.selectFields(fields)} FROM ${table} WHERE device_id = ${db.escape(Number(r.device_id))} AND ${r.whereAccount()} LIMIT 1`;
-            db.query(sql, res, function (result) {
-                let payload = new DraftsPayloads.replaced_drafts(
-                    result[0].id,
-                    result[0].conversation_id,
-                    result[0].data,
-                    result[0].mime_type
-                );
+            let payload = new DraftsPayloads.replaced_drafts(
+                result[0].id,
+                result[0].conversation_id,
+                result[0].data,
+                result[0].mime_type
+            );
 
-                payload.send(r.account_id);
-            });
+            payload.send(r.account_id);
         });
     });
 

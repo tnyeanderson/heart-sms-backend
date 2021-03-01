@@ -157,38 +157,31 @@ router.route('/update/:device_id').post(
     function (req, res, next) {
         let r: ConversationsUpdateRequest = res.locals.request;
 
-        let sql = `UPDATE ${table} SET ${r.updateStr()} WHERE device_id = ${db.escape(Number(r.device_id))} AND ${r.whereAccount()}`;
+        let payloadFields = ["device_id AS id", "color", "color_dark", "color_light", "color_accent", "led_color", "pinned", "read", "title", "snippet", "ringtone", "mute", "archive", "private_notifications"];
+
+        let sql = `UPDATE ${table} SET ${r.updateStr()} WHERE device_id = ${db.escape(Number(r.device_id))} AND ${r.whereAccount()} RETURNING ${db.selectFields(payloadFields)}`;
 
         db.query(sql, res, function (result) {
             res.json(new BaseResponse)
 
-            // TODO: This is inefficient but we have to have all the data :(
-            let fields = ["device_id AS id", "color", "color_dark", "color_light", "color_accent", "led_color", "pinned", "read", "title", "snippet", "ringtone", "mute", "archive", "private_notifications"];
+            var payload = new ConversationsPayloads.updated_conversation(
+                result[0].id,
+                result[0].color,
+                result[0].color_dark,
+                result[0].color_light,
+                result[0].color_accent,
+                result[0].led_color,
+                result[0].pinned,
+                result[0].read,
+                result[0].title,
+                result[0].snippet,
+                result[0].mute,
+                result[0].archive,
+                result[0].private_notifications,
+                result[0].ringtone
+            );
 
-            let sql = `SELECT ${db.selectFields(fields)} FROM ${table} WHERE device_id = ${db.escape(Number(r.device_id))} AND ${r.whereAccount()} LIMIT 1`;
-
-            db.query(sql, res, function (result) {
-                if (result[0]) {
-                    var payload = new ConversationsPayloads.updated_conversation(
-                        result[0].id,
-                        result[0].color,
-                        result[0].color_dark,
-                        result[0].color_light,
-                        result[0].color_accent,
-                        result[0].led_color,
-                        result[0].pinned,
-                        result[0].read,
-                        result[0].title,
-                        result[0].snippet,
-                        result[0].mute,
-                        result[0].archive,
-                        result[0].private_notifications,
-                        result[0].ringtone
-                    );
-
-                    payload.send(r.account_id);
-                }
-            });
+            payload.send(r.account_id);
         });
     });
 
@@ -198,29 +191,22 @@ router.route('/update_snippet/:device_id').post(
     function (req, res, next) {
         let r: ConversationsUpdateSnippetRequest = res.locals.request;
 
-        let sql = `UPDATE ${table} SET ${r.updateStr()} WHERE device_id = ${db.escape(Number(r.device_id))} AND ${r.whereAccount()}`;
+        let payloadFields = ["device_id AS id", "read", "timestamp", "snippet", "archive"];
+
+        let sql = `UPDATE ${table} SET ${r.updateStr()} WHERE device_id = ${db.escape(Number(r.device_id))} AND ${r.whereAccount()} RETURNING ${db.selectFields(payloadFields)}`;
 
         db.query(sql, res, function (result) {
             res.json(new BaseResponse)
 
-            // TODO: This is inefficient but we have to have all the data :(
-            let fields = ["device_id AS id", "read", "timestamp", "snippet", "archive"];
-
-            let sql = `SELECT ${db.selectFields(fields)} FROM ${table} WHERE device_id = ${db.escape(Number(r.device_id))} AND ${r.whereAccount()} LIMIT 1`;
-    
-            db.query(sql, res, function (result) {
-                if (result[0]) {
-                    var payload = new ConversationsPayloads.update_conversation_snippet(
-                        result[0].id,
-                        result[0].read,
-                        result[0].timestamp,
-                        result[0].snippet,
-                        result[0].archive
-                    );
-    
-                    payload.send(r.account_id);
-                }
-            });
+            var payload = new ConversationsPayloads.update_conversation_snippet(
+                result[0].id,
+                result[0].read,
+                result[0].timestamp,
+                result[0].snippet,
+                result[0].archive
+            );
+            
+            payload.send(r.account_id);
         });
     });
 

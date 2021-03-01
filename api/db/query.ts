@@ -1,5 +1,4 @@
 import { Response } from 'express';
-//import mysql, { FieldInfo, Pool } from 'mysql';
 import format from 'pg-format'
 import pg from 'pg';
 import connection from '../db/connect.js';
@@ -7,7 +6,7 @@ import { DatabaseError } from '../models/responses/ErrorResponses.js';
 import util from '../utils/util.js';
 
 // Set to true to debug SQL queries during development
-let log_queries = true;
+let log_queries = false;
 
 let pool: pg.Pool  = new pg.Pool(connection());
 

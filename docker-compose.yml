@@ -37,7 +37,7 @@ services:
     env_file:
       - .db.env
     volumes:
-      - db:/var/lib/mysql
+      - db:/var/lib/postgresql/data
 
   heart-sms-mqtt:
     container_name: heart-sms-mqtt

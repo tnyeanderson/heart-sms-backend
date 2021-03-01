@@ -40,7 +40,7 @@ services:
     env_file:
       - .db.env.example
     volumes:
-      - db-dev:/var/lib/mysql
+      - db-dev:/var/lib/postgresql/data
 
   heart-sms-mqtt:
     container_name: heart-sms-mqtt
