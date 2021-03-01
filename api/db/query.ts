@@ -1,17 +1,17 @@
 import { Response } from 'express';
 //import mysql, { FieldInfo, Pool } from 'mysql';
 import format from 'pg-format'
-import { Pool, QueryResult } from 'pg';
+import pg from 'pg';
 import connection from '../db/connect.js';
 import { DatabaseError } from '../models/responses/ErrorResponses.js';
 import util from '../utils/util.js';
 
 // Set to true to debug SQL queries during development
-let log_queries = false;
+let log_queries = true;
 
-let pool: Pool  = new Pool(connection());
+let pool: pg.Pool  = new pg.Pool(connection());
 
-type HeartQueryCallback = (result: QueryResult | any[]) => any;
+type HeartQueryCallback = (result: pg.QueryResult[] | any[]) => any;
 
 let Query = {
     
@@ -95,7 +95,7 @@ let Query = {
                 
                 return;
             }
-            callback(result);
+            callback(result.rows);
         });
     },
     

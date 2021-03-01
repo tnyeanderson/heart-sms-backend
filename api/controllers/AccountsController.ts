@@ -92,7 +92,7 @@ router.route('/remove_account').post(
     function (req, res, next) {
         let r: AccountIdRequest = res.locals.request;
         
-        let sql = `DELETE FROM Accounts WHERE ${r.whereAccount()} LIMIT 1`;
+        let sql = `DELETE FROM Accounts WHERE ${r.whereAccount()}`;
         
         db.query(sql, res, function (result) {
             let payload = new AccountsPayloads.removed_account(
@@ -112,13 +112,13 @@ router.route('/count').get(
     function (req, res, next) {
         let r: AccountIdRequest = res.locals.request;
         
-        let tables = ["Devices", "Messages", "Conversations", "Drafts", "ScheduledMessages", "Blacklists", "Contacts", "Templates", "Folders", "AutoReplies"];
+        let tables = ["devices", "messages", "conversations", "drafts", "scheduledmessages", "blacklists", "contacts", "templates", "folders", "autoreplies"];
         let colNames = ["device_count", "message_count", "conversation_count", "draft_count", "scheduled_count", "blacklist_count", "contact_count", "template_count", "folder_count", "auto_reply_count"];
         
         // Use subqueries to count from each table
         let sql = "SELECT ";
         for (let i=0, len=tables.length; i<len; i++) {
-            sql += `(SELECT COUNT(*) FROM ${db.escapeId(tables[i])} WHERE ${r.whereAccount()}) AS ${db.escapeId(colNames[i])}, `;
+            sql += `(SELECT COUNT(*) FROM ${tables[i]} WHERE ${r.whereAccount()}) AS ${db.escapeId(colNames[i])}, `;
         }
         // Remove last comma
         sql = sql.substring(0, sql.lastIndexOf(","));

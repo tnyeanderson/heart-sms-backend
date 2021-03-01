@@ -1,7 +1,10 @@
 import { ConnectionConfig } from 'mysql';
-import { PoolConfig } from 'pg';
+import pg from 'pg';
 import { DefaultDatabasePasswordError } from '../models/errors/Errors.js';
 import util from '../utils/util.js';
+
+// Cast bigints to numbers instead of strings
+pg.types.setTypeParser(20, Number);
 
 const dbDefaultPass: string = 'TESTPASSWORD2';
 
@@ -21,7 +24,7 @@ if (util.env.prod() && dbPass === dbDefaultPass) {
 
 console.log("Using database: " + dbHost + ":" + dbName);
 
-const baseSettings: PoolConfig = {
+const baseSettings: pg.PoolConfig = {
     host: dbHost,
     port: dbPort,
     user: dbUser,

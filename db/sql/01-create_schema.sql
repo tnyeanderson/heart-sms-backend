@@ -270,7 +270,9 @@ CREATE INDEX IX_Templates_account_id ON Templates (account_id) ;
 -- ---------------------------
 -- ---------------------------
 
-CREATE FUNCTION TRANSLATE_SESSION_ID(sessionId CHAR(64)) RETURNS INTEGER AS $$
+CREATE FUNCTION TRANSLATE_SESSION_ID(sessionId CHAR(64)) 
+RETURNS INTEGER 
+AS $$
     SELECT account_id FROM SessionMap WHERE session_id = sessionId LIMIT 1;
 $$ LANGUAGE SQL STABLE;
 
@@ -285,12 +287,14 @@ $$ LANGUAGE SQL STABLE;
 -- ---
 -- Messages are sometimes added before a conversation is, so we can't use a FK
 -- ---
-CREATE OR REPLACE FUNCTION before_conversation_delete_func()
+CREATE FUNCTION before_conversation_delete_func()
   RETURNS trigger AS
 $$
 BEGIN
     DELETE FROM Messages WHERE Messages.device_conversation_id = OLD.device_id
     AND Messages.account_id = OLD.account_id;
+
+    RETURN OLD;
 END;
 $$
 LANGUAGE 'plpgsql';
@@ -305,12 +309,13 @@ EXECUTE PROCEDURE before_conversation_delete_func();
 -- ---
 -- Media is sometimes added before a message is, so we can't use a FK
 -- ---
-CREATE OR REPLACE FUNCTION before_message_delete_func()
+CREATE FUNCTION before_message_delete_func()
   RETURNS trigger AS
 $$
 BEGIN
     DELETE FROM Media WHERE Media.message_id = OLD.device_id
     AND Media.account_id = OLD.account_id;
+    RETURN OLD;
 END;
 $$
 LANGUAGE 'plpgsql';
@@ -324,12 +329,13 @@ EXECUTE PROCEDURE before_message_delete_func();
 -- ---
 -- Remove conversations from folder before deleting
 -- ---
-CREATE OR REPLACE FUNCTION before_folder_delete_func()
+CREATE FUNCTION before_folder_delete_func()
   RETURNS trigger AS
 $$
 BEGIN
     UPDATE Conversations SET folder_id = -1 WHERE Conversations.folder_id = OLD.device_id 
     AND Conversations.account_id = OLD.account_id;
+    RETURN OLD;
 END;
 $$
 LANGUAGE 'plpgsql';
@@ -349,6 +355,7 @@ $$
 BEGIN
     UPDATE Messages SET sent_device = -1 WHERE Messages.sent_device = OLD.id 
     AND Messages.account_id = OLD.account_id;
+    RETURN OLD;
 END;
 $$
 LANGUAGE 'plpgsql';
@@ -367,11 +374,12 @@ EXECUTE PROCEDURE before_device_delete_func();
 -- ---------------------------
 
 -- Stored procedure for cleaning an account
-CREATE PROCEDURE CleanAccount(IN sessionId CHAR(64))
+CREATE PROCEDURE CleanAccount(sessionId CHAR(64))
+LANGUAGE plpgsql
+AS $$
+DECLARE
+    accountId INTEGER := TRANSLATE_SESSION_ID(sessionId);
 BEGIN
-    DECLARE accountId INTEGER;
-    SET accountId = TRANSLATE_SESSION_ID(sessionId);
-
     DELETE FROM Messages WHERE account_id = accountId;
     DELETE FROM Conversations WHERE account_id = accountId;
     DELETE FROM Contacts WHERE account_id = accountId;
@@ -381,46 +389,44 @@ BEGIN
     DELETE FROM Folders WHERE account_id = accountId;
     DELETE FROM AutoReplies WHERE account_id = accountId;
     DELETE FROM Templates WHERE account_id = accountId;
-END //
+END;
+$$;
 
 
 -- Stored procedure for updating the primary device
 -- Sets all other devices to false before setting the new one to "true"
 -- TODO: Add a check to make sure the new id exists first!
-CREATE PROCEDURE UpdatePrimaryDevice(IN sessionId CHAR(64), IN newDeviceId INT)
+CREATE PROCEDURE UpdatePrimaryDevice(sessionId CHAR(64), newDeviceId INT)
+LANGUAGE plpgsql
+AS $$
+DECLARE
+    accountId INTEGER := TRANSLATE_SESSION_ID(sessionId);
 BEGIN
-    DECLARE accountId INTEGER;
-    SET accountId = TRANSLATE_SESSION_ID(sessionId);
-
     UPDATE Devices SET "primary" = false WHERE account_id = accountId;
     UPDATE Devices SET "primary" = true WHERE id = newDeviceId AND account_id = accountId;
-END //
+END;
+$$;
 
 
 -- Stored procedure for creating an account
 -- Creates the account then stores a session ID
 CREATE PROCEDURE CreateAccount(
-    IN sessionId CHAR(64), 
-    IN username VARCHAR(64), 
-    IN passwordHash TEXT, 
-    IN salt1 TEXT, 
-    IN salt2 TEXT, 
-    IN realName TEXT, 
-    IN phoneNumber TEXT)
+    sessionId CHAR(64), 
+    username VARCHAR(64), 
+    passwordHash TEXT, 
+    salt1 TEXT, 
+    salt2 TEXT, 
+    realName TEXT, 
+    phoneNumber TEXT)
+LANGUAGE plpgsql
+AS $$
+DECLARE
+    accountId INTEGER;
 BEGIN
-    DECLARE EXIT HANDLER FOR 1062
-    BEGIN
-        ROLLBACK;
-        SELECT "user already exists" error;
-    END;
-
-    START TRANSACTION;
-    INSERT INTO Accounts  ("username", "password_hash", "salt1", "salt2", "real_name", "phone_number") VALUES (username, passwordHash, salt1, salt2, realName, phoneNumber);
-    INSERT INTO SessionMap ("session_id", "account_id") VALUES (sessionId, LAST_INSERT_ID());
-    INSERT INTO Settings ("account_id") VALUES (LAST_INSERT_ID());
-    COMMIT;
-END //
-
-DELIMITER ;
+    INSERT INTO Accounts  ("username", "password_hash", "salt1", "salt2", "real_name", "phone_number") VALUES (username, passwordHash, salt1, salt2, realName, phoneNumber) RETURNING account_id INTO accountId;
+    INSERT INTO SessionMap ("session_id", "account_id") VALUES (sessionId, accountId);
+    INSERT INTO Settings ("account_id") VALUES (accountId);
+END;
+$$;
 
 COMMIT;
