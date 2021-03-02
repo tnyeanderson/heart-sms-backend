@@ -205,7 +205,7 @@ router.route('/update_snippet/:device_id').post(
                 result[0].snippet,
                 result[0].archive
             );
-            
+
             payload.send(r.account_id);
         });
     });

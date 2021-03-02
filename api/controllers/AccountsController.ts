@@ -1,6 +1,8 @@
 import crypto from 'crypto';
 import express from 'express';
+import { QueryResult, QueryResultRow } from 'pg';
 import db from '../db/query.js';
+import { asyncHandler } from '../helpers/AsyncHandler.js';
 import * as AccountsPayloads from '../models/payloads/AccountsPayloads.js';
 import { DismissedNotificationRequest, LoginRequest, SignupRequest, UpdateSettingRequest } from '../models/requests/AccountsRequests.js';
 import { AccountIdRequest } from '../models/requests/BaseRequests.js';
@@ -17,7 +19,7 @@ router.route('/').get(function (req, res, next) {
 
 router.route('/login').post(
     (req, res, next) => LoginRequest.handler(req, res, next), 
-    function (req, res, next) {
+    asyncHandler(async (req, res, next) => {
         let r: LoginRequest = res.locals.request;
 
         let fields = ['account_id', 'session_id', 'password_hash', 'real_name AS name', 'salt1', 'salt2', 'phone_number', 
@@ -26,25 +28,27 @@ router.route('/login').post(
                       'message_timestamp', 'subscription_type', 'subscription_expiration'];
         let sql = `SELECT ${db.selectFields(fields)} FROM Accounts INNER JOIN SessionMap USING (account_id) INNER JOIN Settings USING (account_id) WHERE username = ${db.escape(r.username)} LIMIT 1`;
 
-        db.query(sql, res, function (result) {
-            if (!result[0]) {
+        let result: QueryResultRow[] = await db.queryP(sql);
+
+        console.log(result);
+
+        if (!result[0]) {
+            return next(new AuthError);
+        }
+
+        // Hash password async
+        crypto.pbkdf2(r.password, result[0].salt1, 100000, 64, 'sha512', (err, derivedHash) => {
+            let testhash = derivedHash.toString('hex');
+            
+            if (testhash.length && result[0].password_hash == testhash) {
+                let response = AccountsResponses.LoginResponse.fromResult(result);
+            
+                res.json(response);
+            } else {
                 return next(new AuthError);
             }
-
-            // Hash password async
-            crypto.pbkdf2(r.password, result[0].salt1, 100000, 64, 'sha512', (err, derivedHash) => {
-                let testhash = derivedHash.toString('hex');
-
-                if (testhash.length && result[0].password_hash == testhash) {
-                    let response = AccountsResponses.LoginResponse.fromResult(result);
-                
-                    res.json(response);
-                } else {
-                    return next(new AuthError);
-                }
-            });
         });
-    });
+    }));
 
 
 router.route('/signup').post(

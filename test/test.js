@@ -441,7 +441,7 @@ describe("heart-sms-backend unit test", function () {
         });
     });
 
-    it("Fail to update account color integer setting with wrong type string that does not match database", function (done) {
+    it("Fail to update account color integer setting with wrong type string that does not match database (verifies database errors are caught)", function (done) {
         api
         .post('/accounts/update_setting')
         .query({
