@@ -73,32 +73,14 @@ class Query {
     }
     
     /**
-     * Runs an SQL query with error handling and returns the result
+     * Runs an SQL query with error handling and returns a promis with the result
+     * 
+     * @example
+     * let result = await db.query('SELECT 1`);
+     * 
      * @param sql SQL query to execute
-     * @param res Express response object
-     * @param callback function to run on completion
      */
-    static query (sql: string, res: Response, callback: HeartQueryCallback) {
-        if (log_queries && util.env.dev()) {
-            console.log(Date.now(), ' - ', sql, ';', '\n');
-        }
-        pool.query(sql, function (err, result) {
-            if (err) {
-                let dbError = new DatabaseError;
-                console.log(err);
-                
-                if (res) {
-                    // TODO: Database errors lock up the server for a few seconds
-                    res.status(dbError.status!).json(dbError.msg);
-                }
-                
-                return;
-            }
-            callback(result.rows);
-        });
-    }
-
-    static queryP (sql: string): Promise<QueryResultRow[]> {
+    static query (sql: string): Promise<QueryResultRow[]> {
         if (log_queries && util.env.dev()) {
             console.log(Date.now(), ' - ', sql, ';', '\n');
         }
@@ -106,11 +88,10 @@ class Query {
             pool.query(sql, function (err, result) {
                 if (err) {
                     let dbError = new DatabaseError;
-                    console.log(err);
-                    
-                    reject(dbError);
+                    console.log(err);     
+                    return reject(dbError);
                 }
-                resolve(result.rows);
+                return resolve(result.rows);
             });
         })
     }

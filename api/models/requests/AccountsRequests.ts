@@ -33,26 +33,27 @@ export class SignupRequest extends BaseRequest {
     }
 
     /**
-     * Express middleware that responds with an error if the user is a duplicate
+     * Async-aware express middleware that responds with an error if the user is a duplicate
      * @param req 
      * @param res 
      * @param next 
      */
-    static checkDuplicateUser (req: Request, res: Response, next: NextFunction) {
+    static async checkDuplicateUser (req: Request, res: Response, next: NextFunction) {
         // res.locals.request is set from .handler()
         let r = res.locals.request;
-        let validate_username = `SELECT username FROM Accounts WHERE username = ${db.escape(r.name)}`;
+
+        let sql = `SELECT username FROM Accounts WHERE username = ${db.escape(r.name)}`;
     
         // Don't do the work to hash the password if the user already exists
-        db.query(validate_username, res, function (result) {
-            if (result[0] && result[0].username === r.name) {
-                // User exists
-                return next(new DuplicateUserError);
-            } else {
-                // Continue to signup
-                return next();
-            }
-        });
+        let result = await db.query(sql);
+
+        if (result[0] && result[0].username === r.name) {
+            // User exists
+            return next(new DuplicateUserError);
+        } else {
+            // Continue to signup
+            return next();
+        }
     }
 }
 
