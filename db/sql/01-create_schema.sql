@@ -240,6 +240,54 @@ CREATE TABLE IF NOT EXISTS Media (
 ) ;
 
 
+
+-- ---------------------------
+-- ---------------------------
+-- Create Views --------------
+-- ---------------------------
+-- ---------------------------
+
+
+CREATE VIEW CountsView AS
+select 
+account_id, 
+coalesce(device_count, 0) as device_count, 
+coalesce(message_count, 0) as message_count,
+coalesce(conversation_count, 0) as conversation_count,
+coalesce(draft_count, 0) as draft_count,
+coalesce(scheduled_count, 0) as scheduled_count,
+coalesce(blacklist_count, 0) as blacklist_count,
+coalesce(contact_count, 0) as contact_count,
+coalesce(template_count, 0) as template_count,
+coalesce(folder_count, 0) as folder_count,
+coalesce(auto_reply_count, 0) as auto_reply_count
+from 
+(select account_id from accounts) a
+natural left join
+(select account_id, COUNT(*) as device_count from devices group by account_id) de_count
+natural left join
+(select account_id, COUNT(*) as message_count from messages group by account_id) m_count 
+natural left join
+(select account_id, COUNT(*) as conversation_count from conversations group by account_id) conv_count 
+natural left join
+(select account_id, COUNT(*) as draft_count from drafts group by account_id) dr_count 
+natural left join
+(select account_id, COUNT(*) as scheduled_count from scheduledmessages group by account_id) sm_count 
+natural left join
+(select account_id, COUNT(*) as blacklist_count from blacklists group by account_id) b_count
+natural left join
+(select account_id, COUNT(*) as contact_count from contacts group by account_id) cont_count 
+natural left join
+(select account_id, COUNT(*) as template_count from templates group by account_id) t_count 
+natural left join
+(select account_id, COUNT(*) as folder_count from folders group by account_id) f_count 
+natural left join
+(select account_id, COUNT(*) as auto_reply_count from autoreplies group by account_id) ar_count 
+;
+
+
+
+
 -- ---------------------------
 -- ---------------------------
 -- Create Indexes ------------

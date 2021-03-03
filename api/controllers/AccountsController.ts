@@ -110,16 +110,10 @@ router.route('/count').get(
     asyncHandler(async (req, res, next) => {
         let r: AccountIdRequest = res.locals.request;
         
-        let tables = ["devices", "messages", "conversations", "drafts", "scheduledmessages", "blacklists", "contacts", "templates", "folders", "autoreplies"];
-        let colNames = ["device_count", "message_count", "conversation_count", "draft_count", "scheduled_count", "blacklist_count", "contact_count", "template_count", "folder_count", "auto_reply_count"];
+        let fields = ["device_count", "message_count", "conversation_count", "draft_count", "scheduled_count", "blacklist_count", "contact_count", "template_count", "folder_count", "auto_reply_count"];
         
         // Use subqueries to count from each table
-        let sql = "SELECT ";
-        for (let i=0, len=tables.length; i<len; i++) {
-            sql += `(SELECT COUNT(*) FROM ${tables[i]} WHERE ${r.whereAccount()}) AS ${db.escapeId(colNames[i])}, `;
-        }
-        // Remove last comma
-        sql = sql.substring(0, sql.lastIndexOf(","));
+        let sql = `SELECT ${db.selectFields(fields)} from CountsView where ${r.whereAccount()}`;
 
         let result = await db.query(sql);
         
