@@ -134,7 +134,7 @@ CREATE TABLE IF NOT EXISTS Contacts (
 
 CREATE TABLE IF NOT EXISTS Folders (
     "id" SERIAL PRIMARY KEY,
-    "device_id" BIGINT NOT NULL UNIQUE,
+    "device_id" BIGINT NOT NULL,
     "name" TEXT NULL,
     "account_id" INTEGER NOT NULL,
     "color" INTEGER NOT NULL,
@@ -146,7 +146,7 @@ CREATE TABLE IF NOT EXISTS Folders (
 
 CREATE TABLE IF NOT EXISTS Conversations (
     "id" SERIAL PRIMARY KEY,
-    "device_id" BIGINT NOT NULL UNIQUE,
+    "device_id" BIGINT NOT NULL,
     "phone_numbers" TEXT NULL,
     "image_uri" TEXT NULL,
     "id_matcher" TEXT NULL,
@@ -171,6 +171,7 @@ CREATE TABLE IF NOT EXISTS Conversations (
 
 CREATE TABLE IF NOT EXISTS Devices (
     "id" SERIAL PRIMARY KEY,
+    "device_id" BIGINT NOT NULL,
     "info" TEXT NULL,
     "name" TEXT NULL,
     "primary" BOOLEAN NOT NULL,
@@ -208,8 +209,7 @@ CREATE TABLE IF NOT EXISTS Drafts (
     "data" TEXT NULL,
     "mime_type" TEXT NULL,
     "account_id" INTEGER NOT NULL,
-    CONSTRAINT FK_Drafts_Accounts_account_id FOREIGN KEY (account_id) REFERENCES Accounts (account_id) ON DELETE CASCADE,
-    CONSTRAINT FK_Drafts_Conversations_device_conversation_id FOREIGN KEY (device_conversation_id) REFERENCES Conversations (device_id) ON DELETE CASCADE
+    CONSTRAINT FK_Drafts_Accounts_account_id FOREIGN KEY (account_id) REFERENCES Accounts (account_id) ON DELETE CASCADE
 ) ;
 
 CREATE TABLE IF NOT EXISTS Messages (
@@ -334,6 +334,7 @@ $$ LANGUAGE SQL STABLE;
 
 -- ---
 -- Messages are sometimes added before a conversation is, so we can't use a FK
+-- device_id may not be unique for Drafts and Folders, so we must cascade deletes here
 -- ---
 CREATE FUNCTION before_conversation_delete_func()
   RETURNS trigger AS
@@ -341,6 +342,9 @@ $$
 BEGIN
     DELETE FROM Messages WHERE Messages.device_conversation_id = OLD.device_id
     AND Messages.account_id = OLD.account_id;
+
+    DELETE FROM Drafts WHERE Drafts.device_conversation_id = OLD.device_id
+    AND Drafts.account_id = OLD.account_id;
 
     RETURN OLD;
 END;
@@ -451,7 +455,7 @@ DECLARE
     accountId INTEGER := TRANSLATE_SESSION_ID(sessionId);
 BEGIN
     UPDATE Devices SET "primary" = false WHERE account_id = accountId;
-    UPDATE Devices SET "primary" = true WHERE id = newDeviceId AND account_id = accountId;
+    UPDATE Devices SET "primary" = true WHERE device_id = newDeviceId AND account_id = accountId;
 END;
 $$;
 

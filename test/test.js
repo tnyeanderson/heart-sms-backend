@@ -1,6 +1,7 @@
 import { agent } from 'supertest';
 import * as assert from 'assert';
-import { expectMsg, msgCount, msgTested, socket } from './mqtt-test.js';
+import { expectMsg, msgCount, msgTested, close as mqttTestClose } from './mqtt-test.js';
+import { deleteDummyAccount, postDeleteDummyCounts } from './add_dummy_account.js';
 
 // This agent refers to PORT where program is runninng.
 const api = agent("http://localhost:5000/api/v1");
@@ -3835,7 +3836,19 @@ describe("heart-sms-backend unit test", function () {
     });
 
     it("should close mqtt socket",function(done){
-        socket.end();
-        done();
+        mqttTestClose(function (successful) {
+            successful.should.equal(true);
+            done();
+        })
     });
+
+    /**
+     * Delete the dummy account
+     */
+    deleteDummyAccount();
+
+    /**
+     * All counts should be zero for dummy account after deletion
+     */
+    postDeleteDummyCounts();
 }); 

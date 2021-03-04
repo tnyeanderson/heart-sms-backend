@@ -1,5 +1,10 @@
-import mqtt, { MqttClient } from 'mqtt';
+import mqtt from 'mqtt';
 import * as assert from 'assert';
+
+/**
+ * Stores the socket connection
+ */
+let socket;
 
 const username = 'heart-sms-backend';
 const password = 'testpassword';
@@ -84,29 +89,31 @@ function expectNoMessages() {
     })
 }
 
+export function init(callback) {
+    console.log(`Connecting to ${username}:${password}@${url}`);
 
-/*
- *
- * Initialization
- *
- */
-console.log(`Connecting to ${username}:${password}@${url}`);
+    // Connect to and export socket
+    socket = mqtt.connect("mqtt://localhost", {username, password});
 
-// Connect to and export socket
-export const socket = mqtt.connect("mqtt://localhost", {username, password});
+    // On successful connection
+    socket.on('connect', function () {
+        console.log('Connected to mqtt socket');
+        // Subscribe to root topic
+        this.subscribe('#');
+        callback(true);
+    });
 
-// On successful connection
-socket.on('connect', function () {
-    console.log('Connected to mqtt socket');
-    // Subscribe to root topic
-    this.subscribe('#');
-});
+    // On connection error
+    socket.on('error', function () {
+        console.log('Error connecting to mqtt socket');
+        throw 'Error connecting to mqtt socket'
+    });
 
-// On connection error
-socket.on('error', function () {
-    console.log('Error connecting to mqtt socket');
-    throw 'Error connecting to mqtt socket'
-});
+    // Expect no messages until we've defined our first expected message
+    socket.on('message', expectNoMessages);
+}
 
-// Expect no messages until we've defined our first expected message
-socket.on('message', expectNoMessages);
+export function close(callback) {
+    socket.end();
+    callback(true);
+}

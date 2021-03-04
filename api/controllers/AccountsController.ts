@@ -118,8 +118,9 @@ router.route('/count').get(
         let result = await db.query(sql);
         
         let response = AccountsResponses.CountResponse.fromResult(result);
-        
-        res.json(response);
+
+        // If the account doesn't exist (and response is null), return an empty object
+        res.json(response || {});
     }));
 
 router.route('/clean_account').post(

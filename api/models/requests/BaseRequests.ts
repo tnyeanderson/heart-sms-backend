@@ -266,7 +266,7 @@ export class UpdateRequest extends AccountIdRequest {
     /**
      * Generates an object with all class properties minus account_id
      */
-    toUpdate() {
+    toUpdate(): any {
         let {account_id, ...out} = this;
         return out;
     }
