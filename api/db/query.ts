@@ -10,8 +10,6 @@ let log_queries = false;
 
 let pool: pg.Pool  = new pg.Pool(connection());
 
-type HeartQueryCallback = (result: pg.QueryResult[] | any[]) => any;
-
 class Query {
     
     /**
@@ -65,7 +63,7 @@ class Query {
      * it is actually stored as session_id in the SessionMap table.
      * The SessionMap table associates the 64 character session_id to a primary key of the Accounts table.
      * account_id is actually an auto incremented field, and the foreign key for other tables
-     * From here it is mapped to an account_id
+     * From here the user-provided "account_id" (stored as a session_id) is mapped to an actual account_id
      * @param sessionId This is what the user sends as account_id in their requests
      */
     static translateSessionToAccount (sessionId: string) {
@@ -73,27 +71,26 @@ class Query {
     }
     
     /**
-     * Runs an SQL query with error handling and returns a promis with the result
+     * Runs an SQL query with error handling and returns a promise with the result
      * 
      * @example
      * let result = await db.query('SELECT 1`);
      * 
      * @param sql SQL query to execute
      */
-    static query (sql: string): Promise<QueryResultRow[]> {
+    static async query (sql: string): Promise<QueryResultRow[]> {
         if (log_queries && util.env.dev()) {
             console.log(Date.now(), ' - ', sql, ';', '\n');
         }
-        return new Promise((resolve, reject) => {
-            pool.query(sql, function (err, result) {
-                if (err) {
-                    let dbError = new DatabaseError;
-                    console.log(err);     
-                    return reject(dbError);
-                }
-                return resolve(result.rows);
-            });
-        })
+        
+        try {
+            const res = await pool.query(sql);
+            return res.rows;
+        } catch (err) {
+            let dbError = new DatabaseError;
+            console.log(err);
+            throw dbError;
+        }
     }
     
     /**

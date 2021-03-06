@@ -1,12 +1,12 @@
 # TODO
 ## pulse-sms-backend
 
-- [ ] async/await db query
-- [ ] Fix database error response delay
-- [ ] Fix database default values
+- [x] async/await db query
+- [x] Fix database error response delay
 - [ ] INSERT IGNORE
-- [ ] Database NOT NULL DEFAULTs
+- [ ] Fix database NOT NULL DEFAULTs
 - [ ] Fix .insertStr() to work when object at i>1 has more columns than i=0
+- [ ] Don't send mqtt message if db operation failed
 - [ ] Clean up payloads (stop using constructors?)
 - [x] Add method docs
 - [ ] Better test coverage

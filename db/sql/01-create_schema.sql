@@ -10,7 +10,7 @@ START TRANSACTION;
 
 
 CREATE TABLE IF NOT EXISTS Accounts (
-    "account_id" SERIAL PRIMARY KEY,
+    "account_id" BIGSERIAL PRIMARY KEY,
     "username" VARCHAR(64) NOT NULL UNIQUE,
     "password_hash" TEXT NOT NULL,
     "real_name" TEXT NULL,
@@ -99,7 +99,7 @@ CREATE TABLE IF NOT EXISTS SessionMap (
 ) ;
 
 CREATE TABLE IF NOT EXISTS AutoReplies (
-    "id" SERIAL PRIMARY KEY,
+    "id" BIGSERIAL PRIMARY KEY,
     "device_id" BIGINT NOT NULL,
     "reply_type" TEXT NULL,
     "pattern" TEXT NULL,
@@ -109,7 +109,7 @@ CREATE TABLE IF NOT EXISTS AutoReplies (
 ) ;
 
 CREATE TABLE IF NOT EXISTS Blacklists (
-    "id" SERIAL PRIMARY KEY,
+    "id" BIGSERIAL PRIMARY KEY,
     "device_id" BIGINT NOT NULL,
     "phone_number" TEXT NULL,
     "phrase" TEXT NULL,
@@ -118,7 +118,7 @@ CREATE TABLE IF NOT EXISTS Blacklists (
 ) ;
 
 CREATE TABLE IF NOT EXISTS Contacts (
-    "id" SERIAL PRIMARY KEY,
+    "id" BIGSERIAL PRIMARY KEY,
     "device_id" BIGINT NOT NULL,
     "phone_number" TEXT NULL,
     "id_matcher" TEXT NULL,
@@ -133,7 +133,7 @@ CREATE TABLE IF NOT EXISTS Contacts (
 ) ;
 
 CREATE TABLE IF NOT EXISTS Folders (
-    "id" SERIAL PRIMARY KEY,
+    "id" BIGSERIAL PRIMARY KEY,
     "device_id" BIGINT NOT NULL,
     "name" TEXT NULL,
     "account_id" INTEGER NOT NULL,
@@ -145,7 +145,7 @@ CREATE TABLE IF NOT EXISTS Folders (
 ) ;
 
 CREATE TABLE IF NOT EXISTS Conversations (
-    "id" SERIAL PRIMARY KEY,
+    "id" BIGSERIAL PRIMARY KEY,
     "device_id" BIGINT NOT NULL,
     "phone_numbers" TEXT NULL,
     "image_uri" TEXT NULL,
@@ -170,7 +170,7 @@ CREATE TABLE IF NOT EXISTS Conversations (
 ) ;
 
 CREATE TABLE IF NOT EXISTS Devices (
-    "id" SERIAL PRIMARY KEY,
+    "id" BIGSERIAL PRIMARY KEY,
     "device_id" BIGINT NOT NULL,
     "info" TEXT NULL,
     "name" TEXT NULL,
@@ -182,7 +182,7 @@ CREATE TABLE IF NOT EXISTS Devices (
 ) ;
 
 CREATE TABLE IF NOT EXISTS ScheduledMessages (
-    "id" SERIAL PRIMARY KEY,
+    "id" BIGSERIAL PRIMARY KEY,
     "device_id" BIGINT NOT NULL,
     "to" TEXT NULL,
     "data" TEXT NULL,
@@ -195,7 +195,7 @@ CREATE TABLE IF NOT EXISTS ScheduledMessages (
 ) ;
 
 CREATE TABLE IF NOT EXISTS Templates (
-    "id" SERIAL PRIMARY KEY,
+    "id" BIGSERIAL PRIMARY KEY,
     "device_id" BIGINT NOT NULL,
     "text" TEXT NULL,
     "account_id" INTEGER NOT NULL,
@@ -203,7 +203,7 @@ CREATE TABLE IF NOT EXISTS Templates (
 ) ;
 
 CREATE TABLE IF NOT EXISTS Drafts (
-    "id" SERIAL PRIMARY KEY,
+    "id" BIGSERIAL PRIMARY KEY,
     "device_id" BIGINT NOT NULL,
     "device_conversation_id" BIGINT NOT NULL,
     "data" TEXT NULL,
@@ -213,7 +213,7 @@ CREATE TABLE IF NOT EXISTS Drafts (
 ) ;
 
 CREATE TABLE IF NOT EXISTS Messages (
-    "id" SERIAL PRIMARY KEY,
+    "id" BIGSERIAL PRIMARY KEY,
     "device_id" BIGINT NOT NULL,
     "device_conversation_id" BIGINT NOT NULL,
     "data" TEXT NULL,
@@ -232,7 +232,7 @@ CREATE TABLE IF NOT EXISTS Messages (
 CREATE INDEX IX_Messages_device_id ON Messages (device_id) ;
 
 CREATE TABLE IF NOT EXISTS Media (
-    "id" SERIAL PRIMARY KEY,
+    "id" BIGSERIAL PRIMARY KEY,
     "message_id" BIGINT NOT NULL,
     "data" BYTEA NULL,
     "account_id" INTEGER NOT NULL,
