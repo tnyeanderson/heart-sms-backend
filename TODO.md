@@ -9,7 +9,7 @@
 - [ ] Don't send mqtt message if db operation failed
 - [ ] Clean up payloads (stop using constructors?)
 - [x] Add method docs
-- [ ] Better test coverage
+- [x] Better test coverage
   - [x] Request validation
   - [x] Full response valdation
   - [x] All permutations of optional parameters

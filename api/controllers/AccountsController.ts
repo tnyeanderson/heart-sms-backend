@@ -111,8 +111,7 @@ router.route('/count').get(
         let r: AccountIdRequest = res.locals.request;
         
         let fields = ["device_count", "message_count", "conversation_count", "draft_count", "scheduled_count", "blacklist_count", "contact_count", "template_count", "folder_count", "auto_reply_count"];
-        
-        // Use subqueries to count from each table
+
         let sql = `SELECT ${db.selectFields(fields)} from CountsView where ${r.whereAccount()}`;
 
         let result = await db.query(sql);
