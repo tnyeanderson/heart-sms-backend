@@ -29,10 +29,8 @@ class UserHelper {
         if (this.allowAll) return true;
 
         // If the user is in the allowed array, return true
-        if (this.allowed.indexOf(username) > -1) return true;
-        
         // Otherwise, user is not allowed
-        return false;
+        return (this.allowed.includes(username));
     }
 }
 

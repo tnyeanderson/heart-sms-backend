@@ -56,7 +56,7 @@ export class BaseRequest {
      * Conventions are in api.md and comments in the Request definitions
      */
     static validate (item: Request | any) : boolean | ErrorResponse  {
-        // Get properties of an instance of the calling class
+        // Get properties of an instance of the calling class (aka a class that extends BaseRequests)
         let props = Object.getOwnPropertyNames(new this);
 
         // Combine request query, body, and url parameters into a single object
@@ -95,13 +95,12 @@ export class BaseRequest {
      */
     static handler (req: Request, res: Response, next: NextFunction) {
         let validated = this.validate(req);
-        let error = new ErrorResponse();
 
         if (validated === true) {
             res.locals.request = this.create(req);
             next()
         } else {
-            error = (validated instanceof ErrorResponse) ? validated : error;
+            let error = (validated instanceof ErrorResponse) ? validated : new ErrorResponse();
             next(error);
         }
     }
@@ -118,8 +117,8 @@ export class BaseRequest {
     /**
      * Actually casts the item to a member of the calling class
      * Usually called directly by create(), but create() can be overwritten (e.g. for /add requests) to create a list of items
-     * This will be overwritten by /add requests (HasItemsRequest) to create each item in the array
      * @param item Either an item in an array of a request (e.g. /add) or a combination of query, body, and url parameters
+     * This will be overwritten by /add requests (HasItemsRequest) to create each item in the array
      */
     static createItem(item: any) {
         return plainToClass(this, item, { excludeExtraneousValues: true, enableImplicitConversion: true })

@@ -1,6 +1,8 @@
 import cors from 'cors';
 import express, { json, NextFunction, Request, Response, Router } from 'express';
 import 'reflect-metadata';
+
+
 // Controllers
 import AccountsController from './controllers/AccountsController.js';
 import ActivateController from './controllers/ActivateController.js';
@@ -25,7 +27,6 @@ import { ErrorResponse, UnhandledPathError } from './models/responses/ErrorRespo
 
 
 const app = express();
-const router = Router();
 
 /**
  * Used when defining routes to add the base path to the path
