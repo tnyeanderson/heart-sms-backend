@@ -1,5 +1,13 @@
 import util from "./util.js";
 
+/**
+ * The length of the splashText lines
+ */
+let splashLineLength = 58;
+
+/**
+ * Nice lil graphic
+ */
 let splashText = String.raw`
       _   _      _                     _        _   _     
     /   V   \   | |                   | |     /   V   \   
@@ -10,23 +18,52 @@ let splashText = String.raw`
 `;
 
 /**
- * Display the splash screen in the log
+ * Output the entire splash sequence to the log
  */
 export function splash() {
-    console.log(splashText);
+    fill();
+    showSplash();
+    fill();
+    showVersion();
     showMode();
+    fill();
+    emptyLine();
 }
 
 /**
- * Display the current "mode" (process.env.environment)
+ * Output the current "mode" (process.env.environment) to the log
  */
 function showMode () {
-    // The length of the splashText lines
-    let lineLength = 58;
+    console.log(padCenter(` ${util.env.pretty()} Mode <3 `));
+}
 
-    console.log('-'.repeat(lineLength));
-    console.log(padCenter(` ${util.env.pretty()} Mode <3 `, lineLength, '-'));
-    console.log('-'.repeat(lineLength));
+/**
+ * Output the version of heart-sms-backend from package.json to the log
+ */
+function showVersion () {
+    console.log(padCenter(` heart-sms-backend v${process.env.npm_package_version} `));
+}
+
+/**
+ * Outputs a line of lineLength filled with char to the log
+ * @param char Character to repeat
+ * @param lineLength Amount of times to repeat char
+ */
+function fill(char: string = '-', lineLength: number = splashLineLength) {
+    console.log(char.repeat(lineLength));
+}
+
+/**
+ * Output the splashText to the log
+ */
+function showSplash () {
+    console.log(splashText);
+}
+
+/**
+ * Output an empty line to the log
+ */
+function emptyLine () {
     console.log();
 }
 
@@ -36,6 +73,6 @@ function showMode () {
  * @param lineLength Total length of line to center the text on
  * @param padChar Character to use for padding
  */
-function padCenter (text: string, lineLength: number, padChar = ' ') {
+function padCenter (text: string, lineLength = splashLineLength, padChar = '-') {
     return text.padStart( Math.round((lineLength/2) + (text.length/2)), padChar ).padEnd(lineLength, padChar)
 }
