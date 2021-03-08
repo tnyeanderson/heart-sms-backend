@@ -1,4 +1,4 @@
-version: "3.1"
+version: "3.7"
 
 services:
   heart-sms-backend:
@@ -18,6 +18,7 @@ services:
   heart-sms-web:
     container_name: heart-sms-web
     image: heartsms/heart-sms-web
+    init: true
     restart: always
     ports:
       - "127.0.0.1:8081:80"
@@ -29,22 +30,22 @@ services:
   heart-sms-db:
     container_name: heart-sms-db
     image: heartsms/heart-sms-db
-    command: --default-authentication-plugin=mysql_native_password
     restart: always
-    # Uncomment the below lines for testing
+    # Uncomment the below lines if you need to access to access the database from the host i.e. for debugging
     # ports:
-      # - "127.0.0.1:3306:3306"
+      # - "127.0.0.1:5432:5432"
     env_file:
       - .db.env
     volumes:
-      - mysql:/var/lib/mysql
+      - db:/var/lib/postgresql/data
 
   heart-sms-mqtt:
     container_name: heart-sms-mqtt
     image: heartsms/heart-sms-mqtt
+    init: true
     restart: always
     ports:
-      # Uncomment this line for testing (unencrypted)
+      # Uncomment this line for debugging from the host (unencrypted)
       #- "127.0.0.1:1883:1883"
       # SSL endpoint is exposed directly
       - "8883:8883"
@@ -58,4 +59,4 @@ services:
       - ./certs:/etc/certs
       
 volumes:
-  mysql:
+  db:

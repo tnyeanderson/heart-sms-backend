@@ -1,6 +1,8 @@
 import cors from 'cors';
 import express, { json, NextFunction, Request, Response, Router } from 'express';
 import 'reflect-metadata';
+
+
 // Controllers
 import AccountsController from './controllers/AccountsController.js';
 import ActivateController from './controllers/ActivateController.js';
@@ -20,12 +22,13 @@ import ScheduledMessagesController from './controllers/ScheduledMessagesControll
 import TemplatesController from './controllers/TemplatesController.js';
 import { BaseError } from './models/errors/Errors.js';
 import { ErrorResponse, UnhandledPathError } from './models/responses/ErrorResponses.js';
+import { splash } from './utils/splash.js';
 
 
-
+// Show the console splash
+splash();
 
 const app = express();
-const router = Router();
 
 /**
  * Used when defining routes to add the base path to the path

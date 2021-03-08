@@ -8,11 +8,8 @@ const router = express.Router();
 router.route('/').get(
     (req, res, next) => ActivateRequest.handler(req, res, next), 
     function (req, res, next) {
-        let sql = "SELECT 1";
-        
-        db.query(sql, res, function (result) {
-            res.json(new BaseResponse);
-        });
+        // TODO: Actual activate logic... should return a LoginResponse
+        res.json(new BaseResponse);
     });
 
 export default router;

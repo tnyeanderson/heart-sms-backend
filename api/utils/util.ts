@@ -1,15 +1,11 @@
 import { Request } from 'express';
 import { v4 as uuidv4 } from 'uuid';
 
+const devEnv = 'dev';
+const testEnv = 'test';
+const prodEnv = 'production';
+
 const util = {
-    /**
-     * Get the account_id from either the query or the body.
-     * Return null if not found.
-     * @param req Express request
-     */
-    getAccountId: function (req: Request) {
-        return req.query.account_id || req.body.account_id || null;
-    },
     
     /**
      * Generate a 64 character account id using two UUIDs
@@ -22,13 +18,22 @@ const util = {
      * Used for easily determining which environment we are in
      */
     env: {
-        dev: () => (process.env.NODE_ENV === 'dev'),
+        dev: () => (process.env.NODE_ENV === devEnv),
 
-        test: () => (process.env.NODE_ENV === 'test'),
+        test: () => (process.env.NODE_ENV === testEnv),
 
-        devOrTest: () => (process.env.NODE_ENV === 'dev' || process.env.NODE_ENV === 'test'),
+        devOrTest: () => (process.env.NODE_ENV === devEnv || process.env.NODE_ENV === testEnv),
 
-        prod: () => (process.env.NODE_ENV === 'production')
+        prod: () => (process.env.NODE_ENV === prodEnv),
+
+        pretty: function () {
+            switch (process.env.NODE_ENV) {
+                case devEnv : return 'Development';
+                case testEnv: return 'Test';
+                case prodEnv: return 'Production';
+                default: return 'Unknown';
+            }
+        }
     }
 }
 

@@ -1,5 +1,6 @@
 import express, { Response } from 'express';
 import db from '../db/query.js';
+import { asyncHandler } from '../helpers/AsyncHandler.js';
 import { MQTTAclRequest, MQTTLoginRequest } from '../models/requests/MQTTRequests.js';
 import { MQTTAllowResponse, MQTTDenyResponse } from '../models/responses/MQTTResponses.js';
 import stream from './StreamController.js';
@@ -19,7 +20,7 @@ function allow (res: Response) {
 
 router.route('/login').post(
     (req, res, next) => MQTTLoginRequest.handler(req, res, next),
-    function (req, res, next) {
+    asyncHandler(async (req, res, next) => {
         let r: MQTTLoginRequest = res.locals.request;
 
         // This is called by mosquitto-go-auth to authenticate the user for messaging
@@ -32,24 +33,25 @@ router.route('/login').post(
 
         let sql = `SELECT ${db.escapeId('session_id')} FROM Accounts INNER JOIN SessionMap USING (account_id) WHERE username = ${db.escape(r.username)} LIMIT 1`;
 
-        db.query(sql, res, function (result) {
-            if (!result[0]) {
-                return deny(res);
-            }
+        let result = await db.query(sql);
 
-            if (r.password && r.password === result[0].session_id) {
-                return allow(res);
-            } else {
-                return deny(res);
-            }
-        });
-    });
+        if (!result[0]) {
+            return deny(res);
+        }
+
+        if (r.password && r.password === result[0].session_id) {
+            return allow(res);
+        } else {
+            return deny(res);
+        }
+    }));
 
 
 router.route('/acl').post(
     (req, res, next) => MQTTAclRequest.handler(req, res, next),
-    function (req, res, next) {
+    asyncHandler(async (req, res, next) => {
         let r: MQTTAclRequest = res.locals.request;
+
         // Since we control auth, always accept our own requests
         if (r.username === 'heart-sms-backend') {
             allow(res);
@@ -58,20 +60,18 @@ router.route('/acl').post(
 
         let sql = `SELECT ${db.escapeId('session_id')} FROM Accounts INNER JOIN SessionMap USING (account_id) WHERE username = ${db.escape(r.username)} LIMIT 1`;
 
-        db.query(sql, res, function (result) {
-            if (!result[0]) {
-                deny(res);
-                return;
-            }
+        let result = await db.query(sql);
 
-            if (r.topic === 'heartsms/' + result[0].session_id) {
-                allow(res);
-            } else {
-                deny(res);
-            }
-        });
+        if (!result[0]) {
+            deny(res);
+            return;
+        }
 
-
-    });
+        if (r.topic === 'heartsms/' + result[0].session_id) {
+            allow(res);
+        } else {
+            deny(res);
+        }
+    }));
 
 export default router;

@@ -25,7 +25,7 @@ if [ "$HEART_USE_SSL" = 'true' ]; then
     AUTH_TLS='true'
 fi
 
-# This generates the current configuration as a JS file at <web>/config/web-config.js
+# This generates go-auth.conf with the current config values
 cat << EOF > "/etc/mosquitto/conf.d/go-auth.conf"
 auth_plugin /mosquitto/go-auth.so
 
@@ -48,7 +48,6 @@ auth_opt_auth_cache_seconds 60
 auth_opt_acl_cache_seconds 60
 
 EOF
-
 
 # From https://github.com/iegomez/mosquitto-go-auth/blob/master/Dockerfile
 /usr/sbin/mosquitto -c /etc/mosquitto/mosquitto.conf

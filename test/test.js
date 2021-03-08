@@ -1,6 +1,7 @@
 import { agent } from 'supertest';
 import * as assert from 'assert';
-import { expectMsg, msgCount, msgTested, socket } from './mqtt-test.js';
+import { expectMsg, msgCount, msgTested, close as mqttTestClose } from './mqtt-test.js';
+import { deleteDummyAccount, postDeleteDummyCounts } from './add_dummy_account.js';
 
 // This agent refers to PORT where program is runninng.
 const api = agent("http://localhost:5000/api/v1");
@@ -8,9 +9,11 @@ const api = agent("http://localhost:5000/api/v1");
 let accountId = '';
 let contactsToRemove = [];
 
+let testAccountUsername = 'test@email.com'
+
 // Password is 'tester', this is the SHA256 hash
 // The password is hashed on the client and again on the server to maintain perfect secrecy
-let password = '9bba5c53a0545e0c80184b946153c9f58387e3bd1d4ee35740f29ac2e718b019'
+let testAccountPassword = '9bba5c53a0545e0c80184b946153c9f58387e3bd1d4ee35740f29ac2e718b019'
 
 
 function delay(msg = 'should delay', interval = 3000) {
@@ -41,9 +44,9 @@ describe("heart-sms-backend unit test", function () {
         api
         .post('/accounts/signup')
         .send({
-            "name": "test@email.com",
+            "name": testAccountUsername,
             // Password is 'tester', this is the SHA256 hash
-            "password": password,
+            "password": testAccountPassword,
             "phone_number": "5555555555",
             "real_name": "testname"
         })
@@ -82,9 +85,9 @@ describe("heart-sms-backend unit test", function () {
         api
         .post('/accounts/signup')
         .send({
-            "name": "test@email.com",
+            "name": testAccountUsername,
             // Password is 'tester', this is the SHA256 hash
-            "password": password,
+            "password": testAccountPassword,
             "phone_number": "5555555555",
             "real_name": "testname"
         })
@@ -101,8 +104,8 @@ describe("heart-sms-backend unit test", function () {
     
     it("Log in", function (done) {
         let body = {
-            "username": "test@email.com",
-            "password": password
+            "username": testAccountUsername,
+            "password": testAccountPassword
         }
 
         api
@@ -148,7 +151,7 @@ describe("heart-sms-backend unit test", function () {
         .post('/accounts/login')
         .send({
             "username": "bad",
-            "password": password
+            "password": testAccountPassword
         })
         .expect("Content-type",/json/)
         .expect(200)
@@ -165,7 +168,7 @@ describe("heart-sms-backend unit test", function () {
         api
         .post('/accounts/login')
         .send({
-            "username": "test@email.com",
+            "username": testAccountUsername,
             "password": "bad"
         })
         .expect("Content-type",/json/)
@@ -183,7 +186,7 @@ describe("heart-sms-backend unit test", function () {
         api
         .post('/mqtt/login')
         .send({
-            "username": "test@email.com",
+            "username": testAccountUsername,
             "password": accountId
         })
         .expect("Content-type",/json/)
@@ -220,7 +223,7 @@ describe("heart-sms-backend unit test", function () {
         api
         .post('/mqtt/login')
         .send({
-            "username": "test@email.com",
+            "username": testAccountUsername,
             "password": "bad"
         })
         .expect("Content-type",/json/)
@@ -239,7 +242,7 @@ describe("heart-sms-backend unit test", function () {
         api
         .post('/mqtt/acl')
         .send({
-            "username": "test@email.com",
+            "username": testAccountUsername,
             "topic": 'heartsms/' + accountId
         })
         .expect("Content-type",/json/)
@@ -276,7 +279,7 @@ describe("heart-sms-backend unit test", function () {
         api
         .post('/mqtt/acl')
         .send({
-            "username": "test@email.com",
+            "username": testAccountUsername,
             "topic": "bad"
         })
         .expect("Content-type",/json/)
@@ -441,7 +444,7 @@ describe("heart-sms-backend unit test", function () {
         });
     });
 
-    it("Fail to update account color integer setting with wrong type string that does not match database", function (done) {
+    it("Fail to update account color integer setting with wrong type string that does not match database (verifies database errors are caught)", function (done) {
         api
         .post('/accounts/update_setting')
         .query({
@@ -3833,7 +3836,19 @@ describe("heart-sms-backend unit test", function () {
     });
 
     it("should close mqtt socket",function(done){
-        socket.end();
-        done();
+        mqttTestClose(function (successful) {
+            successful.should.equal(true);
+            done();
+        })
     });
+
+    /**
+     * Delete the dummy account
+     */
+    deleteDummyAccount();
+
+    /**
+     * All counts should be zero for dummy account after deletion
+     */
+    postDeleteDummyCounts();
 }); 

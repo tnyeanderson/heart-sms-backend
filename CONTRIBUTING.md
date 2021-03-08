@@ -81,7 +81,7 @@ You can connect to the database at `localhost:3306` with the username and passwo
 
 ## Test suite
 
-Right now the testing is pretty dirty with a *lot* of blind spots, but it seems to work alright enough for the time being.
+Please ensure your PR passes the tests before submitting.
 
 First, make sure you have the dev environment running by following the steps above.
 
@@ -91,8 +91,6 @@ Then run the tests!
 ```
 npm run test
 ```
-
-You can look over the stream manually in MQTT Explorer and check against [our MQTT documentation](docs/mqtt.md). Tests need to be written for receiving the websocket and mqtt messages. (The responses look good as of this commit by my error-prone eyes)
 
 
 ## TypeScript Linting

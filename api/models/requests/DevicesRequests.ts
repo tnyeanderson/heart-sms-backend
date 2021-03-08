@@ -81,6 +81,12 @@ export class DevicesUpdateRequest extends UpdateRequest {
 
     static optional = ['fcm_token', 'name'];
     static atLeastOne = true;
+
+    toUpdate() {
+        let {account_id, id, ...out} = this;
+        out = Object.assign({ device_id: id }, out);
+        return out;
+    }
 }
 
 
