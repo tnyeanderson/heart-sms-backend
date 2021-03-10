@@ -1,5 +1,15 @@
 # Contributing to HeartSMS
 
+- [Contributing to HeartSMS](#contributing-to-heartsms)
+  - [Building the development environment](#building-the-development-environment)
+    - [Prerequisites](#prerequisites)
+    - [Build the docker containers](#build-the-docker-containers)
+  - [Running the development environment](#running-the-development-environment)
+  - [Using the development environment](#using-the-development-environment)
+  - [Test suite](#test-suite)
+  - [TypeScript linting](#typescript-linting)
+
+
 Contributions and pull requests are welcome! Read [Getting Started](docs/getting-started.md) to get an idea of how Heart is set up.
 
 
@@ -32,24 +42,10 @@ npm run build-dev
 
 ## Running the development environment
 
-The first time you run the containers, please start the `db` container first using the following command, and wait a minute or so to initialize the database:
-```
-npm run db:init-dev
-```
-
-After you initialize the db container, follow the logs and **be sure to save the generated MySQL root user password. It won't ever be shown again!!**
-
-Once you see the following log message (the logs should stop coming after this), you can `CTRL+C` to stop the container:
-```
-mysqld: ready for connections.
-```
-
-Once the db has been initialized, start the containers configured in `docker-compose.dev.yml` by running:
+Start the containers configured in `docker-compose.dev.yml` by running:
 ```
 npm run docker:start-dev
 ```
-
-*On subsequent runs, you don't have to re-initialize the DB as it is stored in a volume. All API calls will make changes to the `heartsms-dev` database ONLY.*
 
 Finally, start caddy with the default Caddyfile provided in this repo. This will generate internal certificates for `api.heart.lan` and `web.heart.lan`:
 ```
@@ -61,7 +57,7 @@ caddy run
 
 The `.api.env.example` and `.db.env.example` files are used for configuring the dev environment. Check there for passwords, ports, etc.
 
-In dev, you may only sign up with the `test@email.com` username (so we can run tests for our user whitelist). You can change this in `.api.env.example`, but know that the test will fail until you change it back :)
+In dev, you may only sign up with the `test@email.com` and `test2@email.com` usernames (so we can run tests for our user whitelist). You can change this in `.api.env.example`, but know that the tests will fail until you change it back :)
 
 The login information to test the MQTT broker is shown below. Use an application such as [MQTT Explorer](https://mqtt-explorer.com/) to inspect incoming/outgoing messages. Subscribe to the root topic (`#`), which shows messages from all topics (i.e. messages from all users). Only the `heart-sms-backend` user can subscribe to the root topic.
 
@@ -93,7 +89,7 @@ npm run test
 ```
 
 
-## TypeScript Linting
+## TypeScript linting
 
 Please lint your project before submitting a PR:
 

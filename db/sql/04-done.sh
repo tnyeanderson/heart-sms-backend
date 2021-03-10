@@ -1,5 +1,6 @@
 #!/bin/bash
 
+
 cat << EOF
 =======================================
 >      _                     _        <
@@ -11,14 +12,8 @@ cat << EOF
 >                                     <
 >                <3                   <
 >                                     <
----------------------------------------
-** The database has been initialized **
----------------------------------------
-************ Shutting down ************
----------------------------------------
+=======================================
+-- The database has been initialized --
 =======================================
 EOF
 
-# After initializing, shut down so we can daisy chain
-# Disable for testing
-shutdown now

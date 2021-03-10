@@ -20,6 +20,7 @@ class StreamController {
         console.log("Connecting to " + username + ":" + this.backendPassword + "@" + protocol + url);
 
         this.socket = mqtt.connect(protocol + url, {
+            clientId: 'heart-sms-backend',
             username: username,
             password: this.backendPassword
         });

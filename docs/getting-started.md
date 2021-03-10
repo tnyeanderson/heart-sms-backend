@@ -1,5 +1,20 @@
 # Getting Started
 
+- [Getting Started](#getting-started)
+  - [System description](#system-description)
+  - [Services, endpoints, and ports](#services-endpoints-and-ports)
+  - [URLs](#urls)
+      - [api.heart.lan](#apiheartlan)
+      - [web.heart.lan](#webheartlan)
+      - [mqtt.heart.lan](#mqttheartlan)
+  - [Prerequisites](#prerequisites)
+  - [Step-by-step](#step-by-step)
+    - [Configure](#configure)
+    - [Certificates](#certificates)
+    - [Start the containers](#start-the-containers)
+    - [Create the reverse proxy and bring it online](#create-the-reverse-proxy-and-bring-it-online)
+
+
 **HeartSMS is a work in progress. It hasn't even been alpha tested yet and should NOT be used in production. This guide exists for developer reference and future releases**
 
 Read this to learn how to deploy a HeartSMS backend to production on your server. For hacking around on a development server, see [Contributing to HeartSMS](../CONTRIBUTING.md)
@@ -100,12 +115,12 @@ cp .api.env.example .api.env
 
 **IMPORTANT: Edit .db.env and .api.env in your favorite text editor and change the values as needed**
 
-For instance, in `.db.env` you probably only need to change `MYSQL_PASSWORD`:
+For instance, in `.db.env` you probably only need to change `POSTGRES_PASSWORD`:
 ```
 DB_HOST=heart-sms-db
-MYSQL_DATABASE=heartsms
-MYSQL_USER=heart
-MYSQL_PASSWORD=MyNewSuperSecurePassword
+POSTGRES_DB=heartsms
+POSTGRES_USER=heart
+POSTGRES_PASSWORD=MyNewSuperSecurePassword
 ```
 
 In `.api.env`, you will need to set all of the URLs to be the same (your API url), and set `HEART_USE_SSL` to `true`:
@@ -159,18 +174,6 @@ heart-sms-mqtt:
 
 
 ### Start the containers
-
-The first time you run the containers, please start the `db` container first using the following command, and wait a minute or so to initialize the database:
-```
-npm run db:init
-```
-
-**VERY IMPORTANT:** Your MySQL root password will be printed to the logs when the `heart-sms-db` container is first created. Save this somewhere. **IT WILL NOT BE SHOWN EVER AGAIN!!** 
-
-Once you see the following log message (the logs should stop coming after this), you can `CTRL+C` to stop the container:
-```
-mysqld: ready for connections.
-```
 
 You're ready!
 
