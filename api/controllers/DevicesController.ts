@@ -40,7 +40,7 @@ router.route('/add').post(
             fcm_token: r.device.fcm_token
         };
 
-        let sql = `INSERT INTO ${table} ${db.insertStr([toInsert])}`;
+        let sql = `INSERT INTO ${table} ${db.insertStr(toInsert)}`;
 
         await db.query(sql);
             

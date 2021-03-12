@@ -16,7 +16,9 @@ CREATE TABLE IF NOT EXISTS Accounts (
     "real_name" TEXT NULL,
     "salt1" TEXT NOT NULL,
     "salt2" TEXT NOT NULL,
-    "phone_number" TEXT NOT NULL
+    "phone_number" TEXT NOT NULL,
+    "created_at" TIMESTAMP DEFAULT NOW(),
+    "updated_at" TIMESTAMP DEFAULT NOW()
 ) ;
 
 CREATE TABLE IF NOT EXISTS Settings (
@@ -95,6 +97,8 @@ CREATE TABLE IF NOT EXISTS Settings (
 CREATE TABLE IF NOT EXISTS SessionMap (
     "session_id" CHAR(64) NOT NULL PRIMARY KEY,
     "account_id" INTEGER NOT NULL,
+    "created_at" TIMESTAMP DEFAULT NOW(),
+    "updated_at" TIMESTAMP DEFAULT NOW(),
     CONSTRAINT FK_SessionMap_Accounts_account_id FOREIGN KEY (account_id) REFERENCES Accounts (account_id) ON DELETE CASCADE
 ) ;
 
@@ -105,6 +109,8 @@ CREATE TABLE IF NOT EXISTS AutoReplies (
     "pattern" TEXT NULL,
     "response" TEXT NULL,
     "account_id" INTEGER NOT NULL,
+    "created_at" TIMESTAMP DEFAULT NOW(),
+    "updated_at" TIMESTAMP DEFAULT NOW(),
     CONSTRAINT FK_AutoReplies_Accounts_account_id FOREIGN KEY (account_id) REFERENCES Accounts (account_id) ON DELETE CASCADE
 ) ;
 
@@ -114,6 +120,8 @@ CREATE TABLE IF NOT EXISTS Blacklists (
     "phone_number" TEXT NULL,
     "phrase" TEXT NULL,
     "account_id" INTEGER NOT NULL,
+    "created_at" TIMESTAMP DEFAULT NOW(),
+    "updated_at" TIMESTAMP DEFAULT NOW(),
     CONSTRAINT FK_Blacklists_Accounts_account_id FOREIGN KEY (account_id) REFERENCES Accounts (account_id) ON DELETE CASCADE
 ) ;
 
@@ -129,6 +137,8 @@ CREATE TABLE IF NOT EXISTS Contacts (
     "color_dark" INTEGER NOT NULL,
     "color_light" INTEGER NOT NULL,
     "color_accent" INTEGER NOT NULL,
+    "created_at" TIMESTAMP DEFAULT NOW(),
+    "updated_at" TIMESTAMP DEFAULT NOW(),
     CONSTRAINT FK_Contacts_Accounts_account_id FOREIGN KEY (account_id) REFERENCES Accounts (account_id) ON DELETE CASCADE
 ) ;
 
@@ -141,6 +151,8 @@ CREATE TABLE IF NOT EXISTS Folders (
     "color_dark" INTEGER NOT NULL,
     "color_light" INTEGER NOT NULL,
     "color_accent" INTEGER NOT NULL,
+    "created_at" TIMESTAMP DEFAULT NOW(),
+    "updated_at" TIMESTAMP DEFAULT NOW(),
     CONSTRAINT FK_Folders_Accounts_account_id FOREIGN KEY (account_id) REFERENCES Accounts (account_id) ON DELETE CASCADE
 ) ;
 
@@ -166,6 +178,8 @@ CREATE TABLE IF NOT EXISTS Conversations (
     "mute" BOOLEAN DEFAULT false,
     "archive" BOOLEAN DEFAULT false,
     "private_notifications" BOOLEAN DEFAULT false,
+    "created_at" TIMESTAMP DEFAULT NOW(),
+    "updated_at" TIMESTAMP DEFAULT NOW(),
     CONSTRAINT FK_Conversations_Accounts_account_id FOREIGN KEY (account_id) REFERENCES Accounts (account_id) ON DELETE CASCADE
 ) ;
 
@@ -178,6 +192,8 @@ CREATE TABLE IF NOT EXISTS Devices (
     "fcm_token" TEXT NULL,
     "account_id" INTEGER NOT NULL,
     "ios" BOOLEAN DEFAULT false,
+    "created_at" TIMESTAMP DEFAULT NOW(),
+    "updated_at" TIMESTAMP DEFAULT NOW(),
     CONSTRAINT FK_Devices_Accounts_account_id FOREIGN KEY (account_id) REFERENCES Accounts (account_id) ON DELETE CASCADE
 ) ;
 
@@ -191,6 +207,8 @@ CREATE TABLE IF NOT EXISTS ScheduledMessages (
     "title" TEXT NULL,
     "repeat" INTEGER NOT NULL,
     "account_id" INTEGER NOT NULL,
+    "created_at" TIMESTAMP DEFAULT NOW(),
+    "updated_at" TIMESTAMP DEFAULT NOW(),
     CONSTRAINT FK_ScheduledMessages_Accounts_account_id FOREIGN KEY (account_id) REFERENCES Accounts (account_id) ON DELETE CASCADE
 ) ;
 
@@ -199,6 +217,8 @@ CREATE TABLE IF NOT EXISTS Templates (
     "device_id" BIGINT NOT NULL,
     "text" TEXT NULL,
     "account_id" INTEGER NOT NULL,
+    "created_at" TIMESTAMP DEFAULT NOW(),
+    "updated_at" TIMESTAMP DEFAULT NOW(),
     CONSTRAINT FK_Templates_Accounts_account_id FOREIGN KEY (account_id) REFERENCES Accounts (account_id) ON DELETE CASCADE
 ) ;
 
@@ -209,6 +229,8 @@ CREATE TABLE IF NOT EXISTS Drafts (
     "data" TEXT NULL,
     "mime_type" TEXT NULL,
     "account_id" INTEGER NOT NULL,
+    "created_at" TIMESTAMP DEFAULT NOW(),
+    "updated_at" TIMESTAMP DEFAULT NOW(),
     CONSTRAINT FK_Drafts_Accounts_account_id FOREIGN KEY (account_id) REFERENCES Accounts (account_id) ON DELETE CASCADE
 ) ;
 
@@ -227,6 +249,8 @@ CREATE TABLE IF NOT EXISTS Messages (
     "sent_device" INTEGER DEFAULT -1,
     "sim_stamp" TEXT NULL,
     "account_id" INTEGER NOT NULL,
+    "created_at" TIMESTAMP DEFAULT NOW(),
+    "updated_at" TIMESTAMP DEFAULT NOW(),
     CONSTRAINT FK_Messages_Accounts_account_id FOREIGN KEY (account_id) REFERENCES Accounts (account_id) ON DELETE CASCADE
 ) ;
 CREATE INDEX IX_Messages_device_id ON Messages (device_id) ;
@@ -236,6 +260,8 @@ CREATE TABLE IF NOT EXISTS Media (
     "message_id" BIGINT NOT NULL,
     "data" BYTEA NULL,
     "account_id" INTEGER NOT NULL,
+    "created_at" TIMESTAMP DEFAULT NOW(),
+    "updated_at" TIMESTAMP DEFAULT NOW(),
     CONSTRAINT FK_Media_Accounts_account_id FOREIGN KEY (account_id) REFERENCES Accounts (account_id) ON DELETE CASCADE
 ) ;
 
@@ -417,6 +443,33 @@ BEFORE DELETE
 ON Devices 
 FOR EACH ROW
 EXECUTE PROCEDURE before_device_delete_func();
+
+
+-- ---
+-- Update timestamp in updated_at
+-- ---
+CREATE OR REPLACE FUNCTION set_updated_at_func()
+RETURNS TRIGGER AS $$
+BEGIN
+  NEW.updated_at = NOW();
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Create triggers to update the timestamp in updated_at for all of the following tables
+CREATE TRIGGER set_Accounts_updated_at          BEFORE UPDATE ON Accounts          FOR EACH ROW EXECUTE PROCEDURE set_updated_at_func();
+CREATE TRIGGER set_AutoReplies_updated_at       BEFORE UPDATE ON AutoReplies       FOR EACH ROW EXECUTE PROCEDURE set_updated_at_func();
+CREATE TRIGGER set_Blacklists_updated_at        BEFORE UPDATE ON Blacklists        FOR EACH ROW EXECUTE PROCEDURE set_updated_at_func();
+CREATE TRIGGER set_Contacts_updated_at          BEFORE UPDATE ON Contacts          FOR EACH ROW EXECUTE PROCEDURE set_updated_at_func();
+CREATE TRIGGER set_Conversations_updated_at     BEFORE UPDATE ON Conversations     FOR EACH ROW EXECUTE PROCEDURE set_updated_at_func();
+CREATE TRIGGER set_Devices_updated_at           BEFORE UPDATE ON Devices           FOR EACH ROW EXECUTE PROCEDURE set_updated_at_func();
+CREATE TRIGGER set_Drafts_updated_at            BEFORE UPDATE ON Drafts            FOR EACH ROW EXECUTE PROCEDURE set_updated_at_func();
+CREATE TRIGGER set_Folders_updated_at           BEFORE UPDATE ON Folders           FOR EACH ROW EXECUTE PROCEDURE set_updated_at_func();
+CREATE TRIGGER set_Media_updated_at             BEFORE UPDATE ON Media             FOR EACH ROW EXECUTE PROCEDURE set_updated_at_func();
+CREATE TRIGGER set_Messages_updated_at          BEFORE UPDATE ON Messages          FOR EACH ROW EXECUTE PROCEDURE set_updated_at_func();
+CREATE TRIGGER set_ScheduledMessages_updated_at BEFORE UPDATE ON ScheduledMessages FOR EACH ROW EXECUTE PROCEDURE set_updated_at_func();
+CREATE TRIGGER set_SessionMap_updated_at        BEFORE UPDATE ON SessionMap        FOR EACH ROW EXECUTE PROCEDURE set_updated_at_func();
+CREATE TRIGGER set_Templates_updated_at         BEFORE UPDATE ON Templates         FOR EACH ROW EXECUTE PROCEDURE set_updated_at_func();
 
 
 -- ---------------------------

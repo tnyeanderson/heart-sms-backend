@@ -60,18 +60,19 @@ router.route('/add').post(
     asyncHandler(async (req, res, next) => {
         let r: MessagesAddRequest = res.locals.request;
         
-        let inserted = r.messages.map((item) => {
+        let items = r.messages.map((item) => {
             return Object.assign({ account_id: r.account_id }, item,);
         });
 
-        let sql = `INSERT INTO ${table} ${db.insertStr(inserted)}`;
+        // Generate a query for each item
+        let sql = db.insertQueries(table, items);
 
-        await db.query(sql);
+        await db.transaction(sql);
 
         res.json(new BaseResponse);
 
         // Send websocket message
-        inserted.forEach(function (item: any) {
+        items.forEach(function (item: any) {
             let payload = new MessagesPayloads.added_message(
                 item.device_id,
                 item.device_conversation_id,

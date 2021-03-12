@@ -18,7 +18,7 @@ router.route('/').get(
         
         let fields = ['session_id AS account_id', 'id', 'device_id', 'device_conversation_id', 'mime_type', 'data'];
 
-        let sql = `SELECT ${db.selectFields(fields)} FROM ${table} INNER JOIN SessionMap USING (account_id) WHERE ${r.whereAccount()}`;
+        let sql = `SELECT ${db.selectFields(fields)} FROM ${table} INNER JOIN SessionMap USING (account_id) WHERE ${r.whereAccount()} ${db.newestFirst(table)}`;
         
         let result = await db.query(sql);
             
@@ -47,18 +47,19 @@ router.route('/add').post(
     asyncHandler(async (req, res, next) => {
         let r: DraftsAddRequest = res.locals.request;
 
-        let inserted = r.drafts.map((item) => {
+        let items = r.drafts.map((item) => {
             return Object.assign({ account_id: r.account_id }, item,);
         });
 
-        let sql = `INSERT INTO ${table} ${db.insertStr(inserted)}`;
+        // Generate a query for each item
+        let sql = db.insertQueries(table, items);
 
-        await db.query(sql);
+        await db.transaction(sql);
 
         res.json(new BaseResponse);
 
         // Send websocket message
-        inserted.forEach(function (item: any) {
+        items.forEach(function (item: any) {
             let payload = new DraftsPayloads.added_draft(
                 item.device_id,
                 item.device_conversation_id,

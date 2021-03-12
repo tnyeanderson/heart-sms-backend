@@ -15,7 +15,7 @@ echo "$DB_HOST:5432:$POSTGRES_DB:$POSTGRES_USER:$POSTGRES_PASSWORD" > "$PGPASSFI
 chmod 400 "$PGPASSFILE"
 
 # Check the heartbeat function
-until psql -h "$DB_HOST" -U "$POSTGRES_USER" -d "$POSTGRES_DB" -c "SELECT HEARTBEAT()" >/dev/null 2>&1; do
+until psql -h "$DB_HOST" -U "$POSTGRES_USER" -d "$POSTGRES_DB" -c "SELECT HEARTBEAT()" &> /dev/null; do
   sleep 1
 done
 

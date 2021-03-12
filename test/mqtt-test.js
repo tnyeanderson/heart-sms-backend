@@ -6,6 +6,7 @@ import * as assert from 'assert';
  */
 let socket;
 
+const clientId = 'heart-sms-backend-test'
 const username = 'heart-sms-backend';
 const password = 'testpassword';
 const url = 'mqtt://localhost';
@@ -79,10 +80,11 @@ function incrementMsgCount(callback) {
 /**
  * Can be attached as a listener to throw an error if an unexpected message is received
  */
-function expectNoMessages() {
+function expectNoMessages(topic, message) {
     describe('unexpected mqtt message', function () {
         it('mqtt message should not be sent', function (done) {
             console.log("shouldn't have sent");
+            JSON.parse(message.toString()).should.equal(null);
             assert.ok(false);
             done();
         })
@@ -93,7 +95,7 @@ export function init(callback) {
     console.log(`Connecting to ${username}:${password}@${url}`);
 
     // Connect to and export socket
-    socket = mqtt.connect("mqtt://localhost", {username, password});
+    socket = mqtt.connect("mqtt://localhost", {username, password, clientId});
 
     // On successful connection
     socket.on('connect', function () {

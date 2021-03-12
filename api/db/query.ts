@@ -11,6 +11,14 @@ let log_queries = false;
 let pool: pg.Pool  = new pg.Pool(connection());
 
 class Query {
+
+    /**
+     * Order the results by most recently updated
+     * @param table
+     */
+    static newestFirst (table: string) {
+        return `ORDER BY ${table}.updated_at DESC`;
+    }
     
     /**
      * Generates a WHERE statement to limit results in a table to given account_id.
@@ -92,6 +100,27 @@ class Query {
             throw dbError;
         }
     }
+
+    /**
+     * Runs an SQL query within a transaction that automatically rolls back upon error
+     * 
+     * @example
+     * let result = await db.transaction('SELECT col_that_does_not_exist');
+     * 
+     * @param sql SQL query to execute within a transaction
+     */
+    static async transaction (sql: string): Promise<QueryResultRow[]> {
+        await this.query('BEGIN');
+        
+        try {
+            let rows = await this.query(sql);
+            await this.query('COMMIT');
+            return rows;
+        } catch (err) {
+            await this.query('ROLLBACK');
+            throw err;
+        }
+    }
     
     /**
      * Creates a comma separated list of escaped column names from an array.
@@ -116,16 +145,29 @@ class Query {
         
         return out.join(', ');
     }
+
+    static insertQueries (table: string, items: any | any[]) {
+        let queries = items.map((item: any) => {
+            return `INSERT INTO ${table} ${this.insertStr(item)}`;
+        })
+        
+        return queries.join('; ');
+    }
     
     /**
      * Generates an insert string from the given items to insert
      * i.e. - (`col1`, `col2`) VALUES (val1, val2), (val3, val4)
      * @param toInsert An array of objects (items to insert) with the following structure: {col1: val1, col2: val2}
      */
-    static insertStr (toInsert: any[]) {
+    static insertStr (toInsert: any | any[]) {
         let cols: string[] = [];
         let vals: any[] = [];
         let out = "";
+
+        // If toInsert is not an array, make it one
+        if (!Array.isArray(toInsert)) {
+            toInsert = [toInsert];
+        }
 
         // Get column names from the first object to insert
         Object.keys(toInsert[0]).forEach(key => {

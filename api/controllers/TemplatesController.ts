@@ -18,7 +18,7 @@ router.route('/').get(
         
         let fields = ['device_id', 'text'];
 
-        let sql = `SELECT ${db.selectFields(fields)} FROM ${table} WHERE ${r.whereAccount()}`;
+        let sql = `SELECT ${db.selectFields(fields)} FROM ${table} WHERE ${r.whereAccount()} ${db.newestFirst(table)}`;
         
         let result = await db.query(sql);
             
@@ -31,18 +31,19 @@ router.route('/add').post(
     asyncHandler(async (req, res, next) => {
         let r: TemplatesAddRequest = res.locals.request;
         
-        let inserted = r.templates.map((item) => {
+        let items = r.templates.map((item) => {
             return Object.assign({ account_id: r.account_id }, item,);
         });
 
-        let sql = `INSERT INTO ${table} ${db.insertStr(inserted)}`;
+        // Generate a query for each item
+        let sql = db.insertQueries(table, items);
 
-        await db.query(sql);
+        await db.transaction(sql);
 
         res.json(new BaseResponse);
 
         // Send websocket message
-        inserted.forEach(function (item) {
+        items.forEach(function (item) {
             let payload = new TemplatesPayloads.added_template(
                 item.device_id,
                 item.text

@@ -18,7 +18,7 @@ router.route('/').get(
         
         let cols = ['session_id AS account_id', 'id', 'device_id', 'phone_number', 'name', 'color', 'color_dark', 'color_light', 'color_accent', 'contact_type'];
         
-        let sql = `SELECT ${db.selectFields(cols)} FROM ${table} INNER JOIN SessionMap USING (account_id) WHERE ${r.whereAccount()} ${r.limitStr()}`;
+        let sql = `SELECT ${db.selectFields(cols)} FROM ${table} INNER JOIN SessionMap USING (account_id) WHERE ${r.whereAccount()} ${db.newestFirst(table)} ${r.limitStr()}`;
 
         let result = await db.query(sql);
         
@@ -32,7 +32,7 @@ router.route('/simple').get(
         
         let cols = ['phone_number', 'name', 'id', 'id_matcher', 'color', 'color_accent', 'contact_type'];
         
-        let sql = `SELECT ${db.selectFields(cols)} FROM ${table} WHERE ${r.whereAccount()} ${r.limitStr()}`;
+        let sql = `SELECT ${db.selectFields(cols)} FROM ${table} WHERE ${r.whereAccount()} ${db.newestFirst(table)} ${r.limitStr()}`;
 
         let result = await db.query(sql);
         
@@ -45,18 +45,19 @@ router.route('/add').post(
     asyncHandler(async (req, res, next) => {
         let r: ContactsAddRequest = res.locals.request;
         
-        let inserted = r.contacts.map((item) => {
+        let items = r.contacts.map((item) => {
             return Object.assign({ account_id: r.account_id }, item,);
         });
 
-        let sql = `INSERT INTO ${table} ${db.insertStr(inserted)}`;
+        // Generate a query for each item
+        let sql = db.insertQueries(table, items);
 
-        await db.query(sql);
+        await db.transaction(sql);
 
         res.json(new BaseResponse);
 
         // Send websocket message
-        inserted.forEach(function (item: any) {
+        items.forEach(function (item: any) {
             let payload = new ContactsPayloads.added_contact(
                 item.phone_number,
                 item.name,

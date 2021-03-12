@@ -588,7 +588,7 @@ describe("heart-sms-backend unit test", function () {
             done();
         });
     });
-    
+
     it("Get auto replies", function (done) {
         api
         .get('/auto_replies')
@@ -1305,12 +1305,12 @@ describe("heart-sms-backend unit test", function () {
             assert.deepStrictEqual(res.body, [
                 {
                     "id": res.body[0].id,
-                    "phone_number": "123",
-                    "name": "newname",
-                    "id_matcher": "idmatch1",
-                    "color": 456,
-                    "color_accent": 456,
-                    "contact_type": 3
+                    "phone_number": "777",
+                    "id_matcher": "idmatch3",
+                    "name": "newname3",
+                    "color": 5,
+                    "color_accent": 5,
+                    "contact_type": 5
                 },
                 {
                     "id": res.body[1].id,
@@ -1323,12 +1323,12 @@ describe("heart-sms-backend unit test", function () {
                 },
                 {
                     "id": res.body[2].id,
-                    "phone_number": "777",
-                    "id_matcher": "idmatch3",
-                    "name": "newname3",
-                    "color": 5,
-                    "color_accent": 5,
-                    "contact_type": 5
+                    "phone_number": "123",
+                    "name": "newname",
+                    "id_matcher": "idmatch1",
+                    "color": 456,
+                    "color_accent": 456,
+                    "contact_type": 3
                 }
             ]);
             contactsToRemove.push(res.body[1].id);
@@ -1351,12 +1351,12 @@ describe("heart-sms-backend unit test", function () {
             assert.deepStrictEqual(res.body, [
                 {
                     "id": res.body[0].id,
-                    "phone_number": "123",
-                    "name": "newname",
-                    "id_matcher": "idmatch1",
-                    "color": 456,
-                    "color_accent": 456,
-                    "contact_type": 3
+                    "phone_number": "777",
+                    "id_matcher": "idmatch3",
+                    "name": "newname3",
+                    "color": 5,
+                    "color_accent": 5,
+                    "contact_type": 5
                 },
                 {
                     "id": res.body[1].id,
@@ -1388,12 +1388,12 @@ describe("heart-sms-backend unit test", function () {
             assert.deepStrictEqual(res.body, [
                 {
                     "id": res.body[0].id,
-                    "phone_number": "777",
-                    "id_matcher": "idmatch3",
-                    "name": "newname3",
-                    "color": 5,
-                    "color_accent": 5,
-                    "contact_type": 5
+                    "phone_number": "123",
+                    "name": "newname",
+                    "id_matcher": "idmatch1",
+                    "color": 456,
+                    "color_accent": 456,
+                    "contact_type": 3
                 }
             ]);
             done();
@@ -1415,14 +1415,14 @@ describe("heart-sms-backend unit test", function () {
                 {
                     "id": res.body[0].id,
                     "account_id": accountId,
-                    "device_id": 1,
-                    "phone_number": "123",
-                    "name": "newname",
-                    "color": 456,
-                    "color_dark": 456,
-                    "color_light": 456,
-                    "color_accent": 456,
-                    "contact_type": 3
+                    "device_id": 3,
+                    "phone_number": "777",
+                    "name": "newname3",
+                    "color": 5,
+                    "color_dark": 5,
+                    "color_light": 5,
+                    "color_accent": 5,
+                    "contact_type": 5
                 },
                 {
                     "id": res.body[1].id,
@@ -1457,15 +1457,15 @@ describe("heart-sms-backend unit test", function () {
                 {
                     "id": res.body[0].id,
                     "account_id": accountId,
-                    "device_id": 3,
-                    "phone_number": "777",
-                    "name": "newname3",
-                    "color": 5,
-                    "color_dark": 5,
-                    "color_light": 5,
-                    "color_accent": 5,
-                    "contact_type": 5
-                },
+                    "device_id": 1,
+                    "phone_number": "123",
+                    "name": "newname",
+                    "color": 456,
+                    "color_dark": 456,
+                    "color_light": 456,
+                    "color_accent": 456,
+                    "contact_type": 3
+                }
             ]);
             done();
         });
@@ -1507,14 +1507,14 @@ describe("heart-sms-backend unit test", function () {
                 {
                     "id": res.body[0].id,
                     "account_id": accountId,
-                    "device_id": 1,
-                    "phone_number": "123",
-                    "name": "newname",
-                    "color": 456,
-                    "color_dark": 456,
-                    "color_light": 456,
-                    "color_accent": 456,
-                    "contact_type": 3
+                    "device_id": 3,
+                    "phone_number": "777",
+                    "name": "newname3",
+                    "color": 5,
+                    "color_dark": 5,
+                    "color_light": 5,
+                    "color_accent": 5,
+                    "contact_type": 5
                 }
             ]);
             done();
@@ -3192,10 +3192,10 @@ describe("heart-sms-backend unit test", function () {
                 {
                     "id": res.body[0].id,
                     "account_id": accountId,
-                    "device_id": 1,
-                    "device_conversation_id": 10,
-                    "mime_type": "testmime",
-                    "data": "newtest"
+                    "device_id": 5,
+                    "device_conversation_id": 30,
+                    "mime_type": "newmime",
+                    "data": "newtest3"
                 },
                 {
                     "id": res.body[1].id,
@@ -3208,10 +3208,10 @@ describe("heart-sms-backend unit test", function () {
                 {
                     "id": res.body[2].id,
                     "account_id": accountId,
-                    "device_id": 5,
-                    "device_conversation_id": 30,
-                    "mime_type": "newmime",
-                    "data": "newtest3"
+                    "device_id": 1,
+                    "device_conversation_id": 10,
+                    "mime_type": "testmime",
+                    "data": "newtest"
                 }
             ]);
             done();
@@ -3406,17 +3406,6 @@ describe("heart-sms-backend unit test", function () {
                 {
                     "id": res.body[0].id,
                     "account_id": accountId,
-                    "device_id": 1,
-                    "to": "888",
-                    "data": "newdata",
-                    "mime_type": "newmime",
-                    "timestamp": 12345,
-                    "title": "title",
-                    "repeat": 1
-                },
-                {
-                    "id": res.body[1].id,
-                    "account_id": accountId,
                     "device_id": 2,
                     "to": "777,333",
                     "data": "testdata2",
@@ -3424,6 +3413,17 @@ describe("heart-sms-backend unit test", function () {
                     "timestamp": 654321,
                     "title": "newtitle",
                     "repeat": 22
+                },
+                {
+                    "id": res.body[1].id,
+                    "account_id": accountId,
+                    "device_id": 1,
+                    "to": "888",
+                    "data": "newdata",
+                    "mime_type": "newmime",
+                    "timestamp": 12345,
+                    "title": "title",
+                    "repeat": 1
                 }
             ]);
             done();
@@ -3827,11 +3827,15 @@ describe("heart-sms-backend unit test", function () {
         });
     });
 
-    it("should check total mqtt messages",function(done){
+    it("All mqtt messages received",function(done){
         // All messages received
-        assert.ok(msgCount == 75);
+        msgCount.should.equal(75);
+        done();
+    });
+
+    it("All mqtt messages tested",function(done){
         // All messages tested
-        assert.ok(msgTested == msgCount);
+        msgTested.should.equal(msgCount);
         done();
     });
 

@@ -24,14 +24,14 @@ const util = {
 
         devOrTest: () => (process.env.NODE_ENV === devEnv || process.env.NODE_ENV === testEnv),
 
-        prod: () => (process.env.NODE_ENV === prodEnv),
+        prod: () => (!process.env.NODE_ENV || process.env.NODE_ENV === prodEnv), // Prod is default
 
         pretty: function () {
             switch (process.env.NODE_ENV) {
                 case devEnv : return 'Development';
                 case testEnv: return 'Test';
                 case prodEnv: return 'Production';
-                default: return 'Unknown';
+                default: return 'Production';
             }
         }
     }

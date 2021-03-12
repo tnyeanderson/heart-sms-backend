@@ -1,13 +1,12 @@
 # TODO
 ## pulse-sms-backend
 
-- [ ] INSERT IGNORE
-- [ ] Fix .insertStr() to work when object at i>1 has more columns than i=0
-- [ ] Don't send mqtt message if db operation failed
+- [x] Fix .insertStr() to work when object at i>1 has more columns than i=0
+- [ ] Don't send mqtt message if db operation failed (need to write a test?)
 - [ ] Clean up payloads (stop using constructors?)
-- [ ] Postgres root password?
-- [ ] Check whether database was set up successfully
-- [ ] Update docs for database init
+- [x] Postgres root password?
+- [x] Check whether database was set up successfully
+- [x] Update docs for database init
 - [x] async/await db query
 - [x] Fix database error response delay
 - [x] Fix database NOT NULL DEFAULTs

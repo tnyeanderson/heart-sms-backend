@@ -27,4 +27,6 @@ RUN chmod +x wait-for-postgres.sh
 RUN npm run compile
 
 EXPOSE 8081
-CMD [ "./wait-for-postgres.sh", "npm", "run", "start" ]
+
+ENTRYPOINT [ "./wait-for-postgres.sh" ]
+CMD [ "npm", "run", "start" ]
