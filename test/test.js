@@ -136,7 +136,7 @@ describe("heart-sms-backend unit test", function () {
                 "color_light": -1,
                 "color_accent": -10011977,
                 "use_global_theme": false,
-                "apply_primary_color_to_toolbar": true,
+                "apply_primary_color_toolbar": true,
                 "passcode": null,
                 "message_timestamp": false,
                 "conversation_categories": true
@@ -346,11 +346,11 @@ describe("heart-sms-backend unit test", function () {
         });
     });
 
-    it("Update account apply_primary_color_to_toolbar boolean setting", function (done) {
+    it("Update account apply_primary_color_toolbar boolean setting", function (done) {
         expectMsg(accountId, {
             operation: 'update_setting',
             content: {
-                "pref": "apply_primary_color_to_toolbar",
+                "pref": "apply_primary_color_toolbar",
                 "type": "boolean",
                 "value": false
             }
@@ -360,7 +360,7 @@ describe("heart-sms-backend unit test", function () {
         .post('/accounts/update_setting')
         .query({
             "account_id": accountId,
-            "pref": "apply_primary_color_to_toolbar",
+            "pref": "apply_primary_color_toolbar",
             "type": "boolean",
             "value": "false"
         })
@@ -374,12 +374,12 @@ describe("heart-sms-backend unit test", function () {
         });
     });
 
-    it("Fail to update account apply_primary_color_to_toolbar boolean setting with uncastable string value", function (done) {
+    it("Fail to update account apply_primary_color_toolbar boolean setting with uncastable string value", function (done) {
         api
         .post('/accounts/update_setting')
         .query({
             "account_id": accountId,
-            "pref": "apply_primary_color_to_toolbar",
+            "pref": "apply_primary_color_toolbar",
             "type": "boolean",
             "value": "shouldfail"
         })
@@ -485,7 +485,7 @@ describe("heart-sms-backend unit test", function () {
                 "color_light": -1,
                 "color_accent": -10011977,
                 "use_global_theme": false,
-                "apply_primary_color_to_toolbar": false,
+                "apply_primary_color_toolbar": false,
                 "passcode": null,
                 "message_timestamp": false,
                 "conversation_categories": true

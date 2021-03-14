@@ -23,7 +23,7 @@ router.route('/login').post(
         let r: LoginRequest = res.locals.request;
 
         let fields = ['account_id', 'session_id', 'password_hash', 'real_name AS name', 'salt1', 'salt2', 'phone_number', 
-                      'base_theme', 'passcode', 'rounder_bubbles', 'use_global_theme', 'apply_primary_color_to_toolbar', 
+                      'base_theme', 'passcode', 'rounder_bubbles', 'use_global_theme', 'apply_primary_color_toolbar', 
                       'conversation_categories', 'color', 'color_dark', 'color_light', 'color_accent', 'global_color_theme', 
                       'message_timestamp', 'subscription_type', 'subscription_expiration'];
         
@@ -147,7 +147,7 @@ router.route('/settings').get(
     asyncHandler(async (req, res, next) => {
         let r: AccountIdRequest = res.locals.request;
         
-        let fields = ["base_theme", "global_color_theme", "rounder_bubbles", "color", "color_dark", "color_light", "color_accent", "use_global_theme", "apply_primary_color_to_toolbar", "passcode", "subscription_type", "message_timestamp", "conversation_categories"];
+        let fields = ["base_theme", "global_color_theme", "rounder_bubbles", "color", "color_dark", "color_light", "color_accent", "use_global_theme", "apply_primary_color_toolbar", "passcode", "subscription_type", "message_timestamp", "conversation_categories"];
         
         let sql = `SELECT ${db.selectFields(fields)} FROM Settings WHERE ${r.whereAccount()} LIMIT 1`;
         

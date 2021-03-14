@@ -33,7 +33,7 @@ export class SettingsResponse extends BaseResponse {
     @Expose() color_light!: number;
     @Expose() color_accent!: number;
     @Expose() use_global_theme!: boolean;
-    @Expose() apply_primary_color_to_toolbar!: boolean;
+    @Expose() apply_primary_color_toolbar!: boolean;
     @Expose() passcode!: string;
     @Expose() subscription_type!: number;
     @Expose() message_timestamp!: boolean;
@@ -57,7 +57,7 @@ export class LoginResponse extends BaseResponse {
     @Expose() color_light!: number;
     @Expose() color_accent!: number;
     @Expose() use_global_theme!: boolean;
-    @Expose() apply_primary_color_to_toolbar!: boolean;
+    @Expose() apply_primary_color_toolbar!: boolean;
     @Expose() passcode!: string;
     @Expose() message_timestamp!: boolean;
     @Expose() conversation_categories!: boolean;

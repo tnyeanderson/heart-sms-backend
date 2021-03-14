@@ -27,7 +27,7 @@ CREATE TABLE IF NOT EXISTS Settings (
     "passcode" TEXT NULL,
     "rounder_bubbles" BOOLEAN DEFAULT false,
     "use_global_theme" BOOLEAN DEFAULT false,
-    "apply_primary_color_to_toolbar" BOOLEAN DEFAULT true,
+    "apply_primary_color_toolbar" BOOLEAN DEFAULT true,
     "conversation_categories" BOOLEAN DEFAULT true,
     "color" INTEGER DEFAULT -1352590,
     "color_dark" INTEGER DEFAULT -4311478,

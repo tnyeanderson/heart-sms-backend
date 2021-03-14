@@ -136,7 +136,7 @@ describe("heart-sms-backend unit test", function () {
                 "color_light": -1,
                 "color_accent": -10011977,
                 "use_global_theme": false,
-                "apply_primary_color_to_toolbar": true,
+                "apply_primary_color_toolbar": true,
                 "passcode": null,
                 "message_timestamp": false,
                 "conversation_categories": true

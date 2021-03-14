@@ -62,7 +62,7 @@ Response:
     "color_light": INT,
     "color_accent": INT,
     "use_global_theme": BOOL,
-    "apply_primary_color_to_toolbar": BOOL,
+    "apply_primary_color_toolbar": BOOL,
     "passcode": STRING,
     "message_timestamp": BOOL,
     "conversation_categories": BOOL
@@ -212,7 +212,7 @@ Response:
     "color_light": INT,
     "color_accent": INT,
     "use_global_theme": BOOL,
-    "apply_primary_color_to_toolbar": BOOL,
+    "apply_primary_color_toolbar": BOOL,
     "passcode": STRING,
     "subscription_type": INT,
     "message_timestamp": BOOL,
@@ -285,7 +285,7 @@ global_primary_color INT
 global_primary_dark_color INT
 global_accent_color INT
 apply_theme_globally BOOLEAN
-apply_primary_color_to_toolbar BOOLEAN
+apply_primary_color_toolbar BOOLEAN
 conversation_categories BOOLEAN
 message_timestamp BOOLEAN
 base_theme STRING
@@ -383,7 +383,7 @@ Response:
     "color_light": INT,
     "color_accent": INT,
     "use_global_theme": BOOL,
-    "apply_primary_color_to_toolbar": BOOL,
+    "apply_primary_color_toolbar": BOOL,
     "passcode": STRING,
     "message_timestamp": BOOL,
     "conversation_categories": BOOL
