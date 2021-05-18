@@ -148,6 +148,7 @@ We should:
   - [ ] Android app
   - [x] Backend
   - [x] Web client
+- [ ] Return username (email) with /account/login
 
 ## MQTT
 Firebase messages are being scrapped for MQTT. Here are the firebase actions from the Android app, and their typescript implementation status (untested):
