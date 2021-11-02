@@ -1,6 +1,7 @@
 import { Expose, plainToClass } from "class-transformer";
 import { NextFunction, Request, Response } from "express";
 import db from '../../db/query.js';
+import util from "../../utils/util.js";
 import { ErrorResponse, MissingParamError } from "../responses/ErrorResponses.js";
 
 
@@ -32,6 +33,12 @@ export class BaseRequest {
     /**
      * Array of query or body parameters that are optional
      */
+    static required: string[] = [];
+
+
+    /**
+     * Array of query or body parameters that are optional
+     */
     static optional: string[] = [];
 
 
@@ -42,23 +49,12 @@ export class BaseRequest {
 
 
     /**
-     * 
-     * @param prop Returns true if prop is not in optional (aka is required), false otherwise
-     */
-    static required(prop: string) {
-        return (!this.optional.includes(prop))
-    }
-
-    /**
      * Schema validation
      * It really doesn't matter whether the value is in the url parameters, body, or query.
      * They are all combined before validation
      * Conventions are in api.md and comments in the Request definitions
      */
-    static validate (item: Request | any) : boolean | ErrorResponse  {
-        // Get properties of an instance of the calling class (aka a class that extends BaseRequests)
-        let props = Object.getOwnPropertyNames(new this);
-
+    static validate (item: Request | any)  {
         // Combine request query, body, and url parameters into a single object
         // If plain object, just use that
         let toValidate = (item.query && item.body && item.params) ? Object.assign(item.query, item.body, item.params) : item;
@@ -66,27 +62,26 @@ export class BaseRequest {
         // Used for atLeastOne
         let optionalButPresent = 0;
 
-        // Validate request against derived class properties
-        for (let i=0, len=props.length; i<len; i++) {
-            let prop = props[i];
-            let required = this.required(prop);
-            let missing = (toValidate[prop] === undefined || toValidate[prop] === "");
-
-            if (required && missing) {
+        this.required.forEach(prop => {
+            if (util.propMissing(toValidate, prop)) {
                 // Property is required but not set (or is empty)
-                return new MissingParamError(prop);
-            } else if (!required && !missing) {
-                // Variable is optional but has a value.
-                optionalButPresent++;
+                throw new MissingParamError(prop);
             }
-        }
+        });
+
+        this.optional.forEach(prop => {
+            if (!util.propMissing(toValidate, prop)) {
+                // Property is optional but has a value.
+                optionalButPresent++
+            }
+        })
 
         if (this.atLeastOne && optionalButPresent === 0) {
             // At least one property from optional must be included, but none are
-            return new MissingParamError();
+            throw new MissingParamError();
         }
 
-        return true; // Validated
+        return; // Validated
     }
 
     /**
@@ -94,24 +89,23 @@ export class BaseRequest {
      * Called from controller to validate and append typed Request to res.locals
      */
     static handler (req: Request, res: Response, next: NextFunction) {
-        let validated = this.validate(req);
-
-        if (validated === true) {
-            res.locals.request = this.create(req);
-            next()
-        } else {
-            let error = (validated instanceof ErrorResponse) ? validated : new ErrorResponse();
-            next(error);
+        try {
+            this.validate(req);
+        } catch (err: unknown) {
+            return next(err)
         }
+        
+        res.locals.request = this.create(req);
+        next();
     }
 
     /**
      * Creates a 'request' to be appended to res.locals that contains all parameters from the url, query, and body
      */
     static create(req: Request, plain?: any) {
-        let toAssign = plain || Object.assign(req.query, req.body, req.params);
+        let r = plain || Object.assign(req.query, req.body, req.params);
         // (this) indicates the calling class
-        return this.createItem(toAssign);
+        return this.constructor(r);
     }
 
     /**
@@ -137,7 +131,12 @@ export class BaseRequest {
  * This adds validation
  */
 export class AccountIdRequest extends BaseRequest {
-    @Expose() account_id: string = '';
+    public account_id: string;
+
+    constructor(r: any) {
+        super();
+        this.account_id = String(r.account_id)
+    }
 
     /**
      * Helper method which calls db.whereAccount with the class instance's account_id
@@ -154,22 +153,13 @@ export class HasItemsRequest extends AccountIdRequest {
      * Must be extended
      */
     static itemsPropName: string = '';
-
-    /**
-     * Using the first item in the list, get the type of the list items.
-     * This is why static items properties have e.g. [new BlacklistsAddItem] as the default value
-     */
-    static getItemsType() {
-        let requestObject: any = new this;
-        // The constructor will return the class from which the first item in the list was instantiated
-        return requestObject[this.itemsPropName][0].constructor;
-    }
+    static itemsPropType: any = BaseRequest
 
     /**
      * Validate each of the items stored in the items property
      * @param req Express request
      */
-    static validateItems(req: Request) {
+    static validate(req: Request) {
         let prop = this.itemsPropName;
         let items = req.body[prop];
 
@@ -177,28 +167,11 @@ export class HasItemsRequest extends AccountIdRequest {
             return new MissingParamError(prop);
         } 
 
-        let itemsType = this.getItemsType();
-
-        for (let i=0, len=items.length; i<len; i++) {
-            let itemValid = itemsType.validate(items[i]);
-
-            // Return any errors
-            if (itemValid !== true) {
-                return itemValid;
-            }
-        }
+        items.forEach((item: any) => this.itemsPropType.validate(item));
 
         // Items are valid
         // Perform request schema validation
-        return this.validate(req);
-    }
-
-    /**
-     * Creates an instance of the items type for a given raw item
-     * @param item the item from the request body
-     */
-    static createItem(item: any) {
-        return this.getItemsType().createItem(item);
+        return super.validate(req);
     }
 
     /**
@@ -206,54 +179,7 @@ export class HasItemsRequest extends AccountIdRequest {
      * @param items list of items to be casted to instance of calling class
      */
     static createItems(items: any[]) {
-        let out: any[] = [];
-        items.forEach((item: any) => {
-            out.push(this.createItem(item));
-        })
-        return out;
-    }
-
-    /**
-     * Returns a request object with an array of items in it
-     * @param req Express request
-     */
-    static createWithItems(req: Request) {
-        let prop = this.itemsPropName;
-        let out: any = new this;
-
-        // This is always set because validate is called before create
-        out.account_id = Object.assign(req.body, req.query).account_id;
-
-        out[prop] = this.createItems(req.body[prop]);
-        
-        return out
-    }
-
-    /**
-     * Overrides the default handler to include item validation and creation
-     * @param req 
-     * @param res 
-     * @param next 
-     */
-    static handler(req: Request, res: Response, next: NextFunction) {
-        let validated = this.validateItems(req);
-        let error = new ErrorResponse();
-
-        if (validated === true) {
-            res.locals.request = this.create(req);
-            next()
-        } else {
-            error = (validated instanceof ErrorResponse) ? validated : error;
-            next(error);
-        }
-    }
-
-    /** 
-     * Calls createWithItems to override the default create command.
-     * Can be extended to also include other properties in the request (e.g. device_conversation_id)
-     */
-    static create(req: Request) {
-        return this.createWithItems(req);
+        return items.map((item: any) => this.itemsPropType.createItem(item));
     }
 }
 
@@ -285,7 +211,12 @@ export class UpdateRequest extends AccountIdRequest {
  */
 export class DeviceIdRequest extends AccountIdRequest {
     // Usually URL params
-    @Expose() device_id: number = -1;
+    public device_id: number;
+
+    constructor(r: any) {
+        super(r);
+        this.device_id = Number(r.device_id);
+    }
 }
 
 
@@ -316,8 +247,15 @@ export class UpdateDeviceIdRequest extends DeviceIdRequest {
  */
 export class LimitOffsetRequest extends AccountIdRequest {
     // Query
-    @Expose() limit: number = -1;
-    @Expose() offset: number = -1;
+    public limit: number = -1;
+    public offset: number = -1;
+
+    constructor(r: any) {
+        super(r);
+        this.limit = Number(r.limit);
+        this.offset = Number(r.offset);
+    }
+
 
     static optional = ['limit', 'offset'];
 
@@ -325,7 +263,7 @@ export class LimitOffsetRequest extends AccountIdRequest {
      * Helper method to call db.limitStr()
      */
     limitStr() {
-        return db.limitStr(Number(this.limit), Number(this.offset));
+        return db.limitStr(this.limit, this.offset);
     }
 }
 

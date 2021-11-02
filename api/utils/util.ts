@@ -13,6 +13,14 @@ const util = {
     createAccountId: function () {
         return (uuidv4() + uuidv4()).replace(/-/g, '');
     },
+
+    /**
+     * Whether a property is missing from an object to validate
+     * 
+    */
+    propMissing: function (toValidate: any, prop: string) {
+        return (toValidate[prop] === undefined || toValidate[prop] === "");
+    },
     
     /**
      * Used for easily determining which environment we are in

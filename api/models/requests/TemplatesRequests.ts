@@ -6,15 +6,35 @@ import { BaseRequest, HasItemsRequest, UpdateDeviceIdRequest } from "./BaseReque
  * templates/add
  */
 class TemplatesAddItem extends BaseRequest {
-    @Expose() device_id: number = -1;
-    @Expose() text: string = '';
+    public device_id: number;
+    public text: string;
+
+    constructor(r: any) {
+        super()
+        this.device_id = Number(r.device_id);
+        this.text = String(r.text);
+    }
+
+
+    static required = [
+        ...super.required,
+        'device_id',
+        'text'
+    ]
 }
 
 export class TemplatesAddRequest extends HasItemsRequest {
     // Body
-    templates: TemplatesAddItem[] = [new TemplatesAddItem];
+    public templates: TemplatesAddItem[];
+
+    constructor(r: any) {
+        super(r);
+        this.templates = TemplatesAddRequest.createItems(r.templates);
+    }
+
 
     static itemsPropName = 'templates';
+    static itemsPropType = TemplatesAddItem;
 }
 
 
@@ -23,5 +43,16 @@ export class TemplatesAddRequest extends HasItemsRequest {
  */
 export class TemplatesUpdateRequest extends UpdateDeviceIdRequest {
     // Body
-    @Expose() text: string = '';
+    public text: string;
+
+    constructor(r: any) {
+        super(r);
+        this.text = String(r.text);
+    }
+
+
+    static required = [
+        ...super.required,
+        'text'
+    ]
 }

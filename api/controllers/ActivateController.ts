@@ -1,6 +1,6 @@
 import express from 'express';
 import db from '../db/query.js';
-import { ActivateRequest } from '../models/requests/ActivateRequesets.js';
+import { ActivateRequest } from '../models/requests/ActivateRequests.js';
 import { BaseResponse } from '../models/responses/BaseResponse.js';
 
 const router = express.Router();
