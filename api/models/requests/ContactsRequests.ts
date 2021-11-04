@@ -1,5 +1,4 @@
-import { Expose } from "class-transformer";
-import util from "../../utils/util.js";
+import { AtLeastOne, ItemsProp, Optional, Required } from "../../utils/decorators.js";
 import { AccountIdRequest, BaseRequest, HasItemsRequest, UpdateDeviceIdRequest } from "./BaseRequests.js";
 
 
@@ -8,21 +7,14 @@ import { AccountIdRequest, BaseRequest, HasItemsRequest, UpdateDeviceIdRequest }
  */
 export class ContactsRemoveDeviceIdRequest extends AccountIdRequest {
     // Query
-    public phone_number: string
-    public device_id: number;
+    @Required phone_number: string
+    @Required device_id: number;
 
     constructor(r: any) {
         super(r);
         this.phone_number = String(r.phone_number);
         this.device_id = Number(r.device_id);
     }
-
-
-    static required = [
-        ...super.required,
-        'phone_number',
-        'device_id'
-    ]
 }
 
 
@@ -31,15 +23,12 @@ export class ContactsRemoveDeviceIdRequest extends AccountIdRequest {
  */
 export class ContactsRemoveIdsRequest extends AccountIdRequest {
     // URL params
-    public ids: string;
+    @Required ids: string;
 
     constructor(r: any) {
         super(r);
         this.ids = String(r.ids);
     }
-
-
-    static required = [...super.required, 'ids'];
 }
 
 
@@ -48,15 +37,15 @@ export class ContactsRemoveIdsRequest extends AccountIdRequest {
  * contacts/add
  */
 class ContactsAddItem extends BaseRequest {
-    public device_id: number;
-    public phone_number: string;
-    public id_matcher: string;
-    public name: string;
-    public color: number;
-    public color_dark: number;
-    public color_light: number;
-    public color_accent: number;
-    public contact_type: number;
+    @Required device_id: number;
+    @Required phone_number: string;
+    @Required id_matcher: string;
+    @Required name: string;
+    @Required color: number;
+    @Required color_dark: number;
+    @Required color_light: number;
+    @Required color_accent: number;
+    @Required contact_type: number;
 
     constructor (r: any) {
         super();
@@ -70,20 +59,17 @@ class ContactsAddItem extends BaseRequest {
         this.color_accent = Number(r.color_accent);
         this.contact_type = Number(r.contact_type);
     }
-
 }
 
 export class ContactsAddRequest extends HasItemsRequest {
     // Body
-    public contacts: ContactsAddItem[];
+    @ItemsProp @Required contacts: ContactsAddItem[];
 
     constructor(r: any) {
         super(r);
         this.contacts = ContactsAddRequest.createItems(r.contacts);
     }
 
-
-    static itemsPropName = 'contacts';
     static itemsPropType = ContactsAddItem;
 }
 
@@ -92,30 +78,27 @@ export class ContactsAddRequest extends HasItemsRequest {
 /**
  * contacts/update_device_id
  */
+@AtLeastOne
 export class ContactsUpdateDeviceIdRequest extends UpdateDeviceIdRequest {
     // Query
     // Included in base class
     // @Expose() device_id: number = -1;
 
     // Body
-    public phone_number?: string;
-    public name?: string;
-    public color?: number;
-    public color_dark?: number;
-    public color_light?: number;
-    public color_accent?: number;
+    @Optional phone_number?: string;
+    @Optional name?: string;
+    @Optional color?: number;
+    @Optional color_dark?: number;
+    @Optional color_light?: number;
+    @Optional color_accent?: number;
 
     constructor(r: any) {
         super(r);
-        !util.propMissing(r, 'phone_number') && (this.phone_number = String(r.phone_number));
-        !util.propMissing(r, 'name') && (this.name = String(r.name));
-        !util.propMissing(r, 'color') && (this.color = Number(r.color));
-        !util.propMissing(r, 'color_dark') && (this.color_dark = Number(r.color_dark));
-        !util.propMissing(r, 'color_light') && (this.color_light = Number(r.color_light));
-        !util.propMissing(r, 'color_accent') && (this.color_accent = Number(r.color_accent));
+        this.setOptional('phone_number', r, String);
+        this.setOptional('name', r, String);
+        this.setOptional('color', r, Number);
+        this.setOptional('color_dark', r, Number);
+        this.setOptional('color_light', r, Number);
+        this.setOptional('color_accent', r, Number);
     }
-
-
-    static optional = ['phone_number', 'name', 'color', 'color_dark', 'color_light', 'color_accent'];
-    static atLeastOne = true;
 }

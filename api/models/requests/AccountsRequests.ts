@@ -1,10 +1,8 @@
-import { Expose } from "class-transformer";
 import { NextFunction, Request, Response } from "express";
 import db from '../../db/query.js';
 import users from '../../helpers/UserHelper.js';
-import util from "../../utils/util.js";
-import { BaseError } from "../errors/Errors.js";
-import { DuplicateUserError, ErrorResponse, MissingParamError, ParamTypeError, UserNotAllowedError } from "../responses/ErrorResponses.js";
+import { Optional, Required } from "../../utils/decorators.js";
+import { DuplicateUserError, ParamTypeError, UserNotAllowedError } from "../responses/ErrorResponses.js";
 import { AccountIdRequest, BaseRequest } from "./BaseRequests.js";
 
 
@@ -13,10 +11,10 @@ import { AccountIdRequest, BaseRequest } from "./BaseRequests.js";
  */
 export class SignupRequest extends BaseRequest {
     // Body
-    public name: string;
-    public password: string;
-    public phone_number: string;
-    public real_name: string;
+    @Required name: string;
+    @Required password: string;
+    @Required phone_number: string;
+    @Required real_name: string;
 
     constructor(r: any) {
         super();
@@ -25,14 +23,6 @@ export class SignupRequest extends BaseRequest {
         this.phone_number = String(r.phone_number);
         this.real_name = String(r.real_name);
     }
-
-    static required = [
-        ...super.required,
-        'name',
-        'password',
-        'phone_number',
-        'real_name'
-    ]
 
     /**
      * Express middleware to check whether a user is in HEART_ALLOWED_USERS
@@ -79,20 +69,14 @@ export class SignupRequest extends BaseRequest {
  * accounts/login
  */
 export class LoginRequest extends BaseRequest {
-    public username: string;
-    public password: string;
+    @Required username: string;
+    @Required password: string;
 
     constructor(r: any) {
         super()
         this.username = String(r.username);
         this.password = String(r.password);
     }
-
-    static required = [
-        ...super.required,
-        'username',
-        'password'
-    ]
 }
 
 
@@ -101,19 +85,14 @@ export class LoginRequest extends BaseRequest {
  */
 export class DismissedNotificationRequest extends AccountIdRequest {
     // Query
-    public id: string;
-    public device_id?: string;
+    @Required id: string;
+    @Optional device_id?: string;
 
     constructor(r: any) {
         super(r)
         this.id = String(r.id);
-        !util.propMissing(r, 'device_id') && (this.device_id = String(r.device_id));
+        this.setOptional(r, 'device_id', String)
     }
-
-    static required = [
-        ...super.required,
-        'id'
-    ]
 }
 
 
@@ -122,9 +101,9 @@ export class DismissedNotificationRequest extends AccountIdRequest {
  */
 export class UpdateSettingRequest extends AccountIdRequest {
     // Query
-    public pref: string;
-    public type: string;
-    public value: any;
+    @Required pref: string;
+    @Required type: string;
+    @Required value: any;
 
     constructor(r: any) {
         super(r);
@@ -132,13 +111,6 @@ export class UpdateSettingRequest extends AccountIdRequest {
         this.type = String(r.type);
         this.value = this.castValue(r.value)
     }
-
-    static required = [
-        ...super.required,
-        'pref',
-        'type',
-        'value'
-    ]
 
     castValue(value: any) {
         // Can it cast?

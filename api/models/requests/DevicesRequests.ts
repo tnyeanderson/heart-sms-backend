@@ -1,6 +1,5 @@
-import { Expose } from "class-transformer";
 import { Request } from 'express';
-import util from "../../utils/util.js";
+import { AtLeastOne, Optional, Required } from '../../utils/decorators.js';
 import { MissingParamError } from "../responses/ErrorResponses.js";
 import { AccountIdRequest, BaseRequest, UpdateRequest } from "./BaseRequests.js";
 
@@ -9,11 +8,11 @@ import { AccountIdRequest, BaseRequest, UpdateRequest } from "./BaseRequests.js"
  * devices/add
  */
 class DevicesAddItem extends BaseRequest {
-    public id: number;
-    public info: string;
-    public name: string;
-    public primary: boolean;
-    public fcm_token: string;
+    @Required id: number;
+    @Required info: string;
+    @Required name: string;
+    @Required primary: boolean;
+    @Required fcm_token: string;
 
     constructor(r: any) {
         super();
@@ -23,21 +22,11 @@ class DevicesAddItem extends BaseRequest {
         this.primary = Boolean(r.primary);
         this.fcm_token = String(r.fcm_token);
     }
-
-
-    static required = [
-        ...super.required,
-        'id',
-        'info',
-        'name',
-        'primary',
-        'fcm_token'
-    ]
 }
 
 export class DevicesAddRequest extends AccountIdRequest {
     // Body
-    public device: DevicesAddItem;
+    device: DevicesAddItem;
 
     constructor(r: any) {
         super(r);
@@ -73,40 +62,33 @@ export class DevicesAddRequest extends AccountIdRequest {
  */
 export class DevicesRemoveRequest extends AccountIdRequest {
     // URL params
-    public id: number;
+    @Required id: number;
 
     constructor(r: any) {
         super(r);
         this.id = Number(r.id);
     }
-
-
-    static required = [...super.required, 'id'];
 }
 
 
 /**
  * devices/update/:id
  */
+@AtLeastOne
 export class DevicesUpdateRequest extends UpdateRequest {
     // URL params
-    public id: number;
+    @Required id: number;
 
     // Query
-    public fcm_token?: string;
-    public name?: string;
+    @Optional fcm_token?: string;
+    @Optional name?: string;
 
     constructor(r: any) {
         super(r);
         this.id = Number(r.id);
-        !util.propMissing(r, 'fcm_token') && (this.fcm_token = String(r.fcm_token));
-        !util.propMissing(r, 'name') && (this.name = String(r.name));
+        this.setOptional('fcm_token', r, String);
+        this.setOptional('name', r, String);
     }
-
-
-    static required = [...super.required, 'id'];
-    static optional = ['fcm_token', 'name'];
-    static atLeastOne = true;
 
     toUpdate() {
         let {account_id, id, ...out} = this;
@@ -122,13 +104,10 @@ export class DevicesUpdateRequest extends UpdateRequest {
  */
 export class DevicesUpdatePrimaryRequest extends AccountIdRequest {
     // Query
-    public new_primary_device_id: string;
+    @Required new_primary_device_id: string;
 
     constructor(r: any) {
         super(r);
         this.new_primary_device_id = String(r.new_primary_device_id);
     }
-
-
-    static required = [...super.required, 'new_primary_device_id'];
 }

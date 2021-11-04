@@ -1,5 +1,4 @@
-import { Expose } from "class-transformer";
-import util from "../../utils/util.js";
+import { AtLeastOne, ItemsProp, Optional, Required } from "../../utils/decorators.js";
 import { BaseRequest, HasItemsRequest, UpdateDeviceIdRequest } from "./BaseRequests.js";
 
 
@@ -7,13 +6,13 @@ import { BaseRequest, HasItemsRequest, UpdateDeviceIdRequest } from "./BaseReque
  * scheduled_messages/add
  */
 class ScheduledMessagesAddItem extends BaseRequest {
-    public device_id: number;
-    public to: string;
-    public data: string;
-    public mime_type: string;
-    public timestamp: number;
-    public title: string;
-    public repeat: number;
+    @Required device_id: number;
+    @Required to: string;
+    @Required data: string;
+    @Required mime_type: string;
+    @Required timestamp: number;
+    @Required title: string;
+    @Required repeat: number;
 
     constructor(r: any) {
         super();
@@ -25,31 +24,17 @@ class ScheduledMessagesAddItem extends BaseRequest {
         this.title = String(r.title);
         this.repeat = Number(r.repeat);
     }
-
-
-    static required = [
-        ...super.required,
-        'device_id',
-        'to',
-        'data',
-        'mime_type',
-        'timestamp',
-        'title',
-        'repeat'
-    ]
 }
 
 export class ScheduledMessagesAddRequest extends HasItemsRequest {
     // Body
-    public scheduled_messages: ScheduledMessagesAddItem[];
+    @ItemsProp scheduled_messages: ScheduledMessagesAddItem[];
 
     constructor(r: any) {
         super(r);
         this.scheduled_messages = ScheduledMessagesAddRequest.createItems(r.scheduled_messages);
     }
 
-
-    static itemsPropName = 'scheduled_messages';
     static itemsPropType = ScheduledMessagesAddItem;
 }
 
@@ -59,25 +44,22 @@ export class ScheduledMessagesAddRequest extends HasItemsRequest {
 /**
  * scheduled_messages/update/:device_id
  */
+@AtLeastOne
 export class ScheduledMessagesUpdateRequest extends UpdateDeviceIdRequest {
-    public to?: string;
-    public data?: string;
-    public mime_type?: string;
-    public timestamp?: number;
-    public title?: string;
-    public repeat?: number;
+    @Optional to?: string;
+    @Optional data?: string;
+    @Optional mime_type?: string;
+    @Optional timestamp?: number;
+    @Optional title?: string;
+    @Optional repeat?: number;
 
     constructor(r: any) {
         super(r);
-        !util.propMissing(r, 'to') && (this.to = String(r.to));
-        !util.propMissing(r, 'data') && (this.data = String(r.data));
-        !util.propMissing(r, 'mime_type') && (this.mime_type = String(r.mime_type));
-        !util.propMissing(r, 'timestamp') && (this.timestamp = Number(r.timestamp));
-        !util.propMissing(r, 'title') && (this.title = String(r.title));
-        !util.propMissing(r, 'repeat') && (this.repeat = Number(r.repeat));
+        this.setOptional('to', r, String);
+        this.setOptional('data', r, String);
+        this.setOptional('mime_type', r, String);
+        this.setOptional('timestamp', r, Number);
+        this.setOptional('title', r, String);
+        this.setOptional('repeat', r, Number);
     }
-
-
-    static optional = ['to', 'data', 'mime_type', 'timestamp', 'title', 'repeat'];
-    static atLeastOne = true;
 }

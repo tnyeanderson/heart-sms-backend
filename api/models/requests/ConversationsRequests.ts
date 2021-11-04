@@ -1,5 +1,4 @@
-import { Expose } from "class-transformer";
-import util from "../../utils/util.js";
+import { AtLeastOne, ItemsProp, Optional, Required } from "../../utils/decorators.js";
 import { AccountIdRequest, BaseRequest, DeviceIdRequest, HasItemsRequest, UpdateDeviceIdRequest } from "./BaseRequests.js";
 
 /**
@@ -7,18 +6,12 @@ import { AccountIdRequest, BaseRequest, DeviceIdRequest, HasItemsRequest, Update
  */
 export class ConversationsFolderRequest extends AccountIdRequest {
     // Query
-    public folder_id: number;
+    @Required folder_id: number;
 
     constructor(r: any) {
         super(r);
         this.folder_id = Number(r.folder_id);
     }
-
-
-    static required = [
-        ...super.required,
-        'folder_id'
-    ]
 }
 
 
@@ -27,25 +20,25 @@ export class ConversationsFolderRequest extends AccountIdRequest {
  * conversations/add
  */
 class ConversationsAddItem extends BaseRequest {
-    public device_id: number;
-    public folder_id: number;
-    public color: number;
-    public color_dark: number;
-    public color_light: number;
-    public color_accent: number;
-    public led_color: number;
-    public pinned: boolean;
-    public read: boolean;
-    public timestamp: number;
-    public title: string;
-    public phone_numbers: string;
-    public snippet: string;
-    public id_matcher: string;
-    public mute: boolean;
-    public archive: boolean;
-    public private_notifications: boolean;
-    public ringtone?: string;
-    public image_uri?: string;
+    @Required device_id: number;
+    @Required folder_id: number;
+    @Required color: number;
+    @Required color_dark: number;
+    @Required color_light: number;
+    @Required color_accent: number;
+    @Required led_color: number;
+    @Required pinned: boolean;
+    @Required read: boolean;
+    @Required timestamp: number;
+    @Required title: string;
+    @Required phone_numbers: string;
+    @Required snippet: string;
+    @Required id_matcher: string;
+    @Required mute: boolean;
+    @Required archive: boolean;
+    @Required private_notifications: boolean;
+    @Optional ringtone?: string;
+    @Optional image_uri?: string;
 
     constructor(r: any) {
         super();
@@ -66,38 +59,14 @@ class ConversationsAddItem extends BaseRequest {
         this.mute = Boolean(r.mute);
         this.archive = Boolean(r.archive);
         this.private_notifications = Boolean(r.private_notifications);
-        !util.propMissing(r, 'ringtone') && (this.ringtone = String(r.ringtone));
-        !util.propMissing(r, 'image_uri') && (this.image_uri = String(r.image_uri));
+        this.setOptional('ringtone', r, String);
+        this.setOptional('image_uri', r, String);
     }
-
-
-    static required = [
-        ...super.required,
-        'device_id',
-        'folder_id',
-        'color',
-        'color_dark',
-        'color_light',
-        'color_accent',
-        'led_color',
-        'pinned',
-        'read',
-        'timestamp',
-        'title',
-        'phone_numbers',
-        'snippet',
-        'id_matcher',
-        'mute',
-        'archive',
-        'private_notifications'
-    ]
-
-    static optional = ['ringtone', 'image_uri'];
 }
 
 export class ConversationsAddRequest extends HasItemsRequest {
     // Body
-    conversations: ConversationsAddItem[];
+    @ItemsProp conversations: ConversationsAddItem[];
 
     constructor(r: any) {
         super(r);
@@ -105,7 +74,6 @@ export class ConversationsAddRequest extends HasItemsRequest {
     }
 
 
-    static itemsPropName = 'conversations';
     static itemsPropType = ConversationsAddItem;
 }
 
@@ -114,84 +82,62 @@ export class ConversationsAddRequest extends HasItemsRequest {
 /**
  * conversations/update/:device_id
  */
+@AtLeastOne
 export class ConversationsUpdateRequest extends UpdateDeviceIdRequest {
     // Body
-    public color?: number;
-    public color_dark?: number;
-    public color_light?: number;
-    public color_accent?: number;
-    public led_color?: number;
-    public pinned?: boolean;
-    public read?: boolean;
-    public timestamp?: number;
-    public title?: string;
-    public snippet?: string;
-    public ringtone?: string;
-    public mute?: boolean;
-    public archive?: boolean;
-    public private_notifications?: boolean;
+    @Optional color?: number;
+    @Optional color_dark?: number;
+    @Optional color_light?: number;
+    @Optional color_accent?: number;
+    @Optional led_color?: number;
+    @Optional pinned?: boolean;
+    @Optional read?: boolean;
+    @Optional timestamp?: number;
+    @Optional title?: string;
+    @Optional snippet?: string;
+    @Optional ringtone?: string;
+    @Optional mute?: boolean;
+    @Optional archive?: boolean;
+    @Optional private_notifications?: boolean;
 
     constructor(r: any) {
         super(r);
-        !util.propMissing(r, 'color') && (this.color = Number(r.color));
-        !util.propMissing(r, 'color_dark') && (this.color_dark = Number(r.color_dark));
-        !util.propMissing(r, 'color_light') && (this.color_light = Number(r.color_light));
-        !util.propMissing(r, 'color_accent') && (this.color_accent = Number(r.color_accent));
-        !util.propMissing(r, 'led_color') && (this.led_color = Number(r.led_color));
-        !util.propMissing(r, 'pinned') && (this.pinned = Boolean(r.pinned));
-        !util.propMissing(r, 'read') && (this.read = Boolean(r.read));
-        !util.propMissing(r, 'timestamp') && (this.timestamp = Number(r.timestamp));
-        !util.propMissing(r, 'title') && (this.title = String(r.title));
-        !util.propMissing(r, 'snippet') && (this.snippet = String(r.snippet));
-        !util.propMissing(r, 'ringtone') && (this.ringtone = String(r.ringtone));
-        !util.propMissing(r, 'mute') && (this.mute = Boolean(r.mute));
-        !util.propMissing(r, 'archive') && (this.archive = Boolean(r.archive));
-        !util.propMissing(r, 'private_notifications') && (this.private_notifications = Boolean(r.private_notifications));
+        this.setOptional('color', r, Number);
+        this.setOptional('color_dark', r, Number);
+        this.setOptional('color_light', r, Number);
+        this.setOptional('color_accent', r, Number);
+        this.setOptional('led_color', r, Number);
+        this.setOptional('pinned', r, Boolean);
+        this.setOptional('read', r, Boolean);
+        this.setOptional('timestamp', r, Number);
+        this.setOptional('title', r, String);
+        this.setOptional('snippet', r, String);
+        this.setOptional('ringtone', r, String);
+        this.setOptional('mute', r, Boolean);
+        this.setOptional('archive', r, Boolean);
+        this.setOptional('private_notifications', r, Boolean);
     }
-
-
-    static optional = [
-        'color',
-        'color_dark',
-        'color_light',
-        'color_accent',
-        'led_color',
-        'pinned',
-        'read',
-        'timestamp',
-        'title',
-        'snippet',
-        'ringtone',
-        'mute',
-        'archive',
-        'private_notifications'
-    ];
-
-    static atLeastOne = true;
 }
 
 
 /**
  * conversations/update_snippet/:device_id
  */
+@AtLeastOne
 export class ConversationsUpdateSnippetRequest extends UpdateDeviceIdRequest {
     // Body
-    public read?: boolean;
-    public timestamp?: number;
-    public snippet?: string;
-    public archive?: boolean;
+    @Optional read?: boolean;
+    @Optional timestamp?: number;
+    @Optional snippet?: string;
+    @Optional archive?: boolean;
 
     constructor(r: any) {
         super(r);
-        !util.propMissing(r, 'read') && (this.read = Boolean(r.read));
-        !util.propMissing(r, 'timestamp') && (this.timestamp = Number(r.timestamp));
-        !util.propMissing(r, 'snippet') && (this.snippet = String(r.snippet));
-        !util.propMissing(r, 'archive') && (this.archive = Boolean(r.archive));
+        this.setOptional('read', r, Boolean);
+        this.setOptional('timestamp', r, Number);
+        this.setOptional('snippet', r, String);
+        this.setOptional('archive', r, Boolean);
     }
-
-
-    static optional = ['read', 'timestamp', 'snippet', 'archive'];
-    static atLeastOne = true;
 }
 
 
@@ -200,15 +146,12 @@ export class ConversationsUpdateSnippetRequest extends UpdateDeviceIdRequest {
  */
 export class ConversationsUpdateTitleRequest extends UpdateDeviceIdRequest {
     // Query
-    public title: string;
+    @Required title: string;
 
     constructor(r: any) {
         super(r);
         this.title = String(r.title);
     }
-
-
-    static required = [...super.required, 'title'];
 }
 
 
@@ -217,15 +160,12 @@ export class ConversationsUpdateTitleRequest extends UpdateDeviceIdRequest {
  */
 export class ConversationsReadRequest extends DeviceIdRequest {
     // Query
-    public android_device?: string;
+    @Optional android_device?: string;
 
     constructor(r: any) {
         super(r);
-        !util.propMissing(r, 'android_device') && (this.android_device = String(r.android_device));
+        this.setOptional('android_device', r, String);
     }
-
-
-    static optional = ['android_device'];
 }
 
 
@@ -234,15 +174,12 @@ export class ConversationsReadRequest extends DeviceIdRequest {
  */
 export class ConversationsSeenRequest extends AccountIdRequest {
     // URL params
-    public device_conversation_id: number;
+    @Required device_conversation_id: number;
 
     constructor(r: any) {
         super(r);
         this.device_conversation_id = Number(r.device_conversation_id);
     }
-
-
-    static required = [...super.required, 'device_conversation_id'];
 }
 
 
@@ -251,15 +188,12 @@ export class ConversationsSeenRequest extends AccountIdRequest {
  */
 export class ConversationsAddToFolderRequest extends DeviceIdRequest {
     // Query
-    public folder_id: number;
+    @Required folder_id: number;
 
     constructor(r: any) {
         super(r);
         this.folder_id = Number(r.folder_id);
     }
-
-
-    static required = [...super.required, 'folder_id'];
 }
 
 
@@ -268,15 +202,12 @@ export class ConversationsAddToFolderRequest extends DeviceIdRequest {
  */
 export class ConversationsCleanupMessagesRequest extends AccountIdRequest {
     // Query
-    public conversation_id: number;
-    public timestamp: number;
+    @Required conversation_id: number;
+    @Required timestamp: number;
 
     constructor(r: any) {
         super(r);
         this.conversation_id = Number(r.conversation_id);
         this.timestamp = Number(r.timestamp);
     }
-
-
-    static required = [...super.required, 'conversation_id', 'timestamp'];
 }

@@ -1,5 +1,4 @@
-import { Expose } from "class-transformer";
-import util from "../../utils/util.js";
+import { AtLeastOne, ItemsProp, Optional, Required } from "../../utils/decorators.js";
 import { AccountIdRequest, BaseRequest, HasItemsRequest, LimitOffsetRequest, UpdateDeviceIdRequest } from "./BaseRequests.js";
 
 
@@ -9,20 +8,12 @@ import { AccountIdRequest, BaseRequest, HasItemsRequest, LimitOffsetRequest, Upd
  */
 export class MessagesGetRequest extends LimitOffsetRequest {
     // Query
-    public conversation_id: number;
+    @Optional conversation_id: number;
 
     constructor(r: any) {
         super(r);
         this.conversation_id = Number(r.conversation_id); 
     }
-
-
-    static required = [
-        ...super.required,
-        'conversation_id'
-    ]
-
-    static optional = ['conversation_id', ...LimitOffsetRequest.optional];
 }
 
 
@@ -31,18 +22,18 @@ export class MessagesGetRequest extends LimitOffsetRequest {
  * messages/add
  */
 class MessagesAddItem extends BaseRequest {
-    public device_id: number;
-    public device_conversation_id: number;
-    public message_type: number;
-    public data: string;
-    public timestamp: number;
-    public mime_type: string;
-    public read: boolean;
-    public seen: boolean;
-    public sent_device: number;
-    public message_from?: string;
-    public color?: number;
-    public sim_stamp?: string;
+    @Required device_id: number;
+    @Required device_conversation_id: number;
+    @Required message_type: number;
+    @Required data: string;
+    @Required timestamp: number;
+    @Required mime_type: string;
+    @Required read: boolean;
+    @Required seen: boolean;
+    @Required sent_device: number;
+    @Optional message_from?: string;
+    @Optional color?: number;
+    @Optional sim_stamp?: string;
 
     constructor(r: any) {
         super();
@@ -55,9 +46,9 @@ class MessagesAddItem extends BaseRequest {
         this.read = Boolean(r.read);
         this.seen = Boolean(r.seen);
         this.sent_device = Number(r.sent_device);
-        !util.propMissing(r, 'message_from') && (this.message_from = String(r.message_from));
-        !util.propMissing(r, 'color') && (this.color = Number(r.color));
-        !util.propMissing(r, 'sim_stamp') && (this.sim_stamp = String(r.sim_stamp));
+        this.setOptional('message_from', r, String);
+        this.setOptional('color', r, Number);
+        this.setOptional('sim_stamp', r, String);
     }
 
 
@@ -79,15 +70,13 @@ class MessagesAddItem extends BaseRequest {
 
 export class MessagesAddRequest extends HasItemsRequest {
     // Body
-    messages: MessagesAddItem[];
+    @ItemsProp messages: MessagesAddItem[];
 
     constructor(r: any) {
         super(r)
         this.messages = MessagesAddRequest.createItems(r.messages);
     }
 
-
-    static itemsPropName = 'messages';
     static itemsPropType = MessagesAddItem;
 }
 
@@ -95,24 +84,21 @@ export class MessagesAddRequest extends HasItemsRequest {
 /**
  * messages/update/:device_id
  */
+@AtLeastOne
 export class MessagesUpdateRequest extends UpdateDeviceIdRequest {
     // Body
-    public message_type?: number;
-    public timestamp?: number;
-    public read?: boolean;
-    public seen?: boolean;
+    @Optional message_type?: number;
+    @Optional timestamp?: number;
+    @Optional read?: boolean;
+    @Optional seen?: boolean;
 
     constructor(r: any) {
         super(r);
-        !util.propMissing(r, 'message_type') && (this.message_type = Number(r.message_type));
-        !util.propMissing(r, 'timestamp') && (this.timestamp = Number(r.timestamp));
-        !util.propMissing(r, 'read') && (this.read = Boolean(r.read));
-        !util.propMissing(r, 'seen') && (this.seen = Boolean(r.seen));
+        this.setOptional('message_type', r, Number);
+        this.setOptional('timestamp', r, Number);
+        this.setOptional('read', r, Boolean);
+        this.setOptional('seen', r, Boolean);
     }
-
-
-    static optional = ['message_type', 'timestamp', 'read', 'seen'];
-    static atLeastOne = true;
 }
 
 
@@ -121,18 +107,12 @@ export class MessagesUpdateRequest extends UpdateDeviceIdRequest {
  */
 export class MessagesUpdateTypeRequest extends UpdateDeviceIdRequest {
     // Query
-    public message_type: number;
+    @Required message_type: number;
 
     constructor(r: any) {
         super(r);
         this.message_type = Number(r.message_type); 
     }
-
-
-    static required = [
-        ...super.required,
-        'message_type'
-    ]
 }
 
 
@@ -141,18 +121,12 @@ export class MessagesUpdateTypeRequest extends UpdateDeviceIdRequest {
  */
 export class MessagesCleanupRequest extends AccountIdRequest {
     // Query
-    public timestamp: number;
+    @Required timestamp: number;
 
     constructor(r: any) {
         super(r);
         this.timestamp = Number(r.timestamp); 
     }
-
-
-    static required = [
-        ...super.required,
-        'timestamp'
-    ]
 }
 
 
@@ -161,30 +135,21 @@ export class MessagesCleanupRequest extends AccountIdRequest {
  */
 export class MessagesForwardToPhoneRequest extends AccountIdRequest {
     // Body
-    public to: string;
-    public message: string;
-    public sent_device: number;
-    public mime_type?: string;
-    public message_id?: number;
+    @Required to: string;
+    @Required message: string;
+    @Required sent_device: number;
+
+    // TODO: Write tests
+    // TODO: Verify if this is correct
+    @Optional mime_type?: string;
+    @Optional message_id?: number;
 
     constructor(r: any) {
         super(r);
         this.to = String(r.to);
         this.message = String(r.message);
         this.sent_device = Number(r.sent_device);
-        !util.propMissing(r, 'mime_type') && (this.mime_type = String(r.mime_type));
-        !util.propMissing(r, 'message_id') && (this.message_id = Number(r.message_id));
+        this.setOptional('mime_type', r, String);
+        this.setOptional('message_id', r, Number);
     }
-
-
-    static required = [
-        ...super.required,
-        'to',
-        'message',
-        'sent_device'
-    ]
-
-    // TODO: Write tests
-    // TODO: Verify if this is correct
-    static optional = ['mime_type', 'message_id'];
 }

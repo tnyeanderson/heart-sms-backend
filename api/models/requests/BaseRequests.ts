@@ -1,21 +1,8 @@
-import { Expose, plainToClass } from "class-transformer";
+import { plainToClass } from "class-transformer";
 import { NextFunction, Request, Response } from "express";
 import db from '../../db/query.js';
 import util from "../../utils/util.js";
-import { ErrorResponse, MissingParamError } from "../responses/ErrorResponses.js";
-
-
-
-/**
- * 
- * For Request classes, all properties are assigned default values according to their type
- * This way we can instantiate the class and use its properties for validation
- * After being validated, class-transformer is used to create instances
- * The main entrypoint for this is .handler()
- * 
- */
-
-
+import { MissingParamError } from "../responses/ErrorResponses.js";
 
 /**
  * BaseRequest
@@ -118,7 +105,18 @@ export class BaseRequest {
         return plainToClass(this, item, { excludeExtraneousValues: true, enableImplicitConversion: true })
     }
 
-    
+    /**
+     * 
+     * @param name The name of the property
+     * @param sourceObj The object to get the property from
+     * @param Cast The function used to cast the value to the proper type
+     */
+    setOptional(name: string, sourceObj: any, Cast: Function) {
+        if (!util.propMissing(sourceObj, name)) {
+            // @ts-expect-error TS7053
+            this[name] = Cast(sourceObj[name])
+        }
+    }
 }
 
 

@@ -1,4 +1,4 @@
-import { Expose } from "class-transformer";
+import { Required } from "../../utils/decorators.js";
 import { BaseRequest } from "./BaseRequests.js";
 
 
@@ -7,21 +7,14 @@ import { BaseRequest } from "./BaseRequests.js";
  */
 export class MQTTLoginRequest extends BaseRequest {
     // Body
-    public username: string;
-    public password: string;
+    @Required username: string;
+    @Required password: string;
 
     constructor(r: any) {
         super();
         this.username = String(r.username);
         this.password = String(r.password);
     }
-
-
-    static required = [
-        ...super.required,
-        'username',
-        'password'
-    ]
 }
 
 
@@ -30,19 +23,12 @@ export class MQTTLoginRequest extends BaseRequest {
  */
 export class MQTTAclRequest extends BaseRequest {
     // Body
-    public username: string;
-    public topic: string;
+    @Required username: string;
+    @Required topic: string;
 
     constructor(r: any) {
         super();
         this.username = String(r.username);
         this.topic = String(r.topic);
     }
-
-
-    static required = [
-        ...super.required,
-        'username',
-        'topic'
-    ]
 }

@@ -1,4 +1,4 @@
-import { Expose } from "class-transformer";
+import { ItemsProp, Required } from "../../utils/decorators.js";
 import { BaseRequest, HasItemsRequest, UpdateDeviceIdRequest } from "./BaseRequests.js";
 
 
@@ -6,12 +6,12 @@ import { BaseRequest, HasItemsRequest, UpdateDeviceIdRequest } from "./BaseReque
  * folders/add
  */
 class FoldersAddItem extends BaseRequest {
-    public device_id: number;
-    public name: string;
-    public color: number;
-    public color_dark: number;
-    public color_light: number;
-    public color_accent: number;
+    @Required device_id: number;
+    @Required name: string;
+    @Required color: number;
+    @Required color_dark: number;
+    @Required color_light: number;
+    @Required color_accent: number;
 
     constructor(r: any) {
         super();
@@ -22,22 +22,11 @@ class FoldersAddItem extends BaseRequest {
         this.color_light = Number(r.color_light);
         this.color_accent = Number(r.color_accent);
     }
-
-
-    static required = [
-        ...super.required,
-        'device_id',
-        'name',
-        'color',
-        'color_dark',
-        'color_light',
-        'color_accent'
-    ]
 }
 
 export class FoldersAddRequest extends HasItemsRequest {
     // Body
-    folders: FoldersAddItem[];
+    @ItemsProp folders: FoldersAddItem[];
 
     constructor(r: any) {
         super(r);
@@ -45,7 +34,6 @@ export class FoldersAddRequest extends HasItemsRequest {
     }
 
 
-    static itemsPropName = 'folders';
     static itemsPropType = FoldersAddItem;
 }
 
@@ -55,11 +43,11 @@ export class FoldersAddRequest extends HasItemsRequest {
  */
 export class FoldersUpdateRequest extends UpdateDeviceIdRequest {
     // Body
-    public name: string;
-    public color: number;
-    public color_dark: number;
-    public color_light: number;
-    public color_accent: number;
+    @Required name: string;
+    @Required color: number;
+    @Required color_dark: number;
+    @Required color_light: number;
+    @Required color_accent: number;
 
     constructor(r: any) {
         super(r);
@@ -69,14 +57,4 @@ export class FoldersUpdateRequest extends UpdateDeviceIdRequest {
         this.color_light = Number(r.color_light);
         this.color_accent = Number(r.color_accent);
     }
-
-
-    static required = [
-        ...super.required,
-        'name',
-        'color',
-        'color_dark',
-        'color_light',
-        'color_accent'
-    ]
 }
