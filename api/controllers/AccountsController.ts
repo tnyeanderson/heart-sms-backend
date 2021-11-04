@@ -79,7 +79,7 @@ router.route('/signup').post(
             return next(new ErrorResponse(result[0][0].error));
         } else {
             // Signup successful
-            res.json(new AccountsResponses.SignupResponse(account_id, salt1, salt2));
+            res.json(AccountsResponses.SignupResponse.fromResult([{account_id, salt1, salt2}]));
             return;
         }
     }));

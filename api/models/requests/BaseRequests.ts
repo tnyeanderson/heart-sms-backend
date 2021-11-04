@@ -1,6 +1,6 @@
-import { plainToClass } from "class-transformer";
 import { NextFunction, Request, Response } from "express";
 import db from '../../db/query.js';
+import { Optional, Required } from "../../utils/decorators.js";
 import util from "../../utils/util.js";
 import { MissingParamError } from "../responses/ErrorResponses.js";
 
@@ -14,7 +14,7 @@ export class BaseRequest {
     /**
      * Empty constructor
      */
-    constructor() { }
+    constructor(r?: any) { }
 
 
     /**
@@ -92,7 +92,7 @@ export class BaseRequest {
     static create(req: Request, plain?: any) {
         let r = plain || Object.assign(req.query, req.body, req.params);
         // (this) indicates the calling class
-        return this.constructor(r);
+        return new this(r);
     }
 
     /**
@@ -102,7 +102,7 @@ export class BaseRequest {
      * This will be overwritten by /add requests (HasItemsRequest) to create each item in the array
      */
     static createItem(item: any) {
-        return plainToClass(this, item, { excludeExtraneousValues: true, enableImplicitConversion: true })
+        return new this(item);
     }
 
     /**
@@ -129,7 +129,7 @@ export class BaseRequest {
  * This adds validation
  */
 export class AccountIdRequest extends BaseRequest {
-    public account_id: string;
+    @Required account_id: string;
 
     constructor(r: any) {
         super();
@@ -209,7 +209,7 @@ export class UpdateRequest extends AccountIdRequest {
  */
 export class DeviceIdRequest extends AccountIdRequest {
     // Usually URL params
-    public device_id: number;
+    @Required device_id: number;
 
     constructor(r: any) {
         super(r);
@@ -245,17 +245,14 @@ export class UpdateDeviceIdRequest extends DeviceIdRequest {
  */
 export class LimitOffsetRequest extends AccountIdRequest {
     // Query
-    public limit: number = -1;
-    public offset: number = -1;
+    @Optional limit: number = -1;
+    @Optional offset: number = -1;
 
     constructor(r: any) {
         super(r);
-        this.limit = Number(r.limit);
-        this.offset = Number(r.offset);
+        this.setOptional('limit', r, Number);
+        this.setOptional('offset', r, Number);
     }
-
-
-    static optional = ['limit', 'offset'];
 
     /**
      * Helper method to call db.limitStr()

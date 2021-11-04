@@ -82,7 +82,6 @@ export class ContactsAddRequest extends HasItemsRequest {
 export class ContactsUpdateDeviceIdRequest extends UpdateDeviceIdRequest {
     // Query
     // Included in base class
-    // @Expose() device_id: number = -1;
 
     // Body
     @Optional phone_number?: string;

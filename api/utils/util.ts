@@ -1,4 +1,3 @@
-import { Request } from 'express';
 import { v4 as uuidv4 } from 'uuid';
 
 const devEnv = 'dev';
@@ -19,7 +18,12 @@ const util = {
      * 
     */
     propMissing: function (toValidate: any, prop: string) {
-        return (toValidate[prop] === undefined || toValidate[prop] === "");
+        return (
+            !toValidate ||
+            toValidate[prop] === undefined ||
+            toValidate[prop] === null ||
+            toValidate[prop] === ""
+        );
     },
     
     /**

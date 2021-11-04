@@ -50,22 +50,6 @@ class MessagesAddItem extends BaseRequest {
         this.setOptional('color', r, Number);
         this.setOptional('sim_stamp', r, String);
     }
-
-
-    static required = [
-        ...super.required,
-        'device_id',
-        'device_conversation_id',
-        'message_type',
-        'data',
-        'timestamp',
-        'mime_type',
-        'read',
-        'seen',
-        'sent_device'
-    ]
-
-    static optional = ['message_from', 'color', 'sim_stamp'];
 }
 
 export class MessagesAddRequest extends HasItemsRequest {

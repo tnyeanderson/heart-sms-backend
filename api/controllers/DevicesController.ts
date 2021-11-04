@@ -44,7 +44,7 @@ router.route('/add').post(
 
         await db.query(sql);
             
-        res.json(new DevicesAddResponse(r.device.id));
+        res.json(DevicesAddResponse.fromResult([r]));
     }));
 
 
