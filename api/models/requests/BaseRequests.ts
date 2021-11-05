@@ -18,7 +18,7 @@ export class BaseRequest {
 
 
     /**
-     * Array of query or body parameters that are optional
+     * Array of query or body parameters that are required
      */
     static required: string[] = [];
 
