@@ -7,9 +7,9 @@ export class SignupResponse extends BaseResponse {
 
     constructor(r: any) {
         super();
-        this.setOptional('account_id', r, String);
-        this.setOptional('salt1', r, String);
-        this.setOptional('salt2', r, String);
+        this.setProp('account_id', r, String);
+        this.setProp('salt1', r, String);
+        this.setProp('salt2', r, String);
     }
 }
 
@@ -28,16 +28,16 @@ export class CountResponse extends BaseResponse {
 
     constructor(r: any) {
         super();
-        this.setOptional('device_count', r, Number);
-        this.setOptional('message_count', r, Number);
-        this.setOptional('conversation_count', r, Number);
-        this.setOptional('draft_count', r, Number);
-        this.setOptional('scheduled_count', r, Number);
-        this.setOptional('blacklist_count', r, Number);
-        this.setOptional('contact_count', r, Number);
-        this.setOptional('template_count', r, Number);
-        this.setOptional('folder_count', r, Number);
-        this.setOptional('auto_reply_count', r, Number);
+        this.setProp('device_count', r, Number);
+        this.setProp('message_count', r, Number);
+        this.setProp('conversation_count', r, Number);
+        this.setProp('draft_count', r, Number);
+        this.setProp('scheduled_count', r, Number);
+        this.setProp('blacklist_count', r, Number);
+        this.setProp('contact_count', r, Number);
+        this.setProp('template_count', r, Number);
+        this.setProp('folder_count', r, Number);
+        this.setProp('auto_reply_count', r, Number);
 
     }
 }
@@ -60,19 +60,19 @@ export class SettingsResponse extends BaseResponse {
 
     constructor(r: any) {
         super();
-        this.setOptional('base_theme', r, String);
-        this.setOptional('global_color_theme', r, String);
-        this.setOptional('rounder_bubbles', r, Boolean);
-        this.setOptional('color', r, Number);
-        this.setOptional('color_dark', r, Number);
-        this.setOptional('color_light', r, Number);
-        this.setOptional('color_accent', r, Number);
-        this.setOptional('use_global_theme', r, Boolean);
-        this.setOptional('apply_primary_color_toolbar', r, Boolean);
-        this.setOptional('passcode', r, String);
-        this.setOptional('subscription_type', r, Number);
-        this.setOptional('message_timestamp', r, Boolean);
-        this.setOptional('conversation_categories', r, Boolean);
+        this.setProp('base_theme', r, String);
+        this.setProp('global_color_theme', r, String);
+        this.setProp('rounder_bubbles', r, Boolean);
+        this.setProp('color', r, Number);
+        this.setProp('color_dark', r, Number);
+        this.setProp('color_light', r, Number);
+        this.setProp('color_accent', r, Number);
+        this.setProp('use_global_theme', r, Boolean);
+        this.setProp('apply_primary_color_toolbar', r, Boolean);
+        this.setProp('passcode', r, String);
+        this.setProp('subscription_type', r, Number);
+        this.setProp('message_timestamp', r, Boolean);
+        this.setProp('conversation_categories', r, Boolean);
     }
 }
 
@@ -100,24 +100,24 @@ export class LoginResponse extends BaseResponse {
 
     constructor(r: any) {
         super();
-        this.setOptional('account_id', r, String);
-        this.setOptional('salt1', r, String);
-        this.setOptional('salt2', r, String);
-        this.setOptional('phone_number', r, String);
-        this.setOptional('name', r, String);
-        this.setOptional('subscription_type', r, Number);
-        this.setOptional('subscription_expiration', r, Number);
-        this.setOptional('base_theme', r, String);
-        this.setOptional('rounder_bubbles', r, Boolean);
-        this.setOptional('global_color_theme', r, String);
-        this.setOptional('color', r, Number);
-        this.setOptional('color_dark', r, Number);
-        this.setOptional('color_light', r, Number);
-        this.setOptional('color_accent', r, Number);
-        this.setOptional('use_global_theme', r, Boolean);
-        this.setOptional('apply_primary_color_toolbar', r, Boolean);
-        this.setOptional('passcode', r, String);
-        this.setOptional('message_timestamp', r, Boolean);
-        this.setOptional('conversation_categories', r, Boolean);
+        this.setProp({target: 'account_id', source: 'session_id'}, r, String);
+        this.setProp('salt1', r, String);
+        this.setProp('salt2', r, String);
+        this.setProp('phone_number', r, String);
+        this.setProp('name', r, String);
+        this.setProp('subscription_type', r, Number);
+        this.setProp('subscription_expiration', r, Number);
+        this.setProp('base_theme', r, String);
+        this.setProp('rounder_bubbles', r, Boolean);
+        this.setProp('global_color_theme', r, String);
+        this.setProp('color', r, Number);
+        this.setProp('color_dark', r, Number);
+        this.setProp('color_light', r, Number);
+        this.setProp('color_accent', r, Number);
+        this.setProp('use_global_theme', r, Boolean);
+        this.setProp('apply_primary_color_toolbar', r, Boolean);
+        this.setProp('passcode', r, String);
+        this.setProp('message_timestamp', r, Boolean);
+        this.setProp('conversation_categories', r, Boolean);
     }
 }

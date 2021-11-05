@@ -10,11 +10,11 @@ export class AutoRepliesListResponse extends BaseResponse {
 
     constructor(r: any) {
         super();
-        this.setOptional('id', r, Number);
-        this.setOptional('account_id', r, String);
-        this.setOptional('device_id', r, Number);
-        this.setOptional('reply_type', r, String);
-        this.setOptional('pattern', r, String);
-        this.setOptional('response', r, String);
+        this.setProp('id', r, Number);
+        this.setProp('account_id', r, String);
+        this.setProp('device_id', r, Number);
+        this.setProp('reply_type', r, String);
+        this.setProp('pattern', r, String);
+        this.setProp('response', r, String);
     }
 }

@@ -10,12 +10,12 @@ export class DraftsListResponse extends BaseResponse {
 
     constructor(r: any) {
         super();
-        this.setOptional('id', r, Number);
-        this.setOptional('account_id', r, String);
-        this.setOptional('device_id', r, Number);
-        this.setOptional('device_conversation_id', r, Number);
-        this.setOptional('data', r, String);
-        this.setOptional('mime_type', r, String);
+        this.setProp('id', r, Number);
+        this.setProp('account_id', r, String);
+        this.setProp('device_id', r, Number);
+        this.setProp('device_conversation_id', r, Number);
+        this.setProp('data', r, String);
+        this.setProp('mime_type', r, String);
     }
 }
 

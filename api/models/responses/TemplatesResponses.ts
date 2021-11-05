@@ -6,7 +6,7 @@ export class TemplatesListResponse extends BaseResponse {
 
     constructor(r: any) {
         super();
-        this.setOptional('device_id', r, Number);
-        this.setOptional('text', r, String);
+        this.setProp('device_id', r, Number);
+        this.setProp('text', r, String);
     }
 }

@@ -2,6 +2,11 @@ import { FieldInfo } from "mysql";
 import { QueryResult } from "pg";
 import util from "../../utils/util.js";
 
+type OptionalName = {
+    target: string;
+    source: string;
+}
+
 export class BaseResponse {
     constructor(r?: any) { }
     
@@ -29,10 +34,17 @@ export class BaseResponse {
      * @param sourceObj The object to get the property from
      * @param Cast The function used to cast the value to the proper type
      */
-    setOptional(name: string, sourceObj: any, Cast: Function) {
-        if (!util.propMissing(sourceObj, name)) {
+    setProp(name: OptionalName | string, sourceObj: any, Cast: Function) {
+        if (typeof name === 'string') {
+            name = {target: name, source: name}
+        }
+
+        if (!sourceObj || sourceObj[name.source] === undefined || sourceObj[name.source] === null) {
             // @ts-expect-error TS7053
-            this[name] = Cast(sourceObj[name])
+            this[name.target] = null;
+        } else {
+            // @ts-expect-error TS7053
+            this[name.target] = Cast(sourceObj[name.source])
         }
     }
 }

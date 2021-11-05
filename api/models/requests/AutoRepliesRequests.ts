@@ -1,5 +1,5 @@
 import { ItemsProp, Required } from "../../utils/decorators.js";
-import { HasItemsRequest, UpdateDeviceIdRequest } from "./BaseRequests.js";
+import { BaseRequest, HasItemsRequest, UpdateDeviceIdRequest } from "./BaseRequests.js";
 
 
 /**
@@ -24,12 +24,18 @@ export class AutoRepliesUpdateRequest extends UpdateDeviceIdRequest {
 /**
  * auto_replies/add
  */
-class AutoRepliesAddItem extends AutoRepliesUpdateRequest {
+class AutoRepliesAddItem extends BaseRequest {
     @Required device_id: number;
+    @Required reply_type: string;
+    @Required pattern: string;
+    @Required response: string;
 
     constructor(r: any) {
         super(r);
         this.device_id = Number(r.device_id);
+        this.reply_type = String(r.reply_type);
+        this.pattern = String(r.pattern);
+        this.response = String(r.response);
     }
 }
 

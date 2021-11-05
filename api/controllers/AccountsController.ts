@@ -115,11 +115,15 @@ router.route('/count').get(
         let sql = `SELECT ${db.selectFields(fields)} from CountsView where ${r.whereAccount()}`;
 
         let result = await db.query(sql);
+
+        // If the account doesn't exist (and response is null), return an empty object
+        if (!result || (Array.isArray(result) && result.length === 0)) {
+            return res.json({});
+        }
         
         let response = AccountsResponses.CountResponse.fromResult(result);
 
-        // If the account doesn't exist (and response is null), return an empty object
-        res.json(response || {});
+        res.json(response);
     }));
 
 router.route('/clean_account').post(
@@ -163,7 +167,7 @@ router.route('/dismissed_notification').post(
     (req, res, next) => DismissedNotificationRequest.handler(req, res, next),
     function (req, res, next) {
         let r: DismissedNotificationRequest = res.locals.request;
-        
+
         let payload = new AccountsPayloads.dismissed_notification(
             r.id,
             r.device_id

@@ -9,10 +9,10 @@ export class ArticleResponse extends BaseResponse {
 
     constructor(r: any) {
         super();
-        this.setOptional('title', r, String);
-        this.setOptional('description', r, String);
-        this.setOptional('image_url', r, String);
-        this.setOptional('domain', r, String);
-        this.setOptional('web_url', r, String);
+        this.setProp('title', r, String);
+        this.setProp({target: 'description', source: 'excerpt'}, r, String);
+        this.setProp({target: 'image_url', source: 'lead_image_url'}, r, String);
+        this.setProp('domain', r, String);
+        this.setProp({target: 'web_url', source: 'url'}, r, String);
     }
 }

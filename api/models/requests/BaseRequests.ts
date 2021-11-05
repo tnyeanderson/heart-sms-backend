@@ -146,6 +146,8 @@ export class AccountIdRequest extends BaseRequest {
 
 
 export class HasItemsRequest extends AccountIdRequest {
+    constructor(r: any) { super(r) }
+
     /**
      * Name of the property which stores the list of items
      * Must be extended
@@ -161,15 +163,15 @@ export class HasItemsRequest extends AccountIdRequest {
         let prop = this.itemsPropName;
         let items = req.body[prop];
 
-        if (!items || items === []) {
-            return new MissingParamError(prop);
-        } 
+        if (!items || (Array.isArray(items) && items.length === 0)) {
+            throw new MissingParamError(prop);
+        }
 
         items.forEach((item: any) => this.itemsPropType.validate(item));
 
         // Items are valid
         // Perform request schema validation
-        return super.validate(req);
+        super.validate(req);
     }
 
     /**
@@ -186,6 +188,8 @@ export class HasItemsRequest extends AccountIdRequest {
  * Update requests can generate an update string
  */
 export class UpdateRequest extends AccountIdRequest {
+    constructor(r: any) { super(r) }
+
     /**
      * Generates an object with all class properties minus account_id
      */
@@ -223,6 +227,8 @@ export class DeviceIdRequest extends AccountIdRequest {
  * Used when a device_id is included (usually by URL param)
  */
 export class UpdateDeviceIdRequest extends DeviceIdRequest {
+    constructor(r: any) { super(r) }
+
     /**
      * Generates an object with all class properties minus account_id and device_id
      */

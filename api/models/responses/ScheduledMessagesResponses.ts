@@ -13,14 +13,14 @@ export class ScheduledMessagesListResponse extends BaseResponse {
 
     constructor(r: any) {
         super();
-        this.setOptional('id', r, Number);
-        this.setOptional('account_id', r, String);
-        this.setOptional('device_id', r, Number);
-        this.setOptional('to', r, String);
-        this.setOptional('data', r, String);
-        this.setOptional('mime_type', r, String);
-        this.setOptional('timestamp', r, Number);
-        this.setOptional('title', r, String);
-        this.setOptional('repeat', r, Number);
+        this.setProp('id', r, Number);
+        this.setProp('account_id', r, String);
+        this.setProp('device_id', r, Number);
+        this.setProp('to', r, String);
+        this.setProp('data', r, String);
+        this.setProp('mime_type', r, String);
+        this.setProp('timestamp', r, Number);
+        this.setProp('title', r, String);
+        this.setProp('repeat', r, Number);
     }
 }

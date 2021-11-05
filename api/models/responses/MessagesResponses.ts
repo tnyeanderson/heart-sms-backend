@@ -18,19 +18,19 @@ export class MessagesListResponse extends BaseResponse {
 
     constructor(r: any) {
         super();
-        this.setOptional('id', r, Number);
-        this.setOptional('account_id', r, String);
-        this.setOptional('device_id', r, Number);
-        this.setOptional('device_conversation_id', r, Number);
-        this.setOptional('message_type', r, Number);
-        this.setOptional('data', r, String);
-        this.setOptional('timestamp', r, Number);
-        this.setOptional('mime_type', r, String);
-        this.setOptional('read', r, Boolean);
-        this.setOptional('seen', r, Boolean);
-        this.setOptional('message_from', r, String);
-        this.setOptional('color', r, Number);
-        this.setOptional('sent_device', r, Number);
-        this.setOptional('sim_stamp', r, String);
+        this.setProp('id', r, Number);
+        this.setProp('account_id', r, String);
+        this.setProp('device_id', r, Number);
+        this.setProp('device_conversation_id', r, Number);
+        this.setProp('message_type', r, Number);
+        this.setProp('data', r, String);
+        this.setProp('timestamp', r, Number);
+        this.setProp('mime_type', r, String);
+        this.setProp('read', r, Boolean);
+        this.setProp('seen', r, Boolean);
+        this.setProp('message_from', r, String);
+        this.setProp('color', r, Number);
+        this.setProp('sent_device', r, Number);
+        this.setProp('sim_stamp', r, String);
     }
 }

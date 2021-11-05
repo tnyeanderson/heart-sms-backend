@@ -42,13 +42,13 @@ export class DevicesAddRequest extends AccountIdRequest {
      */
     static validate(req: Request) {
         let prop = 'device';
-        let items = req.body[prop];
+        let item = req.body[prop];
 
-        if (!items || items === []) {
-            return new MissingParamError(prop);
+        if (!item || item === {}) {
+            throw new MissingParamError(prop);
         } 
 
-        items.forEach((item: any) => DevicesAddItem.validate(item));
+        DevicesAddItem.validate(item);
 
         // Items are valid
         // Perform request schema validation

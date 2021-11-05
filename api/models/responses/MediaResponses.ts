@@ -5,6 +5,6 @@ export class MediaGetResponse extends BaseResponse {
 
     constructor(r: any) {
         super();
-        this.setOptional('data', r, String);
+        this.setProp('data', r, String);
     }
 }

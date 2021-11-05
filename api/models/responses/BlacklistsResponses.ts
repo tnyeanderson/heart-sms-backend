@@ -9,10 +9,10 @@ export class BlacklistListResponse extends BaseResponse {
 
     constructor(r: any) {
         super();
-        this.setOptional('id', r, Number);
-        this.setOptional('account_id', r, String);
-        this.setOptional('device_id', r, Number);
-        this.setOptional('phone_number', r, String);
-        this.setOptional('phrase', r, String);
+        this.setProp('id', r, Number);
+        this.setProp('account_id', r, String);
+        this.setProp('device_id', r, Number);
+        this.setProp('phone_number', r, String);
+        this.setProp('phrase', r, String);
     }
 }

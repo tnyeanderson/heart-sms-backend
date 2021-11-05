@@ -11,13 +11,13 @@ export class DevicesListResponse extends BaseResponse {
 
     constructor(r: any) {
         super();
-        this.setOptional('id', r, Number);
-        this.setOptional('info', r, String);
-        this.setOptional('name', r, String);
-        this.setOptional('primary', r, Boolean);
-        this.setOptional('account_id', r, String);
-        this.setOptional('fcm_token', r, String);
-        this.setOptional('ios', r, Boolean);
+        this.setProp('id', r, Number);
+        this.setProp('info', r, String);
+        this.setProp('name', r, String);
+        this.setProp('primary', r, Boolean);
+        this.setProp('account_id', r, String);
+        this.setProp('fcm_token', r, String);
+        this.setProp('ios', r, Boolean);
     }
 }
 
@@ -27,6 +27,6 @@ export class DevicesAddResponse extends BaseResponse {
 
     constructor(r: any) {
         super();
-        this.setOptional('id', r, Number);
+        this.setProp('id', r, Number);
     }
 }
