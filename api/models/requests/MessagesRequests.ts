@@ -8,11 +8,11 @@ import { AccountIdRequest, BaseRequest, HasItemsRequest, LimitOffsetRequest, Upd
  */
 export class MessagesGetRequest extends LimitOffsetRequest {
     // Query
-    @Optional conversation_id: number;
+    @Optional conversation_id?: number;
 
     constructor(r: any) {
         super(r);
-        this.conversation_id = Number(r.conversation_id); 
+        this.setOptional('conversation_id', r, Number);
     }
 }
 
