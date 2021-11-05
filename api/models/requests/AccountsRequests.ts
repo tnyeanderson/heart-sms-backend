@@ -131,7 +131,6 @@ export class UpdateSettingRequest extends AccountIdRequest {
     }
 
     static validate (req: Request) {
-        // TODO: What?
         super.validate(req);
 
         let toValidate = Object.assign(req.query, req.body, req.params)
