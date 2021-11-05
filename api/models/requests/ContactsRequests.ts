@@ -63,7 +63,7 @@ class ContactsAddItem extends BaseRequest {
 
 export class ContactsAddRequest extends HasItemsRequest {
     // Body
-    @ItemsProp @Required contacts: ContactsAddItem[];
+    @ItemsProp contacts: ContactsAddItem[];
 
     constructor(r: any) {
         super(r);
