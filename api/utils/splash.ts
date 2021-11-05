@@ -49,7 +49,7 @@ function showVersion () {
  * @param char Character to repeat
  * @param lineLength Amount of times to repeat char
  */
-function fill(char: string = '-', lineLength: number = splashLineLength) {
+function fill(char = '-', lineLength: number = splashLineLength) {
     console.log(char.repeat(lineLength));
 }
 

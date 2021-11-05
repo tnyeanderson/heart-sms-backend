@@ -44,7 +44,7 @@ export class BaseRequest {
     static validate (item: Request | any)  {
         // Combine request query, body, and url parameters into a single object
         // If plain object, just use that
-        let toValidate = (item.query && item.body && item.params) ? Object.assign(item.query, item.body, item.params) : item;
+        const toValidate = (item.query && item.body && item.params) ? Object.assign(item.query, item.body, item.params) : item;
 
         // Used for atLeastOne
         let optionalButPresent = 0;
@@ -92,7 +92,7 @@ export class BaseRequest {
     static create(item: Request) {
         // Combine request query, body, and url parameters into a single object
         // If plain object, just use that
-        let r = (item.query && item.body && item.params) ? Object.assign(item.query, item.body, item.params) : item;
+        const r = (item.query && item.body && item.params) ? Object.assign(item.query, item.body, item.params) : item;
         // (this) indicates the calling class
         return new this(r);
     }
@@ -144,7 +144,7 @@ export class HasItemsRequest extends AccountIdRequest {
      * Name of the property which stores the list of items
      * Must be extended
      */
-    static itemsPropName: string = '';
+    static itemsPropName = '';
     static itemsPropType: any = BaseRequest
 
     /**
@@ -152,8 +152,8 @@ export class HasItemsRequest extends AccountIdRequest {
      * @param req Express request
      */
     static validate(req: Request) {
-        let prop = this.itemsPropName;
-        let items = req.body[prop];
+        const prop = this.itemsPropName;
+        const items = req.body[prop];
 
         if (!items || (Array.isArray(items) && items.length === 0)) {
             throw new MissingParamError(prop);
@@ -186,7 +186,7 @@ export class UpdateRequest extends AccountIdRequest {
      * Generates an object with all class properties minus account_id
      */
     toUpdate(): any {
-        let {account_id, ...out} = this;
+        const {account_id, ...out} = this;
         return out;
     }
 
@@ -225,7 +225,7 @@ export class UpdateDeviceIdRequest extends DeviceIdRequest {
      * Generates an object with all class properties minus account_id and device_id
      */
     toUpdate() {
-        let {account_id, device_id, ...out} = this;
+        const {account_id, device_id, ...out} = this;
         return out;
     }
 
@@ -243,8 +243,8 @@ export class UpdateDeviceIdRequest extends DeviceIdRequest {
  */
 export class LimitOffsetRequest extends AccountIdRequest {
     // Query
-    @Optional limit: number = -1;
-    @Optional offset: number = -1;
+    @Optional limit = -1;
+    @Optional offset = -1;
 
     constructor(r: any) {
         super(r);
