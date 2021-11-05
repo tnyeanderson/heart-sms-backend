@@ -11,8 +11,8 @@ import { Handler, NextFunction, Request, Response } from "express";
  * @param fn async-aware middleware function
  */
 export function asyncHandler (fn: Handler) {
-    return (req: Request, res: Response, next: NextFunction) =>
-        Promise
-        .resolve(fn(req, res, next))
-        .catch(next)
+	return (req: Request, res: Response, next: NextFunction) =>
+		Promise
+			.resolve(fn(req, res, next))
+			.catch(next)
 }

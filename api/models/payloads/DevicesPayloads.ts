@@ -1,7 +1,7 @@
 import { BasePayload } from './BasePayload.js';
 
 export class update_primary_device extends BasePayload {
-    constructor (
+	constructor (
         public new_primary_device_id: string
-    ) { super() }
+	) { super() }
 }

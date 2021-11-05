@@ -1,17 +1,17 @@
 import { BasePayload } from './BasePayload.js';
 
 export class removed_template extends BasePayload {
-    constructor (
+	constructor (
         public id: number
-    ) { super() }
+	) { super() }
 }
 
 
 export class added_template extends BasePayload {
-    constructor (
+	constructor (
         public device_id: number,
         public text: string
-    ) { super() }
+	) { super() }
 }
 
 

@@ -8,28 +8,28 @@ import { MediaGetResponse } from '../models/responses/MediaResponses.js';
 const router = express.Router();
 
 router.route('/add').post(
-    (req, res, next) => MediaAddRequest.handler(req, res, next),
-    asyncHandler(async (req, res) => {
-        const r: MediaAddRequest = res.locals.request;
+	(req, res, next) => MediaAddRequest.handler(req, res, next),
+	asyncHandler(async (req, res) => {
+		const r: MediaAddRequest = res.locals.request;
 
-        const sql = `INSERT INTO Media ${db.insertStr([r])}`;
+		const sql = `INSERT INTO Media ${db.insertStr([r])}`;
 
-        await db.query(sql);
+		await db.query(sql);
 
-        res.json(new BaseResponse);
-    }));
+		res.json(new BaseResponse);
+	}));
 
 router.route('/:message_id').get(
-    (req, res, next) => MediaGetRequest.handler(req, res, next),
-    asyncHandler(async (req, res) => {
-        const r: MediaGetRequest = res.locals.request;
+	(req, res, next) => MediaGetRequest.handler(req, res, next),
+	asyncHandler(async (req, res) => {
+		const r: MediaGetRequest = res.locals.request;
 
-        const sql = `SELECT * FROM Media WHERE message_id = ${db.escape(Number(r.message_id))} AND ${r.whereAccount()} LIMIT 1`;
+		const sql = `SELECT * FROM Media WHERE message_id = ${db.escape(Number(r.message_id))} AND ${r.whereAccount()} LIMIT 1`;
 
-        const result = await db.query(sql);
+		const result = await db.query(sql);
 
-        res.json(MediaGetResponse.fromResult(result));
-    }));
+		res.json(MediaGetResponse.fromResult(result));
+	}));
 
 export default router;
 

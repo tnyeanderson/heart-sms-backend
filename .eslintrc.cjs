@@ -9,6 +9,7 @@ module.exports = {
     'plugin:@typescript-eslint/recommended',
   ],
   rules: {
-    "no-trailing-spaces": 2
+    "no-trailing-spaces": 2,
+    "indent": ["error", "tab"]
   }
 };
