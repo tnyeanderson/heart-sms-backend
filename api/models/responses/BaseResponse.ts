@@ -1,6 +1,5 @@
 import { FieldInfo } from "mysql";
 import { QueryResult } from "pg";
-import util from "../../utils/util.js";
 
 type OptionalName = {
     target: string;

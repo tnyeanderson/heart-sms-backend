@@ -2,7 +2,6 @@ import { NextFunction, Request, Response } from "express";
 import db from '../../db/query.js';
 import users from '../../helpers/UserHelper.js';
 import { Optional, Required } from "../../utils/decorators.js";
-import util from "../../utils/util.js";
 import { DuplicateUserError, ParamTypeError, UserNotAllowedError } from "../responses/ErrorResponses.js";
 import { AccountIdRequest, BaseRequest } from "./BaseRequests.js";
 

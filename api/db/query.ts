@@ -1,6 +1,5 @@
-import { Response } from 'express';
-import format from 'pg-format'
 import pg, { QueryResultRow } from 'pg';
+import format from 'pg-format';
 import connection from '../db/connect.js';
 import { DatabaseError } from '../models/responses/ErrorResponses.js';
 import util from '../utils/util.js';
