@@ -89,20 +89,12 @@ export class BaseRequest {
     /**
      * Creates a 'request' to be appended to res.locals that contains all parameters from the url, query, and body
      */
-    static create(req: Request, plain?: any) {
-        let r = plain || Object.assign(req.query, req.body, req.params);
+    static create(item: Request) {
+        // Combine request query, body, and url parameters into a single object
+        // If plain object, just use that
+        let r = (item.query && item.body && item.params) ? Object.assign(item.query, item.body, item.params) : item;
         // (this) indicates the calling class
         return new this(r);
-    }
-
-    /**
-     * Actually casts the item to a member of the calling class
-     * Usually called directly by create(), but create() can be overwritten (e.g. for /add requests) to create a list of items
-     * @param item Either an item in an array of a request (e.g. /add) or a combination of query, body, and url parameters
-     * This will be overwritten by /add requests (HasItemsRequest) to create each item in the array
-     */
-    static createItem(item: any) {
-        return new this(item);
     }
 
     /**
@@ -179,7 +171,7 @@ export class HasItemsRequest extends AccountIdRequest {
      * @param items list of items to be casted to instance of calling class
      */
     static createItems(items: any[]) {
-        return items.map((item: any) => this.itemsPropType.createItem(item));
+        return items.map((item: any) => this.itemsPropType.create(item));
     }
 }
 
