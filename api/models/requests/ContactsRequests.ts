@@ -1,4 +1,4 @@
-import { Expose } from "class-transformer";
+import { AtLeastOne, ItemsProp, Optional, Required } from "../../utils/decorators.js";
 import { AccountIdRequest, BaseRequest, HasItemsRequest, UpdateDeviceIdRequest } from "./BaseRequests.js";
 
 
@@ -7,8 +7,14 @@ import { AccountIdRequest, BaseRequest, HasItemsRequest, UpdateDeviceIdRequest }
  */
 export class ContactsRemoveDeviceIdRequest extends AccountIdRequest {
     // Query
-    @Expose() phone_number: string = '';
-    @Expose() device_id: number = -1;
+    @Required phone_number: string
+    @Required device_id: number;
+
+    constructor(r: any) {
+        super(r);
+        this.phone_number = String(r.phone_number);
+        this.device_id = Number(r.device_id);
+    }
 }
 
 
@@ -17,7 +23,12 @@ export class ContactsRemoveDeviceIdRequest extends AccountIdRequest {
  */
 export class ContactsRemoveIdsRequest extends AccountIdRequest {
     // URL params
-    @Expose() ids: string = '';
+    @Required ids: string;
+
+    constructor(r: any) {
+        super(r);
+        this.ids = String(r.ids);
+    }
 }
 
 
@@ -26,22 +37,40 @@ export class ContactsRemoveIdsRequest extends AccountIdRequest {
  * contacts/add
  */
 class ContactsAddItem extends BaseRequest {
-    @Expose() device_id: number = -1;
-    @Expose() phone_number: string = '';
-    @Expose() id_matcher: string = '';
-    @Expose() name: string = '';
-    @Expose() color: number = -1;
-    @Expose() color_dark: number = -1;
-    @Expose() color_light: number = -1;
-    @Expose() color_accent: number = -1;
-    @Expose() contact_type: number = -1;
+    @Required device_id: number;
+    @Required phone_number: string;
+    @Required id_matcher: string;
+    @Required name: string;
+    @Required color: number;
+    @Required color_dark: number;
+    @Required color_light: number;
+    @Required color_accent: number;
+    @Required contact_type: number;
+
+    constructor (r: any) {
+        super();
+        this.device_id = Number(r.device_id);
+        this.phone_number = String(r.phone_number);
+        this.id_matcher = String(r.id_matcher);
+        this.name = String(r.name);
+        this.color = Number(r.color);
+        this.color_dark = Number(r.color_dark);
+        this.color_light = Number(r.color_light);
+        this.color_accent = Number(r.color_accent);
+        this.contact_type = Number(r.contact_type);
+    }
 }
 
 export class ContactsAddRequest extends HasItemsRequest {
     // Body
-    contacts: ContactsAddItem[] = [new ContactsAddItem];
+    @ItemsProp contacts: ContactsAddItem[];
 
-    static itemsPropName = 'contacts';
+    constructor(r: any) {
+        super(r);
+        this.contacts = ContactsAddRequest.createItems(r.contacts);
+    }
+
+    static itemsPropType = ContactsAddItem;
 }
 
 
@@ -49,19 +78,26 @@ export class ContactsAddRequest extends HasItemsRequest {
 /**
  * contacts/update_device_id
  */
+@AtLeastOne
 export class ContactsUpdateDeviceIdRequest extends UpdateDeviceIdRequest {
     // Query
     // Included in base class
-    // @Expose() device_id: number = -1;
 
     // Body
-    @Expose() phone_number: string = '';
-    @Expose() name: string = '';
-    @Expose() color: number = -1;
-    @Expose() color_dark: number = -1;
-    @Expose() color_light: number = -1;
-    @Expose() color_accent: number = -1;
+    @Optional phone_number?: string;
+    @Optional name?: string;
+    @Optional color?: number;
+    @Optional color_dark?: number;
+    @Optional color_light?: number;
+    @Optional color_accent?: number;
 
-    static optional = ['phone_number', 'name', 'color', 'color_dark', 'color_light', 'color_accent'];
-    static atLeastOne = true;
+    constructor(r: any) {
+        super(r);
+        this.setOptional('phone_number', r, String);
+        this.setOptional('name', r, String);
+        this.setOptional('color', r, Number);
+        this.setOptional('color_dark', r, Number);
+        this.setOptional('color_light', r, Number);
+        this.setOptional('color_accent', r, Number);
+    }
 }

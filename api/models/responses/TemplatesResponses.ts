@@ -1,7 +1,12 @@
-import { Expose } from 'class-transformer';
 import { BaseResponse } from './BaseResponse.js';
 
 export class TemplatesListResponse extends BaseResponse {
-    @Expose() device_id!: number;
-    @Expose() text!: string;
+    device_id?: number;
+    text?: string;
+
+    constructor(r: any) {
+        super();
+        this.setProp('device_id', r, Number);
+        this.setProp('text', r, String);
+    }
 }

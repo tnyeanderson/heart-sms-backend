@@ -28,7 +28,7 @@ router.route('/:message_id').get(
 
         let result = await db.query(sql);
             
-        res.json(new MediaGetResponse(result[0].data.toString()));
+        res.json(MediaGetResponse.fromResult(result));
     }));
 
 export default router;

@@ -1,23 +1,45 @@
-import { Expose } from 'class-transformer';
 import { BaseResponse } from './BaseResponse.js';
 
 export class ContactsBaseListResponse extends BaseResponse {
-    @Expose() phone_number!: string;
-    @Expose() name!: string;
-    @Expose() id!: number;
-    @Expose() color!: number;
-    @Expose() color_accent!: number;
-    @Expose() contact_type!: number;
+    phone_number?: string;
+    name?: string;
+    id?: number;
+    color?: number;
+    color_accent?: number;
+    contact_type?: number;
+
+    constructor(r: any) {
+        super();
+        this.setProp('phone_number', r, String);
+        this.setProp('name', r, String);
+        this.setProp('id', r, Number);
+        this.setProp('color', r, Number);
+        this.setProp('color_accent', r, Number);
+        this.setProp('contact_type', r, Number);
+    }
 }
 
 export class ContactsSimpleListResponse extends ContactsBaseListResponse {
-    @Expose() id_matcher!: string;
+    id_matcher?: string;
+
+    constructor(r: any) {
+        super(r);
+        this.setProp('id_matcher', r, String);
+    }
 }
 
 
 export class ContactsListResponse extends ContactsBaseListResponse {
-    @Expose() account_id!: string;
-    @Expose() device_id!: number;
-    @Expose() color_dark!: number;
-    @Expose() color_light!: number;
+    account_id?: string;
+    device_id?: number;
+    color_dark?: number;
+    color_light?: number;
+
+    constructor(r: any) {
+        super(r);
+        this.setProp('account_id', r, String);
+        this.setProp('device_id', r, Number);
+        this.setProp('color_dark', r, Number);
+        this.setProp('color_light', r, Number);
+    }
 }

@@ -1,22 +1,32 @@
-import { Expose } from 'class-transformer';
 import { BaseResponse } from './BaseResponse.js';
 
 export class DevicesListResponse extends BaseResponse {
-    @Expose() id!: number;
-    @Expose() info!: string;
-    @Expose() name!: string;
-    @Expose() primary!: boolean;
-    @Expose() account_id!: string;
-    @Expose() fcm_token!: string;
-    @Expose() ios!: boolean
+    id?: number;
+    info?: string;
+    name?: string;
+    primary?: boolean;
+    account_id?: string;
+    fcm_token?: string;
+    ios?: boolean;
+
+    constructor(r: any) {
+        super();
+        this.setProp('id', r, Number);
+        this.setProp('info', r, String);
+        this.setProp('name', r, String);
+        this.setProp('primary', r, Boolean);
+        this.setProp('account_id', r, String);
+        this.setProp('fcm_token', r, String);
+        this.setProp('ios', r, Boolean);
+    }
 }
 
 
 export class DevicesAddResponse extends BaseResponse {
-    @Expose() id!: number;
+    id?: number;
 
-    constructor(id: number) {
+    constructor(r: any) {
         super();
-        this.id = id;
+        this.setProp('id', r, Number);
     }
 }

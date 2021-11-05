@@ -1,5 +1,5 @@
-import { Expose } from "class-transformer";
 import { Request } from 'express';
+import { AtLeastOne, Optional, Required } from '../../utils/decorators.js';
 import { MissingParamError } from "../responses/ErrorResponses.js";
 import { AccountIdRequest, BaseRequest, UpdateRequest } from "./BaseRequests.js";
 
@@ -8,53 +8,51 @@ import { AccountIdRequest, BaseRequest, UpdateRequest } from "./BaseRequests.js"
  * devices/add
  */
 class DevicesAddItem extends BaseRequest {
-    @Expose() id: number = -1;
-    @Expose() info: string = '';
-    @Expose() name: string = '';
-    @Expose() primary: boolean = false;
-    @Expose() fcm_token: string = '';
+    @Required id: number;
+    @Required info: string;
+    @Required name: string;
+    @Required primary: boolean;
+    @Required fcm_token: string;
+
+    constructor(r: any) {
+        super();
+        this.id = Number(r.id);
+        this.info = String(r.info);
+        this.name = String(r.name);
+        this.primary = Boolean(r.primary);
+        this.fcm_token = String(r.fcm_token);
+    }
 }
 
 export class DevicesAddRequest extends AccountIdRequest {
     // Body
-    device: DevicesAddItem = new DevicesAddItem;
+    device: DevicesAddItem;
+
+    constructor(r: any) {
+        super(r);
+        this.device = new DevicesAddItem(r.device);
+    }
 
     /**
      * devices/add is a special case, in that it is essentially a HasItemsRequest.
      * However, it only has one item and it is not wrapped in an array (device: {}).
-     * Therefore, this is custom validation function for this endpoint
+     * Therefore, there is a custom validation function for this endpoint
+     * TODO: This is dumb
      * @param req 
      */
-    static validate (req: Request) {
-        let props = Object.getOwnPropertyNames(new DevicesAddItem);
-        let toValidate = Object.assign(req.query, req.body, req.params)
+    static validate(req: Request) {
+        let prop = 'device';
+        let item = req.body[prop];
 
-        if (toValidate.account_id === undefined || toValidate.account_id === '')
-            // Account
-            return new MissingParamError('account_id');
-        
-        if (toValidate.device === undefined || toValidate.device === [])
-            return new MissingParamError('device');
+        if (!item || item === {}) {
+            throw new MissingParamError(prop);
+        } 
 
-        for (let i=0, len=props.length; i<len; i++) {
-            if (toValidate.device[props[i]] === undefined || toValidate.device[props[i]] === '') {
-                return new MissingParamError(props[i]);
-            }
-        }
-        
-        // Validated
-        return true;
-    }
+        DevicesAddItem.validate(item);
 
-    static create (req: Request) {
-        let out = new this;
-
-        // This is always set because validate is called before create
-        out.account_id = req.body.account_id;
-        
-        out.device = DevicesAddItem.createItem(req.body.device) as DevicesAddItem;
-
-        return out;
+        // Items are valid
+        // Perform request schema validation
+        return super.validate(req);
     }
 }
 
@@ -64,23 +62,33 @@ export class DevicesAddRequest extends AccountIdRequest {
  */
 export class DevicesRemoveRequest extends AccountIdRequest {
     // URL params
-    @Expose() id: number = -1;
+    @Required id: number;
+
+    constructor(r: any) {
+        super(r);
+        this.id = Number(r.id);
+    }
 }
 
 
 /**
  * devices/update/:id
  */
+@AtLeastOne
 export class DevicesUpdateRequest extends UpdateRequest {
     // URL params
-    @Expose() id: number = -1;
+    @Required id: number;
 
     // Query
-    @Expose() fcm_token: string = '';
-    @Expose() name: string = '';
+    @Optional fcm_token?: string;
+    @Optional name?: string;
 
-    static optional = ['fcm_token', 'name'];
-    static atLeastOne = true;
+    constructor(r: any) {
+        super(r);
+        this.id = Number(r.id);
+        this.setOptional('fcm_token', r, String);
+        this.setOptional('name', r, String);
+    }
 
     toUpdate() {
         let {account_id, id, ...out} = this;
@@ -96,5 +104,10 @@ export class DevicesUpdateRequest extends UpdateRequest {
  */
 export class DevicesUpdatePrimaryRequest extends AccountIdRequest {
     // Query
-    @Expose() new_primary_device_id: string = '';
+    @Required new_primary_device_id: string;
+
+    constructor(r: any) {
+        super(r);
+        this.new_primary_device_id = String(r.new_primary_device_id);
+    }
 }

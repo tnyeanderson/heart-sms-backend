@@ -1,4 +1,4 @@
-import { Request, Response, NextFunction, Handler } from "express";
+import { Handler, NextFunction, Request, Response } from "express";
 
 // https://www.acuriousanimal.com/blog/2018/03/15/express-async-middleware
 
@@ -6,7 +6,7 @@ import { Request, Response, NextFunction, Handler } from "express";
  * Create async-aware middleware.
  * 
  * @example
- * router.route('/add').post(asyncHandler(async (req, res, next) => { doStuff() })) 
+ * router.route('/add').post(asyncHandler(async (req, res, next) => { await doStuff() })) 
  * 
  * @param fn async-aware middleware function
  */

@@ -1,9 +1,8 @@
-import { Expose } from "class-transformer";
 import { NextFunction, Request, Response } from "express";
 import db from '../../db/query.js';
 import users from '../../helpers/UserHelper.js';
-import { BaseError } from "../errors/Errors.js";
-import { DuplicateUserError, ErrorResponse, MissingParamError, ParamTypeError, UserNotAllowedError } from "../responses/ErrorResponses.js";
+import { Optional, Required } from "../../utils/decorators.js";
+import { DuplicateUserError, ParamTypeError, UserNotAllowedError } from "../responses/ErrorResponses.js";
 import { AccountIdRequest, BaseRequest } from "./BaseRequests.js";
 
 
@@ -12,10 +11,18 @@ import { AccountIdRequest, BaseRequest } from "./BaseRequests.js";
  */
 export class SignupRequest extends BaseRequest {
     // Body
-    @Expose() name: string = '';
-	@Expose() password: string = '';
-	@Expose() phone_number: string = '';
-	@Expose() real_name: string = '';
+    @Required name: string;
+    @Required password: string;
+    @Required phone_number: string;
+    @Required real_name: string;
+
+    constructor(r: any) {
+        super();
+        this.name = String(r.name);
+        this.password = String(r.password);
+        this.phone_number = String(r.phone_number);
+        this.real_name = String(r.real_name);
+    }
 
     /**
      * Express middleware to check whether a user is in HEART_ALLOWED_USERS
@@ -62,9 +69,14 @@ export class SignupRequest extends BaseRequest {
  * accounts/login
  */
 export class LoginRequest extends BaseRequest {
-    // Body
-    @Expose() username: string = '';
-	@Expose() password: string = '';
+    @Required username: string;
+    @Required password: string;
+
+    constructor(r: any) {
+        super()
+        this.username = String(r.username);
+        this.password = String(r.password);
+    }
 }
 
 
@@ -73,10 +85,14 @@ export class LoginRequest extends BaseRequest {
  */
 export class DismissedNotificationRequest extends AccountIdRequest {
     // Query
-    @Expose() id: string = '';
-	@Expose() device_id: string = '';
+    @Required id: string;
+    @Optional device_id?: string;
 
-    static optional = ['device_id'];
+    constructor(r: any) {
+        super(r);
+        this.id = String(r.id);
+        this.setOptional('device_id', r, String);
+    }
 }
 
 
@@ -85,12 +101,37 @@ export class DismissedNotificationRequest extends AccountIdRequest {
  */
 export class UpdateSettingRequest extends AccountIdRequest {
     // Query
-    @Expose() pref: string = '';
-	@Expose() type: string = '';
-    @Expose() value: any = undefined;
+    @Required pref: string;
+    @Required type: string;
+    @Required value: any;
+
+    constructor(r: any) {
+        super(r);
+        this.pref = String(r.pref);
+        this.type = String(r.type);
+        this.value = this.castValue(r.value)
+    }
+
+    castValue(value: any) {
+        // Can it cast?
+        switch (this.type) {
+            case 'int':
+            case 'long':
+                return Number(value);
+            case 'boolean':
+                // Done this way because 'false' would evaluate to true
+                if ([1, true, 'true'].includes(value)) {
+                    return true;
+                } else {
+                    return false;
+                }
+            default:
+                return String(value);
+        }
+    }
 
     static validate (req: Request) {
-        let validated = super.validate(req);
+        super.validate(req);
 
         let toValidate = Object.assign(req.query, req.body, req.params)
         let v = toValidate.value;
@@ -98,21 +139,8 @@ export class UpdateSettingRequest extends AccountIdRequest {
         let expectedType = toValidate.type;
         let uncastedType = typeof v;
         
-
-        if (validated instanceof ErrorResponse) {
-            // Super did not validate. Return its error
-            return validated;
-        }
-
-        switch (uncastedType) {
-            case 'string': // Should always be a string because it's in the query, but it might not be
-            case 'number':
-            case 'boolean':
-                // Allowed
-                break;
-            default:
-                // Other types are not allowed
-                return new ParamTypeError('value');
+        if ( ! ['string', 'number', 'boolean'].includes(uncastedType) ) {
+            throw new ParamTypeError('value');
         }
 
         // Can it cast?
@@ -120,7 +148,7 @@ export class UpdateSettingRequest extends AccountIdRequest {
             case 'int':
             case 'long':
                 if (isNaN(Number(v))) {
-                    return new ParamTypeError('value');
+                    throw new ParamTypeError('value');
                 }
                 break;
             case 'boolean':
@@ -132,7 +160,7 @@ export class UpdateSettingRequest extends AccountIdRequest {
                     v === 0 || 
                     v === 1
                 )) {
-                    return new ParamTypeError('value')
+                    throw new ParamTypeError('value')
                 }
             default:
                 // the rest are cast as strings and work no matter what
@@ -140,6 +168,6 @@ export class UpdateSettingRequest extends AccountIdRequest {
         }
 
         // Validated
-        return true;
+        return;
     }
 }

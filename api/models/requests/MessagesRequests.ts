@@ -1,4 +1,4 @@
-import { Expose } from "class-transformer";
+import { AtLeastOne, ItemsProp, Optional, Required } from "../../utils/decorators.js";
 import { AccountIdRequest, BaseRequest, HasItemsRequest, LimitOffsetRequest, UpdateDeviceIdRequest } from "./BaseRequests.js";
 
 
@@ -8,9 +8,12 @@ import { AccountIdRequest, BaseRequest, HasItemsRequest, LimitOffsetRequest, Upd
  */
 export class MessagesGetRequest extends LimitOffsetRequest {
     // Query
-    @Expose() conversation_id: number = -1;
+    @Optional conversation_id?: number;
 
-    static optional = ['conversation_id', ...LimitOffsetRequest.optional];
+    constructor(r: any) {
+        super(r);
+        this.setOptional('conversation_id', r, Number);
+    }
 }
 
 
@@ -19,42 +22,67 @@ export class MessagesGetRequest extends LimitOffsetRequest {
  * messages/add
  */
 class MessagesAddItem extends BaseRequest {
-    @Expose() device_id: number = -1;
-    @Expose() device_conversation_id: number = -1;
-    @Expose() message_type: number = -1;
-    @Expose() data: string = '';
-    @Expose() timestamp: number = -1;
-    @Expose() mime_type: string = '';
-    @Expose() read: boolean = false;
-    @Expose() seen: boolean = false;
-    @Expose() sent_device: number = -1;
-    @Expose() message_from: string = '';
-    @Expose() color: number = -1;
-    @Expose() sim_stamp: string = '';
+    @Required device_id: number;
+    @Required device_conversation_id: number;
+    @Required message_type: number;
+    @Required data: string;
+    @Required timestamp: number;
+    @Required mime_type: string;
+    @Required read: boolean;
+    @Required seen: boolean;
+    @Required sent_device: number;
+    @Optional message_from?: string;
+    @Optional color?: number;
+    @Optional sim_stamp?: string;
 
-    static optional = ['message_from', 'color', 'sim_stamp'];
+    constructor(r: any) {
+        super();
+        this.device_id = Number(r.device_id);
+        this.device_conversation_id = Number(r.device_conversation_id);
+        this.message_type = Number(r.message_type);
+        this.data = String(r.data);
+        this.timestamp = Number(r.timestamp);
+        this.mime_type = String(r.mime_type);
+        this.read = Boolean(r.read);
+        this.seen = Boolean(r.seen);
+        this.sent_device = Number(r.sent_device);
+        this.setOptional('message_from', r, String);
+        this.setOptional('color', r, Number);
+        this.setOptional('sim_stamp', r, String);
+    }
 }
 
 export class MessagesAddRequest extends HasItemsRequest {
     // Body
-    messages: MessagesAddItem[] = [new MessagesAddItem];
+    @ItemsProp messages: MessagesAddItem[];
 
-    static itemsPropName = 'messages';
+    constructor(r: any) {
+        super(r)
+        this.messages = MessagesAddRequest.createItems(r.messages);
+    }
+
+    static itemsPropType = MessagesAddItem;
 }
 
 
 /**
  * messages/update/:device_id
  */
+@AtLeastOne
 export class MessagesUpdateRequest extends UpdateDeviceIdRequest {
     // Body
-    @Expose() message_type: number = -1;
-    @Expose() timestamp: number = -1;
-    @Expose() read: boolean = false;
-    @Expose() seen: boolean = false;
+    @Optional message_type?: number;
+    @Optional timestamp?: number;
+    @Optional read?: boolean;
+    @Optional seen?: boolean;
 
-    static optional = ['message_type', 'timestamp', 'read', 'seen'];
-    static atLeastOne = true;
+    constructor(r: any) {
+        super(r);
+        this.setOptional('message_type', r, Number);
+        this.setOptional('timestamp', r, Number);
+        this.setOptional('read', r, Boolean);
+        this.setOptional('seen', r, Boolean);
+    }
 }
 
 
@@ -63,7 +91,12 @@ export class MessagesUpdateRequest extends UpdateDeviceIdRequest {
  */
 export class MessagesUpdateTypeRequest extends UpdateDeviceIdRequest {
     // Query
-    @Expose() message_type: number = -1;
+    @Required message_type: number;
+
+    constructor(r: any) {
+        super(r);
+        this.message_type = Number(r.message_type); 
+    }
 }
 
 
@@ -72,7 +105,12 @@ export class MessagesUpdateTypeRequest extends UpdateDeviceIdRequest {
  */
 export class MessagesCleanupRequest extends AccountIdRequest {
     // Query
-    @Expose() timestamp: number = -1;
+    @Required timestamp: number;
+
+    constructor(r: any) {
+        super(r);
+        this.timestamp = Number(r.timestamp); 
+    }
 }
 
 
@@ -81,13 +119,21 @@ export class MessagesCleanupRequest extends AccountIdRequest {
  */
 export class MessagesForwardToPhoneRequest extends AccountIdRequest {
     // Body
-    @Expose() to: string = '';
-    @Expose() message: string = '';
-    @Expose() mime_type: string = '';
-    @Expose() message_id: number = -1
-    @Expose() sent_device: number = -1
+    @Required to: string;
+    @Required message: string;
+    @Required sent_device: number;
 
     // TODO: Write tests
     // TODO: Verify if this is correct
-    static optional = ['mime_type', 'message_id'];
+    @Optional mime_type?: string;
+    @Optional message_id?: number;
+
+    constructor(r: any) {
+        super(r);
+        this.to = String(r.to);
+        this.message = String(r.message);
+        this.sent_device = Number(r.sent_device);
+        this.setOptional('mime_type', r, String);
+        this.setOptional('message_id', r, Number);
+    }
 }

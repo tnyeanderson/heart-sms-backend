@@ -11,7 +11,7 @@ WORKDIR /app
 # where available (npm@5+)
 COPY package*.json ./
 
-RUN npm install
+RUN npm ci
 
 # Bundle app source
 COPY api/ api/

@@ -1,4 +1,4 @@
-import { Expose } from "class-transformer";
+import { ItemsProp, Required } from "../../utils/decorators.js";
 import { BaseRequest, HasItemsRequest, UpdateDeviceIdRequest } from "./BaseRequests.js";
 
 
@@ -6,15 +6,26 @@ import { BaseRequest, HasItemsRequest, UpdateDeviceIdRequest } from "./BaseReque
  * templates/add
  */
 class TemplatesAddItem extends BaseRequest {
-    @Expose() device_id: number = -1;
-    @Expose() text: string = '';
+    @Required device_id: number;
+    @Required text: string;
+
+    constructor(r: any) {
+        super()
+        this.device_id = Number(r.device_id);
+        this.text = String(r.text);
+    }
 }
 
 export class TemplatesAddRequest extends HasItemsRequest {
     // Body
-    templates: TemplatesAddItem[] = [new TemplatesAddItem];
+    @ItemsProp templates: TemplatesAddItem[];
 
-    static itemsPropName = 'templates';
+    constructor(r: any) {
+        super(r);
+        this.templates = TemplatesAddRequest.createItems(r.templates);
+    }
+
+    static itemsPropType = TemplatesAddItem;
 }
 
 
@@ -23,5 +34,10 @@ export class TemplatesAddRequest extends HasItemsRequest {
  */
 export class TemplatesUpdateRequest extends UpdateDeviceIdRequest {
     // Body
-    @Expose() text: string = '';
+    @Required text: string;
+
+    constructor(r: any) {
+        super(r);
+        this.text = String(r.text);
+    }
 }

@@ -1,11 +1,20 @@
-import { Expose } from "class-transformer";
 import { BaseResponse } from "./BaseResponse.js";
 
 export class AutoRepliesListResponse extends BaseResponse {
-    @Expose() id!: number;
-    @Expose() account_id!: string;
-    @Expose() device_id!: number;
-    @Expose() reply_type!: string;
-    @Expose() pattern!: string;
-    @Expose() response!: string;
+    id?: number;
+    account_id?: string;
+    device_id?: number;
+    reply_type?: string;
+    pattern?: string;
+    response?: string;
+
+    constructor(r: any) {
+        super();
+        this.setProp('id', r, Number);
+        this.setProp('account_id', r, String);
+        this.setProp('device_id', r, Number);
+        this.setProp('reply_type', r, String);
+        this.setProp('pattern', r, String);
+        this.setProp('response', r, String);
+    }
 }

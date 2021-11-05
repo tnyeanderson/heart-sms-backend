@@ -1,4 +1,4 @@
-import { Expose } from "class-transformer";
+import { ItemsProp, Required } from "../../utils/decorators.js";
 import { BaseRequest, HasItemsRequest, UpdateDeviceIdRequest } from "./BaseRequests.js";
 
 
@@ -6,20 +6,35 @@ import { BaseRequest, HasItemsRequest, UpdateDeviceIdRequest } from "./BaseReque
  * folders/add
  */
 class FoldersAddItem extends BaseRequest {
-    @Expose() device_id: number = -1;
-    @Expose() name: string = '';
-    @Expose() color: number = -1;
-    @Expose() color_dark: number = -1;
-    @Expose() color_light: number = -1;
-    @Expose() color_accent: number = -1;
+    @Required device_id: number;
+    @Required name: string;
+    @Required color: number;
+    @Required color_dark: number;
+    @Required color_light: number;
+    @Required color_accent: number;
+
+    constructor(r: any) {
+        super();
+        this.device_id = Number(r.device_id);
+        this.name = String(r.name);
+        this.color = Number(r.color);
+        this.color_dark = Number(r.color_dark);
+        this.color_light = Number(r.color_light);
+        this.color_accent = Number(r.color_accent);
+    }
 }
 
 export class FoldersAddRequest extends HasItemsRequest {
     // Body
-    folders: FoldersAddItem[] = [new FoldersAddItem];
+    @ItemsProp folders: FoldersAddItem[];
 
-    static itemsPropName = 'folders';
+    constructor(r: any) {
+        super(r);
+        this.folders = FoldersAddRequest.createItems(r.folders);
+    }
 
+
+    static itemsPropType = FoldersAddItem;
 }
 
 
@@ -28,9 +43,18 @@ export class FoldersAddRequest extends HasItemsRequest {
  */
 export class FoldersUpdateRequest extends UpdateDeviceIdRequest {
     // Body
-    @Expose() name: string = '';
-    @Expose() color: number = -1;
-    @Expose() color_dark: number = -1;
-    @Expose() color_light: number = -1;
-    @Expose() color_accent: number = -1;
+    @Required name: string;
+    @Required color: number;
+    @Required color_dark: number;
+    @Required color_light: number;
+    @Required color_accent: number;
+
+    constructor(r: any) {
+        super(r);
+        this.name = String(r.name);
+        this.color = Number(r.color);
+        this.color_dark = Number(r.color_dark);
+        this.color_light = Number(r.color_light);
+        this.color_accent = Number(r.color_accent);
+    }
 }

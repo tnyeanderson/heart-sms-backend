@@ -1,4 +1,3 @@
-import { Request } from 'express';
 import { v4 as uuidv4 } from 'uuid';
 
 const devEnv = 'dev';
@@ -12,6 +11,19 @@ const util = {
      */
     createAccountId: function () {
         return (uuidv4() + uuidv4()).replace(/-/g, '');
+    },
+
+    /**
+     * Whether a property is missing from an object to validate
+     * 
+    */
+    propMissing: function (toValidate: any, prop: string) {
+        return (
+            !toValidate ||
+            toValidate[prop] === undefined ||
+            toValidate[prop] === null ||
+            toValidate[prop] === ""
+        );
     },
     
     /**

@@ -1,4 +1,4 @@
-import { Expose } from "class-transformer";
+import { ItemsProp, Required } from "../../utils/decorators.js";
 import { BaseRequest, HasItemsRequest, UpdateDeviceIdRequest } from "./BaseRequests.js";
 
 
@@ -7,9 +7,16 @@ import { BaseRequest, HasItemsRequest, UpdateDeviceIdRequest } from "./BaseReque
  */
 export class AutoRepliesUpdateRequest extends UpdateDeviceIdRequest {
     // Body
-    @Expose() reply_type: string = '';
-    @Expose() pattern: string = '';
-    @Expose() response: string = '';
+    @Required reply_type: string;
+    @Required pattern: string;
+    @Required response: string;
+
+    constructor(r: any) {
+        super(r);
+        this.reply_type = String(r.reply_type);
+        this.pattern = String(r.pattern);
+        this.response = String(r.response);
+    }
 }
 
 
@@ -18,17 +25,28 @@ export class AutoRepliesUpdateRequest extends UpdateDeviceIdRequest {
  * auto_replies/add
  */
 class AutoRepliesAddItem extends BaseRequest {
-    // Body
-    @Expose() reply_type: string = '';
-    @Expose() pattern: string = '';
-    @Expose() response: string = '';
-    @Expose() device_id: number = -1;
+    @Required device_id: number;
+    @Required reply_type: string;
+    @Required pattern: string;
+    @Required response: string;
+
+    constructor(r: any) {
+        super(r);
+        this.device_id = Number(r.device_id);
+        this.reply_type = String(r.reply_type);
+        this.pattern = String(r.pattern);
+        this.response = String(r.response);
+    }
 }
 
 export class AutoRepliesAddRequest extends HasItemsRequest {
     // Body
-    auto_replies: AutoRepliesAddItem[] = [new AutoRepliesAddItem];
+    @ItemsProp auto_replies: AutoRepliesAddItem[];
 
+    constructor(r: any) {
+        super(r);
+        this.auto_replies = AutoRepliesAddRequest.createItems(r.auto_replies);
+    }
 
-    static itemsPropName = 'auto_replies';
+    static itemsPropType = AutoRepliesAddItem;
 }

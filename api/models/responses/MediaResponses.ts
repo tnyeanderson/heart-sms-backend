@@ -1,7 +1,10 @@
 import { BaseResponse } from './BaseResponse.js';
 
 export class MediaGetResponse extends BaseResponse {
-    constructor(
-        public data: string
-    ) { super() }
+    data?: string;
+
+    constructor(r: any) {
+        super();
+        this.setProp('data', r, String);
+    }
 }

@@ -1,4 +1,4 @@
-import { Expose } from "class-transformer";
+import { Required } from "../../utils/decorators.js";
 import { AccountIdRequest } from "./BaseRequests.js";
 
 
@@ -8,7 +8,12 @@ import { AccountIdRequest } from "./BaseRequests.js";
  */
 export class MediaGetRequest extends AccountIdRequest {
     // URL params
-    @Expose() message_id: string = '';
+    @Required message_id: number;
+
+    constructor(r: any) {
+        super(r);
+        this.message_id = Number(r.message_id);
+    }
 }
 
 
@@ -18,6 +23,12 @@ export class MediaGetRequest extends AccountIdRequest {
  */
 export class MediaAddRequest extends AccountIdRequest {
     // Body
-    @Expose() message_id: number = -1;
-    @Expose() data: string = '';
+    @Required message_id: number;
+    @Required data: string;
+
+    constructor(r: any) {
+        super(r);
+        this.message_id = Number(r.message_id);
+        this.data = String(r.data);
+    }
 }

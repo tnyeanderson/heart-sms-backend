@@ -1,64 +1,123 @@
-import { Expose } from 'class-transformer';
 import { BaseResponse } from './BaseResponse.js';
 
 export class SignupResponse extends BaseResponse {
-    constructor(
-        public account_id: string,
-        public salt1: string,
-        public salt2: string
-    ) { super() }
+    account_id?: string;
+    salt1?: string;
+    salt2?: string;
+
+    constructor(r: any) {
+        super();
+        this.setProp('account_id', r, String);
+        this.setProp('salt1', r, String);
+        this.setProp('salt2', r, String);
+    }
 }
 
 
 export class CountResponse extends BaseResponse {
-    @Expose() device_count!: number;
-    @Expose() message_count!: number;
-    @Expose() conversation_count!: number;
-    @Expose() draft_count!: number;
-    @Expose() scheduled_count!: number;
-    @Expose() blacklist_count!: number;
-    @Expose() contact_count!: number;
-    @Expose() template_count!: number;
-    @Expose() folder_count!: number;
-    @Expose() auto_reply_count!: number;
+    device_count?: number;
+    message_count?: number;
+    conversation_count?: number;
+    draft_count?: number;
+    scheduled_count?: number;
+    blacklist_count?: number;
+    contact_count?: number;
+    template_count?: number;
+    folder_count?: number;
+    auto_reply_count?: number;
+
+    constructor(r: any) {
+        super();
+        this.setProp('device_count', r, Number);
+        this.setProp('message_count', r, Number);
+        this.setProp('conversation_count', r, Number);
+        this.setProp('draft_count', r, Number);
+        this.setProp('scheduled_count', r, Number);
+        this.setProp('blacklist_count', r, Number);
+        this.setProp('contact_count', r, Number);
+        this.setProp('template_count', r, Number);
+        this.setProp('folder_count', r, Number);
+        this.setProp('auto_reply_count', r, Number);
+
+    }
 }
 
 
 export class SettingsResponse extends BaseResponse {
-    @Expose() base_theme!: string;
-    @Expose() global_color_theme!: string;
-    @Expose() rounder_bubbles!: boolean;
-    @Expose() color!: number;
-    @Expose() color_dark!: number;
-    @Expose() color_light!: number;
-    @Expose() color_accent!: number;
-    @Expose() use_global_theme!: boolean;
-    @Expose() apply_primary_color_toolbar!: boolean;
-    @Expose() passcode!: string;
-    @Expose() subscription_type!: number;
-    @Expose() message_timestamp!: boolean;
-    @Expose() conversation_categories!: boolean;
+    base_theme?: string;
+    global_color_theme?: string;
+    rounder_bubbles?: boolean;
+    color?: number;
+    color_dark?: number;
+    color_light?: number;
+    color_accent?: number;
+    use_global_theme?: boolean;
+    apply_primary_color_toolbar?: boolean;
+    passcode?: string;
+    subscription_type?: number;
+    message_timestamp?: boolean;
+    conversation_categories?: boolean;
+
+    constructor(r: any) {
+        super();
+        this.setProp('base_theme', r, String);
+        this.setProp('global_color_theme', r, String);
+        this.setProp('rounder_bubbles', r, Boolean);
+        this.setProp('color', r, Number);
+        this.setProp('color_dark', r, Number);
+        this.setProp('color_light', r, Number);
+        this.setProp('color_accent', r, Number);
+        this.setProp('use_global_theme', r, Boolean);
+        this.setProp('apply_primary_color_toolbar', r, Boolean);
+        this.setProp('passcode', r, String);
+        this.setProp('subscription_type', r, Number);
+        this.setProp('message_timestamp', r, Boolean);
+        this.setProp('conversation_categories', r, Boolean);
+    }
 }
 
 
 export class LoginResponse extends BaseResponse {
-    @Expose({ name: 'session_id' }) account_id!: string;
-    @Expose() salt1!: string;
-    @Expose() salt2!: string;
-    @Expose() phone_number!: string;
-    @Expose() name!: string;
-    @Expose() subscription_type!: number;
-    @Expose() subscription_expiration!: number;
-    @Expose() base_theme!: string;
-    @Expose() rounder_bubbles!: boolean;
-    @Expose() global_color_theme!: string;
-    @Expose() color!: number;
-    @Expose() color_dark!: number;
-    @Expose() color_light!: number;
-    @Expose() color_accent!: number;
-    @Expose() use_global_theme!: boolean;
-    @Expose() apply_primary_color_toolbar!: boolean;
-    @Expose() passcode!: string;
-    @Expose() message_timestamp!: boolean;
-    @Expose() conversation_categories!: boolean;
+    account_id?: string;
+    salt1?: string;
+    salt2?: string;
+    phone_number?: string;
+    name?: string;
+    subscription_type?: number;
+    subscription_expiration?: number;
+    base_theme?: string;
+    rounder_bubbles?: boolean;
+    global_color_theme?: string;
+    color?: number;
+    color_dark?: number;
+    color_light?: number;
+    color_accent?: number;
+    use_global_theme?: boolean;
+    apply_primary_color_toolbar?: boolean;
+    passcode?: string;
+    message_timestamp?: boolean;
+    conversation_categories?: boolean;
+
+    constructor(r: any) {
+        super();
+        this.setProp({target: 'account_id', source: 'session_id'}, r, String);
+        this.setProp('salt1', r, String);
+        this.setProp('salt2', r, String);
+        this.setProp('phone_number', r, String);
+        this.setProp('name', r, String);
+        this.setProp('subscription_type', r, Number);
+        this.setProp('subscription_expiration', r, Number);
+        this.setProp('base_theme', r, String);
+        this.setProp('rounder_bubbles', r, Boolean);
+        this.setProp('global_color_theme', r, String);
+        this.setProp('color', r, Number);
+        this.setProp('color_dark', r, Number);
+        this.setProp('color_light', r, Number);
+        this.setProp('color_accent', r, Number);
+        this.setProp('use_global_theme', r, Boolean);
+        this.setProp('apply_primary_color_toolbar', r, Boolean);
+        this.setProp('passcode', r, String);
+        this.setProp('message_timestamp', r, Boolean);
+        this.setProp('conversation_categories', r, Boolean);
+    }
 }

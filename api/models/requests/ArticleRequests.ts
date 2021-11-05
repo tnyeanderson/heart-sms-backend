@@ -1,10 +1,14 @@
-import { Expose } from "class-transformer";
+import { Required } from "../../utils/decorators.js";
 import { BaseRequest } from "./BaseRequests.js";
 
 /**
  * article
  */
 export class ArticleRequest extends BaseRequest {
-    // Body
-    @Expose() url: string = '';
+    @Required url: string
+
+    constructor(r: any) {
+        super()
+        this.url = String(r.url);
+    }
 }
