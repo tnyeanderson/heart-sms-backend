@@ -168,13 +168,14 @@ class Query {
         // For each item to insert, push to vals
         const vals = items.map((item) => {
             // Push the val array of the item to be inserted to the list of items to be inserted
-            return Object.keys(item).map(([key, value]) => {
+            return Object.entries(item).map(([key, value]) => {
                 if (key == 'account_id') {
                     // Translate session id to account id using MYSQL function
-                    return Query.translateSessionToAccount(value);
+                    return Query.translateSessionToAccount(value as string);
                 } else {
                     // Add escaped value of item to that item's val array
-                    return Query.escape(value);
+                    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                    return Query.escape(value as any);
                 }
             });
         });
