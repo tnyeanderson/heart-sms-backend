@@ -5,7 +5,7 @@ const testEnv = 'test';
 const prodEnv = 'production';
 
 const util = {
-    
+
     /**
      * Generate a 64 character account id using two UUIDs
      */
@@ -15,7 +15,7 @@ const util = {
 
     /**
      * Whether a property is missing from an object to validate
-     * 
+     *
      */
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     propMissing: function (toValidate: any, prop: string) {
@@ -26,7 +26,7 @@ const util = {
             toValidate[prop] === ""
         );
     },
-    
+
     /**
      * Used for easily determining which environment we are in
      */

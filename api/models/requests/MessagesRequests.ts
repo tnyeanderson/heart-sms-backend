@@ -95,7 +95,7 @@ export class MessagesUpdateTypeRequest extends UpdateDeviceIdRequest {
 
     constructor(r: MessagesUpdateTypeRequest) {
         super(r);
-        this.message_type = Number(r.message_type); 
+        this.message_type = Number(r.message_type);
     }
 }
 
@@ -109,7 +109,7 @@ export class MessagesCleanupRequest extends AccountIdRequest {
 
     constructor(r: MessagesCleanupRequest) {
         super(r);
-        this.timestamp = Number(r.timestamp); 
+        this.timestamp = Number(r.timestamp);
     }
 }
 

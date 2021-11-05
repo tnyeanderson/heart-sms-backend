@@ -38,7 +38,7 @@ export class DevicesAddRequest extends AccountIdRequest {
      * However, it only has one item and it is not wrapped in an array (device: {}).
      * Therefore, there is a custom validation function for this endpoint
      * TODO: This is dumb
-     * @param req 
+     * @param req
      */
     static validate(req: Request) {
         const prop = 'device';
@@ -46,7 +46,7 @@ export class DevicesAddRequest extends AccountIdRequest {
 
         if (!item || item === {}) {
             throw new MissingParamError(prop);
-        } 
+        }
 
         DevicesAddItem.validate(item);
 

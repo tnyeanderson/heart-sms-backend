@@ -13,16 +13,16 @@ const router = express.Router();
 const table = "Blacklists"
 
 router.route('/').get(
-    (req, res, next) => AccountIdRequest.handler(req, res, next), 
+    (req, res, next) => AccountIdRequest.handler(req, res, next),
     asyncHandler(async (req, res) => {
         const r: AccountIdRequest = res.locals.request;
 
         const fields = ['session_id AS account_id', 'id', 'device_id', 'phone_number', 'phrase'];
-        
+
         const sql = `SELECT ${db.selectFields(fields)} FROM ${table} INNER JOIN SessionMap USING (account_id) WHERE ${r.whereAccount()} ${db.newestFirst(table)}`;
 
         const result = await db.query(sql);
-            
+
         res.json(BlacklistListResponse.getList(result));
     }));
 
@@ -50,7 +50,7 @@ router.route('/add').post(
                 item.phone_number,
                 item.phrase
             );
-            
+
             payload.send(r.account_id);
         });
     }));
@@ -60,20 +60,20 @@ router.route('/remove/:device_id').post(
     (req, res, next) => DeviceIdRequest.handler(req, res, next),
     asyncHandler(async (req, res) => {
         const r: DeviceIdRequest = res.locals.request;
-        
+
         const sql = `DELETE FROM ${table} WHERE device_id = ${db.escape(Number(r.device_id))} AND ${r.whereAccount()}`;
 
         await db.query(sql);
-            
+
         res.json(new BaseResponse);
 
         // Send websocket message
         const payload = new BlacklistsPayloads.removed_blacklist(
             Number(r.device_id)
         );
-        
+
         payload.send(r.account_id);
     }));
 
 export default router;
- 
+

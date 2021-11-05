@@ -9,5 +9,5 @@ export function hashPassword(password: string, salt: string): Promise<string> {
 
             return resolve(password_hash.toString('hex'));
         });
-    });   
+    });
 }

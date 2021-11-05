@@ -4,10 +4,10 @@ import { Handler, NextFunction, Request, Response } from "express";
 
 /**
  * Create async-aware middleware.
- * 
+ *
  * @example
- * router.route('/add').post(asyncHandler(async (req, res, next) => { await doStuff() })) 
- * 
+ * router.route('/add').post(asyncHandler(async (req, res, next) => { await doStuff() }))
+ *
  * @param fn async-aware middleware function
  */
 export function asyncHandler (fn: Handler) {

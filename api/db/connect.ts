@@ -37,4 +37,4 @@ const connection = function (extraSettings?: pg.PoolConfig) {
 }
 
 export default connection;
-    
+

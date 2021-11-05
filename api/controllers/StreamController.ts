@@ -37,13 +37,13 @@ class StreamController {
     onError (err: Error) {
         console.log(new MQTTError(err));
     }
-    
+
     sendMessage (accountId: string, operation: string, content: BasePayload) {
         const message = {
             operation: operation,
             content: content
         };
-        
+
         if (this.socket) {
             this.socket.publish(this.topicPrefix + accountId, JSON.stringify(message), {
                 qos: 2
@@ -58,4 +58,4 @@ const streamController = new StreamController();
 
 export default streamController;
 
- 
+

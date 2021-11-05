@@ -12,17 +12,17 @@ const router = express.Router();
 const table = 'Messages';
 
 router.route('/').get(
-    (req, res, next) => MessagesGetRequest.handler(req, res, next), 
+    (req, res, next) => MessagesGetRequest.handler(req, res, next),
     asyncHandler(async (req, res) => {
         const r: MessagesGetRequest = res.locals.request;
 
-        const fields = ['session_id AS account_id', 'id', 'device_id', 
-                    'device_conversation_id', 'message_type', 'data', 
-                    'timestamp', 'mime_type', 'read', 'seen', 'message_from', 
+        const fields = ['session_id AS account_id', 'id', 'device_id',
+                    'device_conversation_id', 'message_type', 'data',
+                    'timestamp', 'mime_type', 'read', 'seen', 'message_from',
                     'color', 'sent_device', 'sim_stamp'];
 
         let whereConversationStr = '';
-        
+
         if (r.conversation_id) {
             whereConversationStr = ` AND device_conversation_id =  ${db.escape(Number(r.conversation_id))} `;
         }
@@ -30,16 +30,16 @@ router.route('/').get(
         const sql = `SELECT ${db.selectFields(fields)} FROM ${table} INNER JOIN SessionMap USING (account_id) WHERE ${r.whereAccount()} ${whereConversationStr} ORDER BY timestamp DESC ${r.limitStr()}`;
 
         const result = await db.query(sql);
-            
+
         res.json(MessagesListResponse.getList(result));
     }));
 
 
 router.route('/remove/:device_id').post(
-    (req, res, next) => DeviceIdRequest.handler(req, res, next), 
+    (req, res, next) => DeviceIdRequest.handler(req, res, next),
     asyncHandler(async (req, res) => {
         const r: DeviceIdRequest = res.locals.request;
-        
+
         const sql = `DELETE FROM ${table} WHERE device_id = ${db.escape(Number(r.device_id))} AND ${r.whereAccount()}`;
 
         await db.query(sql);
@@ -49,17 +49,17 @@ router.route('/remove/:device_id').post(
         const payload = new MessagesPayloads.removed_message(
             Number(r.device_id)
         );
-        
+
         // Send websocket message
         payload.send(r.account_id);
     }));
 
 
 router.route('/add').post(
-    (req, res, next) => MessagesAddRequest.handler(req, res, next), 
+    (req, res, next) => MessagesAddRequest.handler(req, res, next),
     asyncHandler(async (req, res) => {
         const r: MessagesAddRequest = res.locals.request;
-        
+
         const items = r.messages.map(item => {
             return Object.assign({ account_id: r.account_id }, item);
         });
@@ -88,14 +88,14 @@ router.route('/add').post(
                 item.sent_device,
                 item.sim_stamp
             );
-            
+
             payload.send(r.account_id);
         });
     }));
 
 
 router.route('/update/:device_id').post(
-    (req, res, next) => MessagesUpdateRequest.handler(req, res, next), 
+    (req, res, next) => MessagesUpdateRequest.handler(req, res, next),
     asyncHandler(async (req, res) => {
         const r: MessagesUpdateRequest = res.locals.request;
 
@@ -115,20 +115,20 @@ router.route('/update/:device_id').post(
             r.read,
             r.seen
         );
-        
+
         payload.send(r.account_id);
     }));
 
 
 router.route('/update_type/:device_id').post(
-    (req, res, next) => MessagesUpdateTypeRequest.handler(req, res, next), 
+    (req, res, next) => MessagesUpdateTypeRequest.handler(req, res, next),
     asyncHandler(async (req, res) => {
         const r: MessagesUpdateTypeRequest = res.locals.request;
 
         const sql = `UPDATE ${table} SET ${r.updateStr()} WHERE device_id = ${db.escape(Number(r.device_id))} AND ${r.whereAccount()}`;
 
         await db.query(sql);
-        
+
         res.json(new BaseResponse);
 
         const payload = new MessagesPayloads.update_message_type(
@@ -142,7 +142,7 @@ router.route('/update_type/:device_id').post(
 
 
 router.route('/cleanup').post(
-    (req, res, next) => MessagesCleanupRequest.handler(req, res, next), 
+    (req, res, next) => MessagesCleanupRequest.handler(req, res, next),
     asyncHandler(async (req, res) => {
         const r: MessagesCleanupRequest = res.locals.request;
 
@@ -155,17 +155,17 @@ router.route('/cleanup').post(
         const payload = new MessagesPayloads.cleanup_messages(
             Number(r.timestamp)
         )
-        
+
         // Send websocket message
         payload.send(r.account_id);
     }));
 
 
 router.route('/forward_to_phone').post(
-    (req, res, next) => MessagesForwardToPhoneRequest.handler(req, res, next), 
+    (req, res, next) => MessagesForwardToPhoneRequest.handler(req, res, next),
     function (req, res) {
         const r: MessagesForwardToPhoneRequest = res.locals.request;
-        
+
         const payload = new MessagesPayloads.forward_to_phone(
             String(r.to),
             String(r.message),
@@ -173,12 +173,12 @@ router.route('/forward_to_phone').post(
             String(r.mime_type),
             Number(r.message_id)
         );
-        
+
         // Send websocket message
         payload.send(r.account_id);
-        
+
         res.json(new BaseResponse);
     });
 
 export default router;
- 
+

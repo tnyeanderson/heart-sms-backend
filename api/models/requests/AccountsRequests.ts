@@ -26,9 +26,9 @@ export class SignupRequest extends BaseRequest {
 
     /**
      * Express middleware to check whether a user is in HEART_ALLOWED_USERS
-     * @param req 
-     * @param res 
-     * @param next 
+     * @param req
+     * @param res
+     * @param next
      */
     static checkAllowedUser (req: Request, res: Response, next: NextFunction) {
         // res.locals.request is set from .handler()
@@ -41,16 +41,16 @@ export class SignupRequest extends BaseRequest {
 
     /**
      * Async-aware express middleware that responds with an error if the user is a duplicate
-     * @param req 
-     * @param res 
-     * @param next 
+     * @param req
+     * @param res
+     * @param next
      */
     static async checkDuplicateUser (req: Request, res: Response, next: NextFunction) {
         // res.locals.request is set from .handler()
         const r = res.locals.request;
 
         const sql = `SELECT username FROM Accounts WHERE username = ${db.escape(r.name)}`;
-    
+
         // Don't do the work to hash the password if the user already exists
         const result = await db.query(sql);
 
@@ -138,7 +138,7 @@ export class UpdateSettingRequest extends AccountIdRequest {
 
         const expectedType = toValidate.type;
         const uncastedType = typeof v;
-        
+
         if ( ! ['string', 'number', 'boolean'].includes(uncastedType) ) {
             throw new ParamTypeError('value');
         }
@@ -153,11 +153,11 @@ export class UpdateSettingRequest extends AccountIdRequest {
                 break;
             case 'boolean':
                 if ( !( // NOT
-                    v === true || 
-                    v === false || 
-                    v === 'true' ||  
-                    v === 'false' ||  
-                    v === 0 || 
+                    v === true ||
+                    v === false ||
+                    v === 'true' ||
+                    v === 'false' ||
+                    v === 0 ||
                     v === 1
                 )) {
                     throw new ParamTypeError('value')

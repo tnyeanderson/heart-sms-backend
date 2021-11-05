@@ -18,15 +18,15 @@ router.route('/').get(function (req, res, next) {
 });
 
 router.route('/login').post(
-    (req, res, next) => LoginRequest.handler(req, res, next), 
+    (req, res, next) => LoginRequest.handler(req, res, next),
     asyncHandler(async (req, res, next) => {
         const r: LoginRequest = res.locals.request;
 
-        const fields = ['account_id', 'session_id', 'password_hash', 'real_name AS name', 'salt1', 'salt2', 'phone_number', 
-                      'base_theme', 'passcode', 'rounder_bubbles', 'use_global_theme', 'apply_primary_color_toolbar', 
-                      'conversation_categories', 'color', 'color_dark', 'color_light', 'color_accent', 'global_color_theme', 
+        const fields = ['account_id', 'session_id', 'password_hash', 'real_name AS name', 'salt1', 'salt2', 'phone_number',
+                      'base_theme', 'passcode', 'rounder_bubbles', 'use_global_theme', 'apply_primary_color_toolbar',
+                      'conversation_categories', 'color', 'color_dark', 'color_light', 'color_accent', 'global_color_theme',
                       'message_timestamp', 'subscription_type', 'subscription_expiration'];
-        
+
         const sql = `SELECT ${db.selectFields(fields)} FROM Accounts INNER JOIN SessionMap USING (account_id) INNER JOIN Settings USING (account_id) WHERE username = ${db.escape(r.username)} LIMIT 1`;
 
         const result = await db.query(sql);
@@ -48,7 +48,7 @@ router.route('/login').post(
 
 router.route('/signup').post(
     (req, res, next) => SignupRequest.handler(req, res, next),
-    (req, res, next) => SignupRequest.checkAllowedUser(req, res, next), 
+    (req, res, next) => SignupRequest.checkAllowedUser(req, res, next),
     asyncHandler(SignupRequest.checkDuplicateUser),
     asyncHandler(async (req, res, next) => {
         const r: SignupRequest = res.locals.request;
@@ -86,18 +86,18 @@ router.route('/signup').post(
 
 
 router.route('/remove_account').post(
-    (req, res, next) => AccountIdRequest.handler(req, res, next), 
+    (req, res, next) => AccountIdRequest.handler(req, res, next),
     asyncHandler(async (req, res) => {
         const r: AccountIdRequest = res.locals.request;
-        
+
         const sql = `DELETE FROM Accounts WHERE ${r.whereAccount()}`;
 
         await db.query(sql);
-        
+
         const payload = new AccountsPayloads.removed_account(
             r.account_id
         );
-        
+
         // Send websocket message
         payload.send(r.account_id);
 
@@ -106,10 +106,10 @@ router.route('/remove_account').post(
 
 
 router.route('/count').get(
-    (req, res, next) => AccountIdRequest.handler(req, res, next), 
+    (req, res, next) => AccountIdRequest.handler(req, res, next),
     asyncHandler(async (req, res) => {
         const r: AccountIdRequest = res.locals.request;
-        
+
         const fields = ["device_count", "message_count", "conversation_count", "draft_count", "scheduled_count", "blacklist_count", "contact_count", "template_count", "folder_count", "auto_reply_count"];
 
         const sql = `SELECT ${db.selectFields(fields)} from CountsView where ${r.whereAccount()}`;
@@ -120,26 +120,26 @@ router.route('/count').get(
         if (!result || (Array.isArray(result) && result.length === 0)) {
             return res.json({});
         }
-        
+
         const response = AccountsResponses.CountResponse.fromResult(result);
 
         res.json(response);
     }));
 
 router.route('/clean_account').post(
-    (req, res, next) => AccountIdRequest.handler(req, res, next), 
+    (req, res, next) => AccountIdRequest.handler(req, res, next),
     asyncHandler(async (req, res) => {
         const r: AccountIdRequest = res.locals.request;
-        
+
         // Calls the "CleanAccount" mysql stored procedure
         const sql = `CALL CleanAccount( ${db.escape(r.account_id)} )`;
-        
+
         await db.query(sql);
 
         const payload = new AccountsPayloads.cleaned_account(
             r.account_id
         );
-        
+
         // Send websocket message
         payload.send(r.account_id);
 
@@ -147,18 +147,18 @@ router.route('/clean_account').post(
     }));
 
 router.route('/settings').get(
-    (req, res, next) => AccountIdRequest.handler(req, res, next), 
+    (req, res, next) => AccountIdRequest.handler(req, res, next),
     asyncHandler(async (req, res) => {
         const r: AccountIdRequest = res.locals.request;
-        
+
         const fields = ["base_theme", "global_color_theme", "rounder_bubbles", "color", "color_dark", "color_light", "color_accent", "use_global_theme", "apply_primary_color_toolbar", "passcode", "subscription_type", "message_timestamp", "conversation_categories"];
-        
+
         const sql = `SELECT ${db.selectFields(fields)} FROM Settings WHERE ${r.whereAccount()} LIMIT 1`;
-        
+
         const result = await db.query(sql);
-        
+
         const response = AccountsResponses.SettingsResponse.fromResult(result);
-        
+
         res.json(response);
     }));
 
@@ -172,15 +172,15 @@ router.route('/dismissed_notification').post(
             r.id,
             r.device_id
         );
-        
+
         payload.send(r.account_id);
-        
+
         res.json(new BaseResponse);
     });
 
 
 router.route('/update_subscription').post(
-    (req, res, next) => AccountIdRequest.handler(req, res, next), 
+    (req, res, next) => AccountIdRequest.handler(req, res, next),
     function (req, res) {
         // Not implemented because everyone gets a lifetime subscription!
         // Respond for compatibility
@@ -189,12 +189,12 @@ router.route('/update_subscription').post(
 
 
 router.route('/update_setting').post(
-    (req, res, next) => UpdateSettingRequest.handler(req, res, next), 
+    (req, res, next) => UpdateSettingRequest.handler(req, res, next),
     asyncHandler(async (req, res) => {
         const r: UpdateSettingRequest = res.locals.request;
-        
+
         let castedValue: number | string | boolean;
-        
+
         // Use the "type" property in the request to cast the "value"
         switch(r.type) {
             case 'int':
@@ -219,10 +219,10 @@ router.route('/update_setting').post(
             r.type,
             castedValue
         );
-        
+
         payload.send(r.account_id);
 
-        res.json(new BaseResponse);        
+        res.json(new BaseResponse);
     }));
 
 export default router;

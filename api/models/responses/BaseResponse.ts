@@ -13,7 +13,7 @@ export class BaseResponse {
     // We MUST include the r here to avoid errors when calling new this(r) in .create()
     // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unused-vars, @typescript-eslint/no-empty-function
     constructor(r?: any) { }
-    
+
     /**
      * Creates an instance of the calling class from a result
      * @param result Array of results, usually from a database or API call
@@ -33,7 +33,7 @@ export class BaseResponse {
     }
 
     /**
-     * 
+     *
      * @param name The name of the property
      * @param sourceObj The object to get the property from
      * @param Cast The function used to cast the value to the proper type

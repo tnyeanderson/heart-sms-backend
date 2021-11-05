@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
 /**
- * Marks the property as required by adding its name to Class.required[] 
+ * Marks the property as required by adding its name to Class.required[]
  * @param target Target object
  * @param name Name of property
  */
@@ -10,7 +10,7 @@ export function Required(target: any, name: string) {
 }
 
 /**
- * Marks the property as optional by adding its name to Class.optional[] 
+ * Marks the property as optional by adding its name to Class.optional[]
  * @param target Target object
  * @param name Name of property
  */

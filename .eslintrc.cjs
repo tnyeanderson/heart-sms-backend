@@ -9,7 +9,6 @@ module.exports = {
     'plugin:@typescript-eslint/recommended',
   ],
   rules: {
-    "no-unused-vars": "off",
-    "no-explicit-any": "off"
+    "no-trailing-spaces": 2
   }
 };

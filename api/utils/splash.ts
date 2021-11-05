@@ -68,7 +68,7 @@ function emptyLine () {
 }
 
 /**
- * 
+ *
  * @param text Text to center
  * @param lineLength Total length of line to center the text on
  * @param padChar Character to use for padding

@@ -6,7 +6,7 @@ import { MissingParamError } from "../responses/ErrorResponses.js";
 
 /**
  * BaseRequest
- * 
+ *
  * Performs schema validation for derived classes
  * Used for requests which do not require an account_id
  */
@@ -84,7 +84,7 @@ export class BaseRequest {
         } catch (err: unknown) {
             return next(err)
         }
-        
+
         res.locals.request = this.create(req);
         next();
     }
@@ -101,12 +101,12 @@ export class BaseRequest {
     }
 
     /**
-     * 
+     *
      * @param name The name of the property
      * @param sourceObj The object to get the property from
      * @param Cast The function used to cast the value to the proper type
      */
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     setOptional(name: string, sourceObj: any, Cast: (arg: unknown) => boolean | string | number) {
         if (!util.propMissing(sourceObj, name)) {
             // @ts-expect-error TS7053
@@ -152,7 +152,7 @@ export class HasItemsRequest extends AccountIdRequest {
 
     /**
      * Type of each item in this[itemsPropName]
-     * 
+     *
      * This will be something like BlacklistsAddItem
      */
     // Must be type any so it can be overwritten to the new type

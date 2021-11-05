@@ -22,7 +22,7 @@ class UserHelper {
 
     /**
      * Determine whether a given username is allowed to sign up
-     * @param username 
+     * @param username
      */
     isAllowed (username: string) {
         // All signups are allowed, always return true

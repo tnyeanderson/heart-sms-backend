@@ -73,7 +73,7 @@ app.use((req: Request, res: Response, next) => {
 app.use((err: ErrorResponse, req: Request, res: Response, next: NextFunction) => {
     // If err.msg is set, use that. Otherwise generate a generic error
     const message: BaseError = err.msg || new BaseError('unexpected error');
-    
+
     // Log the error
     console.log(`\n ${JSON.stringify(message)} \n`);
 
@@ -90,4 +90,4 @@ app.use((err: ErrorResponse, req: Request, res: Response, next: NextFunction) =>
 });
 
 export default app;
- 
+

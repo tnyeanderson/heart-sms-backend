@@ -12,39 +12,39 @@ const router = express.Router();
 const table = 'Contacts';
 
 router.route('/').get(
-    (req, res, next) => LimitOffsetRequest.handler(req, res, next), 
+    (req, res, next) => LimitOffsetRequest.handler(req, res, next),
     asyncHandler(async (req, res) => {
         const r: LimitOffsetRequest = res.locals.request;
-        
+
         const cols = ['session_id AS account_id', 'id', 'device_id', 'phone_number', 'name', 'color', 'color_dark', 'color_light', 'color_accent', 'contact_type'];
-        
+
         const sql = `SELECT ${db.selectFields(cols)} FROM ${table} INNER JOIN SessionMap USING (account_id) WHERE ${r.whereAccount()} ${db.newestFirst(table)} ${r.limitStr()}`;
 
         const result = await db.query(sql);
-        
+
         res.json(ContactsListResponse.getList(result));
     }));
 
 router.route('/simple').get(
-    (req, res, next) => LimitOffsetRequest.handler(req, res, next), 
+    (req, res, next) => LimitOffsetRequest.handler(req, res, next),
     asyncHandler(async (req, res) => {
         const r: LimitOffsetRequest = res.locals.request;
-        
+
         const cols = ['phone_number', 'name', 'id', 'id_matcher', 'color', 'color_accent', 'contact_type'];
-        
+
         const sql = `SELECT ${db.selectFields(cols)} FROM ${table} WHERE ${r.whereAccount()} ${db.newestFirst(table)} ${r.limitStr()}`;
 
         const result = await db.query(sql);
-        
+
         res.json(ContactsSimpleListResponse.getList(result));
     }));
 
 
 router.route('/add').post(
-    (req, res, next) => ContactsAddRequest.handler(req, res, next), 
+    (req, res, next) => ContactsAddRequest.handler(req, res, next),
     asyncHandler(async (req, res) => {
         const r: ContactsAddRequest = res.locals.request;
-        
+
         const items = r.contacts.map(item => {
             return Object.assign({ account_id: r.account_id }, item,);
         });
@@ -67,27 +67,27 @@ router.route('/add').post(
                 item.color_accent,
                 item.contact_type
             );
-            
+
             payload.send(r.account_id);
         });
     }));
 
 
 router.route('/clear').post(
-    (req, res, next) => AccountIdRequest.handler(req, res, next), 
+    (req, res, next) => AccountIdRequest.handler(req, res, next),
     asyncHandler(async (req, res) => {
         const r: AccountIdRequest = res.locals.request;
-        
+
         const sql = `DELETE FROM ${table} WHERE ${r.whereAccount()}`;
 
         await db.query(sql);
-            
+
         res.json(new BaseResponse);
     }));
 
 
 router.route('/update_device_id').post(
-    (req, res, next) => ContactsUpdateDeviceIdRequest.handler(req, res, next), 
+    (req, res, next) => ContactsUpdateDeviceIdRequest.handler(req, res, next),
     asyncHandler(async (req, res) => {
         const r: ContactsUpdateDeviceIdRequest = res.locals.request;
 
@@ -116,10 +116,10 @@ router.route('/update_device_id').post(
 
 
 router.route('/remove_device_id').post(
-    (req, res, next) => ContactsRemoveDeviceIdRequest.handler(req, res, next), 
+    (req, res, next) => ContactsRemoveDeviceIdRequest.handler(req, res, next),
     asyncHandler(async (req, res) => {
         const r: ContactsRemoveDeviceIdRequest = res.locals.request;
-    
+
         const sql = `DELETE FROM ${table} WHERE ${r.whereAccount()} AND device_id = ${db.escape(Number(r.device_id))}`;
 
         await db.query(sql);
@@ -129,35 +129,35 @@ router.route('/remove_device_id').post(
             Number(r.device_id),
             String(r.phone_number)
         );
-        
+
         payload.send(r.account_id);
     }));
 
 
 router.route('/remove_ids/:ids').post(
-    (req, res, next) => ContactsRemoveIdsRequest.handler(req, res, next), 
+    (req, res, next) => ContactsRemoveIdsRequest.handler(req, res, next),
     asyncHandler(async (req, res) => {
         const r: ContactsRemoveIdsRequest = res.locals.request;
-    
+
         const whereId: string[] = [];
-        
+
         r.ids.split(',').forEach((id: string) => {
             whereId.push(db.escape(Number(id)));
         });
-        
+
         const sql = `DELETE FROM ${table} WHERE ${r.whereAccount()} AND ${db.escapeId('id')} in ( ${whereId.join(', ')} )`;
-    
+
         await db.query(sql);
         res.json(new BaseResponse);
-    
+
         const payload = new ContactsPayloads.removed_contact_by_id(
             r.ids
         );
-        
+
         // Send websocket message
         payload.send(r.account_id);
     }));
 
 
 export default router;
- 
+

@@ -9,7 +9,7 @@ import { BaseRequest, HasItemsRequest } from "./BaseRequests.js";
 class BlacklistsAddItem extends BaseRequest {
     // Body
     @Required device_id: number;
-    @Optional phone_number?: string; 
+    @Optional phone_number?: string;
     @Optional phrase?: string;
 
     constructor(r: BlacklistsAddItem) {

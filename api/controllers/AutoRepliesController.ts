@@ -13,10 +13,10 @@ const router = express.Router();
 const table = "AutoReplies"
 
 router.route('/').get(
-    (req, res, next) => AccountIdRequest.handler(req, res, next), 
+    (req, res, next) => AccountIdRequest.handler(req, res, next),
     asyncHandler(async (req, res) => {
         const r: AccountIdRequest = res.locals.request;
-        
+
         const fields = ['session_id AS account_id', 'id', 'device_id', 'reply_type', 'pattern', 'response']
 
         const sql = `SELECT ${db.selectFields(fields)} FROM ${table} INNER JOIN SessionMap USING (account_id) WHERE ${r.whereAccount()} ${db.newestFirst(table)}`;
@@ -28,7 +28,7 @@ router.route('/').get(
 
 
 router.route('/add').post(
-    (req, res, next) => AutoRepliesAddRequest.handler(req, res, next), 
+    (req, res, next) => AutoRepliesAddRequest.handler(req, res, next),
     asyncHandler(async (req, res) => {
         const r: AutoRepliesAddRequest = res.locals.request;
 
@@ -40,7 +40,7 @@ router.route('/add').post(
         const sql = db.insertQueries(table, items);
 
         await db.transaction(sql);
-        
+
         res.json(new BaseResponse);
 
         // Send websocket message
@@ -51,21 +51,21 @@ router.route('/add').post(
                 item.pattern,
                 item.response
             );
-                
+
             payload.send(r.account_id);
         });
     }));
 
 
 router.route('/remove/:device_id').post(
-    (req, res, next) => DeviceIdRequest.handler(req, res, next), 
+    (req, res, next) => DeviceIdRequest.handler(req, res, next),
     asyncHandler(async (req, res) => {
         const r: DeviceIdRequest = res.locals.request;
-        
+
         const sql = `DELETE FROM ${table} WHERE device_id = ${db.escape(Number(r.device_id))} AND ${r.whereAccount()}`;
-        
+
         await db.query(sql);
-        
+
         res.json(new BaseResponse);
 
         // Send websocket message
@@ -78,7 +78,7 @@ router.route('/remove/:device_id').post(
 
 
 router.route('/update/:device_id').post(
-    (req, res, next) => AutoRepliesUpdateRequest.handler(req, res, next), 
+    (req, res, next) => AutoRepliesUpdateRequest.handler(req, res, next),
     asyncHandler(async (req, res) => {
         const r: AutoRepliesUpdateRequest = res.locals.request;
 
@@ -99,4 +99,4 @@ router.route('/update/:device_id').post(
     }));
 
 export default router;
- 
+

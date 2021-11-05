@@ -18,11 +18,11 @@ class Query {
     static newestFirst (table: string) {
         return `ORDER BY ${table}.updated_at DESC`;
     }
-    
+
     /**
      * Generates a WHERE statement to limit results in a table to given account_id.
      * Uses TRANSLATE_SESSION_ID()
-     * @param accountId 
+     * @param accountId
      */
     static whereAccount (accountId: string) {
         return `account_id = ${Query.translateSessionToAccount(accountId)} `;
@@ -30,27 +30,27 @@ class Query {
 
     /**
      * Generate the LIMIT/OFFSET portion of a query
-     * @param limit 
-     * @param offset 
+     * @param limit
+     * @param offset
      */
     static limitStr (limit: number, offset: number) {
         let out = '';
-    
+
         if (limit > 0) {
             // Limit is set
             out += ` LIMIT ${Query.escape(limit)}`;
             if (offset > 0) {
                 // Offset is set
                 out += ` OFFSET ${Query.escape(offset)}`;
-            } 
+            }
         }
 
         return out;
     }
-    
+
     /**
      * Escape a value before using it in an SQL query
-     * @param item 
+     * @param item
      */
     static escape (item: string | string[] | number | boolean) {
         return format.literal(item);
@@ -58,7 +58,7 @@ class Query {
 
     /**
      * Escape an ID (table name, column name, etc) before using it in an SQL query
-     * @param item 
+     * @param item
      */
     static escapeId (item: string) {
         return format.ident(item);
@@ -76,20 +76,20 @@ class Query {
     static translateSessionToAccount (sessionId: string) {
         return `TRANSLATE_SESSION_ID(${Query.escape(sessionId)})`;
     }
-    
+
     /**
      * Runs an SQL query with error handling and returns a promise with the result
-     * 
+     *
      * @example
      * const result = await db.query('SELECT 1`);
-     * 
+     *
      * @param sql SQL query to execute
      */
     static async query (sql: string): Promise<QueryResultRow[]> {
         if (log_queries && util.env.dev()) {
             console.log(Date.now(), ' - ', sql, ';', '\n');
         }
-        
+
         try {
             const res = await pool.query(sql);
             return res.rows;
@@ -102,15 +102,15 @@ class Query {
 
     /**
      * Runs an SQL query within a transaction that automatically rolls back upon error
-     * 
+     *
      * @example
      * const result = await db.transaction('SELECT col_that_does_not_exist');
-     * 
+     *
      * @param sql SQL query to execute within a transaction
      */
     static async transaction (sql: string): Promise<QueryResultRow[]> {
         await this.query('BEGIN');
-        
+
         try {
             const rows = await this.query(sql);
             await this.query('COMMIT');
@@ -120,7 +120,7 @@ class Query {
             throw err;
         }
     }
-    
+
     /**
      * Creates a comma separated list of escaped column names from an array.
      * Respects the use of "AS" in the array item to alias a column name
@@ -128,20 +128,20 @@ class Query {
      */
     static selectFields (fields: string[]) {
         const out: string[] = [];
-        
+
         fields.forEach(field => {
             const parts = field.split(" AS ");
             let fieldstr = Query.escapeId(parts[0]);
-            
+
             if (parts.length === 2) {
                 // Field includes an alias using "AS"
                 fieldstr += ` AS ${Query.escapeId(parts[1])}`;
             }
-            
-            
+
+
             out.push(fieldstr);
         });
-        
+
         return out.join(', ');
     }
 
@@ -149,10 +149,10 @@ class Query {
         const queries = items.map((item) => {
             return `INSERT INTO ${table} ${this.insertStr(item)}`;
         })
-        
+
         return queries.join('; ');
     }
-    
+
     /**
      * Generates an insert string from the given items to insert
      * i.e. - (`col1`, `col2`) VALUES (val1, val2), (val3, val4)
@@ -164,7 +164,7 @@ class Query {
 
         // Get column names from the first object to insert
         const cols = Object.keys(items[0]).map(key => Query.escapeId(key));
-        
+
         // For each item to insert, push to vals
         const vals = items.map((item) => {
             // Push the val array of the item to be inserted to the list of items to be inserted
@@ -188,7 +188,7 @@ class Query {
         // i.e. - (`col1`, `col2`) VALUES (val1, val2), (val3, val4)
         return ` (${cols.join(", ")}) VALUES ${valStr.join(", ")}`;
     }
-    
+
     /**
      * Generates an update string from the given values
      * i.e. - `col1` = val1, `col2` = val2
@@ -202,7 +202,7 @@ class Query {
                 return `${Query.escapeId(key)} = ${Query.escape(value)}`;
             }
         });
-        
+
         // Stringify the results with comma separator
         // i.e. - `col1` = val1, `col2` = val2
         return out.join(", ");
