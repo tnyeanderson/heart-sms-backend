@@ -14,9 +14,9 @@ const table = 'Messages';
 router.route('/').get(
     (req, res, next) => MessagesGetRequest.handler(req, res, next), 
     asyncHandler(async (req, res, next) => {
-        let r: MessagesGetRequest = res.locals.request;
+        const r: MessagesGetRequest = res.locals.request;
 
-        let fields = ['session_id AS account_id', 'id', 'device_id', 
+        const fields = ['session_id AS account_id', 'id', 'device_id', 
                     'device_conversation_id', 'message_type', 'data', 
                     'timestamp', 'mime_type', 'read', 'seen', 'message_from', 
                     'color', 'sent_device', 'sim_stamp'];
@@ -27,9 +27,9 @@ router.route('/').get(
             whereConversationStr = ` AND device_conversation_id =  ${db.escape(Number(r.conversation_id))} `;
         }
 
-        let sql = `SELECT ${db.selectFields(fields)} FROM ${table} INNER JOIN SessionMap USING (account_id) WHERE ${r.whereAccount()} ${whereConversationStr} ORDER BY timestamp DESC ${r.limitStr()}`;
+        const sql = `SELECT ${db.selectFields(fields)} FROM ${table} INNER JOIN SessionMap USING (account_id) WHERE ${r.whereAccount()} ${whereConversationStr} ORDER BY timestamp DESC ${r.limitStr()}`;
 
-        let result = await db.query(sql);
+        const result = await db.query(sql);
             
         res.json(MessagesListResponse.getList(result));
     }));
@@ -38,15 +38,15 @@ router.route('/').get(
 router.route('/remove/:device_id').post(
     (req, res, next) => DeviceIdRequest.handler(req, res, next), 
     asyncHandler(async (req, res, next) => {
-        let r: DeviceIdRequest = res.locals.request;
+        const r: DeviceIdRequest = res.locals.request;
         
-        let sql = `DELETE FROM ${table} WHERE device_id = ${db.escape(Number(r.device_id))} AND ${r.whereAccount()}`;
+        const sql = `DELETE FROM ${table} WHERE device_id = ${db.escape(Number(r.device_id))} AND ${r.whereAccount()}`;
 
         await db.query(sql);
 
         res.json(new BaseResponse);
 
-        let payload = new MessagesPayloads.removed_message(
+        const payload = new MessagesPayloads.removed_message(
             Number(r.device_id)
         );
         
@@ -58,14 +58,14 @@ router.route('/remove/:device_id').post(
 router.route('/add').post(
     (req, res, next) => MessagesAddRequest.handler(req, res, next), 
     asyncHandler(async (req, res, next) => {
-        let r: MessagesAddRequest = res.locals.request;
+        const r: MessagesAddRequest = res.locals.request;
         
-        let items = r.messages.map((item) => {
+        const items = r.messages.map((item) => {
             return Object.assign({ account_id: r.account_id }, item,);
         });
 
         // Generate a query for each item
-        let sql = db.insertQueries(table, items);
+        const sql = db.insertQueries(table, items);
 
         await db.transaction(sql);
 
@@ -73,7 +73,7 @@ router.route('/add').post(
 
         // Send websocket message
         items.forEach(function (item: any) {
-            let payload = new MessagesPayloads.added_message(
+            const payload = new MessagesPayloads.added_message(
                 item.device_id,
                 item.device_conversation_id,
                 item.message_type,
@@ -96,18 +96,18 @@ router.route('/add').post(
 router.route('/update/:device_id').post(
     (req, res, next) => MessagesUpdateRequest.handler(req, res, next), 
     asyncHandler(async (req, res, next) => {
-        let r: MessagesUpdateRequest = res.locals.request;
+        const r: MessagesUpdateRequest = res.locals.request;
 
-        let payloadFields = ['device_id AS id', 'message_type AS type', 'timestamp'];
+        const payloadFields = ['device_id AS id', 'message_type AS type', 'timestamp'];
 
-        let sql = `UPDATE ${table} SET ${r.updateStr()} WHERE device_id = ${db.escape(Number(r.device_id))} AND ${r.whereAccount()} RETURNING ${db.selectFields(payloadFields)}`;
+        const sql = `UPDATE ${table} SET ${r.updateStr()} WHERE device_id = ${db.escape(Number(r.device_id))} AND ${r.whereAccount()} RETURNING ${db.selectFields(payloadFields)}`;
 
-        let result = await db.query(sql);
+        const result = await db.query(sql);
 
         res.json(new BaseResponse);
 
         // Send websocket message
-        let payload = new MessagesPayloads.updated_message(
+        const payload = new MessagesPayloads.updated_message(
             result[0].id,
             result[0].type,
             result[0].timestamp,
@@ -122,15 +122,15 @@ router.route('/update/:device_id').post(
 router.route('/update_type/:device_id').post(
     (req, res, next) => MessagesUpdateTypeRequest.handler(req, res, next), 
     asyncHandler(async (req, res, next) => {
-        let r: MessagesUpdateTypeRequest = res.locals.request;
+        const r: MessagesUpdateTypeRequest = res.locals.request;
 
-        let sql = `UPDATE ${table} SET ${r.updateStr()} WHERE device_id = ${db.escape(Number(r.device_id))} AND ${r.whereAccount()}`;
+        const sql = `UPDATE ${table} SET ${r.updateStr()} WHERE device_id = ${db.escape(Number(r.device_id))} AND ${r.whereAccount()}`;
 
         await db.query(sql);
         
         res.json(new BaseResponse);
 
-        let payload = new MessagesPayloads.update_message_type(
+        const payload = new MessagesPayloads.update_message_type(
             String(r.device_id),
             String(r.message_type)
         )
@@ -143,15 +143,15 @@ router.route('/update_type/:device_id').post(
 router.route('/cleanup').post(
     (req, res, next) => MessagesCleanupRequest.handler(req, res, next), 
     asyncHandler(async (req, res, next) => {
-        let r: MessagesCleanupRequest = res.locals.request;
+        const r: MessagesCleanupRequest = res.locals.request;
 
-        let sql = `DELETE FROM ${table} WHERE timestamp < ${db.escape(Number(r.timestamp))} AND ${r.whereAccount()}`;
+        const sql = `DELETE FROM ${table} WHERE timestamp < ${db.escape(Number(r.timestamp))} AND ${r.whereAccount()}`;
 
         await db.query(sql);
 
         res.json(new BaseResponse);
 
-        let payload = new MessagesPayloads.cleanup_messages(
+        const payload = new MessagesPayloads.cleanup_messages(
             Number(r.timestamp)
         )
         
@@ -163,9 +163,9 @@ router.route('/cleanup').post(
 router.route('/forward_to_phone').post(
     (req, res, next) => MessagesForwardToPhoneRequest.handler(req, res, next), 
     function (req, res, next) {
-        let r: MessagesForwardToPhoneRequest = res.locals.request;
+        const r: MessagesForwardToPhoneRequest = res.locals.request;
         
-        let payload = new MessagesPayloads.forward_to_phone(
+        const payload = new MessagesPayloads.forward_to_phone(
             String(r.to),
             String(r.message),
             Number(r.sent_device),

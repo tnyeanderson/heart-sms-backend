@@ -5,9 +5,9 @@ import { DatabaseError } from '../models/responses/ErrorResponses.js';
 import util from '../utils/util.js';
 
 // Set to true to debug SQL queries during development
-let log_queries = false;
+const log_queries = false;
 
-let pool: pg.Pool  = new pg.Pool(connection());
+const pool: pg.Pool  = new pg.Pool(connection());
 
 class Query {
 
@@ -81,7 +81,7 @@ class Query {
      * Runs an SQL query with error handling and returns a promise with the result
      * 
      * @example
-     * let result = await db.query('SELECT 1`);
+     * const result = await db.query('SELECT 1`);
      * 
      * @param sql SQL query to execute
      */
@@ -94,7 +94,7 @@ class Query {
             const res = await pool.query(sql);
             return res.rows;
         } catch (err) {
-            let dbError = new DatabaseError;
+            const dbError = new DatabaseError;
             console.log(err);
             throw dbError;
         }
@@ -104,7 +104,7 @@ class Query {
      * Runs an SQL query within a transaction that automatically rolls back upon error
      * 
      * @example
-     * let result = await db.transaction('SELECT col_that_does_not_exist');
+     * const result = await db.transaction('SELECT col_that_does_not_exist');
      * 
      * @param sql SQL query to execute within a transaction
      */
@@ -112,7 +112,7 @@ class Query {
         await this.query('BEGIN');
         
         try {
-            let rows = await this.query(sql);
+            const rows = await this.query(sql);
             await this.query('COMMIT');
             return rows;
         } catch (err) {
@@ -127,10 +127,10 @@ class Query {
      * @param fields An array of strings representing column names (and optional aliases) in the database
      */
     static selectFields (fields: string[]) {
-        let out: string[] = [];
+        const out: string[] = [];
         
         fields.forEach(field => {
-            let parts = field.split(" AS ");
+            const parts = field.split(" AS ");
             let fieldstr = Query.escapeId(parts[0]);
             
             if (parts.length === 2) {
@@ -146,7 +146,7 @@ class Query {
     }
 
     static insertQueries (table: string, items: any | any[]) {
-        let queries = items.map((item: any) => {
+        const queries = items.map((item: any) => {
             return `INSERT INTO ${table} ${this.insertStr(item)}`;
         })
         
@@ -159,8 +159,8 @@ class Query {
      * @param toInsert An array of objects (items to insert) with the following structure: {col1: val1, col2: val2}
      */
     static insertStr (toInsert: any | any[]) {
-        let cols: string[] = [];
-        let vals: any[] = [];
+        const cols: string[] = [];
+        const vals: any[] = [];
         let out = "";
 
         // If toInsert is not an array, make it one
@@ -176,7 +176,7 @@ class Query {
         // For each item to insert, push to vals
         toInsert.forEach((item: any) => {
             // Stores each item's list of values
-            let val: string[] = [];
+            const val: string[] = [];
 
             Object.keys(item).forEach(key => {
                 if (key == 'account_id') {
@@ -196,7 +196,7 @@ class Query {
         // i.e. (`col1`, `col2`) VALUES 
         out += " (" + cols.join(", ") + ") VALUES ";
 
-        let valStr: string[] = [];
+        const valStr: string[] = [];
         vals.forEach((val: string[]) => {
             // Push each item's values to the values string
             // i.e. - (val1, val2)
@@ -218,7 +218,7 @@ class Query {
      * @param toUpdate Object with the following structure: {col1: val1, col2: val2}
      */
     static updateStr (toUpdate: any) {
-        let out: any[] = [];
+        const out: any[] = [];
         
         // Loop through the keys in the 
         Object.keys(toUpdate).forEach((key: string) => {
@@ -240,7 +240,7 @@ class Query {
      * @param toEscape Array of values to escape
      */
     static escapeAll (toEscape: any) {
-        let out: any[] = [];
+        const out: any[] = [];
 
         toEscape.forEach((item: any) => {
             out.push(Query.escape(item));

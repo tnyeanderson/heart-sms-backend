@@ -14,13 +14,13 @@ const table = "Folders"
 router.route('/').get(
     (req, res, next) => AccountIdRequest.handler(req, res, next), 
     asyncHandler(async (req, res, next) => {
-        let r: AccountIdRequest = res.locals.request;
+        const r: AccountIdRequest = res.locals.request;
         
-        let fields = ['session_id AS account_id', 'id', 'device_id', 'name', 'color', 'color_dark', 'color_light', 'color_accent'];
+        const fields = ['session_id AS account_id', 'id', 'device_id', 'name', 'color', 'color_dark', 'color_light', 'color_accent'];
 
-        let sql = `SELECT ${db.selectFields(fields)} FROM ${table} INNER JOIN SessionMap USING (account_id) WHERE ${r.whereAccount()} ${db.newestFirst(table)}`;
+        const sql = `SELECT ${db.selectFields(fields)} FROM ${table} INNER JOIN SessionMap USING (account_id) WHERE ${r.whereAccount()} ${db.newestFirst(table)}`;
 
-        let result = await db.query(sql);
+        const result = await db.query(sql);
             
         res.json(FoldersListResponse.getList(result));
     }));
@@ -29,14 +29,14 @@ router.route('/').get(
 router.route('/add').post(
     (req, res, next) => FoldersAddRequest.handler(req, res, next), 
     asyncHandler(async (req, res, next) => {
-        let r: FoldersAddRequest = res.locals.request;
+        const r: FoldersAddRequest = res.locals.request;
         
-        let items = r.folders.map((item) => {
+        const items = r.folders.map((item) => {
             return Object.assign({ account_id: r.account_id }, item,);
         });
 
         // Generate a query for each item
-        let sql = db.insertQueries(table, items);
+        const sql = db.insertQueries(table, items);
 
         await db.transaction(sql);
 
@@ -44,7 +44,7 @@ router.route('/add').post(
 
         // Send websocket message
         items.forEach(function (item) {
-            let payload = new FoldersPayloads.added_folder(
+            const payload = new FoldersPayloads.added_folder(
                 item.device_id,
                 item.name,
                 item.color,
@@ -62,16 +62,16 @@ router.route('/add').post(
 router.route('/remove/:device_id').post(
     (req, res, next) => DeviceIdRequest.handler(req, res, next), 
     asyncHandler(async (req, res, next) => {
-        let r: DeviceIdRequest = res.locals.request;
+        const r: DeviceIdRequest = res.locals.request;
         
         // Delete the folder
-        let sql = `DELETE FROM ${table} WHERE device_id = ${db.escape(Number(r.device_id))} AND ${r.whereAccount()}`;
+        const sql = `DELETE FROM ${table} WHERE device_id = ${db.escape(Number(r.device_id))} AND ${r.whereAccount()}`;
         
         await db.query(sql);
 
         res.json(new BaseResponse);
 
-        let payload = new FoldersPayloads.removed_folder(
+        const payload = new FoldersPayloads.removed_folder(
             Number(r.device_id)
         );
         
@@ -83,15 +83,15 @@ router.route('/remove/:device_id').post(
 router.route('/update/:device_id').post(
     (req, res, next) => FoldersUpdateRequest.handler(req, res, next), 
     asyncHandler(async (req, res, next) => {
-        let r: FoldersUpdateRequest = res.locals.request;
+        const r: FoldersUpdateRequest = res.locals.request;
 
-        let sql = `UPDATE ${table} SET ${r.updateStr()} WHERE device_id = ${db.escape(Number(r.device_id))} AND ${r.whereAccount()}`;
+        const sql = `UPDATE ${table} SET ${r.updateStr()} WHERE device_id = ${db.escape(Number(r.device_id))} AND ${r.whereAccount()}`;
 
         await db.query(sql);
 
         res.json(new BaseResponse);
 
-        let payload = new FoldersPayloads.updated_folder(
+        const payload = new FoldersPayloads.updated_folder(
             Number(r.device_id),
             r.name,
             r.color,

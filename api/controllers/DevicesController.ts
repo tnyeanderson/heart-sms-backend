@@ -14,13 +14,13 @@ const table = "Devices"
 router.route('/').get(
     (req, res, next) => AccountIdRequest.handler(req, res, next), 
     asyncHandler(async (req, res, next) => {
-        let r: AccountIdRequest = res.locals.request;
+        const r: AccountIdRequest = res.locals.request;
         
-        let fields = ['session_id AS account_id', 'device_id AS id', 'info', 'name', 'primary', 'fcm_token', 'ios'];
+        const fields = ['session_id AS account_id', 'device_id AS id', 'info', 'name', 'primary', 'fcm_token', 'ios'];
 
-        let sql = `SELECT ${db.selectFields(fields)} FROM ${table} INNER JOIN SessionMap USING (account_id) WHERE ${r.whereAccount()}`;
+        const sql = `SELECT ${db.selectFields(fields)} FROM ${table} INNER JOIN SessionMap USING (account_id) WHERE ${r.whereAccount()}`;
         
-        let result = await db.query(sql);
+        const result = await db.query(sql);
             
         res.json(DevicesListResponse.getList(result));
     }));
@@ -29,9 +29,9 @@ router.route('/').get(
 router.route('/add').post(
     (req, res, next) => DevicesAddRequest.handler(req, res, next), 
     asyncHandler(async (req, res, next) => {
-        let r: DevicesAddRequest = res.locals.request;
+        const r: DevicesAddRequest = res.locals.request;
 
-        let toInsert = {
+        const toInsert = {
             account_id: r.account_id,
             device_id: r.device.id,
             info: r.device.info,
@@ -40,7 +40,7 @@ router.route('/add').post(
             fcm_token: r.device.fcm_token
         };
 
-        let sql = `INSERT INTO ${table} ${db.insertStr(toInsert)}`;
+        const sql = `INSERT INTO ${table} ${db.insertStr(toInsert)}`;
 
         await db.query(sql);
             
@@ -51,10 +51,10 @@ router.route('/add').post(
 router.route('/remove/:id').post(
     (req, res, next) => DevicesRemoveRequest.handler(req, res, next), 
     asyncHandler(async (req, res, next) => {
-        let r: DevicesRemoveRequest = res.locals.request;
+        const r: DevicesRemoveRequest = res.locals.request;
 
         // Remove the device
-        let sql = `DELETE FROM ${table} WHERE device_id = ${db.escape(Number(r.id))} AND ${r.whereAccount()}`;
+        const sql = `DELETE FROM ${table} WHERE device_id = ${db.escape(Number(r.id))} AND ${r.whereAccount()}`;
         
         await db.query(sql);
             
@@ -65,9 +65,9 @@ router.route('/remove/:id').post(
 router.route('/update/:id').post(
     (req, res, next) => DevicesUpdateRequest.handler(req, res, next), 
     asyncHandler(async (req, res, next) => {
-        let r: DevicesUpdateRequest = res.locals.request;
+        const r: DevicesUpdateRequest = res.locals.request;
 
-        let sql = `UPDATE ${table} SET ${r.updateStr()} WHERE device_id = ${db.escape(Number(r.id))} AND ${r.whereAccount()}`;
+        const sql = `UPDATE ${table} SET ${r.updateStr()} WHERE device_id = ${db.escape(Number(r.id))} AND ${r.whereAccount()}`;
 
         await db.query(sql);
         
@@ -78,16 +78,16 @@ router.route('/update/:id').post(
 router.route('/update_primary').post(
     (req, res, next) => DevicesUpdatePrimaryRequest.handler(req, res, next), 
     asyncHandler(async (req, res, next) => {
-        let r: DevicesUpdatePrimaryRequest = res.locals.request;
+        const r: DevicesUpdatePrimaryRequest = res.locals.request;
         
         // Calls the MYSQL stored procedure
-        let sql = `CALL UpdatePrimaryDevice( ${db.escape(r.account_id)} , ${db.escape(Number(r.new_primary_device_id))} )`;
+        const sql = `CALL UpdatePrimaryDevice( ${db.escape(r.account_id)} , ${db.escape(Number(r.new_primary_device_id))} )`;
         
         await db.query(sql);
             
         res.json(new BaseResponse);
 
-        let payload = new DevicesPayloads.update_primary_device(
+        const payload = new DevicesPayloads.update_primary_device(
             String(r.new_primary_device_id)
         );
         

@@ -41,8 +41,8 @@ export class DevicesAddRequest extends AccountIdRequest {
      * @param req 
      */
     static validate(req: Request) {
-        let prop = 'device';
-        let item = req.body[prop];
+        const prop = 'device';
+        const item = req.body[prop];
 
         if (!item || item === {}) {
             throw new MissingParamError(prop);
@@ -91,9 +91,8 @@ export class DevicesUpdateRequest extends UpdateRequest {
     }
 
     toUpdate() {
-        let {account_id, id, ...out} = this;
-        out = Object.assign({ device_id: id }, out);
-        return out;
+        const {account_id, id, ...out} = this;
+        return Object.assign({ device_id: id }, out);
     }
 }
 

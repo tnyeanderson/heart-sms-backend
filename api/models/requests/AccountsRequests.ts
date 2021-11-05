@@ -47,12 +47,12 @@ export class SignupRequest extends BaseRequest {
      */
     static async checkDuplicateUser (req: Request, res: Response, next: NextFunction) {
         // res.locals.request is set from .handler()
-        let r = res.locals.request;
+        const r = res.locals.request;
 
-        let sql = `SELECT username FROM Accounts WHERE username = ${db.escape(r.name)}`;
+        const sql = `SELECT username FROM Accounts WHERE username = ${db.escape(r.name)}`;
     
         // Don't do the work to hash the password if the user already exists
-        let result = await db.query(sql);
+        const result = await db.query(sql);
 
         if (result[0] && result[0].username === r.name) {
             // User exists
@@ -133,11 +133,11 @@ export class UpdateSettingRequest extends AccountIdRequest {
     static validate (req: Request) {
         super.validate(req);
 
-        let toValidate = Object.assign(req.query, req.body, req.params)
-        let v = toValidate.value;
+        const toValidate = Object.assign(req.query, req.body, req.params)
+        const v = toValidate.value;
 
-        let expectedType = toValidate.type;
-        let uncastedType = typeof v;
+        const expectedType = toValidate.type;
+        const uncastedType = typeof v;
         
         if ( ! ['string', 'number', 'boolean'].includes(uncastedType) ) {
             throw new ParamTypeError('value');
@@ -162,6 +162,7 @@ export class UpdateSettingRequest extends AccountIdRequest {
                 )) {
                     throw new ParamTypeError('value')
                 }
+                break;
             default:
                 // the rest are cast as strings and work no matter what
                 break;

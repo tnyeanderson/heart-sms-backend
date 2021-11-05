@@ -20,25 +20,25 @@ router.route('/').get(function (req, res, next) {
 router.route('/login').post(
     (req, res, next) => LoginRequest.handler(req, res, next), 
     asyncHandler(async (req, res, next) => {
-        let r: LoginRequest = res.locals.request;
+        const r: LoginRequest = res.locals.request;
 
-        let fields = ['account_id', 'session_id', 'password_hash', 'real_name AS name', 'salt1', 'salt2', 'phone_number', 
+        const fields = ['account_id', 'session_id', 'password_hash', 'real_name AS name', 'salt1', 'salt2', 'phone_number', 
                       'base_theme', 'passcode', 'rounder_bubbles', 'use_global_theme', 'apply_primary_color_toolbar', 
                       'conversation_categories', 'color', 'color_dark', 'color_light', 'color_accent', 'global_color_theme', 
                       'message_timestamp', 'subscription_type', 'subscription_expiration'];
         
-        let sql = `SELECT ${db.selectFields(fields)} FROM Accounts INNER JOIN SessionMap USING (account_id) INNER JOIN Settings USING (account_id) WHERE username = ${db.escape(r.username)} LIMIT 1`;
+        const sql = `SELECT ${db.selectFields(fields)} FROM Accounts INNER JOIN SessionMap USING (account_id) INNER JOIN Settings USING (account_id) WHERE username = ${db.escape(r.username)} LIMIT 1`;
 
-        let result = await db.query(sql);
+        const result = await db.query(sql);
 
         if (!result[0]) {
             return next(new AuthError);
         }
 
-        let testHash = await hashPassword(r.password, result[0].salt1);
+        const testHash = await hashPassword(r.password, result[0].salt1);
 
         if (testHash.length && result[0].password_hash == testHash) {
-            let response = AccountsResponses.LoginResponse.fromResult(result);
+            const response = AccountsResponses.LoginResponse.fromResult(result);
             res.json(response);
         } else {
             return next(new AuthError);
@@ -51,16 +51,16 @@ router.route('/signup').post(
     (req, res, next) => SignupRequest.checkAllowedUser(req, res, next), 
     asyncHandler(SignupRequest.checkDuplicateUser),
     asyncHandler(async (req, res, next) => {
-        let r: SignupRequest = res.locals.request;
+        const r: SignupRequest = res.locals.request;
 
         // Generate 64-character account id and salts
-        let account_id = util.createAccountId();
-        let salt1 = crypto.randomBytes(64).toString('hex');
-        let salt2 = crypto.randomBytes(64).toString('hex');
+        const account_id = util.createAccountId();
+        const salt1 = crypto.randomBytes(64).toString('hex');
+        const salt2 = crypto.randomBytes(64).toString('hex');
 
-        let passwordHash = await hashPassword(r.password, salt1);
+        const passwordHash = await hashPassword(r.password, salt1);
 
-        let values = [
+        const values = [
             account_id,
             r.name,
             passwordHash,
@@ -70,9 +70,9 @@ router.route('/signup').post(
             r.phone_number
         ];
 
-        let sql = `CALL CreateAccount( ${db.escapeAll(values)} )`;
+        const sql = `CALL CreateAccount( ${db.escapeAll(values)} )`;
 
-        let result = await db.query(sql);
+        const result = await db.query(sql);
 
         if (result[1] && result[1].affectedRows === 0 && result[0][0].error) {
             // user already exists, or some other error during the stored procedure
@@ -88,13 +88,13 @@ router.route('/signup').post(
 router.route('/remove_account').post(
     (req, res, next) => AccountIdRequest.handler(req, res, next), 
     asyncHandler(async (req, res, next) => {
-        let r: AccountIdRequest = res.locals.request;
+        const r: AccountIdRequest = res.locals.request;
         
-        let sql = `DELETE FROM Accounts WHERE ${r.whereAccount()}`;
+        const sql = `DELETE FROM Accounts WHERE ${r.whereAccount()}`;
 
         await db.query(sql);
         
-        let payload = new AccountsPayloads.removed_account(
+        const payload = new AccountsPayloads.removed_account(
             r.account_id
         );
         
@@ -108,20 +108,20 @@ router.route('/remove_account').post(
 router.route('/count').get(
     (req, res, next) => AccountIdRequest.handler(req, res, next), 
     asyncHandler(async (req, res, next) => {
-        let r: AccountIdRequest = res.locals.request;
+        const r: AccountIdRequest = res.locals.request;
         
-        let fields = ["device_count", "message_count", "conversation_count", "draft_count", "scheduled_count", "blacklist_count", "contact_count", "template_count", "folder_count", "auto_reply_count"];
+        const fields = ["device_count", "message_count", "conversation_count", "draft_count", "scheduled_count", "blacklist_count", "contact_count", "template_count", "folder_count", "auto_reply_count"];
 
-        let sql = `SELECT ${db.selectFields(fields)} from CountsView where ${r.whereAccount()}`;
+        const sql = `SELECT ${db.selectFields(fields)} from CountsView where ${r.whereAccount()}`;
 
-        let result = await db.query(sql);
+        const result = await db.query(sql);
 
         // If the account doesn't exist (and response is null), return an empty object
         if (!result || (Array.isArray(result) && result.length === 0)) {
             return res.json({});
         }
         
-        let response = AccountsResponses.CountResponse.fromResult(result);
+        const response = AccountsResponses.CountResponse.fromResult(result);
 
         res.json(response);
     }));
@@ -129,14 +129,14 @@ router.route('/count').get(
 router.route('/clean_account').post(
     (req, res, next) => AccountIdRequest.handler(req, res, next), 
     asyncHandler(async (req, res, next) => {
-        let r: AccountIdRequest = res.locals.request;
+        const r: AccountIdRequest = res.locals.request;
         
         // Calls the "CleanAccount" mysql stored procedure
-        let sql = `CALL CleanAccount( ${db.escape(r.account_id)} )`;
+        const sql = `CALL CleanAccount( ${db.escape(r.account_id)} )`;
         
         await db.query(sql);
 
-        let payload = new AccountsPayloads.cleaned_account(
+        const payload = new AccountsPayloads.cleaned_account(
             r.account_id
         );
         
@@ -149,15 +149,15 @@ router.route('/clean_account').post(
 router.route('/settings').get(
     (req, res, next) => AccountIdRequest.handler(req, res, next), 
     asyncHandler(async (req, res, next) => {
-        let r: AccountIdRequest = res.locals.request;
+        const r: AccountIdRequest = res.locals.request;
         
-        let fields = ["base_theme", "global_color_theme", "rounder_bubbles", "color", "color_dark", "color_light", "color_accent", "use_global_theme", "apply_primary_color_toolbar", "passcode", "subscription_type", "message_timestamp", "conversation_categories"];
+        const fields = ["base_theme", "global_color_theme", "rounder_bubbles", "color", "color_dark", "color_light", "color_accent", "use_global_theme", "apply_primary_color_toolbar", "passcode", "subscription_type", "message_timestamp", "conversation_categories"];
         
-        let sql = `SELECT ${db.selectFields(fields)} FROM Settings WHERE ${r.whereAccount()} LIMIT 1`;
+        const sql = `SELECT ${db.selectFields(fields)} FROM Settings WHERE ${r.whereAccount()} LIMIT 1`;
         
-        let result = await db.query(sql);
+        const result = await db.query(sql);
         
-        let response = AccountsResponses.SettingsResponse.fromResult(result);
+        const response = AccountsResponses.SettingsResponse.fromResult(result);
         
         res.json(response);
     }));
@@ -166,9 +166,9 @@ router.route('/settings').get(
 router.route('/dismissed_notification').post(
     (req, res, next) => DismissedNotificationRequest.handler(req, res, next),
     function (req, res, next) {
-        let r: DismissedNotificationRequest = res.locals.request;
+        const r: DismissedNotificationRequest = res.locals.request;
 
-        let payload = new AccountsPayloads.dismissed_notification(
+        const payload = new AccountsPayloads.dismissed_notification(
             r.id,
             r.device_id
         );
@@ -191,9 +191,9 @@ router.route('/update_subscription').post(
 router.route('/update_setting').post(
     (req, res, next) => UpdateSettingRequest.handler(req, res, next), 
     asyncHandler(async (req, res, next) => {
-        let r: UpdateSettingRequest = res.locals.request;
+        const r: UpdateSettingRequest = res.locals.request;
         
-        let castedValue: any;
+        let castedValue: number | string | boolean;
         
         // Use the "type" property in the request to cast the "value"
         switch(r.type) {
@@ -210,11 +210,11 @@ router.route('/update_setting').post(
                 break;
         }
 
-        let sql = `UPDATE Settings SET ${db.escapeId(r.pref)} = ${db.escape(castedValue)} WHERE ${r.whereAccount()}`;
+        const sql = `UPDATE Settings SET ${db.escapeId(r.pref)} = ${db.escape(castedValue)} WHERE ${r.whereAccount()}`;
 
         await db.query(sql);
 
-        let payload = new AccountsPayloads.update_setting(
+        const payload = new AccountsPayloads.update_setting(
             r.pref,
             r.type,
             castedValue

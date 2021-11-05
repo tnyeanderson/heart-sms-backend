@@ -1,5 +1,5 @@
 import cors from 'cors';
-import express, { json, NextFunction, Request, Response, Router } from 'express';
+import express, { json, NextFunction, Request, Response } from 'express';
 import 'reflect-metadata';
 
 
@@ -72,7 +72,7 @@ app.use((req: Request, res: Response, next) => {
 // Error handling
 app.use((err: ErrorResponse, req: Request, res: Response, next: NextFunction) => {
     // If err.msg is set, use that. Otherwise generate a generic error
-    let message: BaseError = err.msg || new BaseError('unexpected error');
+    const message: BaseError = err.msg || new BaseError('unexpected error');
     
     // Log the error
     console.log(`\n ${JSON.stringify(message)} \n`);

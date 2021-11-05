@@ -3,12 +3,12 @@ import util from "./util.js";
 /**
  * The length of the splashText lines
  */
-let splashLineLength = 58;
+const splashLineLength = 58;
 
 /**
  * Nice lil graphic
  */
-let splashText = String.raw`
+const splashText = String.raw`
       _   _      _                     _        _   _     
     /   V   \   | |                   | |     /   V   \   
     |       |   | |__   ___  ____ ____| |_    |       |   

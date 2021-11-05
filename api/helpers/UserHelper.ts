@@ -7,7 +7,7 @@ class UserHelper {
      */
     constructor () {
         // The comma delimited string of allowed users from the environment variable
-        let allowedStr = process.env.HEART_ALLOWED_USERS || null;
+        const allowedStr = process.env.HEART_ALLOWED_USERS || null;
 
         if (allowedStr === null) {
             console.log("HEART_ALLOWED_USERS is not set. Signups will not be permitted.");

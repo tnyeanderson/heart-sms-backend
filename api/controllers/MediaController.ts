@@ -10,9 +10,9 @@ const router = express.Router();
 router.route('/add').post(
     (req, res, next) => MediaAddRequest.handler(req, res, next), 
     asyncHandler(async (req, res, next) => {
-        let r: MediaAddRequest = res.locals.request;
+        const r: MediaAddRequest = res.locals.request;
 
-        let sql = `INSERT INTO Media ${db.insertStr([r])}`;
+        const sql = `INSERT INTO Media ${db.insertStr([r])}`;
 
         await db.query(sql);
             
@@ -22,11 +22,11 @@ router.route('/add').post(
 router.route('/:message_id').get(
     (req, res, next) => MediaGetRequest.handler(req, res, next), 
     asyncHandler(async (req, res, next) => {
-        let r: MediaGetRequest = res.locals.request;
+        const r: MediaGetRequest = res.locals.request;
         
-        let sql = `SELECT * FROM Media WHERE message_id = ${db.escape(Number(r.message_id))} AND ${r.whereAccount()} LIMIT 1`;
+        const sql = `SELECT * FROM Media WHERE message_id = ${db.escape(Number(r.message_id))} AND ${r.whereAccount()} LIMIT 1`;
 
-        let result = await db.query(sql);
+        const result = await db.query(sql);
             
         res.json(MediaGetResponse.fromResult(result));
     }));

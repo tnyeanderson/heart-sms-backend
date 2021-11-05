@@ -21,7 +21,7 @@ function allow (res: Response) {
 router.route('/login').post(
     (req, res, next) => MQTTLoginRequest.handler(req, res, next),
     asyncHandler(async (req, res, next) => {
-        let r: MQTTLoginRequest = res.locals.request;
+        const r: MQTTLoginRequest = res.locals.request;
 
         // This is called by mosquitto-go-auth to authenticate the user for messaging
         // It just sends a different result from the /accounts/login endpoint
@@ -31,9 +31,9 @@ router.route('/login').post(
             return allow(res);
         }
 
-        let sql = `SELECT ${db.escapeId('session_id')} FROM Accounts INNER JOIN SessionMap USING (account_id) WHERE username = ${db.escape(r.username)} LIMIT 1`;
+        const sql = `SELECT ${db.escapeId('session_id')} FROM Accounts INNER JOIN SessionMap USING (account_id) WHERE username = ${db.escape(r.username)} LIMIT 1`;
 
-        let result = await db.query(sql);
+        const result = await db.query(sql);
 
         if (!result[0]) {
             return deny(res);
@@ -50,7 +50,7 @@ router.route('/login').post(
 router.route('/acl').post(
     (req, res, next) => MQTTAclRequest.handler(req, res, next),
     asyncHandler(async (req, res, next) => {
-        let r: MQTTAclRequest = res.locals.request;
+        const r: MQTTAclRequest = res.locals.request;
 
         // Since we control auth, always accept our own requests
         if (r.username === 'heart-sms-backend') {
@@ -58,9 +58,9 @@ router.route('/acl').post(
             return;
         }
 
-        let sql = `SELECT ${db.escapeId('session_id')} FROM Accounts INNER JOIN SessionMap USING (account_id) WHERE username = ${db.escape(r.username)} LIMIT 1`;
+        const sql = `SELECT ${db.escapeId('session_id')} FROM Accounts INNER JOIN SessionMap USING (account_id) WHERE username = ${db.escape(r.username)} LIMIT 1`;
 
-        let result = await db.query(sql);
+        const result = await db.query(sql);
 
         if (!result[0]) {
             deny(res);

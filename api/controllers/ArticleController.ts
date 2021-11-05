@@ -8,7 +8,7 @@ const router = express.Router();
 router.route('/').get(
     (req, res, next) => ArticleRequest.handler(req, res, next),
     function (req, res, next) {
-        let r: ArticleRequest = res.locals.request;
+        const r: ArticleRequest = res.locals.request;
 
         Mercury.parse(r.url).then(result => {
             res.json(ArticleResponse.fromResult([result]));

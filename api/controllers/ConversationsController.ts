@@ -11,7 +11,7 @@ const router = express.Router();
 
 const table = 'Conversations'
 
-let fields = ['session_id AS account_id', 'id', 'device_id', 'folder_id', 
+const fields = ['session_id AS account_id', 'id', 'device_id', 'folder_id', 
             'color', 'color_dark', 'color_light', 'color_accent', 'led_color', 
             'pinned', 'read', 'timestamp', 'title', 'phone_numbers', 'snippet', 
             'ringtone', 'image_uri', 'id_matcher', 'mute', 'archive', 'private_notifications'];
@@ -21,11 +21,11 @@ const notInFolder = " (folder_id IS NULL OR folder_id < 0) ";
 router.route('/').get(
     (req, res, next) => LimitOffsetRequest.handler(req, res, next), 
     asyncHandler(async (req, res, next) => {
-        let r: LimitOffsetRequest = res.locals.request;
+        const r: LimitOffsetRequest = res.locals.request;
         
-        let sql = `SELECT ${db.selectFields(fields)} FROM ${table} INNER JOIN SessionMap USING (account_id) WHERE ${r.whereAccount()} ORDER BY timestamp DESC ${r.limitStr()}`;
+        const sql = `SELECT ${db.selectFields(fields)} FROM ${table} INNER JOIN SessionMap USING (account_id) WHERE ${r.whereAccount()} ORDER BY timestamp DESC ${r.limitStr()}`;
 
-        let result = await db.query(sql);
+        const result = await db.query(sql);
             
         res.json(ConversationsListResponse.getList(result));
     }));
@@ -34,11 +34,11 @@ router.route('/').get(
 router.route('/index_archived').get(
     (req, res, next) => LimitOffsetRequest.handler(req, res, next), 
     asyncHandler(async (req, res, next) => {
-        let r: LimitOffsetRequest = res.locals.request;
+        const r: LimitOffsetRequest = res.locals.request;
         
-        let sql = `SELECT ${db.selectFields(fields)} FROM ${table} INNER JOIN SessionMap USING (account_id) WHERE archive = true AND ${notInFolder} AND ${r.whereAccount()} ORDER BY timestamp DESC ${r.limitStr()}`;
+        const sql = `SELECT ${db.selectFields(fields)} FROM ${table} INNER JOIN SessionMap USING (account_id) WHERE archive = true AND ${notInFolder} AND ${r.whereAccount()} ORDER BY timestamp DESC ${r.limitStr()}`;
 
-        let result = await db.query(sql);
+        const result = await db.query(sql);
             
         res.json(ConversationsListResponse.getList(result));
     }));
@@ -47,11 +47,11 @@ router.route('/index_archived').get(
 router.route('/index_private').get(
     (req, res, next) => LimitOffsetRequest.handler(req, res, next), 
     asyncHandler(async (req, res, next) => {
-        let r: LimitOffsetRequest = res.locals.request;
+        const r: LimitOffsetRequest = res.locals.request;
         
-        let sql = `SELECT ${db.selectFields(fields)} FROM ${table} INNER JOIN SessionMap USING (account_id) WHERE private_notifications = true AND ${notInFolder} AND ${r.whereAccount()} ORDER BY timestamp DESC ${r.limitStr()}`;
+        const sql = `SELECT ${db.selectFields(fields)} FROM ${table} INNER JOIN SessionMap USING (account_id) WHERE private_notifications = true AND ${notInFolder} AND ${r.whereAccount()} ORDER BY timestamp DESC ${r.limitStr()}`;
 
-        let result = await db.query(sql);
+        const result = await db.query(sql);
             
         res.json(ConversationsListResponse.getList(result));
     }));
@@ -60,11 +60,11 @@ router.route('/index_private').get(
 router.route('/index_public_unarchived').get(
     (req, res, next) => LimitOffsetRequest.handler(req, res, next), 
     asyncHandler(async (req, res, next) => {
-        let r: LimitOffsetRequest = res.locals.request;
+        const r: LimitOffsetRequest = res.locals.request;
         
-        let sql = `SELECT ${db.selectFields(fields)} FROM ${table} INNER JOIN SessionMap USING (account_id) WHERE archive = false AND private_notifications = false AND ${r.whereAccount()} ORDER BY timestamp DESC ${r.limitStr()}`;
+        const sql = `SELECT ${db.selectFields(fields)} FROM ${table} INNER JOIN SessionMap USING (account_id) WHERE archive = false AND private_notifications = false AND ${r.whereAccount()} ORDER BY timestamp DESC ${r.limitStr()}`;
 
-        let result = await db.query(sql);
+        const result = await db.query(sql);
             
         res.json(ConversationsListResponse.getList(result));
     }));
@@ -73,11 +73,11 @@ router.route('/index_public_unarchived').get(
 router.route('/index_public_unread').get(
     (req, res, next) => LimitOffsetRequest.handler(req, res, next), 
     asyncHandler(async (req, res, next) => {
-        let r: LimitOffsetRequest = res.locals.request;
+        const r: LimitOffsetRequest = res.locals.request;
         
-        let sql = `SELECT ${db.selectFields(fields)} FROM ${table} INNER JOIN SessionMap USING (account_id) WHERE ${db.escapeId("read")} = false AND private_notifications = false AND ${r.whereAccount()} ORDER BY timestamp DESC ${r.limitStr()}`;
+        const sql = `SELECT ${db.selectFields(fields)} FROM ${table} INNER JOIN SessionMap USING (account_id) WHERE ${db.escapeId("read")} = false AND private_notifications = false AND ${r.whereAccount()} ORDER BY timestamp DESC ${r.limitStr()}`;
 
-        let result = await db.query(sql);
+        const result = await db.query(sql);
             
         res.json(ConversationsListResponse.getList(result));
     }));
@@ -86,11 +86,11 @@ router.route('/index_public_unread').get(
 router.route('/:device_id').get(
     (req, res, next) => DeviceIdRequest.handler(req, res, next), 
     asyncHandler(async (req, res, next) => {
-        let r: DeviceIdRequest = res.locals.request;
+        const r: DeviceIdRequest = res.locals.request;
         
-        let sql = `SELECT ${db.selectFields(fields)} FROM ${table} INNER JOIN SessionMap USING (account_id) WHERE device_id = ${db.escape(Number(r.device_id))} AND ${r.whereAccount()} LIMIT 1`;
+        const sql = `SELECT ${db.selectFields(fields)} FROM ${table} INNER JOIN SessionMap USING (account_id) WHERE device_id = ${db.escape(Number(r.device_id))} AND ${r.whereAccount()} LIMIT 1`;
 
-        let result = await db.query(sql);
+        const result = await db.query(sql);
             
         res.json(ConversationsListResponse.fromResult(result));
     }));
@@ -99,11 +99,11 @@ router.route('/:device_id').get(
 router.route('/folder/:folder_id').get(
     (req, res, next) => ConversationsFolderRequest.handler(req, res, next), 
     asyncHandler(async (req, res, next) => {
-        let r: ConversationsFolderRequest = res.locals.request;
+        const r: ConversationsFolderRequest = res.locals.request;
         
-        let sql = `SELECT ${db.selectFields(fields)} FROM ${table} INNER JOIN SessionMap USING (account_id) WHERE folder_id = ${db.escape(Number(r.folder_id))} AND ${r.whereAccount()}`;
+        const sql = `SELECT ${db.selectFields(fields)} FROM ${table} INNER JOIN SessionMap USING (account_id) WHERE folder_id = ${db.escape(Number(r.folder_id))} AND ${r.whereAccount()}`;
 
-        let result = await db.query(sql);
+        const result = await db.query(sql);
         
         res.json(ConversationsListResponse.getList(result));
     }));
@@ -112,14 +112,14 @@ router.route('/folder/:folder_id').get(
 router.route('/add').post(
     (req, res, next) => ConversationsAddRequest.handler(req, res, next), 
     asyncHandler(async (req, res, next) => {
-        let r: ConversationsAddRequest = res.locals.request;
+        const r: ConversationsAddRequest = res.locals.request;
         
-        let items = r.conversations.map((item) => {
+        const items = r.conversations.map((item) => {
             return Object.assign({ account_id: r.account_id }, item,);
         });
 
         // Generate a query for each item
-        let sql = db.insertQueries(table, items);
+        const sql = db.insertQueries(table, items);
 
         await db.transaction(sql);
 
@@ -127,7 +127,7 @@ router.route('/add').post(
 
         // Send websocket message
         items.forEach(function (item) {
-            let payload = new ConversationsPayloads.added_conversation(
+            const payload = new ConversationsPayloads.added_conversation(
                 item.device_id,
                 item.folder_id,
                 item.color,
@@ -157,17 +157,17 @@ router.route('/add').post(
 router.route('/update/:device_id').post(
     (req, res, next) => ConversationsUpdateRequest.handler(req, res, next),
     asyncHandler(async (req, res, next) => {
-        let r: ConversationsUpdateRequest = res.locals.request;
+        const r: ConversationsUpdateRequest = res.locals.request;
 
-        let payloadFields = ["device_id AS id", "color", "color_dark", "color_light", "color_accent", "led_color", "pinned", "read", "title", "snippet", "ringtone", "mute", "archive", "private_notifications"];
+        const payloadFields = ["device_id AS id", "color", "color_dark", "color_light", "color_accent", "led_color", "pinned", "read", "title", "snippet", "ringtone", "mute", "archive", "private_notifications"];
 
-        let sql = `UPDATE ${table} SET ${r.updateStr()} WHERE device_id = ${db.escape(Number(r.device_id))} AND ${r.whereAccount()} RETURNING ${db.selectFields(payloadFields)}`;
+        const sql = `UPDATE ${table} SET ${r.updateStr()} WHERE device_id = ${db.escape(Number(r.device_id))} AND ${r.whereAccount()} RETURNING ${db.selectFields(payloadFields)}`;
 
-        let result = await db.query(sql);
+        const result = await db.query(sql);
 
         res.json(new BaseResponse)
 
-        var payload = new ConversationsPayloads.updated_conversation(
+        const payload = new ConversationsPayloads.updated_conversation(
             result[0].id,
             result[0].color,
             result[0].color_dark,
@@ -191,17 +191,17 @@ router.route('/update/:device_id').post(
 router.route('/update_snippet/:device_id').post(
     (req, res, next) => ConversationsUpdateSnippetRequest.handler(req, res, next), 
     asyncHandler(async (req, res, next) => {
-        let r: ConversationsUpdateSnippetRequest = res.locals.request;
+        const r: ConversationsUpdateSnippetRequest = res.locals.request;
 
-        let payloadFields = ["device_id AS id", "read", "timestamp", "snippet", "archive"];
+        const payloadFields = ["device_id AS id", "read", "timestamp", "snippet", "archive"];
 
-        let sql = `UPDATE ${table} SET ${r.updateStr()} WHERE device_id = ${db.escape(Number(r.device_id))} AND ${r.whereAccount()} RETURNING ${db.selectFields(payloadFields)}`;
+        const sql = `UPDATE ${table} SET ${r.updateStr()} WHERE device_id = ${db.escape(Number(r.device_id))} AND ${r.whereAccount()} RETURNING ${db.selectFields(payloadFields)}`;
 
-        let result = await db.query(sql);
+        const result = await db.query(sql);
 
         res.json(new BaseResponse)
 
-        var payload = new ConversationsPayloads.update_conversation_snippet(
+        const payload = new ConversationsPayloads.update_conversation_snippet(
             result[0].id,
             result[0].read,
             result[0].timestamp,
@@ -216,16 +216,16 @@ router.route('/update_snippet/:device_id').post(
 router.route('/update_title/:device_id').post(
     (req, res, next) => ConversationsUpdateTitleRequest.handler(req, res, next), 
     asyncHandler(async (req, res, next) => {
-        let r: ConversationsUpdateTitleRequest = res.locals.request;
+        const r: ConversationsUpdateTitleRequest = res.locals.request;
 
-        let sql = `UPDATE ${table} SET ${r.updateStr()} WHERE device_id = ${db.escape(Number(r.device_id))} AND ${r.whereAccount()}`;
+        const sql = `UPDATE ${table} SET ${r.updateStr()} WHERE device_id = ${db.escape(Number(r.device_id))} AND ${r.whereAccount()}`;
 
-        let result = await db.query(sql);
+        const result = await db.query(sql);
             
         res.json(new BaseResponse)
 
         // Send websocket message
-        let payload = new ConversationsPayloads.update_conversation_title(
+        const payload = new ConversationsPayloads.update_conversation_title(
             Number(r.device_id),
             String(r.title)
         );
@@ -237,16 +237,16 @@ router.route('/update_title/:device_id').post(
 router.route('/remove/:device_id').post(
     (req, res, next) => DeviceIdRequest.handler(req, res, next), 
     asyncHandler(async (req, res, next) => {
-        let r: DeviceIdRequest = res.locals.request;
+        const r: DeviceIdRequest = res.locals.request;
         
-        let sql = `DELETE FROM ${table} WHERE device_id = ${db.escape(Number(r.device_id))} AND ${r.whereAccount()}`;
+        const sql = `DELETE FROM ${table} WHERE device_id = ${db.escape(Number(r.device_id))} AND ${r.whereAccount()}`;
 
         await db.query(sql);
 
         res.json(new BaseResponse)
 
         // Send websocket message
-        let payload = new ConversationsPayloads.removed_conversation(
+        const payload = new ConversationsPayloads.removed_conversation(
             Number(r.device_id)
         );
         
@@ -257,16 +257,16 @@ router.route('/remove/:device_id').post(
 router.route('/read/:device_id').post(
     (req, res, next) => ConversationsReadRequest.handler(req, res, next), 
     asyncHandler(async (req, res, next) => {
-        let r: ConversationsReadRequest = res.locals.request;
+        const r: ConversationsReadRequest = res.locals.request;
         
-        let sql = `UPDATE ${table} SET ${db.escapeId("read")} = true WHERE device_id = ${db.escape(Number(r.device_id))} AND ${r.whereAccount()}`;
+        const sql = `UPDATE ${table} SET ${db.escapeId("read")} = true WHERE device_id = ${db.escape(Number(r.device_id))} AND ${r.whereAccount()}`;
 
         await db.query(sql);
 
         res.json(new BaseResponse)
 
         // Send websocket message
-        let payload = new ConversationsPayloads.read_conversation(
+        const payload = new ConversationsPayloads.read_conversation(
             Number(r.device_id),
             // Don't cast to 'undefined' by accident
             (r.android_device) ? String(r.android_device) : undefined
@@ -279,16 +279,16 @@ router.route('/read/:device_id').post(
 router.route('/seen/:device_conversation_id').post(
     (req, res, next) => ConversationsSeenRequest.handler(req, res, next), 
     asyncHandler(async (req, res, next) => {
-        let r: ConversationsSeenRequest = res.locals.request
+        const r: ConversationsSeenRequest = res.locals.request
         
-        let sql = `UPDATE Messages SET seen = true WHERE device_conversation_id = ${db.escape(Number(r.device_conversation_id))} AND ${r.whereAccount()}`;
+        const sql = `UPDATE Messages SET seen = true WHERE device_conversation_id = ${db.escape(Number(r.device_conversation_id))} AND ${r.whereAccount()}`;
 
         await db.query(sql);
 
         res.json(new BaseResponse)
 
         // Send websocket message
-        let payload = new ConversationsPayloads.seen_conversation(
+        const payload = new ConversationsPayloads.seen_conversation(
             Number(r.device_conversation_id)
         );
         payload.send(r.account_id);
@@ -299,15 +299,15 @@ router.route('/seen/:device_conversation_id').post(
 router.route('/seen').post(
     (req, res, next) => AccountIdRequest.handler(req, res, next), 
     asyncHandler(async (req, res, next) => {
-        let r: AccountIdRequest = res.locals.request;
+        const r: AccountIdRequest = res.locals.request;
         
-        let sql = `UPDATE Messages SET seen = true WHERE ${r.whereAccount()}`;
+        const sql = `UPDATE Messages SET seen = true WHERE ${r.whereAccount()}`;
 
-        let result = await db.query(sql);
+        const result = await db.query(sql);
 
         res.json(new BaseResponse)
 
-        let payload = new ConversationsPayloads.seen_conversations();
+        const payload = new ConversationsPayloads.seen_conversations();
 
         // Send websocket message
         payload.send(r.account_id);
@@ -317,16 +317,16 @@ router.route('/seen').post(
 router.route('/archive/:device_id').post(
     (req, res, next) => DeviceIdRequest.handler(req, res, next), 
     asyncHandler(async (req, res, next) => {
-        let r: DeviceIdRequest = res.locals.request;
+        const r: DeviceIdRequest = res.locals.request;
         
-        let sql = `UPDATE ${table} SET archive = true, folder_id = -1 WHERE device_id = ${db.escape(Number(r.device_id))} AND ${r.whereAccount()}`;
+        const sql = `UPDATE ${table} SET archive = true, folder_id = -1 WHERE device_id = ${db.escape(Number(r.device_id))} AND ${r.whereAccount()}`;
 
         await db.query(sql);
 
         res.json(new BaseResponse)
 
         // Send websocket message
-        let payload = new ConversationsPayloads.archive_conversation(
+        const payload = new ConversationsPayloads.archive_conversation(
             Number(r.device_id),
             true
         );
@@ -338,16 +338,16 @@ router.route('/archive/:device_id').post(
 router.route('/unarchive/:device_id').post(
     (req, res, next) => DeviceIdRequest.handler(req, res, next), 
     asyncHandler(async (req, res, next) => {
-        let r: DeviceIdRequest = res.locals.request;
+        const r: DeviceIdRequest = res.locals.request;
         
-        let sql = `UPDATE ${table} SET archive = false, folder_id = -1 WHERE device_id = ${db.escape(Number(r.device_id))} AND ${r.whereAccount()}`;
+        const sql = `UPDATE ${table} SET archive = false, folder_id = -1 WHERE device_id = ${db.escape(Number(r.device_id))} AND ${r.whereAccount()}`;
 
         await db.query(sql);
 
         res.json(new BaseResponse)
 
         // Send websocket message
-        let payload = new ConversationsPayloads.archive_conversation(
+        const payload = new ConversationsPayloads.archive_conversation(
             Number(r.device_id),
             false
         );
@@ -359,16 +359,16 @@ router.route('/unarchive/:device_id').post(
 router.route('/add_to_folder/:device_id').post(
     (req, res, next) => ConversationsAddToFolderRequest.handler(req, res, next), 
     asyncHandler(async (req, res, next) => {
-        let r: ConversationsAddToFolderRequest = res.locals.request;
+        const r: ConversationsAddToFolderRequest = res.locals.request;
 
-        let sql = `UPDATE ${table} SET folder_id = ${db.escape(Number(r.folder_id))} WHERE device_id = ${db.escape(Number(r.device_id))} AND ${r.whereAccount()}`;
+        const sql = `UPDATE ${table} SET folder_id = ${db.escape(Number(r.folder_id))} WHERE device_id = ${db.escape(Number(r.device_id))} AND ${r.whereAccount()}`;
 
         await db.query(sql);
 
         res.json(new BaseResponse)
 
         // Send websocket message
-        let payload = new ConversationsPayloads.add_conversation_to_folder(
+        const payload = new ConversationsPayloads.add_conversation_to_folder(
             Number(r.device_id),
             Number(r.folder_id)
         );
@@ -380,16 +380,16 @@ router.route('/add_to_folder/:device_id').post(
 router.route('/remove_from_folder/:device_id').post(
     (req, res, next) => DeviceIdRequest.handler(req, res, next), 
     asyncHandler(async (req, res, next) => {
-        let r: DeviceIdRequest = res.locals.request;
+        const r: DeviceIdRequest = res.locals.request;
         
-        let sql = `UPDATE ${table} SET folder_id = -1 WHERE device_id = ${db.escape(Number(r.device_id))} AND ${r.whereAccount()}`;
+        const sql = `UPDATE ${table} SET folder_id = -1 WHERE device_id = ${db.escape(Number(r.device_id))} AND ${r.whereAccount()}`;
 
         await db.query(sql);
 
         res.json(new BaseResponse)
 
         // Send websocket message
-        let payload = new ConversationsPayloads.remove_conversation_from_folder(
+        const payload = new ConversationsPayloads.remove_conversation_from_folder(
             Number(r.device_id)
         );
         
@@ -400,15 +400,15 @@ router.route('/remove_from_folder/:device_id').post(
 router.route('/cleanup_messages').post(
     (req, res, next) => ConversationsCleanupMessagesRequest.handler(req, res, next), 
     asyncHandler(async (req, res, next) => {
-        let r: ConversationsCleanupMessagesRequest = res.locals.request;
+        const r: ConversationsCleanupMessagesRequest = res.locals.request;
     
-        let sql = `DELETE FROM Messages WHERE device_conversation_id = ${db.escape(Number(r.conversation_id))} AND timestamp < ${db.escape(Number(r.timestamp))} AND ${r.whereAccount()}`;
+        const sql = `DELETE FROM Messages WHERE device_conversation_id = ${db.escape(Number(r.conversation_id))} AND timestamp < ${db.escape(Number(r.timestamp))} AND ${r.whereAccount()}`;
 
         await db.query(sql);
 
         res.json(new BaseResponse)
         
-        let payload = new ConversationsPayloads.cleanup_conversation_messages(
+        const payload = new ConversationsPayloads.cleanup_conversation_messages(
             Number(r.timestamp),
             String(r.conversation_id)
         );
