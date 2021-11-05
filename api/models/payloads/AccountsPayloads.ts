@@ -19,7 +19,7 @@ export class update_setting extends BasePayload {
     constructor (
         public pref: string,
         public type: string,
-        public value: any
+        public value: unknown 
     ) { super() }
 }
 

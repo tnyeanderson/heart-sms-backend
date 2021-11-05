@@ -13,7 +13,7 @@ const table = "Folders"
 
 router.route('/').get(
     (req, res, next) => AccountIdRequest.handler(req, res, next), 
-    asyncHandler(async (req, res, next) => {
+    asyncHandler(async (req, res) => {
         const r: AccountIdRequest = res.locals.request;
         
         const fields = ['session_id AS account_id', 'id', 'device_id', 'name', 'color', 'color_dark', 'color_light', 'color_accent'];
@@ -28,7 +28,7 @@ router.route('/').get(
 
 router.route('/add').post(
     (req, res, next) => FoldersAddRequest.handler(req, res, next), 
-    asyncHandler(async (req, res, next) => {
+    asyncHandler(async (req, res) => {
         const r: FoldersAddRequest = res.locals.request;
         
         const items = r.folders.map((item) => {
@@ -61,7 +61,7 @@ router.route('/add').post(
 
 router.route('/remove/:device_id').post(
     (req, res, next) => DeviceIdRequest.handler(req, res, next), 
-    asyncHandler(async (req, res, next) => {
+    asyncHandler(async (req, res) => {
         const r: DeviceIdRequest = res.locals.request;
         
         // Delete the folder
@@ -82,7 +82,7 @@ router.route('/remove/:device_id').post(
 
 router.route('/update/:device_id').post(
     (req, res, next) => FoldersUpdateRequest.handler(req, res, next), 
-    asyncHandler(async (req, res, next) => {
+    asyncHandler(async (req, res) => {
         const r: FoldersUpdateRequest = res.locals.request;
 
         const sql = `UPDATE ${table} SET ${r.updateStr()} WHERE device_id = ${db.escape(Number(r.device_id))} AND ${r.whereAccount()}`;

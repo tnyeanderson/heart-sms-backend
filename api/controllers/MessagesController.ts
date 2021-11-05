@@ -13,7 +13,7 @@ const table = 'Messages';
 
 router.route('/').get(
     (req, res, next) => MessagesGetRequest.handler(req, res, next), 
-    asyncHandler(async (req, res, next) => {
+    asyncHandler(async (req, res) => {
         const r: MessagesGetRequest = res.locals.request;
 
         const fields = ['session_id AS account_id', 'id', 'device_id', 
@@ -37,7 +37,7 @@ router.route('/').get(
 
 router.route('/remove/:device_id').post(
     (req, res, next) => DeviceIdRequest.handler(req, res, next), 
-    asyncHandler(async (req, res, next) => {
+    asyncHandler(async (req, res) => {
         const r: DeviceIdRequest = res.locals.request;
         
         const sql = `DELETE FROM ${table} WHERE device_id = ${db.escape(Number(r.device_id))} AND ${r.whereAccount()}`;
@@ -57,11 +57,11 @@ router.route('/remove/:device_id').post(
 
 router.route('/add').post(
     (req, res, next) => MessagesAddRequest.handler(req, res, next), 
-    asyncHandler(async (req, res, next) => {
+    asyncHandler(async (req, res) => {
         const r: MessagesAddRequest = res.locals.request;
         
-        const items = r.messages.map((item) => {
-            return Object.assign({ account_id: r.account_id }, item,);
+        const items = r.messages.map(item => {
+            return Object.assign({ account_id: r.account_id }, item);
         });
 
         // Generate a query for each item
@@ -72,7 +72,8 @@ router.route('/add').post(
         res.json(new BaseResponse);
 
         // Send websocket message
-        items.forEach(function (item: any) {
+        // TODO: Fix linting
+        items.forEach((item: any) => {
             const payload = new MessagesPayloads.added_message(
                 item.device_id,
                 item.device_conversation_id,
@@ -95,7 +96,7 @@ router.route('/add').post(
 
 router.route('/update/:device_id').post(
     (req, res, next) => MessagesUpdateRequest.handler(req, res, next), 
-    asyncHandler(async (req, res, next) => {
+    asyncHandler(async (req, res) => {
         const r: MessagesUpdateRequest = res.locals.request;
 
         const payloadFields = ['device_id AS id', 'message_type AS type', 'timestamp'];
@@ -121,7 +122,7 @@ router.route('/update/:device_id').post(
 
 router.route('/update_type/:device_id').post(
     (req, res, next) => MessagesUpdateTypeRequest.handler(req, res, next), 
-    asyncHandler(async (req, res, next) => {
+    asyncHandler(async (req, res) => {
         const r: MessagesUpdateTypeRequest = res.locals.request;
 
         const sql = `UPDATE ${table} SET ${r.updateStr()} WHERE device_id = ${db.escape(Number(r.device_id))} AND ${r.whereAccount()}`;
@@ -142,7 +143,7 @@ router.route('/update_type/:device_id').post(
 
 router.route('/cleanup').post(
     (req, res, next) => MessagesCleanupRequest.handler(req, res, next), 
-    asyncHandler(async (req, res, next) => {
+    asyncHandler(async (req, res) => {
         const r: MessagesCleanupRequest = res.locals.request;
 
         const sql = `DELETE FROM ${table} WHERE timestamp < ${db.escape(Number(r.timestamp))} AND ${r.whereAccount()}`;
@@ -162,7 +163,7 @@ router.route('/cleanup').post(
 
 router.route('/forward_to_phone').post(
     (req, res, next) => MessagesForwardToPhoneRequest.handler(req, res, next), 
-    function (req, res, next) {
+    function (req, res) {
         const r: MessagesForwardToPhoneRequest = res.locals.request;
         
         const payload = new MessagesPayloads.forward_to_phone(

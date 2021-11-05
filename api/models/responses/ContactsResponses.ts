@@ -8,7 +8,7 @@ export class ContactsBaseListResponse extends BaseResponse {
     color_accent?: number;
     contact_type?: number;
 
-    constructor(r: any) {
+    constructor(r: ContactsBaseListResponse) {
         super();
         this.setProp('phone_number', r, String);
         this.setProp('name', r, String);
@@ -22,7 +22,7 @@ export class ContactsBaseListResponse extends BaseResponse {
 export class ContactsSimpleListResponse extends ContactsBaseListResponse {
     id_matcher?: string;
 
-    constructor(r: any) {
+    constructor(r: ContactsSimpleListResponse) {
         super(r);
         this.setProp('id_matcher', r, String);
     }
@@ -35,7 +35,7 @@ export class ContactsListResponse extends ContactsBaseListResponse {
     color_dark?: number;
     color_light?: number;
 
-    constructor(r: any) {
+    constructor(r: ContactsListResponse) {
         super(r);
         this.setProp('account_id', r, String);
         this.setProp('device_id', r, Number);

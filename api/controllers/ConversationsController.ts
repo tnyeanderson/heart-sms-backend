@@ -20,7 +20,7 @@ const notInFolder = " (folder_id IS NULL OR folder_id < 0) ";
 
 router.route('/').get(
     (req, res, next) => LimitOffsetRequest.handler(req, res, next), 
-    asyncHandler(async (req, res, next) => {
+    asyncHandler(async (req, res) => {
         const r: LimitOffsetRequest = res.locals.request;
         
         const sql = `SELECT ${db.selectFields(fields)} FROM ${table} INNER JOIN SessionMap USING (account_id) WHERE ${r.whereAccount()} ORDER BY timestamp DESC ${r.limitStr()}`;
@@ -33,7 +33,7 @@ router.route('/').get(
 
 router.route('/index_archived').get(
     (req, res, next) => LimitOffsetRequest.handler(req, res, next), 
-    asyncHandler(async (req, res, next) => {
+    asyncHandler(async (req, res) => {
         const r: LimitOffsetRequest = res.locals.request;
         
         const sql = `SELECT ${db.selectFields(fields)} FROM ${table} INNER JOIN SessionMap USING (account_id) WHERE archive = true AND ${notInFolder} AND ${r.whereAccount()} ORDER BY timestamp DESC ${r.limitStr()}`;
@@ -46,7 +46,7 @@ router.route('/index_archived').get(
 
 router.route('/index_private').get(
     (req, res, next) => LimitOffsetRequest.handler(req, res, next), 
-    asyncHandler(async (req, res, next) => {
+    asyncHandler(async (req, res) => {
         const r: LimitOffsetRequest = res.locals.request;
         
         const sql = `SELECT ${db.selectFields(fields)} FROM ${table} INNER JOIN SessionMap USING (account_id) WHERE private_notifications = true AND ${notInFolder} AND ${r.whereAccount()} ORDER BY timestamp DESC ${r.limitStr()}`;
@@ -59,7 +59,7 @@ router.route('/index_private').get(
 
 router.route('/index_public_unarchived').get(
     (req, res, next) => LimitOffsetRequest.handler(req, res, next), 
-    asyncHandler(async (req, res, next) => {
+    asyncHandler(async (req, res) => {
         const r: LimitOffsetRequest = res.locals.request;
         
         const sql = `SELECT ${db.selectFields(fields)} FROM ${table} INNER JOIN SessionMap USING (account_id) WHERE archive = false AND private_notifications = false AND ${r.whereAccount()} ORDER BY timestamp DESC ${r.limitStr()}`;
@@ -72,7 +72,7 @@ router.route('/index_public_unarchived').get(
 
 router.route('/index_public_unread').get(
     (req, res, next) => LimitOffsetRequest.handler(req, res, next), 
-    asyncHandler(async (req, res, next) => {
+    asyncHandler(async (req, res) => {
         const r: LimitOffsetRequest = res.locals.request;
         
         const sql = `SELECT ${db.selectFields(fields)} FROM ${table} INNER JOIN SessionMap USING (account_id) WHERE ${db.escapeId("read")} = false AND private_notifications = false AND ${r.whereAccount()} ORDER BY timestamp DESC ${r.limitStr()}`;
@@ -85,7 +85,7 @@ router.route('/index_public_unread').get(
 
 router.route('/:device_id').get(
     (req, res, next) => DeviceIdRequest.handler(req, res, next), 
-    asyncHandler(async (req, res, next) => {
+    asyncHandler(async (req, res) => {
         const r: DeviceIdRequest = res.locals.request;
         
         const sql = `SELECT ${db.selectFields(fields)} FROM ${table} INNER JOIN SessionMap USING (account_id) WHERE device_id = ${db.escape(Number(r.device_id))} AND ${r.whereAccount()} LIMIT 1`;
@@ -98,7 +98,7 @@ router.route('/:device_id').get(
 
 router.route('/folder/:folder_id').get(
     (req, res, next) => ConversationsFolderRequest.handler(req, res, next), 
-    asyncHandler(async (req, res, next) => {
+    asyncHandler(async (req, res) => {
         const r: ConversationsFolderRequest = res.locals.request;
         
         const sql = `SELECT ${db.selectFields(fields)} FROM ${table} INNER JOIN SessionMap USING (account_id) WHERE folder_id = ${db.escape(Number(r.folder_id))} AND ${r.whereAccount()}`;
@@ -111,7 +111,7 @@ router.route('/folder/:folder_id').get(
 
 router.route('/add').post(
     (req, res, next) => ConversationsAddRequest.handler(req, res, next), 
-    asyncHandler(async (req, res, next) => {
+    asyncHandler(async (req, res) => {
         const r: ConversationsAddRequest = res.locals.request;
         
         const items = r.conversations.map((item) => {
@@ -156,7 +156,7 @@ router.route('/add').post(
 
 router.route('/update/:device_id').post(
     (req, res, next) => ConversationsUpdateRequest.handler(req, res, next),
-    asyncHandler(async (req, res, next) => {
+    asyncHandler(async (req, res) => {
         const r: ConversationsUpdateRequest = res.locals.request;
 
         const payloadFields = ["device_id AS id", "color", "color_dark", "color_light", "color_accent", "led_color", "pinned", "read", "title", "snippet", "ringtone", "mute", "archive", "private_notifications"];
@@ -190,7 +190,7 @@ router.route('/update/:device_id').post(
 
 router.route('/update_snippet/:device_id').post(
     (req, res, next) => ConversationsUpdateSnippetRequest.handler(req, res, next), 
-    asyncHandler(async (req, res, next) => {
+    asyncHandler(async (req, res) => {
         const r: ConversationsUpdateSnippetRequest = res.locals.request;
 
         const payloadFields = ["device_id AS id", "read", "timestamp", "snippet", "archive"];
@@ -215,13 +215,13 @@ router.route('/update_snippet/:device_id').post(
 
 router.route('/update_title/:device_id').post(
     (req, res, next) => ConversationsUpdateTitleRequest.handler(req, res, next), 
-    asyncHandler(async (req, res, next) => {
+    asyncHandler(async (req, res) => {
         const r: ConversationsUpdateTitleRequest = res.locals.request;
 
         const sql = `UPDATE ${table} SET ${r.updateStr()} WHERE device_id = ${db.escape(Number(r.device_id))} AND ${r.whereAccount()}`;
 
-        const result = await db.query(sql);
-            
+        await db.query(sql);
+        
         res.json(new BaseResponse)
 
         // Send websocket message
@@ -236,7 +236,7 @@ router.route('/update_title/:device_id').post(
 
 router.route('/remove/:device_id').post(
     (req, res, next) => DeviceIdRequest.handler(req, res, next), 
-    asyncHandler(async (req, res, next) => {
+    asyncHandler(async (req, res) => {
         const r: DeviceIdRequest = res.locals.request;
         
         const sql = `DELETE FROM ${table} WHERE device_id = ${db.escape(Number(r.device_id))} AND ${r.whereAccount()}`;
@@ -256,7 +256,7 @@ router.route('/remove/:device_id').post(
 
 router.route('/read/:device_id').post(
     (req, res, next) => ConversationsReadRequest.handler(req, res, next), 
-    asyncHandler(async (req, res, next) => {
+    asyncHandler(async (req, res) => {
         const r: ConversationsReadRequest = res.locals.request;
         
         const sql = `UPDATE ${table} SET ${db.escapeId("read")} = true WHERE device_id = ${db.escape(Number(r.device_id))} AND ${r.whereAccount()}`;
@@ -278,7 +278,7 @@ router.route('/read/:device_id').post(
 
 router.route('/seen/:device_conversation_id').post(
     (req, res, next) => ConversationsSeenRequest.handler(req, res, next), 
-    asyncHandler(async (req, res, next) => {
+    asyncHandler(async (req, res) => {
         const r: ConversationsSeenRequest = res.locals.request
         
         const sql = `UPDATE Messages SET seen = true WHERE device_conversation_id = ${db.escape(Number(r.device_conversation_id))} AND ${r.whereAccount()}`;
@@ -298,12 +298,12 @@ router.route('/seen/:device_conversation_id').post(
 
 router.route('/seen').post(
     (req, res, next) => AccountIdRequest.handler(req, res, next), 
-    asyncHandler(async (req, res, next) => {
+    asyncHandler(async (req, res) => {
         const r: AccountIdRequest = res.locals.request;
         
         const sql = `UPDATE Messages SET seen = true WHERE ${r.whereAccount()}`;
 
-        const result = await db.query(sql);
+        await db.query(sql);
 
         res.json(new BaseResponse)
 
@@ -316,7 +316,7 @@ router.route('/seen').post(
 
 router.route('/archive/:device_id').post(
     (req, res, next) => DeviceIdRequest.handler(req, res, next), 
-    asyncHandler(async (req, res, next) => {
+    asyncHandler(async (req, res) => {
         const r: DeviceIdRequest = res.locals.request;
         
         const sql = `UPDATE ${table} SET archive = true, folder_id = -1 WHERE device_id = ${db.escape(Number(r.device_id))} AND ${r.whereAccount()}`;
@@ -337,7 +337,7 @@ router.route('/archive/:device_id').post(
 
 router.route('/unarchive/:device_id').post(
     (req, res, next) => DeviceIdRequest.handler(req, res, next), 
-    asyncHandler(async (req, res, next) => {
+    asyncHandler(async (req, res) => {
         const r: DeviceIdRequest = res.locals.request;
         
         const sql = `UPDATE ${table} SET archive = false, folder_id = -1 WHERE device_id = ${db.escape(Number(r.device_id))} AND ${r.whereAccount()}`;
@@ -358,7 +358,7 @@ router.route('/unarchive/:device_id').post(
 
 router.route('/add_to_folder/:device_id').post(
     (req, res, next) => ConversationsAddToFolderRequest.handler(req, res, next), 
-    asyncHandler(async (req, res, next) => {
+    asyncHandler(async (req, res) => {
         const r: ConversationsAddToFolderRequest = res.locals.request;
 
         const sql = `UPDATE ${table} SET folder_id = ${db.escape(Number(r.folder_id))} WHERE device_id = ${db.escape(Number(r.device_id))} AND ${r.whereAccount()}`;
@@ -379,7 +379,7 @@ router.route('/add_to_folder/:device_id').post(
 
 router.route('/remove_from_folder/:device_id').post(
     (req, res, next) => DeviceIdRequest.handler(req, res, next), 
-    asyncHandler(async (req, res, next) => {
+    asyncHandler(async (req, res) => {
         const r: DeviceIdRequest = res.locals.request;
         
         const sql = `UPDATE ${table} SET folder_id = -1 WHERE device_id = ${db.escape(Number(r.device_id))} AND ${r.whereAccount()}`;
@@ -399,7 +399,7 @@ router.route('/remove_from_folder/:device_id').post(
 
 router.route('/cleanup_messages').post(
     (req, res, next) => ConversationsCleanupMessagesRequest.handler(req, res, next), 
-    asyncHandler(async (req, res, next) => {
+    asyncHandler(async (req, res) => {
         const r: ConversationsCleanupMessagesRequest = res.locals.request;
     
         const sql = `DELETE FROM Messages WHERE device_conversation_id = ${db.escape(Number(r.conversation_id))} AND timestamp < ${db.escape(Number(r.timestamp))} AND ${r.whereAccount()}`;

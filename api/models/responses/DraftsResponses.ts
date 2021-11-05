@@ -8,7 +8,7 @@ export class DraftsListResponse extends BaseResponse {
     data?: string;
     mime_type?: string;
 
-    constructor(r: any) {
+    constructor(r: DraftsListResponse) {
         super();
         this.setProp('id', r, Number);
         this.setProp('account_id', r, String);

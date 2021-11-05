@@ -7,7 +7,7 @@ import { BaseRequest } from "./BaseRequests.js";
 export class ArticleRequest extends BaseRequest {
     @Required url: string
 
-    constructor(r: any) {
+    constructor(r: ArticleRequest) {
         super()
         this.url = String(r.url);
     }

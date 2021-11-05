@@ -16,7 +16,7 @@ export class MessagesListResponse extends BaseResponse {
     sent_device?: number;
     sim_stamp?: string;
 
-    constructor(r: any) {
+    constructor(r: MessagesListResponse) {
         super();
         this.setProp('id', r, Number);
         this.setProp('account_id', r, String);

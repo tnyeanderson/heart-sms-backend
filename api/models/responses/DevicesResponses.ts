@@ -9,7 +9,7 @@ export class DevicesListResponse extends BaseResponse {
     fcm_token?: string;
     ios?: boolean;
 
-    constructor(r: any) {
+    constructor(r: DevicesListResponse) {
         super();
         this.setProp('id', r, Number);
         this.setProp('info', r, String);
@@ -25,7 +25,7 @@ export class DevicesListResponse extends BaseResponse {
 export class DevicesAddResponse extends BaseResponse {
     id?: number;
 
-    constructor(r: any) {
+    constructor(r: DevicesAddResponse) {
         super();
         this.setProp('id', r, Number);
     }

@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
 /**
  * Marks the property as required by adding its name to Class.required[] 
  * @param target Target object

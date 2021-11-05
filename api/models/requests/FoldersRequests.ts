@@ -13,7 +13,7 @@ class FoldersAddItem extends BaseRequest {
     @Required color_light: number;
     @Required color_accent: number;
 
-    constructor(r: any) {
+    constructor(r: FoldersAddItem) {
         super();
         this.device_id = Number(r.device_id);
         this.name = String(r.name);
@@ -28,7 +28,7 @@ export class FoldersAddRequest extends HasItemsRequest {
     // Body
     @ItemsProp folders: FoldersAddItem[];
 
-    constructor(r: any) {
+    constructor(r: FoldersAddRequest) {
         super(r);
         this.folders = FoldersAddRequest.createItems(r.folders);
     }
@@ -49,7 +49,7 @@ export class FoldersUpdateRequest extends UpdateDeviceIdRequest {
     @Required color_light: number;
     @Required color_accent: number;
 
-    constructor(r: any) {
+    constructor(r: FoldersUpdateRequest) {
         super(r);
         this.name = String(r.name);
         this.color = Number(r.color);

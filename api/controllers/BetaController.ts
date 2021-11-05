@@ -5,13 +5,13 @@ const router = express.Router();
 
 // Not implemented because there is no beta program.
 
-router.route('/register').post(function (req, res, next) {
+router.route('/register').post(function (req, res) {
     // Respond for compatibility
     res.json(new BaseResponse);
 });
 
 
-router.route('/remove').post(function (req, res, next) {
+router.route('/remove').post(function (req, res) {
     // Respond for compatibility
     res.json(new BaseResponse);
 });

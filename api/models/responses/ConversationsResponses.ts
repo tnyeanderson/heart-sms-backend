@@ -23,7 +23,7 @@ export class ConversationsListResponse extends BaseResponse {
     archive?: boolean;
     private_notifications?: boolean;
 
-    constructor(r: any) {
+    constructor(r: ConversationsListResponse) {
         super();
         this.setProp('id', r, Number);
         this.setProp('account_id', r, String);

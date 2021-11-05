@@ -12,7 +12,7 @@ class BlacklistsAddItem extends BaseRequest {
     @Optional phone_number?: string; 
     @Optional phrase?: string;
 
-    constructor(r: any) {
+    constructor(r: BlacklistsAddItem) {
         super();
         this.device_id = Number(r.device_id);
         this.setOptional('phone_number', r, String);
@@ -24,7 +24,7 @@ export class BlacklistsAddRequest extends HasItemsRequest {
     // Body
     @ItemsProp blacklists: BlacklistsAddItem[];
 
-    constructor(r: any) {
+    constructor(r: BlacklistsAddRequest) {
         super(r);
         this.blacklists = BlacklistsAddRequest.createItems(r.blacklists);
     }

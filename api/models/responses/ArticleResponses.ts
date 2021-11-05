@@ -7,7 +7,7 @@ export class ArticleResponse extends BaseResponse {
     domain?: string;
     web_url?: string;
 
-    constructor(r: any) {
+    constructor(r: ArticleResponse) {
         super();
         this.setProp('title', r, String);
         this.setProp({target: 'description', source: 'excerpt'}, r, String);

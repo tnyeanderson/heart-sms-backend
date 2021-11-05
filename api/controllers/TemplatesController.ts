@@ -13,7 +13,7 @@ const table = "Templates"
 
 router.route('/').get(
     (req, res, next) => AccountIdRequest.handler(req, res, next), 
-    asyncHandler(async (req, res, next) => {
+    asyncHandler(async (req, res) => {
         const r: AccountIdRequest = res.locals.request;
         
         const fields = ['device_id', 'text'];
@@ -28,7 +28,7 @@ router.route('/').get(
 
 router.route('/add').post(
     (req, res, next) => TemplatesAddRequest.handler(req, res, next), 
-    asyncHandler(async (req, res, next) => {
+    asyncHandler(async (req, res) => {
         const r: TemplatesAddRequest = res.locals.request;
         
         const items = r.templates.map((item) => {
@@ -56,7 +56,7 @@ router.route('/add').post(
 
 router.route('/remove/:device_id').post(
     (req, res, next) => DeviceIdRequest.handler(req, res, next), 
-    asyncHandler(async (req, res, next) => {
+    asyncHandler(async (req, res) => {
         const r: DeviceIdRequest = res.locals.request;
         
         const sql = `DELETE FROM ${table} WHERE device_id = ${db.escape(Number(r.device_id))} AND ${r.whereAccount()}`;
@@ -76,7 +76,7 @@ router.route('/remove/:device_id').post(
 
 router.route('/update/:device_id').post(
     (req, res, next) => TemplatesUpdateRequest.handler(req, res, next), 
-    asyncHandler(async (req, res, next) => {
+    asyncHandler(async (req, res) => {
         const r: TemplatesUpdateRequest = res.locals.request;
 
         const sql = `UPDATE ${table} SET ${r.updateStr()} WHERE device_id = ${db.escape(Number(r.device_id))} AND ${r.whereAccount()}`;

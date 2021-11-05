@@ -10,7 +10,7 @@ export class MQTTLoginRequest extends BaseRequest {
     @Required username: string;
     @Required password: string;
 
-    constructor(r: any) {
+    constructor(r: MQTTLoginRequest) {
         super();
         this.username = String(r.username);
         this.password = String(r.password);
@@ -26,7 +26,7 @@ export class MQTTAclRequest extends BaseRequest {
     @Required username: string;
     @Required topic: string;
 
-    constructor(r: any) {
+    constructor(r: MQTTAclRequest) {
         super();
         this.username = String(r.username);
         this.topic = String(r.topic);

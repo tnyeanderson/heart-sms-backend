@@ -14,7 +14,7 @@ class DevicesAddItem extends BaseRequest {
     @Required primary: boolean;
     @Required fcm_token: string;
 
-    constructor(r: any) {
+    constructor(r: DevicesAddItem) {
         super();
         this.id = Number(r.id);
         this.info = String(r.info);
@@ -28,7 +28,7 @@ export class DevicesAddRequest extends AccountIdRequest {
     // Body
     device: DevicesAddItem;
 
-    constructor(r: any) {
+    constructor(r: DevicesAddRequest) {
         super(r);
         this.device = new DevicesAddItem(r.device);
     }
@@ -64,7 +64,7 @@ export class DevicesRemoveRequest extends AccountIdRequest {
     // URL params
     @Required id: number;
 
-    constructor(r: any) {
+    constructor(r: DevicesRemoveRequest) {
         super(r);
         this.id = Number(r.id);
     }
@@ -83,7 +83,7 @@ export class DevicesUpdateRequest extends UpdateRequest {
     @Optional fcm_token?: string;
     @Optional name?: string;
 
-    constructor(r: any) {
+    constructor(r: DevicesUpdateRequest) {
         super(r);
         this.id = Number(r.id);
         this.setOptional('fcm_token', r, String);
@@ -91,6 +91,7 @@ export class DevicesUpdateRequest extends UpdateRequest {
     }
 
     toUpdate() {
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const {account_id, id, ...out} = this;
         return Object.assign({ device_id: id }, out);
     }
@@ -105,7 +106,7 @@ export class DevicesUpdatePrimaryRequest extends AccountIdRequest {
     // Query
     @Required new_primary_device_id: string;
 
-    constructor(r: any) {
+    constructor(r: DevicesUpdatePrimaryRequest) {
         super(r);
         this.new_primary_device_id = String(r.new_primary_device_id);
     }

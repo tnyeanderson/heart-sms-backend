@@ -10,7 +10,7 @@ export class MessagesGetRequest extends LimitOffsetRequest {
     // Query
     @Optional conversation_id?: number;
 
-    constructor(r: any) {
+    constructor(r: MessagesGetRequest) {
         super(r);
         this.setOptional('conversation_id', r, Number);
     }
@@ -21,7 +21,7 @@ export class MessagesGetRequest extends LimitOffsetRequest {
 /**
  * messages/add
  */
-class MessagesAddItem extends BaseRequest {
+export class MessagesAddItem extends BaseRequest {
     @Required device_id: number;
     @Required device_conversation_id: number;
     @Required message_type: number;
@@ -35,7 +35,7 @@ class MessagesAddItem extends BaseRequest {
     @Optional color?: number;
     @Optional sim_stamp?: string;
 
-    constructor(r: any) {
+    constructor(r: MessagesAddItem) {
         super();
         this.device_id = Number(r.device_id);
         this.device_conversation_id = Number(r.device_conversation_id);
@@ -56,7 +56,7 @@ export class MessagesAddRequest extends HasItemsRequest {
     // Body
     @ItemsProp messages: MessagesAddItem[];
 
-    constructor(r: any) {
+    constructor(r: MessagesAddRequest) {
         super(r)
         this.messages = MessagesAddRequest.createItems(r.messages);
     }
@@ -76,7 +76,7 @@ export class MessagesUpdateRequest extends UpdateDeviceIdRequest {
     @Optional read?: boolean;
     @Optional seen?: boolean;
 
-    constructor(r: any) {
+    constructor(r: MessagesUpdateRequest) {
         super(r);
         this.setOptional('message_type', r, Number);
         this.setOptional('timestamp', r, Number);
@@ -93,7 +93,7 @@ export class MessagesUpdateTypeRequest extends UpdateDeviceIdRequest {
     // Query
     @Required message_type: number;
 
-    constructor(r: any) {
+    constructor(r: MessagesUpdateTypeRequest) {
         super(r);
         this.message_type = Number(r.message_type); 
     }
@@ -107,7 +107,7 @@ export class MessagesCleanupRequest extends AccountIdRequest {
     // Query
     @Required timestamp: number;
 
-    constructor(r: any) {
+    constructor(r: MessagesCleanupRequest) {
         super(r);
         this.timestamp = Number(r.timestamp); 
     }
@@ -128,7 +128,7 @@ export class MessagesForwardToPhoneRequest extends AccountIdRequest {
     @Optional mime_type?: string;
     @Optional message_id?: number;
 
-    constructor(r: any) {
+    constructor(r: MessagesForwardToPhoneRequest) {
         super(r);
         this.to = String(r.to);
         this.message = String(r.message);

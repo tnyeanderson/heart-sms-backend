@@ -5,7 +5,7 @@ export class SignupResponse extends BaseResponse {
     salt1?: string;
     salt2?: string;
 
-    constructor(r: any) {
+    constructor(r: SignupResponse) {
         super();
         this.setProp('account_id', r, String);
         this.setProp('salt1', r, String);
@@ -26,7 +26,7 @@ export class CountResponse extends BaseResponse {
     folder_count?: number;
     auto_reply_count?: number;
 
-    constructor(r: any) {
+    constructor(r: CountResponse) {
         super();
         this.setProp('device_count', r, Number);
         this.setProp('message_count', r, Number);
@@ -58,7 +58,7 @@ export class SettingsResponse extends BaseResponse {
     message_timestamp?: boolean;
     conversation_categories?: boolean;
 
-    constructor(r: any) {
+    constructor(r: SettingsResponse) {
         super();
         this.setProp('base_theme', r, String);
         this.setProp('global_color_theme', r, String);
@@ -98,7 +98,7 @@ export class LoginResponse extends BaseResponse {
     message_timestamp?: boolean;
     conversation_categories?: boolean;
 
-    constructor(r: any) {
+    constructor(r: LoginResponse) {
         super();
         this.setProp({target: 'account_id', source: 'session_id'}, r, String);
         this.setProp('salt1', r, String);

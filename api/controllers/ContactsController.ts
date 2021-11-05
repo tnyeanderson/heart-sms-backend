@@ -13,7 +13,7 @@ const table = 'Contacts';
 
 router.route('/').get(
     (req, res, next) => LimitOffsetRequest.handler(req, res, next), 
-    asyncHandler(async (req, res, next) => {
+    asyncHandler(async (req, res) => {
         const r: LimitOffsetRequest = res.locals.request;
         
         const cols = ['session_id AS account_id', 'id', 'device_id', 'phone_number', 'name', 'color', 'color_dark', 'color_light', 'color_accent', 'contact_type'];
@@ -27,7 +27,7 @@ router.route('/').get(
 
 router.route('/simple').get(
     (req, res, next) => LimitOffsetRequest.handler(req, res, next), 
-    asyncHandler(async (req, res, next) => {
+    asyncHandler(async (req, res) => {
         const r: LimitOffsetRequest = res.locals.request;
         
         const cols = ['phone_number', 'name', 'id', 'id_matcher', 'color', 'color_accent', 'contact_type'];
@@ -42,10 +42,10 @@ router.route('/simple').get(
 
 router.route('/add').post(
     (req, res, next) => ContactsAddRequest.handler(req, res, next), 
-    asyncHandler(async (req, res, next) => {
+    asyncHandler(async (req, res) => {
         const r: ContactsAddRequest = res.locals.request;
         
-        const items = r.contacts.map((item) => {
+        const items = r.contacts.map(item => {
             return Object.assign({ account_id: r.account_id }, item,);
         });
 
@@ -57,7 +57,7 @@ router.route('/add').post(
         res.json(new BaseResponse);
 
         // Send websocket message
-        items.forEach(function (item: any) {
+        items.forEach(item => {
             const payload = new ContactsPayloads.added_contact(
                 item.phone_number,
                 item.name,
@@ -75,7 +75,7 @@ router.route('/add').post(
 
 router.route('/clear').post(
     (req, res, next) => AccountIdRequest.handler(req, res, next), 
-    asyncHandler(async (req, res, next) => {
+    asyncHandler(async (req, res) => {
         const r: AccountIdRequest = res.locals.request;
         
         const sql = `DELETE FROM ${table} WHERE ${r.whereAccount()}`;
@@ -88,7 +88,7 @@ router.route('/clear').post(
 
 router.route('/update_device_id').post(
     (req, res, next) => ContactsUpdateDeviceIdRequest.handler(req, res, next), 
-    asyncHandler(async (req, res, next) => {
+    asyncHandler(async (req, res) => {
         const r: ContactsUpdateDeviceIdRequest = res.locals.request;
 
         const payloadFields = ["device_id", "phone_number", "name", "color", "color_dark", "color_light", "color_accent", "contact_type AS type"];
@@ -117,7 +117,7 @@ router.route('/update_device_id').post(
 
 router.route('/remove_device_id').post(
     (req, res, next) => ContactsRemoveDeviceIdRequest.handler(req, res, next), 
-    asyncHandler(async (req, res, next) => {
+    asyncHandler(async (req, res) => {
         const r: ContactsRemoveDeviceIdRequest = res.locals.request;
     
         const sql = `DELETE FROM ${table} WHERE ${r.whereAccount()} AND device_id = ${db.escape(Number(r.device_id))}`;
@@ -136,7 +136,7 @@ router.route('/remove_device_id').post(
 
 router.route('/remove_ids/:ids').post(
     (req, res, next) => ContactsRemoveIdsRequest.handler(req, res, next), 
-    asyncHandler(async (req, res, next) => {
+    asyncHandler(async (req, res) => {
         const r: ContactsRemoveIdsRequest = res.locals.request;
     
         const whereId: string[] = [];

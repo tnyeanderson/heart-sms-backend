@@ -20,7 +20,7 @@ function allow (res: Response) {
 
 router.route('/login').post(
     (req, res, next) => MQTTLoginRequest.handler(req, res, next),
-    asyncHandler(async (req, res, next) => {
+    asyncHandler(async (req, res) => {
         const r: MQTTLoginRequest = res.locals.request;
 
         // This is called by mosquitto-go-auth to authenticate the user for messaging
@@ -49,7 +49,7 @@ router.route('/login').post(
 
 router.route('/acl').post(
     (req, res, next) => MQTTAclRequest.handler(req, res, next),
-    asyncHandler(async (req, res, next) => {
+    asyncHandler(async (req, res) => {
         const r: MQTTAclRequest = res.locals.request;
 
         // Since we control auth, always accept our own requests

@@ -9,7 +9,7 @@ class TemplatesAddItem extends BaseRequest {
     @Required device_id: number;
     @Required text: string;
 
-    constructor(r: any) {
+    constructor(r: TemplatesAddItem) {
         super()
         this.device_id = Number(r.device_id);
         this.text = String(r.text);
@@ -20,7 +20,7 @@ export class TemplatesAddRequest extends HasItemsRequest {
     // Body
     @ItemsProp templates: TemplatesAddItem[];
 
-    constructor(r: any) {
+    constructor(r: TemplatesAddRequest) {
         super(r);
         this.templates = TemplatesAddRequest.createItems(r.templates);
     }
@@ -36,7 +36,7 @@ export class TemplatesUpdateRequest extends UpdateDeviceIdRequest {
     // Body
     @Required text: string;
 
-    constructor(r: any) {
+    constructor(r: TemplatesUpdateRequest) {
         super(r);
         this.text = String(r.text);
     }

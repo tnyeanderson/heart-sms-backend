@@ -11,7 +11,7 @@ export class AutoRepliesUpdateRequest extends UpdateDeviceIdRequest {
     @Required pattern: string;
     @Required response: string;
 
-    constructor(r: any) {
+    constructor(r: AutoRepliesUpdateRequest) {
         super(r);
         this.reply_type = String(r.reply_type);
         this.pattern = String(r.pattern);
@@ -30,8 +30,8 @@ class AutoRepliesAddItem extends BaseRequest {
     @Required pattern: string;
     @Required response: string;
 
-    constructor(r: any) {
-        super(r);
+    constructor(r: AutoRepliesAddItem) {
+        super();
         this.device_id = Number(r.device_id);
         this.reply_type = String(r.reply_type);
         this.pattern = String(r.pattern);
@@ -43,7 +43,7 @@ export class AutoRepliesAddRequest extends HasItemsRequest {
     // Body
     @ItemsProp auto_replies: AutoRepliesAddItem[];
 
-    constructor(r: any) {
+    constructor(r: AutoRepliesAddRequest) {
         super(r);
         this.auto_replies = AutoRepliesAddRequest.createItems(r.auto_replies);
     }

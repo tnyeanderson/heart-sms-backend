@@ -87,7 +87,7 @@ router.route('/signup').post(
 
 router.route('/remove_account').post(
     (req, res, next) => AccountIdRequest.handler(req, res, next), 
-    asyncHandler(async (req, res, next) => {
+    asyncHandler(async (req, res) => {
         const r: AccountIdRequest = res.locals.request;
         
         const sql = `DELETE FROM Accounts WHERE ${r.whereAccount()}`;
@@ -107,7 +107,7 @@ router.route('/remove_account').post(
 
 router.route('/count').get(
     (req, res, next) => AccountIdRequest.handler(req, res, next), 
-    asyncHandler(async (req, res, next) => {
+    asyncHandler(async (req, res) => {
         const r: AccountIdRequest = res.locals.request;
         
         const fields = ["device_count", "message_count", "conversation_count", "draft_count", "scheduled_count", "blacklist_count", "contact_count", "template_count", "folder_count", "auto_reply_count"];
@@ -128,7 +128,7 @@ router.route('/count').get(
 
 router.route('/clean_account').post(
     (req, res, next) => AccountIdRequest.handler(req, res, next), 
-    asyncHandler(async (req, res, next) => {
+    asyncHandler(async (req, res) => {
         const r: AccountIdRequest = res.locals.request;
         
         // Calls the "CleanAccount" mysql stored procedure
@@ -148,7 +148,7 @@ router.route('/clean_account').post(
 
 router.route('/settings').get(
     (req, res, next) => AccountIdRequest.handler(req, res, next), 
-    asyncHandler(async (req, res, next) => {
+    asyncHandler(async (req, res) => {
         const r: AccountIdRequest = res.locals.request;
         
         const fields = ["base_theme", "global_color_theme", "rounder_bubbles", "color", "color_dark", "color_light", "color_accent", "use_global_theme", "apply_primary_color_toolbar", "passcode", "subscription_type", "message_timestamp", "conversation_categories"];
@@ -165,7 +165,7 @@ router.route('/settings').get(
 
 router.route('/dismissed_notification').post(
     (req, res, next) => DismissedNotificationRequest.handler(req, res, next),
-    function (req, res, next) {
+    function (req, res) {
         const r: DismissedNotificationRequest = res.locals.request;
 
         const payload = new AccountsPayloads.dismissed_notification(
@@ -181,7 +181,7 @@ router.route('/dismissed_notification').post(
 
 router.route('/update_subscription').post(
     (req, res, next) => AccountIdRequest.handler(req, res, next), 
-    function (req, res, next) {
+    function (req, res) {
         // Not implemented because everyone gets a lifetime subscription!
         // Respond for compatibility
         res.json(new BaseResponse);
@@ -190,7 +190,7 @@ router.route('/update_subscription').post(
 
 router.route('/update_setting').post(
     (req, res, next) => UpdateSettingRequest.handler(req, res, next), 
-    asyncHandler(async (req, res, next) => {
+    asyncHandler(async (req, res) => {
         const r: UpdateSettingRequest = res.locals.request;
         
         let castedValue: number | string | boolean;

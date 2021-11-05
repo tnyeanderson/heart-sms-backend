@@ -10,7 +10,7 @@ export class ContactsRemoveDeviceIdRequest extends AccountIdRequest {
     @Required phone_number: string
     @Required device_id: number;
 
-    constructor(r: any) {
+    constructor(r: ContactsRemoveDeviceIdRequest) {
         super(r);
         this.phone_number = String(r.phone_number);
         this.device_id = Number(r.device_id);
@@ -25,7 +25,7 @@ export class ContactsRemoveIdsRequest extends AccountIdRequest {
     // URL params
     @Required ids: string;
 
-    constructor(r: any) {
+    constructor(r: ContactsRemoveIdsRequest) {
         super(r);
         this.ids = String(r.ids);
     }
@@ -47,7 +47,7 @@ class ContactsAddItem extends BaseRequest {
     @Required color_accent: number;
     @Required contact_type: number;
 
-    constructor (r: any) {
+    constructor (r: ContactsAddItem) {
         super();
         this.device_id = Number(r.device_id);
         this.phone_number = String(r.phone_number);
@@ -65,7 +65,7 @@ export class ContactsAddRequest extends HasItemsRequest {
     // Body
     @ItemsProp contacts: ContactsAddItem[];
 
-    constructor(r: any) {
+    constructor(r: ContactsAddRequest) {
         super(r);
         this.contacts = ContactsAddRequest.createItems(r.contacts);
     }
@@ -91,7 +91,7 @@ export class ContactsUpdateDeviceIdRequest extends UpdateDeviceIdRequest {
     @Optional color_light?: number;
     @Optional color_accent?: number;
 
-    constructor(r: any) {
+    constructor(r: ContactsUpdateDeviceIdRequest) {
         super(r);
         this.setOptional('phone_number', r, String);
         this.setOptional('name', r, String);

@@ -13,7 +13,7 @@ const table = "Drafts"
 
 router.route('/').get(
     (req, res, next) => AccountIdRequest.handler(req, res, next), 
-    asyncHandler(async (req, res, next) => {
+    asyncHandler(async (req, res) => {
         const r: AccountIdRequest = res.locals.request;
         
         const fields = ['session_id AS account_id', 'id', 'device_id', 'device_conversation_id', 'mime_type', 'data'];
@@ -28,7 +28,7 @@ router.route('/').get(
 
 router.route('/:device_conversation_id').get(
     (req, res, next) => DraftsGetDraftRequest.handler(req, res, next), 
-    asyncHandler(async (req, res, next) => {
+    asyncHandler(async (req, res) => {
         const r: DraftsGetDraftRequest = res.locals.request;
         
         const fields = ['session_id AS account_id', 'id', 'device_id', 'device_conversation_id', 'mime_type', 'data'];
@@ -44,10 +44,10 @@ router.route('/:device_conversation_id').get(
 
 router.route('/add').post(
     (req, res, next) => DraftsAddRequest.handler(req, res, next), 
-    asyncHandler(async (req, res, next) => {
+    asyncHandler(async (req, res) => {
         const r: DraftsAddRequest = res.locals.request;
 
-        const items = r.drafts.map((item) => {
+        const items = r.drafts.map(item => {
             return Object.assign({ account_id: r.account_id }, item,);
         });
 
@@ -59,7 +59,7 @@ router.route('/add').post(
         res.json(new BaseResponse);
 
         // Send websocket message
-        items.forEach(function (item: any) {
+        items.forEach(item => {
             const payload = new DraftsPayloads.added_draft(
                 item.device_id,
                 item.device_conversation_id,
@@ -74,7 +74,7 @@ router.route('/add').post(
 
 router.route('/remove/:device_conversation_id').post(
     (req, res, next) => DraftsRemoveRequest.handler(req, res, next), 
-    asyncHandler(async (req, res, next) => {
+    asyncHandler(async (req, res) => {
         const r: DraftsRemoveRequest = res.locals.request;
 
         const sql = `DELETE FROM ${table} WHERE device_conversation_id = ${db.escape(Number(r.device_conversation_id))} AND ${r.whereAccount()}`;
@@ -95,7 +95,7 @@ router.route('/remove/:device_conversation_id').post(
 
 router.route('/update/:device_id').post(
     (req, res, next) => DraftsUpdateRequest.handler(req, res, next), 
-    asyncHandler(async (req, res, next) => {
+    asyncHandler(async (req, res) => {
         const r: DraftsUpdateRequest = res.locals.request;
         
         console.log("*************** /drafts/update called!!!!!! **********************");
@@ -120,7 +120,7 @@ router.route('/update/:device_id').post(
 
 router.route('/replace/:device_conversation_id').post(
     (req, res, next) => DraftsReplaceRequest.handler(req, res, next), 
-    asyncHandler(async (req, res, next) => {
+    asyncHandler(async (req, res) => {
         const r: DraftsReplaceRequest = res.locals.request;
         
         // Only the first item is ever processed
@@ -132,7 +132,7 @@ router.route('/replace/:device_conversation_id').post(
         res.json(new BaseResponse);
 
         // Send websocket message
-        r.drafts.forEach(function (item: any) {
+        r.drafts.forEach(item => {
             const payload = new DraftsPayloads.replaced_drafts(
                 item.device_id,
                 item.device_conversation_id,

@@ -9,7 +9,7 @@ export class DraftsGetDraftRequest extends AccountIdRequest {
     // URL params
     @Required device_conversation_id: number;
 
-    constructor(r: any) {
+    constructor(r: DraftsGetDraftRequest) {
         super(r);
         this.device_conversation_id = Number(r.device_conversation_id);
     }
@@ -24,7 +24,7 @@ export class DraftsRemoveRequest extends DraftsGetDraftRequest {
     // Query
     @Required android_device: string;
 
-    constructor(r: any) {
+    constructor(r: DraftsRemoveRequest) {
         super(r);
         this.android_device = String(r.android_device);
     }
@@ -40,7 +40,7 @@ class DraftsAddItem extends BaseRequest {
     @Required mime_type: string;
     @Required data: string;
 
-    constructor(r: any) {
+    constructor(r: DraftsAddItem) {
         super();
         this.device_id = Number(r.device_id);
         this.device_conversation_id = Number(r.device_conversation_id);
@@ -53,7 +53,7 @@ export class DraftsAddRequest extends HasItemsRequest {
     // Body
     @ItemsProp drafts: DraftsAddItem[];
 
-    constructor(r: any) {
+    constructor(r: DraftsAddRequest) {
         super(r);
         this.drafts = DraftsAddRequest.createItems(r.drafts);
     }
@@ -70,7 +70,7 @@ export class DraftsUpdateRequest extends UpdateDeviceIdRequest {
     @Required data: string;
     @Optional mime_type?: string;
 
-    constructor(r: any) {
+    constructor(r: DraftsUpdateRequest) {
         super(r);
         this.data = String(r.data);
         this.setOptional('mime_type', r, String);
@@ -84,7 +84,7 @@ export class DraftsUpdateRequest extends UpdateDeviceIdRequest {
 export class DraftsReplaceRequest extends DraftsAddRequest {
     @Required device_conversation_id: number;
 
-    constructor(r: any) {
+    constructor(r: DraftsReplaceRequest) {
         super(r);
         this.device_conversation_id = Number(r.device_conversation_id);
     }

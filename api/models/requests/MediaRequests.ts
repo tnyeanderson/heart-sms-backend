@@ -10,7 +10,7 @@ export class MediaGetRequest extends AccountIdRequest {
     // URL params
     @Required message_id: number;
 
-    constructor(r: any) {
+    constructor(r: MediaGetRequest) {
         super(r);
         this.message_id = Number(r.message_id);
     }
@@ -26,7 +26,7 @@ export class MediaAddRequest extends AccountIdRequest {
     @Required message_id: number;
     @Required data: string;
 
-    constructor(r: any) {
+    constructor(r: MediaAddRequest) {
         super(r);
         this.message_id = Number(r.message_id);
         this.data = String(r.data);

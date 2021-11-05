@@ -7,7 +7,7 @@ export class BlacklistListResponse extends BaseResponse {
     phone_number?: string;
     phrase?: string;
 
-    constructor(r: any) {
+    constructor(r: BlacklistListResponse) {
         super();
         this.setProp('id', r, Number);
         this.setProp('account_id', r, String);

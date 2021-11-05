@@ -14,7 +14,7 @@ class ScheduledMessagesAddItem extends BaseRequest {
     @Required title: string;
     @Required repeat: number;
 
-    constructor(r: any) {
+    constructor(r: ScheduledMessagesAddItem) {
         super();
         this.device_id = Number(r.device_id);
         this.to = String(r.to);
@@ -30,7 +30,7 @@ export class ScheduledMessagesAddRequest extends HasItemsRequest {
     // Body
     @ItemsProp scheduled_messages: ScheduledMessagesAddItem[];
 
-    constructor(r: any) {
+    constructor(r: ScheduledMessagesAddRequest) {
         super(r);
         this.scheduled_messages = ScheduledMessagesAddRequest.createItems(r.scheduled_messages);
     }
@@ -53,7 +53,7 @@ export class ScheduledMessagesUpdateRequest extends UpdateDeviceIdRequest {
     @Optional title?: string;
     @Optional repeat?: number;
 
-    constructor(r: any) {
+    constructor(r: ScheduledMessagesUpdateRequest) {
         super(r);
         this.setOptional('to', r, String);
         this.setOptional('data', r, String);

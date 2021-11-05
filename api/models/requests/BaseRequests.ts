@@ -14,7 +14,9 @@ export class BaseRequest {
     /**
      * Empty constructor
      */
-    constructor(r?: any) { }
+    // We MUST include the r here to avoid errors when calling new this(r) in .create()
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unused-vars, @typescript-eslint/no-empty-function
+    constructor(r?: any) {  }
 
 
     /**
@@ -41,6 +43,7 @@ export class BaseRequest {
      * They are all combined before validation
      * Conventions are in api.md and comments in the Request definitions
      */
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     static validate (item: Request | any)  {
         // Combine request query, body, and url parameters into a single object
         // If plain object, just use that
@@ -103,7 +106,8 @@ export class BaseRequest {
      * @param sourceObj The object to get the property from
      * @param Cast The function used to cast the value to the proper type
      */
-    setOptional(name: string, sourceObj: any, Cast: Function) {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any 
+    setOptional(name: string, sourceObj: any, Cast: (arg: unknown) => boolean | string | number) {
         if (!util.propMissing(sourceObj, name)) {
             // @ts-expect-error TS7053
             this[name] = Cast(sourceObj[name])
@@ -123,7 +127,7 @@ export class BaseRequest {
 export class AccountIdRequest extends BaseRequest {
     @Required account_id: string;
 
-    constructor(r: any) {
+    constructor(r: AccountIdRequest) {
         super();
         this.account_id = String(r.account_id)
     }
@@ -138,13 +142,21 @@ export class AccountIdRequest extends BaseRequest {
 
 
 export class HasItemsRequest extends AccountIdRequest {
-    constructor(r: any) { super(r) }
+    constructor(r: HasItemsRequest) { super(r) }
 
     /**
      * Name of the property which stores the list of items
      * Must be extended
      */
     static itemsPropName = '';
+
+    /**
+     * Type of each item in this[itemsPropName]
+     * 
+     * This will be something like BlacklistsAddItem
+     */
+    // Must be type any so it can be overwritten to the new type
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     static itemsPropType: any = BaseRequest
 
     /**
@@ -159,7 +171,7 @@ export class HasItemsRequest extends AccountIdRequest {
             throw new MissingParamError(prop);
         }
 
-        items.forEach((item: any) => this.itemsPropType.validate(item));
+        items.forEach((item: unknown) => this.itemsPropType.validate(item));
 
         // Items are valid
         // Perform request schema validation
@@ -170,8 +182,8 @@ export class HasItemsRequest extends AccountIdRequest {
      * Returns an array of instances of the calling class from an array of objects
      * @param items list of items to be casted to instance of calling class
      */
-    static createItems(items: any[]) {
-        return items.map((item: any) => this.itemsPropType.create(item));
+    static createItems(items: unknown[]) {
+        return items.map(item => this.itemsPropType.create(item));
     }
 }
 
@@ -180,12 +192,13 @@ export class HasItemsRequest extends AccountIdRequest {
  * Update requests can generate an update string
  */
 export class UpdateRequest extends AccountIdRequest {
-    constructor(r: any) { super(r) }
+    constructor(r: UpdateRequest) { super(r) }
 
     /**
      * Generates an object with all class properties minus account_id
      */
-    toUpdate(): any {
+    toUpdate(): object {
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const {account_id, ...out} = this;
         return out;
     }
@@ -207,7 +220,7 @@ export class DeviceIdRequest extends AccountIdRequest {
     // Usually URL params
     @Required device_id: number;
 
-    constructor(r: any) {
+    constructor(r: DeviceIdRequest) {
         super(r);
         this.device_id = Number(r.device_id);
     }
@@ -219,12 +232,13 @@ export class DeviceIdRequest extends AccountIdRequest {
  * Used when a device_id is included (usually by URL param)
  */
 export class UpdateDeviceIdRequest extends DeviceIdRequest {
-    constructor(r: any) { super(r) }
+    constructor(r: UpdateDeviceIdRequest) { super(r) }
 
     /**
      * Generates an object with all class properties minus account_id and device_id
      */
     toUpdate() {
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const {account_id, device_id, ...out} = this;
         return out;
     }
@@ -246,7 +260,7 @@ export class LimitOffsetRequest extends AccountIdRequest {
     @Optional limit = -1;
     @Optional offset = -1;
 
-    constructor(r: any) {
+    constructor(r: LimitOffsetRequest) {
         super(r);
         this.setOptional('limit', r, Number);
         this.setOptional('offset', r, Number);

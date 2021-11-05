@@ -14,7 +14,7 @@ const table = "AutoReplies"
 
 router.route('/').get(
     (req, res, next) => AccountIdRequest.handler(req, res, next), 
-    asyncHandler(async (req, res, next) => {
+    asyncHandler(async (req, res) => {
         const r: AccountIdRequest = res.locals.request;
         
         const fields = ['session_id AS account_id', 'id', 'device_id', 'reply_type', 'pattern', 'response']
@@ -29,7 +29,7 @@ router.route('/').get(
 
 router.route('/add').post(
     (req, res, next) => AutoRepliesAddRequest.handler(req, res, next), 
-    asyncHandler(async (req, res, next) => {
+    asyncHandler(async (req, res) => {
         const r: AutoRepliesAddRequest = res.locals.request;
 
         const items = r.auto_replies.map((item) => {
@@ -59,7 +59,7 @@ router.route('/add').post(
 
 router.route('/remove/:device_id').post(
     (req, res, next) => DeviceIdRequest.handler(req, res, next), 
-    asyncHandler(async (req, res, next) => {
+    asyncHandler(async (req, res) => {
         const r: DeviceIdRequest = res.locals.request;
         
         const sql = `DELETE FROM ${table} WHERE device_id = ${db.escape(Number(r.device_id))} AND ${r.whereAccount()}`;
@@ -79,7 +79,7 @@ router.route('/remove/:device_id').post(
 
 router.route('/update/:device_id').post(
     (req, res, next) => AutoRepliesUpdateRequest.handler(req, res, next), 
-    asyncHandler(async (req, res, next) => {
+    asyncHandler(async (req, res) => {
         const r: AutoRepliesUpdateRequest = res.locals.request;
 
         const sql = `UPDATE ${table} SET ${r.updateStr()} WHERE device_id = ${db.escape(Number(r.device_id))} AND ${r.whereAccount()}`;

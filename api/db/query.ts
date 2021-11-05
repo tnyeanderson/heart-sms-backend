@@ -25,7 +25,7 @@ class Query {
      * @param accountId 
      */
     static whereAccount (accountId: string) {
-        return "account_id = " + Query.translateSessionToAccount(accountId) + " ";
+        return `account_id = ${Query.translateSessionToAccount(accountId)} `;
     }
 
     /**
@@ -74,7 +74,7 @@ class Query {
      * @param sessionId This is what the user sends as account_id in their requests
      */
     static translateSessionToAccount (sessionId: string) {
-        return "TRANSLATE_SESSION_ID(" + Query.escape(sessionId) + ")";
+        return `TRANSLATE_SESSION_ID(${Query.escape(sessionId)})`;
     }
     
     /**
@@ -135,7 +135,7 @@ class Query {
             
             if (parts.length === 2) {
                 // Field includes an alias using "AS"
-                fieldstr += " AS " + Query.escapeId(parts[1]);
+                fieldstr += ` AS ${Query.escapeId(parts[1])}`;
             }
             
             
@@ -145,8 +145,8 @@ class Query {
         return out.join(', ');
     }
 
-    static insertQueries (table: string, items: any | any[]) {
-        const queries = items.map((item: any) => {
+    static insertQueries (table: string, items: unknown[]) {
+        const queries = items.map((item) => {
             return `INSERT INTO ${table} ${this.insertStr(item)}`;
         })
         
@@ -158,58 +158,34 @@ class Query {
      * i.e. - (`col1`, `col2`) VALUES (val1, val2), (val3, val4)
      * @param toInsert An array of objects (items to insert) with the following structure: {col1: val1, col2: val2}
      */
-    static insertStr (toInsert: any | any[]) {
-        const cols: string[] = [];
-        const vals: any[] = [];
-        let out = "";
-
+    static insertStr (toInsert: unknown | unknown[]) {
         // If toInsert is not an array, make it one
-        if (!Array.isArray(toInsert)) {
-            toInsert = [toInsert];
-        }
+        const items = Array.isArray(toInsert) ? toInsert : [toInsert];
 
         // Get column names from the first object to insert
-        Object.keys(toInsert[0]).forEach(key => {
-            cols.push(Query.escapeId(key));
-        });
+        const cols = Object.keys(items[0]).map(key => Query.escapeId(key));
         
         // For each item to insert, push to vals
-        toInsert.forEach((item: any) => {
-            // Stores each item's list of values
-            const val: string[] = [];
-
-            Object.keys(item).forEach(key => {
+        const vals = items.map((item) => {
+            // Push the val array of the item to be inserted to the list of items to be inserted
+            return Object.keys(item).map(([key, value]) => {
                 if (key == 'account_id') {
                     // Translate session id to account id using MYSQL function
-                    val.push(Query.translateSessionToAccount(item[key]));
+                    return Query.translateSessionToAccount(value);
                 } else {
                     // Add escaped value of item to that item's val array
-                    val.push(Query.escape(item[key]));
+                    return Query.escape(value);
                 }
             });
-
-            // Push the val array of the item to be inserted to the list of items to be inserted
-            vals.push(val);
         });
 
-        // Stringify column definitions for query
-        // i.e. (`col1`, `col2`) VALUES 
-        out += " (" + cols.join(", ") + ") VALUES ";
+        // Push each item's values to the values string
+        // i.e. - (val1, val2)
+        const valStr = vals.map((val) => ` (${val.join(", ")}) `);
 
-        const valStr: string[] = [];
-        vals.forEach((val: string[]) => {
-            // Push each item's values to the values string
-            // i.e. - (val1, val2)
-            valStr.push(" (" + val.join(", ") + ") ");
-        });
-
-        // Combine the values in the valStr array
-        // i.e. - (val1, val2), (val3, val4)
-        out += valStr.join(", ");
-        
         // Return the full insert string
         // i.e. - (`col1`, `col2`) VALUES (val1, val2), (val3, val4)
-        return out;
+        return ` (${cols.join(", ")}) VALUES ${valStr.join(", ")}`;
     }
     
     /**
@@ -217,15 +193,12 @@ class Query {
      * i.e. - `col1` = val1, `col2` = val2
      * @param toUpdate Object with the following structure: {col1: val1, col2: val2}
      */
-    static updateStr (toUpdate: any) {
-        const out: any[] = [];
-        
-        // Loop through the keys in the 
-        Object.keys(toUpdate).forEach((key: string) => {
-            if (toUpdate[key] != undefined) {
+    static updateStr (toUpdate: object) {
+        const out = Object.entries(toUpdate).map(([key, value]) => {
+            if (value !== undefined) {
                 // Value is defined, generate a key/value pair
                 // i.e. - `col1` = val1
-                out.push(Query.escapeId(key) + " = " + Query.escape(toUpdate[key]));
+                return `${Query.escapeId(key)} = ${Query.escape(value)}`;
             }
         });
         
@@ -239,14 +212,9 @@ class Query {
      * Return escaped values separated by commas
      * @param toEscape Array of values to escape
      */
-    static escapeAll (toEscape: any) {
-        const out: any[] = [];
-
-        toEscape.forEach((item: any) => {
-            out.push(Query.escape(item));
-        });
-
-        return out.join(', ');
+    static escapeAll (toEscape: unknown[]) {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        return toEscape.map((item: any) => Query.escape(item)).join(', ');
     }
 
 }

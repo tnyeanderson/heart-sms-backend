@@ -8,7 +8,7 @@ export class ConversationsFolderRequest extends AccountIdRequest {
     // Query
     @Required folder_id: number;
 
-    constructor(r: any) {
+    constructor(r: ConversationsFolderRequest) {
         super(r);
         this.folder_id = Number(r.folder_id);
     }
@@ -40,7 +40,7 @@ class ConversationsAddItem extends BaseRequest {
     @Optional ringtone?: string;
     @Optional image_uri?: string;
 
-    constructor(r: any) {
+    constructor(r: ConversationsAddItem) {
         super();
         this.device_id = Number(r.device_id);
         this.folder_id = Number(r.folder_id);
@@ -68,7 +68,7 @@ export class ConversationsAddRequest extends HasItemsRequest {
     // Body
     @ItemsProp conversations: ConversationsAddItem[];
 
-    constructor(r: any) {
+    constructor(r: ConversationsAddRequest) {
         super(r);
         this.conversations = ConversationsAddRequest.createItems(r.conversations);
     }
@@ -100,7 +100,7 @@ export class ConversationsUpdateRequest extends UpdateDeviceIdRequest {
     @Optional archive?: boolean;
     @Optional private_notifications?: boolean;
 
-    constructor(r: any) {
+    constructor(r: ConversationsUpdateRequest) {
         super(r);
         this.setOptional('color', r, Number);
         this.setOptional('color_dark', r, Number);
@@ -131,7 +131,7 @@ export class ConversationsUpdateSnippetRequest extends UpdateDeviceIdRequest {
     @Optional snippet?: string;
     @Optional archive?: boolean;
 
-    constructor(r: any) {
+    constructor(r: ConversationsUpdateSnippetRequest) {
         super(r);
         this.setOptional('read', r, Boolean);
         this.setOptional('timestamp', r, Number);
@@ -148,7 +148,7 @@ export class ConversationsUpdateTitleRequest extends UpdateDeviceIdRequest {
     // Query
     @Required title: string;
 
-    constructor(r: any) {
+    constructor(r: ConversationsUpdateTitleRequest) {
         super(r);
         this.title = String(r.title);
     }
@@ -162,7 +162,7 @@ export class ConversationsReadRequest extends DeviceIdRequest {
     // Query
     @Optional android_device?: string;
 
-    constructor(r: any) {
+    constructor(r: ConversationsReadRequest) {
         super(r);
         this.setOptional('android_device', r, String);
     }
@@ -176,7 +176,7 @@ export class ConversationsSeenRequest extends AccountIdRequest {
     // URL params
     @Required device_conversation_id: number;
 
-    constructor(r: any) {
+    constructor(r: ConversationsSeenRequest) {
         super(r);
         this.device_conversation_id = Number(r.device_conversation_id);
     }
@@ -190,7 +190,7 @@ export class ConversationsAddToFolderRequest extends DeviceIdRequest {
     // Query
     @Required folder_id: number;
 
-    constructor(r: any) {
+    constructor(r: ConversationsAddToFolderRequest) {
         super(r);
         this.folder_id = Number(r.folder_id);
     }
@@ -205,7 +205,7 @@ export class ConversationsCleanupMessagesRequest extends AccountIdRequest {
     @Required conversation_id: number;
     @Required timestamp: number;
 
-    constructor(r: any) {
+    constructor(r: ConversationsCleanupMessagesRequest) {
         super(r);
         this.conversation_id = Number(r.conversation_id);
         this.timestamp = Number(r.timestamp);

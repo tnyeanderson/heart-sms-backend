@@ -14,7 +14,7 @@ const table = "Blacklists"
 
 router.route('/').get(
     (req, res, next) => AccountIdRequest.handler(req, res, next), 
-    asyncHandler(async (req, res, next) => {
+    asyncHandler(async (req, res) => {
         const r: AccountIdRequest = res.locals.request;
 
         const fields = ['session_id AS account_id', 'id', 'device_id', 'phone_number', 'phrase'];
@@ -29,11 +29,11 @@ router.route('/').get(
 
 router.route('/add').post(
     (req, res, next) => BlacklistsAddRequest.handler(req, res, next),
-    asyncHandler(async (req, res, next) => {
+    asyncHandler(async (req, res) => {
         const r: BlacklistsAddRequest = res.locals.request;
 
-        const items = r.blacklists.map((item) => {
-            return Object.assign({ account_id: r.account_id }, item,);
+        const items = r.blacklists.map(item => {
+            return Object.assign({ account_id: r.account_id }, item);
         });
 
         // Generate a query for each item
@@ -44,7 +44,7 @@ router.route('/add').post(
         res.json(new BaseResponse);
 
         // Send websocket message
-        items.forEach(function (item: any) {
+        items.forEach(item => {
             const payload = new BlacklistsPayloads.added_blacklist(
                 item.device_id,
                 item.phone_number,
@@ -58,7 +58,7 @@ router.route('/add').post(
 
 router.route('/remove/:device_id').post(
     (req, res, next) => DeviceIdRequest.handler(req, res, next),
-    asyncHandler(async (req, res, next) => {
+    asyncHandler(async (req, res) => {
         const r: DeviceIdRequest = res.locals.request;
         
         const sql = `DELETE FROM ${table} WHERE device_id = ${db.escape(Number(r.device_id))} AND ${r.whereAccount()}`;

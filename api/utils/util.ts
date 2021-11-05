@@ -16,7 +16,8 @@ const util = {
     /**
      * Whether a property is missing from an object to validate
      * 
-    */
+     */
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     propMissing: function (toValidate: any, prop: string) {
         return (
             !toValidate ||

@@ -10,7 +10,7 @@ export class FoldersListResponse extends BaseResponse {
     color_dark?: number;
     color_accent?: number;
 
-    constructor(r: any) {
+    constructor(r: FoldersListResponse) {
         super();
         this.setProp('id', r, Number);
         this.setProp('account_id', r, String);

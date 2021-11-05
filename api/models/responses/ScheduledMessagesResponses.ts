@@ -11,7 +11,7 @@ export class ScheduledMessagesListResponse extends BaseResponse {
     title?: string;
     repeat?: number;
 
-    constructor(r: any) {
+    constructor(r: ScheduledMessagesListResponse) {
         super();
         this.setProp('id', r, Number);
         this.setProp('account_id', r, String);

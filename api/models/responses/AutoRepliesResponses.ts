@@ -8,7 +8,7 @@ export class AutoRepliesListResponse extends BaseResponse {
     pattern?: string;
     response?: string;
 
-    constructor(r: any) {
+    constructor(r: AutoRepliesListResponse) {
         super();
         this.setProp('id', r, Number);
         this.setProp('account_id', r, String);

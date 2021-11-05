@@ -16,7 +16,7 @@ export class SignupRequest extends BaseRequest {
     @Required phone_number: string;
     @Required real_name: string;
 
-    constructor(r: any) {
+    constructor(r: SignupRequest) {
         super();
         this.name = String(r.name);
         this.password = String(r.password);
@@ -72,7 +72,7 @@ export class LoginRequest extends BaseRequest {
     @Required username: string;
     @Required password: string;
 
-    constructor(r: any) {
+    constructor(r: LoginRequest) {
         super()
         this.username = String(r.username);
         this.password = String(r.password);
@@ -88,7 +88,7 @@ export class DismissedNotificationRequest extends AccountIdRequest {
     @Required id: string;
     @Optional device_id?: string;
 
-    constructor(r: any) {
+    constructor(r: DismissedNotificationRequest) {
         super(r);
         this.id = String(r.id);
         this.setOptional('device_id', r, String);
@@ -103,16 +103,16 @@ export class UpdateSettingRequest extends AccountIdRequest {
     // Query
     @Required pref: string;
     @Required type: string;
-    @Required value: any;
+    @Required value: unknown;
 
-    constructor(r: any) {
+    constructor(r: UpdateSettingRequest) {
         super(r);
         this.pref = String(r.pref);
         this.type = String(r.type);
         this.value = this.castValue(r.value)
     }
 
-    castValue(value: any) {
+    castValue(value: unknown) {
         // Can it cast?
         switch (this.type) {
             case 'int':
@@ -120,7 +120,7 @@ export class UpdateSettingRequest extends AccountIdRequest {
                 return Number(value);
             case 'boolean':
                 // Done this way because 'false' would evaluate to true
-                if ([1, true, 'true'].includes(value)) {
+                if ([1, true, 'true'].includes(value as number | boolean | string)) {
                     return true;
                 } else {
                     return false;
