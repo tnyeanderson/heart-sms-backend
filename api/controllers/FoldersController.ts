@@ -12,96 +12,96 @@ const router = express.Router();
 const table = "Folders"
 
 router.route('/').get(
-    (req, res, next) => AccountIdRequest.handler(req, res, next), 
-    asyncHandler(async (req, res, next) => {
-        let r: AccountIdRequest = res.locals.request;
-        
-        let fields = ['session_id AS account_id', 'id', 'device_id', 'name', 'color', 'color_dark', 'color_light', 'color_accent'];
+	(req, res, next) => AccountIdRequest.handler(req, res, next),
+	asyncHandler(async (req, res) => {
+		const r: AccountIdRequest = res.locals.request;
 
-        let sql = `SELECT ${db.selectFields(fields)} FROM ${table} INNER JOIN SessionMap USING (account_id) WHERE ${r.whereAccount()} ${db.newestFirst(table)}`;
+		const fields = ['session_id AS account_id', 'id', 'device_id', 'name', 'color', 'color_dark', 'color_light', 'color_accent'];
 
-        let result = await db.query(sql);
-            
-        res.json(FoldersListResponse.getList(result));
-    }));
+		const sql = `SELECT ${db.selectFields(fields)} FROM ${table} INNER JOIN SessionMap USING (account_id) WHERE ${r.whereAccount()} ${db.newestFirst(table)}`;
+
+		const result = await db.query(sql);
+
+		res.json(FoldersListResponse.getList(result));
+	}));
 
 
 router.route('/add').post(
-    (req, res, next) => FoldersAddRequest.handler(req, res, next), 
-    asyncHandler(async (req, res, next) => {
-        let r: FoldersAddRequest = res.locals.request;
-        
-        let items = r.folders.map((item) => {
-            return Object.assign({ account_id: r.account_id }, item,);
-        });
+	(req, res, next) => FoldersAddRequest.handler(req, res, next),
+	asyncHandler(async (req, res) => {
+		const r: FoldersAddRequest = res.locals.request;
 
-        // Generate a query for each item
-        let sql = db.insertQueries(table, items);
+		const items = r.folders.map((item) => {
+			return Object.assign({ account_id: r.account_id }, item,);
+		});
 
-        await db.transaction(sql);
+		// Generate a query for each item
+		const sql = db.insertQueries(table, items);
 
-        res.json(new BaseResponse);
+		await db.transaction(sql);
 
-        // Send websocket message
-        items.forEach(function (item) {
-            let payload = new FoldersPayloads.added_folder(
-                item.device_id,
-                item.name,
-                item.color,
-                item.color_dark,
-                item.color_light,
-                item.color_accent
-            )
-            
-            payload.send(r.account_id);
-        });
-        
-    }));
+		res.json(new BaseResponse);
+
+		// Send websocket message
+		items.forEach(function (item) {
+			const payload = new FoldersPayloads.added_folder(
+				item.device_id,
+				item.name,
+				item.color,
+				item.color_dark,
+				item.color_light,
+				item.color_accent
+			)
+
+			payload.send(r.account_id);
+		});
+
+	}));
 
 
 router.route('/remove/:device_id').post(
-    (req, res, next) => DeviceIdRequest.handler(req, res, next), 
-    asyncHandler(async (req, res, next) => {
-        let r: DeviceIdRequest = res.locals.request;
-        
-        // Delete the folder
-        let sql = `DELETE FROM ${table} WHERE device_id = ${db.escape(Number(r.device_id))} AND ${r.whereAccount()}`;
-        
-        await db.query(sql);
+	(req, res, next) => DeviceIdRequest.handler(req, res, next),
+	asyncHandler(async (req, res) => {
+		const r: DeviceIdRequest = res.locals.request;
 
-        res.json(new BaseResponse);
+		// Delete the folder
+		const sql = `DELETE FROM ${table} WHERE device_id = ${db.escape(Number(r.device_id))} AND ${r.whereAccount()}`;
 
-        let payload = new FoldersPayloads.removed_folder(
-            Number(r.device_id)
-        );
-        
-        // Send websocket message
-        payload.send(r.account_id);
-    }));
+		await db.query(sql);
+
+		res.json(new BaseResponse);
+
+		const payload = new FoldersPayloads.removed_folder(
+			Number(r.device_id)
+		);
+
+		// Send websocket message
+		payload.send(r.account_id);
+	}));
 
 
 router.route('/update/:device_id').post(
-    (req, res, next) => FoldersUpdateRequest.handler(req, res, next), 
-    asyncHandler(async (req, res, next) => {
-        let r: FoldersUpdateRequest = res.locals.request;
+	(req, res, next) => FoldersUpdateRequest.handler(req, res, next),
+	asyncHandler(async (req, res) => {
+		const r: FoldersUpdateRequest = res.locals.request;
 
-        let sql = `UPDATE ${table} SET ${r.updateStr()} WHERE device_id = ${db.escape(Number(r.device_id))} AND ${r.whereAccount()}`;
+		const sql = `UPDATE ${table} SET ${r.updateStr()} WHERE device_id = ${db.escape(Number(r.device_id))} AND ${r.whereAccount()}`;
 
-        await db.query(sql);
+		await db.query(sql);
 
-        res.json(new BaseResponse);
+		res.json(new BaseResponse);
 
-        let payload = new FoldersPayloads.updated_folder(
-            Number(r.device_id),
-            r.name,
-            r.color,
-            r.color_dark,
-            r.color_light,
-            r.color_accent
-        )
+		const payload = new FoldersPayloads.updated_folder(
+			Number(r.device_id),
+			r.name,
+			r.color,
+			r.color_dark,
+			r.color_light,
+			r.color_accent
+		)
 
-        payload.send(r.account_id);
-    }));
+		payload.send(r.account_id);
+	}));
 
 export default router;
- 
+

@@ -6,26 +6,26 @@ import { BaseRequest, HasItemsRequest, UpdateDeviceIdRequest } from "./BaseReque
  * templates/add
  */
 class TemplatesAddItem extends BaseRequest {
-    @Required device_id: number;
-    @Required text: string;
+	@Required device_id: number;
+	@Required text: string;
 
-    constructor(r: any) {
-        super()
-        this.device_id = Number(r.device_id);
-        this.text = String(r.text);
-    }
+	constructor(r: TemplatesAddItem) {
+		super()
+		this.device_id = Number(r.device_id);
+		this.text = String(r.text);
+	}
 }
 
 export class TemplatesAddRequest extends HasItemsRequest {
-    // Body
-    @ItemsProp templates: TemplatesAddItem[];
+	// Body
+	@ItemsProp templates: TemplatesAddItem[];
 
-    constructor(r: any) {
-        super(r);
-        this.templates = TemplatesAddRequest.createItems(r.templates);
-    }
+	constructor(r: TemplatesAddRequest) {
+		super(r);
+		this.templates = TemplatesAddRequest.createItems(r.templates);
+	}
 
-    static itemsPropType = TemplatesAddItem;
+	static itemsPropType = TemplatesAddItem;
 }
 
 
@@ -33,11 +33,11 @@ export class TemplatesAddRequest extends HasItemsRequest {
  * templates/update/:device_id
  */
 export class TemplatesUpdateRequest extends UpdateDeviceIdRequest {
-    // Body
-    @Required text: string;
+	// Body
+	@Required text: string;
 
-    constructor(r: any) {
-        super(r);
-        this.text = String(r.text);
-    }
+	constructor(r: TemplatesUpdateRequest) {
+		super(r);
+		this.text = String(r.text);
+	}
 }

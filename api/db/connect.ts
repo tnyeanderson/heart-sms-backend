@@ -5,7 +5,7 @@ import util from '../utils/util.js';
 // Cast bigints to numbers instead of strings
 pg.types.setTypeParser(20, Number);
 
-const dbDefaultPass: string = 'TESTPASSWORD2';
+const dbDefaultPass = 'TESTPASSWORD2';
 
 // Get values based on environment, environment variables, or default values
 const dbHost: string = (util.env.test()) ? 'localhost' : (process.env.DB_HOST || 'localhost');
@@ -16,25 +16,25 @@ const dbPass: string = (util.env.test()) ? dbDefaultPass : (process.env.POSTGRES
 
 // If we are in production, refuse to use the default password
 if (util.env.prod() && dbPass === dbDefaultPass) {
-    let defaultPasswordError = new DefaultDatabasePasswordError;
-    console.log(defaultPasswordError);
-    throw defaultPasswordError;
+	const defaultPasswordError = new DefaultDatabasePasswordError;
+	console.log(defaultPasswordError);
+	throw defaultPasswordError;
 }
 
 console.log("Using database: " + dbHost + ":" + dbName);
 
 const baseSettings: pg.PoolConfig = {
-    host: dbHost,
-    port: dbPort,
-    user: dbUser,
-    password: dbPass,
-    database: dbName
+	host: dbHost,
+	port: dbPort,
+	user: dbUser,
+	password: dbPass,
+	database: dbName
 }
 
 const connection = function (extraSettings?: pg.PoolConfig) {
-    // Return the base config with any extraSettings applied
-    return Object.assign({}, baseSettings, extraSettings);
+	// Return the base config with any extraSettings applied
+	return Object.assign({}, baseSettings, extraSettings);
 }
 
 export default connection;
-    
+

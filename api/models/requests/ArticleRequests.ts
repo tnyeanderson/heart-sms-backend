@@ -5,10 +5,10 @@ import { BaseRequest } from "./BaseRequests.js";
  * article
  */
 export class ArticleRequest extends BaseRequest {
-    @Required url: string
+	@Required url: string
 
-    constructor(r: any) {
-        super()
-        this.url = String(r.url);
-    }
+	constructor(r: ArticleRequest) {
+		super()
+		this.url = String(r.url);
+	}
 }

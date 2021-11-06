@@ -6,17 +6,17 @@ import { BaseRequest, HasItemsRequest, UpdateDeviceIdRequest } from "./BaseReque
  * auto_replies/update/:device_id
  */
 export class AutoRepliesUpdateRequest extends UpdateDeviceIdRequest {
-    // Body
-    @Required reply_type: string;
-    @Required pattern: string;
-    @Required response: string;
+	// Body
+	@Required reply_type: string;
+	@Required pattern: string;
+	@Required response: string;
 
-    constructor(r: any) {
-        super(r);
-        this.reply_type = String(r.reply_type);
-        this.pattern = String(r.pattern);
-        this.response = String(r.response);
-    }
+	constructor(r: AutoRepliesUpdateRequest) {
+		super(r);
+		this.reply_type = String(r.reply_type);
+		this.pattern = String(r.pattern);
+		this.response = String(r.response);
+	}
 }
 
 
@@ -25,28 +25,28 @@ export class AutoRepliesUpdateRequest extends UpdateDeviceIdRequest {
  * auto_replies/add
  */
 class AutoRepliesAddItem extends BaseRequest {
-    @Required device_id: number;
-    @Required reply_type: string;
-    @Required pattern: string;
-    @Required response: string;
+	@Required device_id: number;
+	@Required reply_type: string;
+	@Required pattern: string;
+	@Required response: string;
 
-    constructor(r: any) {
-        super(r);
-        this.device_id = Number(r.device_id);
-        this.reply_type = String(r.reply_type);
-        this.pattern = String(r.pattern);
-        this.response = String(r.response);
-    }
+	constructor(r: AutoRepliesAddItem) {
+		super();
+		this.device_id = Number(r.device_id);
+		this.reply_type = String(r.reply_type);
+		this.pattern = String(r.pattern);
+		this.response = String(r.response);
+	}
 }
 
 export class AutoRepliesAddRequest extends HasItemsRequest {
-    // Body
-    @ItemsProp auto_replies: AutoRepliesAddItem[];
+	// Body
+	@ItemsProp auto_replies: AutoRepliesAddItem[];
 
-    constructor(r: any) {
-        super(r);
-        this.auto_replies = AutoRepliesAddRequest.createItems(r.auto_replies);
-    }
+	constructor(r: AutoRepliesAddRequest) {
+		super(r);
+		this.auto_replies = AutoRepliesAddRequest.createItems(r.auto_replies);
+	}
 
-    static itemsPropType = AutoRepliesAddItem;
+	static itemsPropType = AutoRepliesAddItem;
 }

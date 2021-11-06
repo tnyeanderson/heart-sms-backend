@@ -8,10 +8,10 @@ const port = (util.env.test()) ? 5001 : (process.env.port || 5000);
 
 // Create server
 const server = app.listen(port, function () {
-    console.log("Server running on port " + port);
+	console.log("Server running on port " + port);
 
-    // Once the server is up so we can authenticate users, connect to the MQTT broker
-    stream.init();
+	// Once the server is up so we can authenticate users, connect to the MQTT broker
+	stream.init();
 });
 
 export default { server };

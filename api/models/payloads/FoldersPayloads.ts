@@ -1,21 +1,21 @@
 import { BasePayload } from './BasePayload.js';
 
 export class added_folder extends BasePayload {
-    constructor (
+	constructor (
         public device_id: number,
         public name: string,
         public color: number,
         public color_dark: number,
         public color_light: number,
         public color_accent: number
-    ) { super() }
+	) { super() }
 }
 
 
 export class removed_folder extends BasePayload {
-    constructor (
+	constructor (
         public id: number
-    ) { super() }
+	) { super() }
 }
 
 

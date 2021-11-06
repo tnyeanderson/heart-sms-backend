@@ -1,7 +1,7 @@
 import { BasePayload } from './BasePayload.js';
 
 export class added_conversation extends BasePayload {
-    constructor (
+	constructor (
         public device_id: number,
         public folder_id: number,
         public color: number,
@@ -21,12 +21,12 @@ export class added_conversation extends BasePayload {
         public private_notifications: boolean,
         public ringtone?: string,
         public image_uri?: string,
-    ) { super() }
+	) { super() }
 }
 
 
 export class updated_conversation extends BasePayload {
-    constructor (
+	constructor (
         public id: number,
         public color: number,
         public color_dark: number,
@@ -41,58 +41,58 @@ export class updated_conversation extends BasePayload {
         public archive: boolean,
         public private_notifications: boolean,
         public ringtone?: string
-    ) { super() }
+	) { super() }
 }
 
 
 export class update_conversation_snippet extends BasePayload {
-    constructor (
+	constructor (
         public id: number,
         public read: boolean,
         public timestamp: number,
         public snippet: string,
         public archive: boolean
-    ) { super() }
+	) { super() }
 }
 
 
 export class update_conversation_title extends BasePayload {
-    constructor (
+	constructor (
         public id: number,
         public title: string
-    ) { super() }
+	) { super() }
 }
 
 
 export class read_conversation extends BasePayload {
-    constructor (
+	constructor (
         public id: number,
         public android_device?: string
-    ) { super() }
+	) { super() }
 }
 
 
 export class archive_conversation extends BasePayload {
-    constructor (
+	constructor (
         public id: number,
         public archive: boolean
-    ) { super() }
+	) { super() }
 }
 
 
 export class add_conversation_to_folder extends BasePayload {
-    constructor (
+	constructor (
         public id: number,
         public folder_id: number
-    ) { super() }
+	) { super() }
 }
 
 
 export class cleanup_conversation_messages extends BasePayload {
-    constructor (
+	constructor (
         public timestamp: number,
         public conversation_id: string
-    ) { super() }
+	) { super() }
 }
 
 
@@ -101,9 +101,9 @@ export class seen_conversations extends BasePayload { }
 
 
 export class seen_conversation extends BasePayload {
-    constructor (
+	constructor (
         public id: number
-    ) { super() }
+	) { super() }
 }
 
 

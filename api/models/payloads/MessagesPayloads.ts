@@ -1,7 +1,7 @@
 import { BasePayload } from './BasePayload.js';
 
 export class added_message extends BasePayload {
-    constructor (
+	constructor (
         public id: number,
         public conversation_id: number,
         public type: number,
@@ -14,49 +14,49 @@ export class added_message extends BasePayload {
         public color: number,
         public sent_device: number,
         public sim_stamp: number
-    ) { super() }
+	) { super() }
 }
 
 
 export class updated_message extends BasePayload {
-    constructor (
+	constructor (
         public id: number,
         public type: number,
         public timestamp: number,
         public read?: boolean,
         public seen?: boolean,
-    ) { super() }
+	) { super() }
 }
 
 
 export class update_message_type extends BasePayload {
-    constructor (
+	constructor (
         public id: string,
         public message_type: string
-    ) { super() }
+	) { super() }
 }
 
 
 export class removed_message extends BasePayload {
-    constructor (
+	constructor (
         public id: number
-    ) { super() }
+	) { super() }
 }
 
 
 export class cleanup_messages extends BasePayload {
-    constructor (
+	constructor (
         public timestamp: number
-    ) { super() }
+	) { super() }
 }
 
 
 export class forward_to_phone extends BasePayload {
-    constructor (
+	constructor (
         public to: string,
         public message: string,
         public sent_device: number,
         public mime_type?: string,
         public message_id?: number
-    ) { super() }
+	) { super() }
 }

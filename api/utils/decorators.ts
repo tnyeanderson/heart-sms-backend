@@ -1,19 +1,21 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+
 /**
- * Marks the property as required by adding its name to Class.required[] 
+ * Marks the property as required by adding its name to Class.required[]
  * @param target Target object
  * @param name Name of property
  */
 export function Required(target: any, name: string) {
-  target.constructor.required = [...target.constructor.required, name]
+	target.constructor.required = [...target.constructor.required, name]
 }
 
 /**
- * Marks the property as optional by adding its name to Class.optional[] 
+ * Marks the property as optional by adding its name to Class.optional[]
  * @param target Target object
  * @param name Name of property
  */
 export function Optional(target: any, name: string) {
-  target.constructor.optional = [...target.constructor.optional, name]
+	target.constructor.optional = [...target.constructor.optional, name]
 }
 
 /**
@@ -22,7 +24,7 @@ export function Optional(target: any, name: string) {
  * @param name Name of property
  */
 export function ItemsProp(target: any, name: string) {
-    target.constructor.itemsPropName = name
+	target.constructor.itemsPropName = name
 }
 
 /**
@@ -30,5 +32,5 @@ export function ItemsProp(target: any, name: string) {
  * @param constructor The class to mark
  */
 export function AtLeastOne(constructor: any) {
-    constructor.atLeastOne = true
+	constructor.atLeastOne = true
 }

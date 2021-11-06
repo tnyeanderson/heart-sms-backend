@@ -13,90 +13,90 @@ const router = express.Router();
 const table = "AutoReplies"
 
 router.route('/').get(
-    (req, res, next) => AccountIdRequest.handler(req, res, next), 
-    asyncHandler(async (req, res, next) => {
-        let r: AccountIdRequest = res.locals.request;
-        
-        let fields = ['session_id AS account_id', 'id', 'device_id', 'reply_type', 'pattern', 'response']
+	(req, res, next) => AccountIdRequest.handler(req, res, next),
+	asyncHandler(async (req, res) => {
+		const r: AccountIdRequest = res.locals.request;
 
-        let sql = `SELECT ${db.selectFields(fields)} FROM ${table} INNER JOIN SessionMap USING (account_id) WHERE ${r.whereAccount()} ${db.newestFirst(table)}`;
+		const fields = ['session_id AS account_id', 'id', 'device_id', 'reply_type', 'pattern', 'response']
 
-        let result = await db.query(sql);
+		const sql = `SELECT ${db.selectFields(fields)} FROM ${table} INNER JOIN SessionMap USING (account_id) WHERE ${r.whereAccount()} ${db.newestFirst(table)}`;
 
-        res.json(AutoRepliesListResponse.getList(result));
-    }));
+		const result = await db.query(sql);
+
+		res.json(AutoRepliesListResponse.getList(result));
+	}));
 
 
 router.route('/add').post(
-    (req, res, next) => AutoRepliesAddRequest.handler(req, res, next), 
-    asyncHandler(async (req, res, next) => {
-        let r: AutoRepliesAddRequest = res.locals.request;
+	(req, res, next) => AutoRepliesAddRequest.handler(req, res, next),
+	asyncHandler(async (req, res) => {
+		const r: AutoRepliesAddRequest = res.locals.request;
 
-        let items = r.auto_replies.map((item) => {
-            return Object.assign({ account_id: r.account_id }, item);
-        });
+		const items = r.auto_replies.map((item) => {
+			return Object.assign({ account_id: r.account_id }, item);
+		});
 
-        // Generate a query for each item
-        let sql = db.insertQueries(table, items);
+		// Generate a query for each item
+		const sql = db.insertQueries(table, items);
 
-        await db.transaction(sql);
-        
-        res.json(new BaseResponse);
+		await db.transaction(sql);
 
-        // Send websocket message
-        items.forEach(function (item) {
-            let payload = new AutoRepliesPayloads.added_auto_reply(
-                item.device_id,
-                item.reply_type,
-                item.pattern,
-                item.response
-            );
-                
-            payload.send(r.account_id);
-        });
-    }));
+		res.json(new BaseResponse);
+
+		// Send websocket message
+		items.forEach(function (item) {
+			const payload = new AutoRepliesPayloads.added_auto_reply(
+				item.device_id,
+				item.reply_type,
+				item.pattern,
+				item.response
+			);
+
+			payload.send(r.account_id);
+		});
+	}));
 
 
 router.route('/remove/:device_id').post(
-    (req, res, next) => DeviceIdRequest.handler(req, res, next), 
-    asyncHandler(async (req, res, next) => {
-        let r: DeviceIdRequest = res.locals.request;
-        
-        let sql = `DELETE FROM ${table} WHERE device_id = ${db.escape(Number(r.device_id))} AND ${r.whereAccount()}`;
-        
-        await db.query(sql);
-        
-        res.json(new BaseResponse);
+	(req, res, next) => DeviceIdRequest.handler(req, res, next),
+	asyncHandler(async (req, res) => {
+		const r: DeviceIdRequest = res.locals.request;
 
-        // Send websocket message
-        let payload = new AutoRepliesPayloads.removed_auto_reply(
-            Number(r.device_id)
-        );
+		const sql = `DELETE FROM ${table} WHERE device_id = ${db.escape(Number(r.device_id))} AND ${r.whereAccount()}`;
 
-        payload.send(r.account_id);
-    }));
+		await db.query(sql);
+
+		res.json(new BaseResponse);
+
+		// Send websocket message
+		const payload = new AutoRepliesPayloads.removed_auto_reply(
+			Number(r.device_id)
+		);
+
+		payload.send(r.account_id);
+	}));
 
 
 router.route('/update/:device_id').post(
-    (req, res, next) => AutoRepliesUpdateRequest.handler(req, res, next), 
-    asyncHandler(async (req, res, next) => {
-        let r: AutoRepliesUpdateRequest = res.locals.request;
+	(req, res, next) => AutoRepliesUpdateRequest.handler(req, res, next),
+	asyncHandler(async (req, res) => {
+		const r: AutoRepliesUpdateRequest = res.locals.request;
 
-        let sql = `UPDATE ${table} SET ${r.updateStr()} WHERE device_id = ${db.escape(Number(r.device_id))} AND ${r.whereAccount()}`;
+		const sql = `UPDATE ${table} SET ${r.updateStr()} WHERE device_id = ${db.escape(Number(r.device_id))} AND ${r.whereAccount()}`;
 
-        await db.query(sql);
+		await db.query(sql);
 
-        res.json(new BasePayload);
+		res.json(new BasePayload);
 
-        let payload = new AutoRepliesPayloads.updated_auto_reply(
-            Number(r.device_id),
-            r.reply_type,
-            r.pattern,
-            r.response
-        );
+		const payload = new AutoRepliesPayloads.updated_auto_reply(
+			Number(r.device_id),
+			r.reply_type,
+			r.pattern,
+			r.response
+		);
 
-        payload.send(r.account_id);
-    }));
+		payload.send(r.account_id);
+	}));
 
 export default router;
- 
+

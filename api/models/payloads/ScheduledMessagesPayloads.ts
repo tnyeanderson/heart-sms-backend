@@ -1,14 +1,14 @@
 import { BasePayload } from './BasePayload.js';
 
 export class removed_scheduled_message extends BasePayload {
-    constructor (
+	constructor (
         public id: number
-    ) { super() }
+	) { super() }
 }
 
 
 export class added_scheduled_message extends BasePayload {
-    constructor (
+	constructor (
         public id: number,
         public to: string,
         public data: string,
@@ -16,7 +16,7 @@ export class added_scheduled_message extends BasePayload {
         public timestamp: number,
         public title: string,
         public repeat: number
-    ) { super() }
+	) { super() }
 }
 
 

@@ -1,20 +1,20 @@
 import { BasePayload } from './BasePayload.js';
 
 export class added_draft extends BasePayload {
-    constructor (
+	constructor (
         public id: number,
         public conversation_id: number,
         public data: string,
         public mime_type: string
-    ) { super() }
+	) { super() }
 }
 
 
 export class removed_drafts extends BasePayload {
-    constructor (
+	constructor (
         public id: number,
         public android_device?: string
-    ) { super() }
+	) { super() }
 }
 
 

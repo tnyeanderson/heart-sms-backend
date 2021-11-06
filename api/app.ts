@@ -1,5 +1,5 @@
 import cors from 'cors';
-import express, { json, NextFunction, Request, Response, Router } from 'express';
+import express, { json, NextFunction, Request, Response } from 'express';
 import 'reflect-metadata';
 
 
@@ -35,7 +35,7 @@ const app = express();
  * @param path top-level api url path (e.g. '/accounts')
  */
 function getUrl (path: string) {
-    return '/api/v1' + path;
+	return '/api/v1' + path;
 }
 
 // Allow cross-site requests
@@ -66,28 +66,28 @@ app.use(getUrl('/templates'),          TemplatesController);
 
 // Log requests with no endpoint
 app.use((req: Request, res: Response, next) => {
-    next(new UnhandledPathError(req.path)); // Passing the request to the next handler in the stack.
+	next(new UnhandledPathError(req.path)); // Passing the request to the next handler in the stack.
 });
 
 // Error handling
 app.use((err: ErrorResponse, req: Request, res: Response, next: NextFunction) => {
-    // If err.msg is set, use that. Otherwise generate a generic error
-    let message: BaseError = err.msg || new BaseError('unexpected error');
-    
-    // Log the error
-    console.log(`\n ${JSON.stringify(message)} \n`);
+	// If err.msg is set, use that. Otherwise generate a generic error
+	const message: BaseError = err.msg || new BaseError('unexpected error');
 
-    // Avoid bugs when sending error after res.send() is called
-    if (res.headersSent) {
-        return next(err)
-    }
+	// Log the error
+	console.log(`\n ${JSON.stringify(message)} \n`);
 
-    // Set status. Default: 500 Internal Server Error
-    res.status(err.status || 500);
-    // Send error
-    res.json(message);
-    next(); // Passing the request to the next handler in the stack.
+	// Avoid bugs when sending error after res.send() is called
+	if (res.headersSent) {
+		return next(err)
+	}
+
+	// Set status. Default: 500 Internal Server Error
+	res.status(err.status || 500);
+	// Send error
+	res.json(message);
+	next(); // Passing the request to the next handler in the stack.
 });
 
 export default app;
- 
+

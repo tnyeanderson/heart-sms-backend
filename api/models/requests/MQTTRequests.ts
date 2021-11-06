@@ -6,15 +6,15 @@ import { BaseRequest } from "./BaseRequests.js";
  * mqtt/login
  */
 export class MQTTLoginRequest extends BaseRequest {
-    // Body
-    @Required username: string;
-    @Required password: string;
+	// Body
+	@Required username: string;
+	@Required password: string;
 
-    constructor(r: any) {
-        super();
-        this.username = String(r.username);
-        this.password = String(r.password);
-    }
+	constructor(r: MQTTLoginRequest) {
+		super();
+		this.username = String(r.username);
+		this.password = String(r.password);
+	}
 }
 
 
@@ -22,13 +22,13 @@ export class MQTTLoginRequest extends BaseRequest {
  * mqtt/acl
  */
 export class MQTTAclRequest extends BaseRequest {
-    // Body
-    @Required username: string;
-    @Required topic: string;
+	// Body
+	@Required username: string;
+	@Required topic: string;
 
-    constructor(r: any) {
-        super();
-        this.username = String(r.username);
-        this.topic = String(r.topic);
-    }
+	constructor(r: MQTTAclRequest) {
+		super();
+		this.username = String(r.username);
+		this.topic = String(r.topic);
+	}
 }
