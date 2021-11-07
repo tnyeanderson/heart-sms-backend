@@ -17,7 +17,6 @@ export class added_message extends BasePayload {
 	) { super() }
 }
 
-
 export class updated_message extends BasePayload {
 	constructor (
         public id: number,
@@ -28,7 +27,6 @@ export class updated_message extends BasePayload {
 	) { super() }
 }
 
-
 export class update_message_type extends BasePayload {
 	constructor (
         public id: string,
@@ -36,20 +34,17 @@ export class update_message_type extends BasePayload {
 	) { super() }
 }
 
-
 export class removed_message extends BasePayload {
 	constructor (
         public id: number
 	) { super() }
 }
 
-
 export class cleanup_messages extends BasePayload {
 	constructor (
         public timestamp: number
 	) { super() }
 }
-
 
 export class forward_to_phone extends BasePayload {
 	constructor (

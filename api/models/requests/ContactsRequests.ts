@@ -1,7 +1,6 @@
 import { AtLeastOne, ItemsProp, Optional, Required } from "../../utils/decorators.js";
 import { AccountIdRequest, BaseRequest, HasItemsRequest, UpdateDeviceIdRequest } from "./BaseRequests.js";
 
-
 /**
  * contacts/remove_device_id
  */
@@ -17,7 +16,6 @@ export class ContactsRemoveDeviceIdRequest extends AccountIdRequest {
 	}
 }
 
-
 /**
  * contacts/remove_ids/:ids
  */
@@ -30,8 +28,6 @@ export class ContactsRemoveIdsRequest extends AccountIdRequest {
 		this.ids = String(r.ids);
 	}
 }
-
-
 
 /**
  * contacts/add
@@ -72,8 +68,6 @@ export class ContactsAddRequest extends HasItemsRequest {
 
 	static itemsPropType = ContactsAddItem;
 }
-
-
 
 /**
  * contacts/update_device_id

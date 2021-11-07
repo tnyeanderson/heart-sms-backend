@@ -2,7 +2,6 @@ import cors from 'cors';
 import express, { json, NextFunction, Request, Response } from 'express';
 import 'reflect-metadata';
 
-
 // Controllers
 import AccountsController from './controllers/AccountsController.js';
 import ActivateController from './controllers/ActivateController.js';
@@ -24,7 +23,6 @@ import { BaseError } from './models/errors/Errors.js';
 import { ErrorResponse, UnhandledPathError } from './models/responses/ErrorResponses.js';
 import { splash } from './utils/splash.js';
 
-
 // Show the console splash
 splash();
 
@@ -35,7 +33,7 @@ const app = express();
  * @param path top-level api url path (e.g. '/accounts')
  */
 function getUrl (path: string) {
-	return '/api/v1' + path;
+	return `/api/v1${path}`;
 }
 
 // Allow cross-site requests
@@ -44,25 +42,23 @@ app.use(cors());
 // Parse JSON in request body
 app.use(json())
 
-
-
 // Define routes to controllers
-app.use(getUrl('/accounts'),           AccountsController);
-app.use(getUrl('/activate'),           ActivateController);
-app.use(getUrl('/article'),            ArticleController);
-app.use(getUrl('/auto_replies'),       AutoRepliesController);
-app.use(getUrl('/blacklists'),         BlacklistsController);
-app.use(getUrl('/contacts'),           ContactsController);
-app.use(getUrl('/conversations'),      ConversationsController);
-app.use(getUrl('/devices'),            DevicesController);
-app.use(getUrl('/drafts'),             DraftsController);
-app.use(getUrl('/folders'),            FoldersController);
-app.use(getUrl('/media'),              MediaController);
-app.use(getUrl('/messages'),           MessagesController);
-app.use(getUrl('/mqtt'),               MQTTController);
-app.use(getUrl('/purchases'),          PurchasesController);
+app.use(getUrl('/accounts'), AccountsController);
+app.use(getUrl('/activate'), ActivateController);
+app.use(getUrl('/article'), ArticleController);
+app.use(getUrl('/auto_replies'), AutoRepliesController);
+app.use(getUrl('/blacklists'), BlacklistsController);
+app.use(getUrl('/contacts'), ContactsController);
+app.use(getUrl('/conversations'), ConversationsController);
+app.use(getUrl('/devices'), DevicesController);
+app.use(getUrl('/drafts'), DraftsController);
+app.use(getUrl('/folders'), FoldersController);
+app.use(getUrl('/media'), MediaController);
+app.use(getUrl('/messages'), MessagesController);
+app.use(getUrl('/mqtt'), MQTTController);
+app.use(getUrl('/purchases'), PurchasesController);
 app.use(getUrl('/scheduled_messages'), ScheduledMessagesController);
-app.use(getUrl('/templates'),          TemplatesController);
+app.use(getUrl('/templates'), TemplatesController);
 
 // Log requests with no endpoint
 app.use((req: Request, res: Response, next) => {

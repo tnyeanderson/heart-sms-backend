@@ -1,7 +1,6 @@
 import { ItemsProp, Optional, Required } from "../../utils/decorators.js";
 import { AccountIdRequest, BaseRequest, HasItemsRequest, UpdateDeviceIdRequest } from "./BaseRequests.js";
 
-
 /**
  * drafts/:device_conversation_id
  */
@@ -15,8 +14,6 @@ export class DraftsGetDraftRequest extends AccountIdRequest {
 	}
 }
 
-
-
 /**
  * drafts/remove/:device_conversation_id
  */
@@ -29,7 +26,6 @@ export class DraftsRemoveRequest extends DraftsGetDraftRequest {
 		this.android_device = String(r.android_device);
 	}
 }
-
 
 /**
  * drafts/add
@@ -61,7 +57,6 @@ export class DraftsAddRequest extends HasItemsRequest {
 	static itemsPropType = DraftsAddItem;
 }
 
-
 /**
  * drafts/update/:device_id
  */
@@ -76,7 +71,6 @@ export class DraftsUpdateRequest extends UpdateDeviceIdRequest {
 		this.setOptional('mime_type', r, String);
 	}
 }
-
 
 /**
  * drafts/replace/:device_conversation_id

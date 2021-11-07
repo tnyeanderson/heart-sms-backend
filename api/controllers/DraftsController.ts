@@ -18,13 +18,14 @@ router.route('/').get(
 
 		const fields = ['session_id AS account_id', 'id', 'device_id', 'device_conversation_id', 'mime_type', 'data'];
 
-		const sql = `SELECT ${db.selectFields(fields)} FROM ${table} INNER JOIN SessionMap USING (account_id) WHERE ${r.whereAccount()} ${db.newestFirst(table)}`;
+		const sql = `SELECT ${db.selectFields(fields)} FROM ${table}
+			INNER JOIN SessionMap USING (account_id)
+			WHERE ${r.whereAccount()} ${db.newestFirst(table)}`;
 
 		const result = await db.query(sql);
 
 		res.json(DraftsListResponse.getList(result));
 	}));
-
 
 router.route('/:device_conversation_id').get(
 	(req, res, next) => DraftsGetDraftRequest.handler(req, res, next),
@@ -33,14 +34,14 @@ router.route('/:device_conversation_id').get(
 
 		const fields = ['session_id AS account_id', 'id', 'device_id', 'device_conversation_id', 'mime_type', 'data'];
 
-		const sql = `SELECT ${db.selectFields(fields)} FROM ${table} INNER JOIN SessionMap USING (account_id) WHERE device_conversation_id = ${db.escape(Number(r.device_conversation_id))} AND ${r.whereAccount()}`;
-
+		const sql = `SELECT ${db.selectFields(fields)} FROM ${table}
+			INNER JOIN SessionMap USING (account_id)
+			WHERE device_conversation_id = ${db.escape(Number(r.device_conversation_id))} AND ${r.whereAccount()}`;
 
 		const result = await db.query(sql);
 
 		res.json(DraftsListResponse.getList(result));
 	}));
-
 
 router.route('/add').post(
 	(req, res, next) => DraftsAddRequest.handler(req, res, next),
@@ -71,13 +72,13 @@ router.route('/add').post(
 		});
 	}));
 
-
 router.route('/remove/:device_conversation_id').post(
 	(req, res, next) => DraftsRemoveRequest.handler(req, res, next),
 	asyncHandler(async (req, res) => {
 		const r: DraftsRemoveRequest = res.locals.request;
 
-		const sql = `DELETE FROM ${table} WHERE device_conversation_id = ${db.escape(Number(r.device_conversation_id))} AND ${r.whereAccount()}`;
+		const sql = `DELETE FROM ${table}
+			WHERE device_conversation_id = ${db.escape(Number(r.device_conversation_id))} AND ${r.whereAccount()}`;
 
 		await db.query(sql);
 
@@ -92,7 +93,6 @@ router.route('/remove/:device_conversation_id').post(
 		payload.send(r.account_id);
 	}));
 
-
 router.route('/update/:device_id').post(
 	(req, res, next) => DraftsUpdateRequest.handler(req, res, next),
 	asyncHandler(async (req, res) => {
@@ -102,7 +102,9 @@ router.route('/update/:device_id').post(
 
 		const payloadFields = ["device_id AS id", "device_conversation_id AS conversation_id", "data", "mime_type"];
 
-		const sql = `UPDATE ${table} SET ${r.updateStr()} WHERE device_id = ${db.escape(Number(r.device_id))} AND ${r.whereAccount()} RETURNING ${db.selectFields(payloadFields)}`;
+		const sql = `UPDATE ${table} SET ${r.updateStr()}
+			WHERE device_id = ${db.escape(Number(r.device_id))} AND ${r.whereAccount()}
+			RETURNING ${db.selectFields(payloadFields)}`;
 
 		const result = await db.query(sql);
 		res.json(new BaseResponse);
@@ -117,7 +119,6 @@ router.route('/update/:device_id').post(
 		payload.send(r.account_id);
 	}));
 
-
 router.route('/replace/:device_conversation_id').post(
 	(req, res, next) => DraftsReplaceRequest.handler(req, res, next),
 	asyncHandler(async (req, res) => {
@@ -125,7 +126,8 @@ router.route('/replace/:device_conversation_id').post(
 
 		// Only the first item is ever processed
 		// URL param is ignored, device_conversation_id in the items aray in the body is used
-		const sql = `UPDATE ${table} SET ${db.updateStr(r.drafts[0])} WHERE device_conversation_id = ${db.escape(Number(r.drafts[0].device_conversation_id))} AND ${r.whereAccount()}`;
+		const sql = `UPDATE ${table} SET ${db.updateStr(r.drafts[0])}
+			WHERE device_conversation_id = ${db.escape(Number(r.drafts[0].device_conversation_id))} AND ${r.whereAccount()}`;
 
 		await db.query(sql);
 

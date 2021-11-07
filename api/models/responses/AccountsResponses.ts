@@ -13,7 +13,6 @@ export class SignupResponse extends BaseResponse {
 	}
 }
 
-
 export class CountResponse extends BaseResponse {
 	device_count?: number;
 	message_count?: number;
@@ -41,7 +40,6 @@ export class CountResponse extends BaseResponse {
 
 	}
 }
-
 
 export class SettingsResponse extends BaseResponse {
 	base_theme?: string;
@@ -75,7 +73,6 @@ export class SettingsResponse extends BaseResponse {
 		this.setProp('conversation_categories', r, Boolean);
 	}
 }
-
 
 export class LoginResponse extends BaseResponse {
 	account_id?: string;

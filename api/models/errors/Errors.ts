@@ -4,7 +4,6 @@ export class BaseError extends Error {
 	) { super() }
 }
 
-
 export class MQTTNotConnectedError extends BaseError {
 	constructor() { super("Not connected to MQTT, can't send a message") }
 }

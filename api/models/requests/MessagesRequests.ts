@@ -1,8 +1,6 @@
 import { AtLeastOne, ItemsProp, Optional, Required } from "../../utils/decorators.js";
 import { AccountIdRequest, BaseRequest, HasItemsRequest, LimitOffsetRequest, UpdateDeviceIdRequest } from "./BaseRequests.js";
 
-
-
 /**
  * messages/
  */
@@ -15,8 +13,6 @@ export class MessagesGetRequest extends LimitOffsetRequest {
 		this.setOptional('conversation_id', r, Number);
 	}
 }
-
-
 
 /**
  * messages/add
@@ -64,7 +60,6 @@ export class MessagesAddRequest extends HasItemsRequest {
 	static itemsPropType = MessagesAddItem;
 }
 
-
 /**
  * messages/update/:device_id
  */
@@ -85,7 +80,6 @@ export class MessagesUpdateRequest extends UpdateDeviceIdRequest {
 	}
 }
 
-
 /**
  * messages/update_type/:device_id
  */
@@ -99,7 +93,6 @@ export class MessagesUpdateTypeRequest extends UpdateDeviceIdRequest {
 	}
 }
 
-
 /**
  * messages/cleanup
  */
@@ -112,7 +105,6 @@ export class MessagesCleanupRequest extends AccountIdRequest {
 		this.timestamp = Number(r.timestamp);
 	}
 }
-
 
 /**
  * messages/forward_to_phone

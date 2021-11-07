@@ -11,12 +11,10 @@ export class added_folder extends BasePayload {
 	) { super() }
 }
 
-
 export class removed_folder extends BasePayload {
 	constructor (
         public id: number
 	) { super() }
 }
-
 
 export class updated_folder extends added_folder { }

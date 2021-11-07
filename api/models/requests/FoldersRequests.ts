@@ -1,7 +1,6 @@
 import { ItemsProp, Required } from "../../utils/decorators.js";
 import { BaseRequest, HasItemsRequest, UpdateDeviceIdRequest } from "./BaseRequests.js";
 
-
 /**
  * folders/add
  */
@@ -33,10 +32,8 @@ export class FoldersAddRequest extends HasItemsRequest {
 		this.folders = FoldersAddRequest.createItems(r.folders);
 	}
 
-
 	static itemsPropType = FoldersAddItem;
 }
-
 
 /**
  * folders/update/:device_id

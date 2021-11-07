@@ -6,7 +6,6 @@ export class removed_scheduled_message extends BasePayload {
 	) { super() }
 }
 
-
 export class added_scheduled_message extends BasePayload {
 	constructor (
         public id: number,
@@ -18,6 +17,5 @@ export class added_scheduled_message extends BasePayload {
         public repeat: number
 	) { super() }
 }
-
 
 export class updated_scheduled_message extends added_scheduled_message { }

@@ -18,7 +18,3 @@ export class DraftsListResponse extends BaseResponse {
 		this.setProp('mime_type', r, String);
 	}
 }
-
-
-
-

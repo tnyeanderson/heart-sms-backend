@@ -1,7 +1,6 @@
 import { Required } from "../../utils/decorators.js";
 import { BaseRequest } from "./BaseRequests.js";
 
-
 /**
  * mqtt/login
  */
@@ -16,7 +15,6 @@ export class MQTTLoginRequest extends BaseRequest {
 		this.password = String(r.password);
 	}
 }
-
 
 /**
  * mqtt/acl

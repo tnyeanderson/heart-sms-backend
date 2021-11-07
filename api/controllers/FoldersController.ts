@@ -18,13 +18,14 @@ router.route('/').get(
 
 		const fields = ['session_id AS account_id', 'id', 'device_id', 'name', 'color', 'color_dark', 'color_light', 'color_accent'];
 
-		const sql = `SELECT ${db.selectFields(fields)} FROM ${table} INNER JOIN SessionMap USING (account_id) WHERE ${r.whereAccount()} ${db.newestFirst(table)}`;
+		const sql = `SELECT ${db.selectFields(fields)} FROM ${table}
+			INNER JOIN SessionMap USING (account_id)
+			WHERE ${r.whereAccount()} ${db.newestFirst(table)}`;
 
 		const result = await db.query(sql);
 
 		res.json(FoldersListResponse.getList(result));
 	}));
-
 
 router.route('/add').post(
 	(req, res, next) => FoldersAddRequest.handler(req, res, next),
@@ -58,7 +59,6 @@ router.route('/add').post(
 
 	}));
 
-
 router.route('/remove/:device_id').post(
 	(req, res, next) => DeviceIdRequest.handler(req, res, next),
 	asyncHandler(async (req, res) => {
@@ -78,7 +78,6 @@ router.route('/remove/:device_id').post(
 		// Send websocket message
 		payload.send(r.account_id);
 	}));
-
 
 router.route('/update/:device_id').post(
 	(req, res, next) => FoldersUpdateRequest.handler(req, res, next),

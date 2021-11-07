@@ -1,7 +1,6 @@
 import { ItemsProp, Required } from "../../utils/decorators.js";
 import { BaseRequest, HasItemsRequest, UpdateDeviceIdRequest } from "./BaseRequests.js";
 
-
 /**
  * auto_replies/update/:device_id
  */
@@ -18,8 +17,6 @@ export class AutoRepliesUpdateRequest extends UpdateDeviceIdRequest {
 		this.response = String(r.response);
 	}
 }
-
-
 
 /**
  * auto_replies/add

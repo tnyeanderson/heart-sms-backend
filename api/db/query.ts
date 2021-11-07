@@ -7,7 +7,7 @@ import util from '../utils/util.js';
 // Set to true to debug SQL queries during development
 const log_queries = false;
 
-const pool: pg.Pool  = new pg.Pool(connection());
+const pool: pg.Pool = new pg.Pool(connection());
 
 class Query {
 
@@ -138,7 +138,6 @@ class Query {
 				fieldstr += ` AS ${Query.escapeId(parts[1])}`;
 			}
 
-
 			out.push(fieldstr);
 		});
 
@@ -169,7 +168,7 @@ class Query {
 		const vals = items.map((item) => {
 			// Push the val array of the item to be inserted to the list of items to be inserted
 			return Object.entries(item).map(([key, value]) => {
-				if (key == 'account_id') {
+				if (key === 'account_id') {
 					// Translate session id to account id using MYSQL function
 					return Query.translateSessionToAccount(value as string);
 				} else {

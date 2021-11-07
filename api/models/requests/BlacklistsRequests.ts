@@ -1,7 +1,6 @@
 import { AtLeastOne, ItemsProp, Optional, Required } from "../../utils/decorators.js";
 import { BaseRequest, HasItemsRequest } from "./BaseRequests.js";
 
-
 /**
  * blacklists/add
  */

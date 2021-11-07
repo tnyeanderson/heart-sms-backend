@@ -15,5 +15,4 @@ export class added_auto_reply extends BasePayload {
 	) { super() }
 }
 
-
 export class updated_auto_reply extends added_auto_reply {}

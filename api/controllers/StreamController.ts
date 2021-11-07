@@ -17,7 +17,7 @@ class StreamController {
 		const protocol = (process.env.HEART_USE_SSL === 'true') ? 'mqtts://' : 'mqtt://';
 		const url = (process.env.HEART_MQTT_URL) ? process.env.HEART_MQTT_URL : 'localhost';
 
-		console.log("Connecting to " + username + ":" + this.backendPassword + "@" + protocol + url);
+		console.log(`Connecting to ${username}: ${this.backendPassword}@${protocol}${url}`);
 
 		this.socket = mqtt.connect(protocol + url, {
 			clientId: 'heart-sms-backend',
@@ -57,5 +57,4 @@ class StreamController {
 const streamController = new StreamController();
 
 export default streamController;
-
 

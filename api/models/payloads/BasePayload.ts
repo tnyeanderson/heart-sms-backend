@@ -1,6 +1,5 @@
 import streamController from "../../controllers/StreamController.js";
 
-
 export class BasePayload {
 	/**
      * Publishes an MQTT message

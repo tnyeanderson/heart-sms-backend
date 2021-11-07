@@ -25,7 +25,6 @@ router.route('/').get(
 		res.json(DevicesListResponse.getList(result));
 	}));
 
-
 router.route('/add').post(
 	(req, res, next) => DevicesAddRequest.handler(req, res, next),
 	asyncHandler(async (req, res) => {
@@ -47,7 +46,6 @@ router.route('/add').post(
 		res.json(DevicesAddResponse.fromResult([r.device]));
 	}));
 
-
 router.route('/remove/:id').post(
 	(req, res, next) => DevicesRemoveRequest.handler(req, res, next),
 	asyncHandler(async (req, res) => {
@@ -61,7 +59,6 @@ router.route('/remove/:id').post(
 		res.json(new BaseResponse);
 	}));
 
-
 router.route('/update/:id').post(
 	(req, res, next) => DevicesUpdateRequest.handler(req, res, next),
 	asyncHandler(async (req, res) => {
@@ -73,7 +70,6 @@ router.route('/update/:id').post(
 
 		res.json(new BaseResponse);
 	}));
-
 
 router.route('/update_primary').post(
 	(req, res, next) => DevicesUpdatePrimaryRequest.handler(req, res, next),

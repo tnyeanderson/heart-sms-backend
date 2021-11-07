@@ -23,4 +23,3 @@ export class FoldersListResponse extends BaseResponse {
 	}
 }
 
-

@@ -8,7 +8,6 @@ export class added_blacklist extends BasePayload {
 	) { super() }
 }
 
-
 export class removed_blacklist extends BasePayload {
 	constructor (
         public id: number
