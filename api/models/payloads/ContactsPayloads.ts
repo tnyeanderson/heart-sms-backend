@@ -12,7 +12,6 @@ export class added_contact extends BasePayload {
 	) { super() }
 }
 
-
 export class updated_contact extends BasePayload {
 	constructor (
         public device_id: number,
@@ -26,14 +25,12 @@ export class updated_contact extends BasePayload {
 	) { super() }
 }
 
-
 export class removed_contact extends BasePayload {
 	constructor (
         public device_id: number,
         public phone_number: string
 	) { super() }
 }
-
 
 export class removed_contact_by_id extends BasePayload {
 	constructor (

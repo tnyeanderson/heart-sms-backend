@@ -17,7 +17,6 @@ function allow (res: Response) {
 	res.json(new MQTTAllowResponse);
 }
 
-
 router.route('/login').post(
 	(req, res, next) => MQTTLoginRequest.handler(req, res, next),
 	asyncHandler(async (req, res) => {
@@ -31,7 +30,10 @@ router.route('/login').post(
 			return allow(res);
 		}
 
-		const sql = `SELECT ${db.escapeId('session_id')} FROM Accounts INNER JOIN SessionMap USING (account_id) WHERE username = ${db.escape(r.username)} LIMIT 1`;
+		const sql = `SELECT ${db.escapeId('session_id')} FROM Accounts
+			INNER JOIN SessionMap USING (account_id)
+			WHERE username = ${db.escape(r.username)}
+			LIMIT 1`;
 
 		const result = await db.query(sql);
 
@@ -46,7 +48,6 @@ router.route('/login').post(
 		}
 	}));
 
-
 router.route('/acl').post(
 	(req, res, next) => MQTTAclRequest.handler(req, res, next),
 	asyncHandler(async (req, res) => {
@@ -58,7 +59,10 @@ router.route('/acl').post(
 			return;
 		}
 
-		const sql = `SELECT ${db.escapeId('session_id')} FROM Accounts INNER JOIN SessionMap USING (account_id) WHERE username = ${db.escape(r.username)} LIMIT 1`;
+		const sql = `SELECT ${db.escapeId('session_id')} FROM Accounts
+			INNER JOIN SessionMap USING (account_id)
+			WHERE username = ${db.escape(r.username)}
+			LIMIT 1`;
 
 		const result = await db.query(sql);
 
@@ -67,7 +71,7 @@ router.route('/acl').post(
 			return;
 		}
 
-		if (r.topic === 'heartsms/' + result[0].session_id) {
+		if (r.topic === `heartsms/${result[0].session_id}`) {
 			allow(res);
 		} else {
 			deny(res);

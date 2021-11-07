@@ -22,7 +22,6 @@ export class BaseResponse {
 		return new this(result[0]);
 	}
 
-
 	/**
      * Creates an array of instances of the calling class from a result
      * Used for GET results which are arrays of items

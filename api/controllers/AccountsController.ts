@@ -27,7 +27,9 @@ router.route('/login').post(
 			'conversation_categories', 'color', 'color_dark', 'color_light', 'color_accent', 'global_color_theme',
 			'message_timestamp', 'subscription_type', 'subscription_expiration'];
 
-		const sql = `SELECT ${db.selectFields(fields)} FROM Accounts INNER JOIN SessionMap USING (account_id) INNER JOIN Settings USING (account_id) WHERE username = ${db.escape(r.username)} LIMIT 1`;
+		const sql = `SELECT ${db.selectFields(fields)} FROM Accounts
+			INNER JOIN SessionMap USING (account_id) INNER JOIN Settings USING (account_id)
+			WHERE username = ${db.escape(r.username)} LIMIT 1`;
 
 		const result = await db.query(sql);
 
@@ -37,14 +39,13 @@ router.route('/login').post(
 
 		const testHash = await hashPassword(r.password, result[0].salt1);
 
-		if (testHash.length && result[0].password_hash == testHash) {
+		if (testHash.length && result[0].password_hash === testHash) {
 			const response = AccountsResponses.LoginResponse.fromResult(result);
 			res.json(response);
 		} else {
 			return next(new AuthError);
 		}
 	}));
-
 
 router.route('/signup').post(
 	(req, res, next) => SignupRequest.handler(req, res, next),
@@ -84,7 +85,6 @@ router.route('/signup').post(
 		}
 	}));
 
-
 router.route('/remove_account').post(
 	(req, res, next) => AccountIdRequest.handler(req, res, next),
 	asyncHandler(async (req, res) => {
@@ -104,13 +104,13 @@ router.route('/remove_account').post(
 		res.json(new BaseResponse);
 	}));
 
-
 router.route('/count').get(
 	(req, res, next) => AccountIdRequest.handler(req, res, next),
 	asyncHandler(async (req, res) => {
 		const r: AccountIdRequest = res.locals.request;
 
-		const fields = ["device_count", "message_count", "conversation_count", "draft_count", "scheduled_count", "blacklist_count", "contact_count", "template_count", "folder_count", "auto_reply_count"];
+		const fields = ["device_count", "message_count", "conversation_count", "draft_count", "scheduled_count",
+			"blacklist_count", "contact_count", "template_count", "folder_count", "auto_reply_count"];
 
 		const sql = `SELECT ${db.selectFields(fields)} from CountsView where ${r.whereAccount()}`;
 
@@ -151,7 +151,9 @@ router.route('/settings').get(
 	asyncHandler(async (req, res) => {
 		const r: AccountIdRequest = res.locals.request;
 
-		const fields = ["base_theme", "global_color_theme", "rounder_bubbles", "color", "color_dark", "color_light", "color_accent", "use_global_theme", "apply_primary_color_toolbar", "passcode", "subscription_type", "message_timestamp", "conversation_categories"];
+		const fields = ["base_theme", "global_color_theme", "rounder_bubbles", "color", "color_dark",
+			"color_light", "color_accent", "use_global_theme", "apply_primary_color_toolbar", "passcode",
+			"subscription_type", "message_timestamp", "conversation_categories"];
 
 		const sql = `SELECT ${db.selectFields(fields)} FROM Settings WHERE ${r.whereAccount()} LIMIT 1`;
 
@@ -161,7 +163,6 @@ router.route('/settings').get(
 
 		res.json(response);
 	}));
-
 
 router.route('/dismissed_notification').post(
 	(req, res, next) => DismissedNotificationRequest.handler(req, res, next),
@@ -178,7 +179,6 @@ router.route('/dismissed_notification').post(
 		res.json(new BaseResponse);
 	});
 
-
 router.route('/update_subscription').post(
 	(req, res, next) => AccountIdRequest.handler(req, res, next),
 	function (req, res) {
@@ -186,7 +186,6 @@ router.route('/update_subscription').post(
 		// Respond for compatibility
 		res.json(new BaseResponse);
 	});
-
 
 router.route('/update_setting').post(
 	(req, res, next) => UpdateSettingRequest.handler(req, res, next),

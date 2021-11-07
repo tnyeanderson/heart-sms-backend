@@ -21,7 +21,6 @@ export class DevicesListResponse extends BaseResponse {
 	}
 }
 
-
 export class DevicesAddResponse extends BaseResponse {
 	id?: number;
 

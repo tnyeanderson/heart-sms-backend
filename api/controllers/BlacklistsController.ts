@@ -7,7 +7,6 @@ import { BlacklistsAddRequest } from '../models/requests/BlacklistsRequests.js';
 import { BaseResponse } from '../models/responses/BaseResponse.js';
 import { BlacklistListResponse } from '../models/responses/BlacklistsResponses.js';
 
-
 const router = express.Router();
 
 const table = "Blacklists"
@@ -19,13 +18,14 @@ router.route('/').get(
 
 		const fields = ['session_id AS account_id', 'id', 'device_id', 'phone_number', 'phrase'];
 
-		const sql = `SELECT ${db.selectFields(fields)} FROM ${table} INNER JOIN SessionMap USING (account_id) WHERE ${r.whereAccount()} ${db.newestFirst(table)}`;
+		const sql = `SELECT ${db.selectFields(fields)} FROM ${table}
+			INNER JOIN SessionMap USING (account_id)
+			WHERE ${r.whereAccount()} ${db.newestFirst(table)}`;
 
 		const result = await db.query(sql);
 
 		res.json(BlacklistListResponse.getList(result));
 	}));
-
 
 router.route('/add').post(
 	(req, res, next) => BlacklistsAddRequest.handler(req, res, next),
@@ -54,7 +54,6 @@ router.route('/add').post(
 			payload.send(r.account_id);
 		});
 	}));
-
 
 router.route('/remove/:device_id').post(
 	(req, res, next) => DeviceIdRequest.handler(req, res, next),

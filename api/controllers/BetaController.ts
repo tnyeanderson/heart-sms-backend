@@ -10,12 +10,10 @@ router.route('/register').post(function (req, res) {
 	res.json(new BaseResponse);
 });
 
-
 router.route('/remove').post(function (req, res) {
 	// Respond for compatibility
 	res.json(new BaseResponse);
 });
-
 
 export default router;
 

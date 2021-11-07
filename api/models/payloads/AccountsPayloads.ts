@@ -7,13 +7,11 @@ export class dismissed_notification extends BasePayload {
 	) { super() }
 }
 
-
 export class cleaned_account extends BasePayload {
 	constructor (
         public id: string
 	) { super() }
 }
-
 
 export class update_setting extends BasePayload {
 	constructor (
@@ -22,6 +20,5 @@ export class update_setting extends BasePayload {
         public value: unknown
 	) { super() }
 }
-
 
 export class removed_account extends cleaned_account {}

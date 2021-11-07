@@ -28,7 +28,6 @@ export class ContactsSimpleListResponse extends ContactsBaseListResponse {
 	}
 }
 
-
 export class ContactsListResponse extends ContactsBaseListResponse {
 	account_id?: string;
 	device_id?: number;

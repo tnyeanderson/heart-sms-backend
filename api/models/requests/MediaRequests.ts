@@ -1,8 +1,6 @@
 import { Required } from "../../utils/decorators.js";
 import { AccountIdRequest } from "./BaseRequests.js";
 
-
-
 /**
  * media/:message_id
  */
@@ -15,8 +13,6 @@ export class MediaGetRequest extends AccountIdRequest {
 		this.message_id = Number(r.message_id);
 	}
 }
-
-
 
 /**
  * media/add

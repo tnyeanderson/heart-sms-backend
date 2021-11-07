@@ -3,7 +3,6 @@ import { AtLeastOne, Optional, Required } from '../../utils/decorators.js';
 import { MissingParamError } from "../responses/ErrorResponses.js";
 import { AccountIdRequest, BaseRequest, UpdateRequest } from "./BaseRequests.js";
 
-
 /**
  * devices/add
  */
@@ -56,7 +55,6 @@ export class DevicesAddRequest extends AccountIdRequest {
 	}
 }
 
-
 /**
  * devices/remove/:id
  */
@@ -69,7 +67,6 @@ export class DevicesRemoveRequest extends AccountIdRequest {
 		this.id = Number(r.id);
 	}
 }
-
 
 /**
  * devices/update/:id
@@ -96,8 +93,6 @@ export class DevicesUpdateRequest extends UpdateRequest {
 		return Object.assign({ device_id: id }, out);
 	}
 }
-
-
 
 /**
  * devices/update_primary

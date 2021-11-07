@@ -1,7 +1,6 @@
 import { ItemsProp, Required } from "../../utils/decorators.js";
 import { BaseRequest, HasItemsRequest, UpdateDeviceIdRequest } from "./BaseRequests.js";
 
-
 /**
  * templates/add
  */
@@ -27,7 +26,6 @@ export class TemplatesAddRequest extends HasItemsRequest {
 
 	static itemsPropType = TemplatesAddItem;
 }
-
 
 /**
  * templates/update/:device_id

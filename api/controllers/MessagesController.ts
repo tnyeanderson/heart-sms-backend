@@ -27,13 +27,15 @@ router.route('/').get(
 			whereConversationStr = ` AND device_conversation_id =  ${db.escape(Number(r.conversation_id))} `;
 		}
 
-		const sql = `SELECT ${db.selectFields(fields)} FROM ${table} INNER JOIN SessionMap USING (account_id) WHERE ${r.whereAccount()} ${whereConversationStr} ORDER BY timestamp DESC ${r.limitStr()}`;
+		const sql = `SELECT ${db.selectFields(fields)} FROM ${table}
+			INNER JOIN SessionMap USING (account_id)
+			WHERE ${r.whereAccount()} ${whereConversationStr}
+			ORDER BY timestamp DESC ${r.limitStr()}`;
 
 		const result = await db.query(sql);
 
 		res.json(MessagesListResponse.getList(result));
 	}));
-
 
 router.route('/remove/:device_id').post(
 	(req, res, next) => DeviceIdRequest.handler(req, res, next),
@@ -53,7 +55,6 @@ router.route('/remove/:device_id').post(
 		// Send websocket message
 		payload.send(r.account_id);
 	}));
-
 
 router.route('/add').post(
 	(req, res, next) => MessagesAddRequest.handler(req, res, next),
@@ -93,7 +94,6 @@ router.route('/add').post(
 		});
 	}));
 
-
 router.route('/update/:device_id').post(
 	(req, res, next) => MessagesUpdateRequest.handler(req, res, next),
 	asyncHandler(async (req, res) => {
@@ -101,7 +101,9 @@ router.route('/update/:device_id').post(
 
 		const payloadFields = ['device_id AS id', 'message_type AS type', 'timestamp'];
 
-		const sql = `UPDATE ${table} SET ${r.updateStr()} WHERE device_id = ${db.escape(Number(r.device_id))} AND ${r.whereAccount()} RETURNING ${db.selectFields(payloadFields)}`;
+		const sql = `UPDATE ${table} SET ${r.updateStr()}
+			WHERE device_id = ${db.escape(Number(r.device_id))} AND ${r.whereAccount()}
+			RETURNING ${db.selectFields(payloadFields)}`;
 
 		const result = await db.query(sql);
 
@@ -118,7 +120,6 @@ router.route('/update/:device_id').post(
 
 		payload.send(r.account_id);
 	}));
-
 
 router.route('/update_type/:device_id').post(
 	(req, res, next) => MessagesUpdateTypeRequest.handler(req, res, next),
@@ -140,7 +141,6 @@ router.route('/update_type/:device_id').post(
 		payload.send(r.account_id);
 	}));
 
-
 router.route('/cleanup').post(
 	(req, res, next) => MessagesCleanupRequest.handler(req, res, next),
 	asyncHandler(async (req, res) => {
@@ -159,7 +159,6 @@ router.route('/cleanup').post(
 		// Send websocket message
 		payload.send(r.account_id);
 	}));
-
 
 router.route('/forward_to_phone').post(
 	(req, res, next) => MessagesForwardToPhoneRequest.handler(req, res, next),

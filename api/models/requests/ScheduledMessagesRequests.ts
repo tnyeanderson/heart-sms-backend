@@ -1,7 +1,6 @@
 import { AtLeastOne, ItemsProp, Optional, Required } from "../../utils/decorators.js";
 import { BaseRequest, HasItemsRequest, UpdateDeviceIdRequest } from "./BaseRequests.js";
 
-
 /**
  * scheduled_messages/add
  */
@@ -37,9 +36,6 @@ export class ScheduledMessagesAddRequest extends HasItemsRequest {
 
 	static itemsPropType = ScheduledMessagesAddItem;
 }
-
-
-
 
 /**
  * scheduled_messages/update/:device_id

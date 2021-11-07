@@ -5,7 +5,6 @@ import { Optional, Required } from "../../utils/decorators.js";
 import { DuplicateUserError, ParamTypeError, UserNotAllowedError } from "../responses/ErrorResponses.js";
 import { AccountIdRequest, BaseRequest } from "./BaseRequests.js";
 
-
 /**
  * accounts/signup
  */
@@ -64,7 +63,6 @@ export class SignupRequest extends BaseRequest {
 	}
 }
 
-
 /**
  * accounts/login
  */
@@ -78,7 +76,6 @@ export class LoginRequest extends BaseRequest {
 		this.password = String(r.password);
 	}
 }
-
 
 /**
  * accounts/dismissed_notification
@@ -94,7 +91,6 @@ export class DismissedNotificationRequest extends AccountIdRequest {
 		this.setOptional('device_id', r, String);
 	}
 }
-
 
 /**
  * accounts/update_setting

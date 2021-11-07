@@ -25,7 +25,6 @@ router.route('/').get(
 		res.json(TemplatesListResponse.getList(result));
 	}));
 
-
 router.route('/add').post(
 	(req, res, next) => TemplatesAddRequest.handler(req, res, next),
 	asyncHandler(async (req, res) => {
@@ -53,7 +52,6 @@ router.route('/add').post(
 		});
 	}));
 
-
 router.route('/remove/:device_id').post(
 	(req, res, next) => DeviceIdRequest.handler(req, res, next),
 	asyncHandler(async (req, res) => {
@@ -72,7 +70,6 @@ router.route('/remove/:device_id').post(
 
 		payload.send(r.account_id);
 	}));
-
 
 router.route('/update/:device_id').post(
 	(req, res, next) => TemplatesUpdateRequest.handler(req, res, next),

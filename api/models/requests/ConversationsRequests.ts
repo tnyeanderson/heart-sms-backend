@@ -14,8 +14,6 @@ export class ConversationsFolderRequest extends AccountIdRequest {
 	}
 }
 
-
-
 /**
  * conversations/add
  */
@@ -73,11 +71,8 @@ export class ConversationsAddRequest extends HasItemsRequest {
 		this.conversations = ConversationsAddRequest.createItems(r.conversations);
 	}
 
-
 	static itemsPropType = ConversationsAddItem;
 }
-
-
 
 /**
  * conversations/update/:device_id
@@ -119,7 +114,6 @@ export class ConversationsUpdateRequest extends UpdateDeviceIdRequest {
 	}
 }
 
-
 /**
  * conversations/update_snippet/:device_id
  */
@@ -140,7 +134,6 @@ export class ConversationsUpdateSnippetRequest extends UpdateDeviceIdRequest {
 	}
 }
 
-
 /**
  * conversations/update_title/:device_id
  */
@@ -153,7 +146,6 @@ export class ConversationsUpdateTitleRequest extends UpdateDeviceIdRequest {
 		this.title = String(r.title);
 	}
 }
-
 
 /**
  * conversations/read/:device_id
@@ -168,7 +160,6 @@ export class ConversationsReadRequest extends DeviceIdRequest {
 	}
 }
 
-
 /**
  * conversations/seen/:device_conversation_id
  */
@@ -182,7 +173,6 @@ export class ConversationsSeenRequest extends AccountIdRequest {
 	}
 }
 
-
 /**
  * conversations/add_to_folder/:device_id
  */
@@ -195,7 +185,6 @@ export class ConversationsAddToFolderRequest extends DeviceIdRequest {
 		this.folder_id = Number(r.folder_id);
 	}
 }
-
 
 /**
  * conversations/cleanup_messages/:device_id

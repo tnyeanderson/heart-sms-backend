@@ -24,7 +24,6 @@ export class added_conversation extends BasePayload {
 	) { super() }
 }
 
-
 export class updated_conversation extends BasePayload {
 	constructor (
         public id: number,
@@ -44,7 +43,6 @@ export class updated_conversation extends BasePayload {
 	) { super() }
 }
 
-
 export class update_conversation_snippet extends BasePayload {
 	constructor (
         public id: number,
@@ -55,14 +53,12 @@ export class update_conversation_snippet extends BasePayload {
 	) { super() }
 }
 
-
 export class update_conversation_title extends BasePayload {
 	constructor (
         public id: number,
         public title: string
 	) { super() }
 }
-
 
 export class read_conversation extends BasePayload {
 	constructor (
@@ -71,14 +67,12 @@ export class read_conversation extends BasePayload {
 	) { super() }
 }
 
-
 export class archive_conversation extends BasePayload {
 	constructor (
         public id: number,
         public archive: boolean
 	) { super() }
 }
-
 
 export class add_conversation_to_folder extends BasePayload {
 	constructor (
@@ -87,7 +81,6 @@ export class add_conversation_to_folder extends BasePayload {
 	) { super() }
 }
 
-
 export class cleanup_conversation_messages extends BasePayload {
 	constructor (
         public timestamp: number,
@@ -95,10 +88,7 @@ export class cleanup_conversation_messages extends BasePayload {
 	) { super() }
 }
 
-
-
 export class seen_conversations extends BasePayload { }
-
 
 export class seen_conversation extends BasePayload {
 	constructor (
@@ -106,8 +96,6 @@ export class seen_conversation extends BasePayload {
 	) { super() }
 }
 
-
 export class removed_conversation extends seen_conversation { }
-
 
 export class remove_conversation_from_folder extends seen_conversation { }

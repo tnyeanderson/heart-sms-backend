@@ -16,26 +16,22 @@ export class BaseRequest {
 	 */
 	// We MUST include the r here to avoid errors when calling new this(r) in .create()
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unused-vars, @typescript-eslint/no-empty-function
-	constructor(r?: any) {  }
-
+	constructor(r?: any) { }
 
 	/**
 	 * Array of query or body parameters that are required
 	 */
 	static required: string[] = [];
 
-
 	/**
 	 * Array of query or body parameters that are optional
 	 */
 	static optional: string[] = [];
 
-
 	/**
 	 * Whether at least one parameter in optional must be present
 	 */
 	static atLeastOne = false;
-
 
 	/**
 	 * Schema validation
@@ -44,7 +40,7 @@ export class BaseRequest {
 	 * Conventions are in api.md and comments in the Request definitions
 	 */
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	static validate (item: Request | any)  {
+	static validate (item: Request | any) {
 		// Combine request query, body, and url parameters into a single object
 		// If plain object, just use that
 		const toValidate = (item.query && item.body && item.params) ? Object.assign(item.query, item.body, item.params) : item;
@@ -115,11 +111,6 @@ export class BaseRequest {
 	}
 }
 
-
-
-
-
-
 /**
  * Most requests require an account_id in either the body or the query
  * This adds validation
@@ -139,7 +130,6 @@ export class AccountIdRequest extends BaseRequest {
 		return db.whereAccount(this.account_id);
 	}
 }
-
 
 export class HasItemsRequest extends AccountIdRequest {
 	constructor(r: HasItemsRequest) { super(r) }
@@ -187,7 +177,6 @@ export class HasItemsRequest extends AccountIdRequest {
 	}
 }
 
-
 /**
  * Update requests can generate an update string
  */
@@ -211,7 +200,6 @@ export class UpdateRequest extends AccountIdRequest {
 	}
 }
 
-
 /**
  * Many requests (deletes especially) require a device_id
  * This adds validation
@@ -225,7 +213,6 @@ export class DeviceIdRequest extends AccountIdRequest {
 		this.device_id = Number(r.device_id);
 	}
 }
-
 
 /**
  * Update requests can generate an update string
@@ -250,7 +237,6 @@ export class UpdateDeviceIdRequest extends DeviceIdRequest {
 		return db.updateStr(this.toUpdate());
 	}
 }
-
 
 /**
  * Many GET requests can (optionally) set limit and offset for pagination

@@ -21,7 +21,7 @@ if (util.env.prod() && dbPass === dbDefaultPass) {
 	throw defaultPasswordError;
 }
 
-console.log("Using database: " + dbHost + ":" + dbName);
+console.log(`Using database: ${dbHost}:${dbName}`);
 
 const baseSettings: pg.PoolConfig = {
 	host: dbHost,

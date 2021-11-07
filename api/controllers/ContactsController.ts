@@ -16,9 +16,12 @@ router.route('/').get(
 	asyncHandler(async (req, res) => {
 		const r: LimitOffsetRequest = res.locals.request;
 
-		const cols = ['session_id AS account_id', 'id', 'device_id', 'phone_number', 'name', 'color', 'color_dark', 'color_light', 'color_accent', 'contact_type'];
+		const cols = ['session_id AS account_id', 'id', 'device_id', 'phone_number', 'name',
+			'color', 'color_dark', 'color_light', 'color_accent', 'contact_type'];
 
-		const sql = `SELECT ${db.selectFields(cols)} FROM ${table} INNER JOIN SessionMap USING (account_id) WHERE ${r.whereAccount()} ${db.newestFirst(table)} ${r.limitStr()}`;
+		const sql = `SELECT ${db.selectFields(cols)} FROM ${table}
+			INNER JOIN SessionMap USING (account_id)
+			WHERE ${r.whereAccount()} ${db.newestFirst(table)} ${r.limitStr()}`;
 
 		const result = await db.query(sql);
 
@@ -32,13 +35,13 @@ router.route('/simple').get(
 
 		const cols = ['phone_number', 'name', 'id', 'id_matcher', 'color', 'color_accent', 'contact_type'];
 
-		const sql = `SELECT ${db.selectFields(cols)} FROM ${table} WHERE ${r.whereAccount()} ${db.newestFirst(table)} ${r.limitStr()}`;
+		const sql = `SELECT ${db.selectFields(cols)} FROM ${table}
+			WHERE ${r.whereAccount()} ${db.newestFirst(table)} ${r.limitStr()}`;
 
 		const result = await db.query(sql);
 
 		res.json(ContactsSimpleListResponse.getList(result));
 	}));
-
 
 router.route('/add').post(
 	(req, res, next) => ContactsAddRequest.handler(req, res, next),
@@ -72,7 +75,6 @@ router.route('/add').post(
 		});
 	}));
 
-
 router.route('/clear').post(
 	(req, res, next) => AccountIdRequest.handler(req, res, next),
 	asyncHandler(async (req, res) => {
@@ -85,15 +87,17 @@ router.route('/clear').post(
 		res.json(new BaseResponse);
 	}));
 
-
 router.route('/update_device_id').post(
 	(req, res, next) => ContactsUpdateDeviceIdRequest.handler(req, res, next),
 	asyncHandler(async (req, res) => {
 		const r: ContactsUpdateDeviceIdRequest = res.locals.request;
 
-		const payloadFields = ["device_id", "phone_number", "name", "color", "color_dark", "color_light", "color_accent", "contact_type AS type"];
+		const payloadFields = ["device_id", "phone_number", "name", "color",
+			"color_dark", "color_light", "color_accent", "contact_type AS type"];
 
-		const sql = `UPDATE ${table} SET ${r.updateStr()} WHERE device_id = ${db.escape(Number(r.device_id))} AND ${r.whereAccount()} RETURNING ${db.selectFields(payloadFields)}`;
+		const sql = `UPDATE ${table} SET ${r.updateStr()}
+			WHERE device_id = ${db.escape(Number(r.device_id))} AND ${r.whereAccount()}
+			RETURNING ${db.selectFields(payloadFields)}`;
 
 		const result = await db.query(sql);
 		res.json(new BaseResponse);
@@ -114,7 +118,6 @@ router.route('/update_device_id').post(
 		}
 	}));
 
-
 router.route('/remove_device_id').post(
 	(req, res, next) => ContactsRemoveDeviceIdRequest.handler(req, res, next),
 	asyncHandler(async (req, res) => {
@@ -132,7 +135,6 @@ router.route('/remove_device_id').post(
 
 		payload.send(r.account_id);
 	}));
-
 
 router.route('/remove_ids/:ids').post(
 	(req, res, next) => ContactsRemoveIdsRequest.handler(req, res, next),
@@ -157,7 +159,6 @@ router.route('/remove_ids/:ids').post(
 		// Send websocket message
 		payload.send(r.account_id);
 	}));
-
 
 export default router;
 
