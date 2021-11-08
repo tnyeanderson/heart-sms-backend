@@ -12,27 +12,27 @@ const pool: pg.Pool = new pg.Pool(connection());
 class Query {
 
 	/**
-     * Order the results by most recently updated
-     * @param table
-     */
+	 * Order the results by most recently updated
+	 * @param table
+	 */
 	static newestFirst (table: string) {
 		return `ORDER BY ${table}.updated_at DESC`;
 	}
 
 	/**
-     * Generates a WHERE statement to limit results in a table to given account_id.
-     * Uses TRANSLATE_SESSION_ID()
-     * @param accountId
-     */
+	 * Generates a WHERE statement to limit results in a table to given account_id.
+	 * Uses TRANSLATE_SESSION_ID()
+	 * @param accountId
+	 */
 	static whereAccount (accountId: string) {
 		return `account_id = ${Query.translateSessionToAccount(accountId)} `;
 	}
 
 	/**
-     * Generate the LIMIT/OFFSET portion of a query
-     * @param limit
-     * @param offset
-     */
+	 * Generate the LIMIT/OFFSET portion of a query
+	 * @param limit
+	 * @param offset
+	 */
 	static limitStr (limit: number, offset: number) {
 		let out = '';
 
@@ -49,42 +49,42 @@ class Query {
 	}
 
 	/**
-     * Escape a value before using it in an SQL query
-     * @param item
-     */
+	 * Escape a value before using it in an SQL query
+	 * @param item
+	 */
 	static escape (item: string | string[] | number | boolean) {
 		return format.literal(item);
 	}
 
 	/**
-     * Escape an ID (table name, column name, etc) before using it in an SQL query
-     * @param item
-     */
+	 * Escape an ID (table name, column name, etc) before using it in an SQL query
+	 * @param item
+	 */
 	static escapeId (item: string) {
 		return format.ident(item);
 	}
 
 	/**
-     * TRANSLATE_SESSION_ID mysql function returns an account_id from a session_id.
-     * To the user, it is called account_id, but in the database,
-     * it is actually stored as session_id in the SessionMap table.
-     * The SessionMap table associates the 64 character session_id to a primary key of the Accounts table.
-     * account_id is actually an auto incremented field, and the foreign key for other tables
-     * From here the user-provided "account_id" (stored as a session_id) is mapped to an actual account_id
-     * @param sessionId This is what the user sends as account_id in their requests
-     */
+	 * TRANSLATE_SESSION_ID mysql function returns an account_id from a session_id.
+	 * To the user, it is called account_id, but in the database,
+	 * it is actually stored as session_id in the SessionMap table.
+	 * The SessionMap table associates the 64 character session_id to a primary key of the Accounts table.
+	 * account_id is actually an auto incremented field, and the foreign key for other tables
+	 * From here the user-provided "account_id" (stored as a session_id) is mapped to an actual account_id
+	 * @param sessionId This is what the user sends as account_id in their requests
+	 */
 	static translateSessionToAccount (sessionId: string) {
 		return `TRANSLATE_SESSION_ID(${Query.escape(sessionId)})`;
 	}
 
 	/**
-     * Runs an SQL query with error handling and returns a promise with the result
-     *
-     * @example
-     * const result = await db.query('SELECT 1`);
-     *
-     * @param sql SQL query to execute
-     */
+	 * Runs an SQL query with error handling and returns a promise with the result
+	 *
+	 * @example
+	 * const result = await db.query('SELECT 1`);
+	 *
+	 * @param sql SQL query to execute
+	 */
 	static async query (sql: string): Promise<QueryResultRow[]> {
 		if (log_queries && util.env.dev()) {
 			console.log(Date.now(), ' - ', sql, ';', '\n');
@@ -101,13 +101,13 @@ class Query {
 	}
 
 	/**
-     * Runs an SQL query within a transaction that automatically rolls back upon error
-     *
-     * @example
-     * const result = await db.transaction('SELECT col_that_does_not_exist');
-     *
-     * @param sql SQL query to execute within a transaction
-     */
+	 * Runs an SQL query within a transaction that automatically rolls back upon error
+	 *
+	 * @example
+	 * const result = await db.transaction('SELECT col_that_does_not_exist');
+	 *
+	 * @param sql SQL query to execute within a transaction
+	 */
 	static async transaction (sql: string): Promise<QueryResultRow[]> {
 		await this.query('BEGIN');
 
@@ -122,10 +122,10 @@ class Query {
 	}
 
 	/**
-     * Creates a comma separated list of escaped column names from an array.
-     * Respects the use of "AS" in the array item to alias a column name
-     * @param fields An array of strings representing column names (and optional aliases) in the database
-     */
+	 * Creates a comma separated list of escaped column names from an array.
+	 * Respects the use of "AS" in the array item to alias a column name
+	 * @param fields An array of strings representing column names (and optional aliases) in the database
+	 */
 	static selectFields (fields: string[]) {
 		const out: string[] = [];
 
@@ -153,10 +153,10 @@ class Query {
 	}
 
 	/**
-     * Generates an insert string from the given items to insert
-     * i.e. - (`col1`, `col2`) VALUES (val1, val2), (val3, val4)
-     * @param toInsert An array of objects (items to insert) with the following structure: {col1: val1, col2: val2}
-     */
+	 * Generates an insert string from the given items to insert
+	 * i.e. - (`col1`, `col2`) VALUES (val1, val2), (val3, val4)
+	 * @param toInsert An array of objects (items to insert) with the following structure: {col1: val1, col2: val2}
+	 */
 	static insertStr (toInsert: unknown | unknown[]) {
 		// If toInsert is not an array, make it one
 		const items = Array.isArray(toInsert) ? toInsert : [toInsert];
@@ -189,10 +189,10 @@ class Query {
 	}
 
 	/**
-     * Generates an update string from the given values
-     * i.e. - `col1` = val1, `col2` = val2
-     * @param toUpdate Object with the following structure: {col1: val1, col2: val2}
-     */
+	 * Generates an update string from the given values
+	 * i.e. - `col1` = val1, `col2` = val2
+	 * @param toUpdate Object with the following structure: {col1: val1, col2: val2}
+	 */
 	static updateStr (toUpdate: object) {
 		const out = Object.entries(toUpdate).map(([key, value]) => {
 			if (value !== undefined) {
@@ -208,10 +208,10 @@ class Query {
 	}
 
 	/**
-     * Escape all the values in an array.
-     * Return escaped values separated by commas
-     * @param toEscape Array of values to escape
-     */
+	 * Escape all the values in an array.
+	 * Return escaped values separated by commas
+	 * @param toEscape Array of values to escape
+	 */
 	static escapeAll (toEscape: unknown[]) {
 		// eslint-disable-next-line @typescript-eslint/no-explicit-any
 		return toEscape.map((item: any) => Query.escape(item)).join(', ');

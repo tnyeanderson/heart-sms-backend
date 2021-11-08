@@ -2,8 +2,8 @@ import { BaseError } from "../errors/Errors.js"
 
 export class ErrorResponse {
 	constructor(
-        public msg: BaseError = new BaseError('unexpected error'),
-        public status?: number
+		public msg: BaseError = new BaseError('unexpected error'),
+		public status?: number
 	) { }
 }
 
