@@ -9,7 +9,7 @@ import { AccountIdRequest } from '../models/requests/BaseRequests.js';
 import * as AccountsResponses from '../models/responses/AccountsResponses.js';
 import { BaseResponse } from '../models/responses/BaseResponse.js';
 import { AuthError, ErrorResponse, NotImplementedError } from '../models/responses/ErrorResponses.js';
-import util from '../utils/util.js';
+import { util } from '../utils/util.js';
 
 const router = express.Router();
 
@@ -94,9 +94,7 @@ router.route('/remove_account').post(
 
 		await db.query(sql);
 
-		const payload = new AccountsPayloads.removed_account(
-			r.account_id
-		);
+		const payload = new AccountsPayloads.removed_account(r);
 
 		// Send websocket message
 		payload.send(r.account_id);
@@ -136,9 +134,7 @@ router.route('/clean_account').post(
 
 		await db.query(sql);
 
-		const payload = new AccountsPayloads.cleaned_account(
-			r.account_id
-		);
+		const payload = new AccountsPayloads.cleaned_account(r);
 
 		// Send websocket message
 		payload.send(r.account_id);
@@ -169,10 +165,7 @@ router.route('/dismissed_notification').post(
 	function (req, res) {
 		const r: DismissedNotificationRequest = res.locals.request;
 
-		const payload = new AccountsPayloads.dismissed_notification(
-			r.id,
-			r.device_id
-		);
+		const payload = new AccountsPayloads.dismissed_notification(r);
 
 		payload.send(r.account_id);
 
@@ -213,11 +206,11 @@ router.route('/update_setting').post(
 
 		await db.query(sql);
 
-		const payload = new AccountsPayloads.update_setting(
-			r.pref,
-			r.type,
-			castedValue
-		);
+		const payload = new AccountsPayloads.update_setting({
+			pref: r.pref,
+			type: r.type,
+			value: castedValue
+		});
 
 		payload.send(r.account_id);
 

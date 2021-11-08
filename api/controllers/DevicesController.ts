@@ -83,9 +83,7 @@ router.route('/update_primary').post(
 
 		res.json(new BaseResponse);
 
-		const payload = new DevicesPayloads.update_primary_device(
-			String(r.new_primary_device_id)
-		);
+		const payload = new DevicesPayloads.update_primary_device(r);
 
 		// Send websocket message
 		payload.send(r.account_id);

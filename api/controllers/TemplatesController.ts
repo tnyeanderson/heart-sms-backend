@@ -43,11 +43,7 @@ router.route('/add').post(
 
 		// Send websocket message
 		items.forEach(function (item) {
-			const payload = new TemplatesPayloads.added_template(
-				item.device_id,
-				item.text
-			)
-
+			const payload = new TemplatesPayloads.added_template(item);
 			payload.send(r.account_id);
 		});
 	}));
@@ -64,10 +60,7 @@ router.route('/remove/:device_id').post(
 		res.json(new BaseResponse);
 
 		// Send websocket message
-		const payload = new TemplatesPayloads.removed_template(
-			Number(r.device_id)
-		);
-
+		const payload = new TemplatesPayloads.removed_template(r);
 		payload.send(r.account_id);
 	}));
 
@@ -83,11 +76,7 @@ router.route('/update/:device_id').post(
 		res.json(new BaseResponse);
 
 		// Send websocket message
-		const payload = new TemplatesPayloads.updated_template(
-			Number(r.device_id),
-			String(r.text)
-		);
-
+		const payload = new TemplatesPayloads.updated_template(r);
 		payload.send(r.account_id);
 	}));
 

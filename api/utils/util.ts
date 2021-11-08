@@ -4,33 +4,41 @@ const devEnv = 'dev';
 const testEnv = 'test';
 const prodEnv = 'production';
 
-const util = {
+export class util {
 
 	/**
-     * Generate a 64 character account id using two UUIDs
-     */
-	createAccountId: function () {
+	 * Generate a 64 character account id using two UUIDs
+	 */
+	static createAccountId() {
 		return (uuidv4() + uuidv4()).replace(/-/g, '');
-	},
+	}
 
 	/**
-     * Whether a property is missing from an object to validate
-     *
-     */
+	 * Whether a property is missing from an object to validate
+	 *
+	 */
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	propMissing: function (toValidate: any, prop: string) {
+	static propMissing(toValidate: any, prop: string) {
 		return (
 			!toValidate ||
-            toValidate[prop] === undefined ||
-            toValidate[prop] === null ||
-            toValidate[prop] === ""
+			toValidate[prop] === undefined ||
+			toValidate[prop] === null ||
+			toValidate[prop] === ""
 		);
-	},
+	}
+
+	static smartToString(val: string | undefined | null) {
+		if (typeof val === 'undefined' || val === null) {
+			return '';
+		} else {
+			return String(val);
+		}
+	}
 
 	/**
-     * Used for easily determining which environment we are in
-     */
-	env: {
+	 * Used for easily determining which environment we are in
+	 */
+	static env = {
 		dev: () => (process.env.NODE_ENV === devEnv),
 
 		test: () => (process.env.NODE_ENV === testEnv),
@@ -49,5 +57,3 @@ const util = {
 		}
 	}
 }
-
-export default util;

@@ -140,28 +140,7 @@ router.route('/add').post(
 
 		// Send websocket message
 		items.forEach(function (item) {
-			const payload = new ConversationsPayloads.added_conversation(
-				item.device_id,
-				item.folder_id,
-				item.color,
-				item.color_dark,
-				item.color_light,
-				item.color_accent,
-				item.led_color,
-				item.pinned,
-				item.read,
-				item.timestamp,
-				item.title,
-				item.phone_numbers,
-				item.snippet,
-				item.id_matcher,
-				item.mute,
-				item.archive,
-				item.private_notifications,
-				item.ringtone,
-				item.image_uri
-			);
-
+			const payload = new ConversationsPayloads.added_conversation(item);
 			payload.send(r.account_id);
 		});
 	}));
@@ -182,23 +161,7 @@ router.route('/update/:device_id').post(
 
 		res.json(new BaseResponse)
 
-		const payload = new ConversationsPayloads.updated_conversation(
-			result[0].id,
-			result[0].color,
-			result[0].color_dark,
-			result[0].color_light,
-			result[0].color_accent,
-			result[0].led_color,
-			result[0].pinned,
-			result[0].read,
-			result[0].title,
-			result[0].snippet,
-			result[0].mute,
-			result[0].archive,
-			result[0].private_notifications,
-			result[0].ringtone
-		);
-
+		const payload = new ConversationsPayloads.updated_conversation(result[0]);
 		payload.send(r.account_id);
 	}));
 
@@ -217,14 +180,7 @@ router.route('/update_snippet/:device_id').post(
 
 		res.json(new BaseResponse)
 
-		const payload = new ConversationsPayloads.update_conversation_snippet(
-			result[0].id,
-			result[0].read,
-			result[0].timestamp,
-			result[0].snippet,
-			result[0].archive
-		);
-
+		const payload = new ConversationsPayloads.update_conversation_snippet(result[0]);
 		payload.send(r.account_id);
 	}));
 
@@ -241,11 +197,7 @@ router.route('/update_title/:device_id').post(
 		res.json(new BaseResponse)
 
 		// Send websocket message
-		const payload = new ConversationsPayloads.update_conversation_title(
-			Number(r.device_id),
-			String(r.title)
-		);
-
+		const payload = new ConversationsPayloads.update_conversation_title(r);
 		payload.send(r.account_id);
 	}));
 
@@ -262,10 +214,7 @@ router.route('/remove/:device_id').post(
 		res.json(new BaseResponse)
 
 		// Send websocket message
-		const payload = new ConversationsPayloads.removed_conversation(
-			Number(r.device_id)
-		);
-
+		const payload = new ConversationsPayloads.removed_conversation(r);
 		payload.send(r.account_id);
 	}));
 
@@ -282,12 +231,7 @@ router.route('/read/:device_id').post(
 		res.json(new BaseResponse)
 
 		// Send websocket message
-		const payload = new ConversationsPayloads.read_conversation(
-			Number(r.device_id),
-			// Don't cast to 'undefined' by accident
-			(r.android_device) ? String(r.android_device) : undefined
-		);
-
+		const payload = new ConversationsPayloads.read_conversation(r);
 		payload.send(r.account_id);
 	}));
 
@@ -304,9 +248,7 @@ router.route('/seen/:device_conversation_id').post(
 		res.json(new BaseResponse)
 
 		// Send websocket message
-		const payload = new ConversationsPayloads.seen_conversation(
-			Number(r.device_conversation_id)
-		);
+		const payload = new ConversationsPayloads.seen_conversation(r);
 		payload.send(r.account_id);
 
 	}));
@@ -322,9 +264,8 @@ router.route('/seen').post(
 
 		res.json(new BaseResponse)
 
-		const payload = new ConversationsPayloads.seen_conversations();
-
 		// Send websocket message
+		const payload = new ConversationsPayloads.seen_conversations();
 		payload.send(r.account_id);
 	}));
 
@@ -341,11 +282,7 @@ router.route('/archive/:device_id').post(
 		res.json(new BaseResponse)
 
 		// Send websocket message
-		const payload = new ConversationsPayloads.archive_conversation(
-			Number(r.device_id),
-			true
-		);
-
+		const payload = new ConversationsPayloads.archive_conversation(r, true);
 		payload.send(r.account_id);
 	}));
 
@@ -362,11 +299,7 @@ router.route('/unarchive/:device_id').post(
 		res.json(new BaseResponse)
 
 		// Send websocket message
-		const payload = new ConversationsPayloads.archive_conversation(
-			Number(r.device_id),
-			false
-		);
-
+		const payload = new ConversationsPayloads.archive_conversation(r, false);
 		payload.send(r.account_id);
 	}));
 
@@ -383,11 +316,7 @@ router.route('/add_to_folder/:device_id').post(
 		res.json(new BaseResponse)
 
 		// Send websocket message
-		const payload = new ConversationsPayloads.add_conversation_to_folder(
-			Number(r.device_id),
-			Number(r.folder_id)
-		);
-
+		const payload = new ConversationsPayloads.add_conversation_to_folder(r);
 		payload.send(r.account_id);
 	}));
 
@@ -404,10 +333,7 @@ router.route('/remove_from_folder/:device_id').post(
 		res.json(new BaseResponse)
 
 		// Send websocket message
-		const payload = new ConversationsPayloads.remove_conversation_from_folder(
-			Number(r.device_id)
-		);
-
+		const payload = new ConversationsPayloads.remove_conversation_from_folder(r);
 		payload.send(r.account_id);
 	}));
 
@@ -425,12 +351,8 @@ router.route('/cleanup_messages').post(
 
 		res.json(new BaseResponse)
 
-		const payload = new ConversationsPayloads.cleanup_conversation_messages(
-			Number(r.timestamp),
-			String(r.conversation_id)
-		);
-
 		// Send websocket message
+		const payload = new ConversationsPayloads.cleanup_conversation_messages(r);
 		payload.send(r.account_id);
 	}));
 

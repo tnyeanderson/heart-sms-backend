@@ -61,13 +61,7 @@ router.route('/add').post(
 
 		// Send websocket message
 		items.forEach(item => {
-			const payload = new DraftsPayloads.added_draft(
-				item.device_id,
-				item.device_conversation_id,
-				item.data,
-				item.mime_type
-			)
-
+			const payload = new DraftsPayloads.added_draft(item);
 			payload.send(r.account_id);
 		});
 	}));
@@ -85,11 +79,7 @@ router.route('/remove/:device_conversation_id').post(
 		res.json(new BaseResponse);
 
 		// Send websocket message
-		const payload = new DraftsPayloads.removed_drafts(
-			Number(r.device_conversation_id),
-			String(r.android_device)
-		);
-
+		const payload = new DraftsPayloads.removed_drafts(r);
 		payload.send(r.account_id);
 	}));
 
@@ -109,13 +99,7 @@ router.route('/update/:device_id').post(
 		const result = await db.query(sql);
 		res.json(new BaseResponse);
 
-		const payload = new DraftsPayloads.replaced_drafts(
-			result[0].id,
-			result[0].conversation_id,
-			result[0].data,
-			result[0].mime_type
-		);
-
+		const payload = new DraftsPayloads.replaced_drafts(result[0]);
 		payload.send(r.account_id);
 	}));
 
@@ -135,13 +119,7 @@ router.route('/replace/:device_conversation_id').post(
 
 		// Send websocket message
 		r.drafts.forEach(item => {
-			const payload = new DraftsPayloads.replaced_drafts(
-				item.device_id,
-				item.device_conversation_id,
-				item.data,
-				item.mime_type
-			);
-
+			const payload = new DraftsPayloads.replaced_drafts(item);
 			payload.send(r.account_id);
 		});
 	}));

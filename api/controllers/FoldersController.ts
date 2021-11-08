@@ -45,15 +45,7 @@ router.route('/add').post(
 
 		// Send websocket message
 		items.forEach(function (item) {
-			const payload = new FoldersPayloads.added_folder(
-				item.device_id,
-				item.name,
-				item.color,
-				item.color_dark,
-				item.color_light,
-				item.color_accent
-			)
-
+			const payload = new FoldersPayloads.added_folder(item);
 			payload.send(r.account_id);
 		});
 
@@ -71,11 +63,8 @@ router.route('/remove/:device_id').post(
 
 		res.json(new BaseResponse);
 
-		const payload = new FoldersPayloads.removed_folder(
-			Number(r.device_id)
-		);
-
 		// Send websocket message
+		const payload = new FoldersPayloads.removed_folder(r);
 		payload.send(r.account_id);
 	}));
 
@@ -90,15 +79,7 @@ router.route('/update/:device_id').post(
 
 		res.json(new BaseResponse);
 
-		const payload = new FoldersPayloads.updated_folder(
-			Number(r.device_id),
-			r.name,
-			r.color,
-			r.color_dark,
-			r.color_light,
-			r.color_accent
-		)
-
+		const payload = new FoldersPayloads.updated_folder(r);
 		payload.send(r.account_id);
 	}));
 

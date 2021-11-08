@@ -2,7 +2,7 @@ import crypto from 'crypto';
 import mqtt, { MqttClient } from 'mqtt';
 import { MQTTError, MQTTNotConnectedError } from '../models/errors/Errors.js';
 import { BasePayload } from '../models/payloads/BasePayload.js';
-import util from '../utils/util.js';
+import { util } from '../utils/util.js';
 
 class StreamController {
 	socket?: MqttClient;

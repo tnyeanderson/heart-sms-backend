@@ -46,13 +46,7 @@ router.route('/add').post(
 
 		// Send websocket message
 		items.forEach(function (item) {
-			const payload = new AutoRepliesPayloads.added_auto_reply(
-				item.device_id,
-				item.reply_type,
-				item.pattern,
-				item.response
-			);
-
+			const payload = new AutoRepliesPayloads.added_auto_reply(item);
 			payload.send(r.account_id);
 		});
 	}));
@@ -69,10 +63,7 @@ router.route('/remove/:device_id').post(
 		res.json(new BaseResponse);
 
 		// Send websocket message
-		const payload = new AutoRepliesPayloads.removed_auto_reply(
-			Number(r.device_id)
-		);
-
+		const payload = new AutoRepliesPayloads.removed_auto_reply(r);
 		payload.send(r.account_id);
 	}));
 
@@ -87,12 +78,7 @@ router.route('/update/:device_id').post(
 
 		res.json(new BasePayload);
 
-		const payload = new AutoRepliesPayloads.updated_auto_reply(
-			Number(r.device_id),
-			r.reply_type,
-			r.pattern,
-			r.response
-		);
+		const payload = new AutoRepliesPayloads.updated_auto_reply(r);
 
 		payload.send(r.account_id);
 	}));
