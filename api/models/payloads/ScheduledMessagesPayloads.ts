@@ -1,4 +1,6 @@
-import { BasePayload, DeviceIdPayload } from './BasePayload.js';
+import { QueryResultRow } from 'pg';
+import { ScheduledMessagesAddItem } from '../requests/ScheduledMessagesRequests.js';
+import { DeviceIdPayload } from './BasePayload.js';
 
 export class removed_scheduled_message extends DeviceIdPayload { }
 
@@ -10,7 +12,7 @@ export class added_scheduled_message extends DeviceIdPayload {
 	title: string;
 	repeat: number;
 
-	constructor(r: any) {
+	constructor(r: ScheduledMessagesAddItem | QueryResultRow) {
 		super(r);
 		this.to = String(r.to);
 		this.data = String(r.data);
@@ -22,7 +24,7 @@ export class added_scheduled_message extends DeviceIdPayload {
 }
 
 export class updated_scheduled_message extends added_scheduled_message {
-	constructor(r: any) {
+	constructor(r: QueryResultRow) {
 		super(r);
 		// Gets passed in as id, not device_id
 		this.id = Number(r.id);

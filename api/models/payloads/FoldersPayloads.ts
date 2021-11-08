@@ -1,3 +1,4 @@
+import { FoldersAddItem } from '../requests/FoldersRequests.js';
 import { BasePayload, DeviceIdPayload } from './BasePayload.js';
 
 export class added_folder extends BasePayload {
@@ -8,7 +9,7 @@ export class added_folder extends BasePayload {
 	color_light: number;
 	color_accent: number;
 
-	constructor(r: any) {
+	constructor(r: FoldersAddItem) {
 		super();
 		this.device_id = Number(r.device_id);
 		this.name = String(r.name);

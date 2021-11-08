@@ -1,3 +1,4 @@
+import { AutoRepliesAddItem } from '../requests/AutoRepliesRequests.js';
 import { BasePayload, DeviceIdPayload } from './BasePayload.js';
 
 export class removed_auto_reply extends DeviceIdPayload {}
@@ -8,7 +9,7 @@ export class added_auto_reply extends BasePayload {
 	pattern: string;
 	response: string;
 
-	constructor(r: any) {
+	constructor(r: AutoRepliesAddItem) {
 		super();
 		this.device_id = Number(r.device_id);
 		this.type = String(r.reply_type);

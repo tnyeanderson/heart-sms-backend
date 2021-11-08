@@ -4,7 +4,7 @@ import { BaseRequest, HasItemsRequest, UpdateDeviceIdRequest } from "./BaseReque
 /**
  * scheduled_messages/add
  */
-class ScheduledMessagesAddItem extends BaseRequest {
+export class ScheduledMessagesAddItem extends BaseRequest {
 	@Required device_id: number;
 	@Required to: string;
 	@Required data: string;

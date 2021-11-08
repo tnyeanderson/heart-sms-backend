@@ -1,3 +1,4 @@
+import { DraftsAddItem, DraftsRemoveRequest } from '../requests/DraftsRequests.js';
 import { BasePayload, DeviceIdPayload } from './BasePayload.js';
 
 export class added_draft extends DeviceIdPayload {
@@ -5,7 +6,7 @@ export class added_draft extends DeviceIdPayload {
 	data: string;
 	mime_type: string;
 
-	constructor(r: any) {
+	constructor(r: DraftsAddItem) {
 		super(r);
 		this.conversation_id = Number(r.device_conversation_id);
 		this.data = String(r.data);
@@ -17,7 +18,7 @@ export class removed_drafts extends BasePayload {
 	id: number;
 	android_device?: string;
 
-	constructor(r: any) {
+	constructor(r: DraftsRemoveRequest) {
 		super();
 		this.id = Number(r.device_conversation_id);
 		this.setProp('android_device', r, String);

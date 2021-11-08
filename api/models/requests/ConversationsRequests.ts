@@ -17,7 +17,7 @@ export class ConversationsFolderRequest extends AccountIdRequest {
 /**
  * conversations/add
  */
-class ConversationsAddItem extends BaseRequest {
+export class ConversationsAddItem extends BaseRequest {
 	@Required device_id: number;
 	@Required folder_id: number;
 	@Required color: number;

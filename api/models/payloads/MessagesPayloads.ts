@@ -1,3 +1,4 @@
+import { MessagesAddItem, MessagesCleanupRequest, MessagesForwardToPhoneRequest, MessagesUpdateTypeRequest } from '../requests/MessagesRequests.js';
 import { BasePayload, DeviceIdPayload } from './BasePayload.js';
 
 export class added_message extends DeviceIdPayload {
@@ -13,7 +14,7 @@ export class added_message extends DeviceIdPayload {
 	color?: number;
 	sim_stamp?: string;
 
-	constructor(r: any) {
+	constructor(r: MessagesAddItem) {
 		super(r);
 		this.conversation_id = Number(r.device_conversation_id);
 		this.type = Number(r.message_type);
@@ -50,7 +51,7 @@ export class update_message_type extends BasePayload {
 	id: string;
 	message_type: string;
 
-	constructor(r: any) {
+	constructor(r: MessagesUpdateTypeRequest) {
 		super();
 		this.id = String(r.device_id);
 		this.message_type = String(r.message_type);
@@ -62,7 +63,7 @@ export class removed_message extends DeviceIdPayload { }
 export class cleanup_messages extends BasePayload {
 	timestamp: number;
 
-	constructor(r: any) {
+	constructor(r: MessagesCleanupRequest) {
 		super();
 		this.timestamp = Number(r.timestamp);
 	}
@@ -75,7 +76,7 @@ export class forward_to_phone extends BasePayload {
 	mime_type?: string;
 	message_id?: number;
 
-	constructor(r: any) {
+	constructor(r: MessagesForwardToPhoneRequest) {
 		super();
 		this.to = String(r.to)
 		this.message = String(r.message);

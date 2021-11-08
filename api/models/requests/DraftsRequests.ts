@@ -30,7 +30,7 @@ export class DraftsRemoveRequest extends DraftsGetDraftRequest {
 /**
  * drafts/add
  */
-class DraftsAddItem extends BaseRequest {
+export class DraftsAddItem extends BaseRequest {
 	@Required device_id: number;
 	@Required device_conversation_id: number;
 	@Required mime_type: string;

@@ -5,7 +5,7 @@ import { BaseRequest, HasItemsRequest } from "./BaseRequests.js";
  * blacklists/add
  */
 @AtLeastOne
-class BlacklistsAddItem extends BaseRequest {
+export class BlacklistsAddItem extends BaseRequest {
 	// Body
 	@Required device_id: number;
 	@Optional phone_number?: string;

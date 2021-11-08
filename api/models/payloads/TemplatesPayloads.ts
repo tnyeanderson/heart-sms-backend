@@ -1,3 +1,4 @@
+import { TemplatesAddItem } from '../requests/TemplatesRequests.js';
 import { BasePayload, DeviceIdPayload } from './BasePayload.js';
 
 export class removed_template extends DeviceIdPayload { }
@@ -6,7 +7,7 @@ export class added_template extends BasePayload {
 	device_id: number;
 	text: string;
 
-	constructor(r: any) {
+	constructor(r: TemplatesAddItem) {
 		super();
 		this.device_id = Number(r.device_id);
 		this.text = String(r.text);

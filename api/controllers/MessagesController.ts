@@ -70,8 +70,7 @@ router.route('/add').post(
 		res.json(new BaseResponse);
 
 		// Send websocket message
-		// TODO: Fix linting
-		items.forEach((item: any) => {
+		items.forEach((item) => {
 			const payload = new MessagesPayloads.added_message(item);
 			payload.send(r.account_id);
 		});

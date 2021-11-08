@@ -32,7 +32,7 @@ export class ContactsRemoveIdsRequest extends AccountIdRequest {
 /**
  * contacts/add
  */
-class ContactsAddItem extends BaseRequest {
+export class ContactsAddItem extends BaseRequest {
 	@Required device_id: number;
 	@Required phone_number: string;
 	@Required id_matcher: string;

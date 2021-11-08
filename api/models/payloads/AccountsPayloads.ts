@@ -1,10 +1,12 @@
+import { DismissedNotificationRequest } from '../requests/AccountsRequests.js';
+import { AccountIdRequest } from '../requests/BaseRequests.js';
 import { BasePayload } from './BasePayload.js';
 
 export class dismissed_notification extends BasePayload {
 	id: string;
 	device_id?: string;
 
-	constructor (r: any) {
+	constructor (r: DismissedNotificationRequest) {
 		super();
 		this.id = String(r.id);
 		this.setProp('device_id', r, String);
@@ -14,7 +16,7 @@ export class dismissed_notification extends BasePayload {
 export class cleaned_account extends BasePayload {
 	id: string
 
-	constructor (r: any) {
+	constructor (r: AccountIdRequest) {
 		super();
 		this.id = String(r.account_id);
 	}

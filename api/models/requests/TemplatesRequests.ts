@@ -4,7 +4,7 @@ import { BaseRequest, HasItemsRequest, UpdateDeviceIdRequest } from "./BaseReque
 /**
  * templates/add
  */
-class TemplatesAddItem extends BaseRequest {
+export class TemplatesAddItem extends BaseRequest {
 	@Required device_id: number;
 	@Required text: string;
 

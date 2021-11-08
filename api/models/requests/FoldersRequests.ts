@@ -4,7 +4,7 @@ import { BaseRequest, HasItemsRequest, UpdateDeviceIdRequest } from "./BaseReque
 /**
  * folders/add
  */
-class FoldersAddItem extends BaseRequest {
+export class FoldersAddItem extends BaseRequest {
 	@Required device_id: number;
 	@Required name: string;
 	@Required color: number;

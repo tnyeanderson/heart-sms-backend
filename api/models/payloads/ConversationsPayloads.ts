@@ -1,4 +1,7 @@
+import { QueryResultRow } from 'pg';
 import { util } from '../../utils/util.js';
+import { DeviceIdRequest } from '../requests/BaseRequests.js';
+import { ConversationsAddItem, ConversationsAddToFolderRequest, ConversationsCleanupMessagesRequest, ConversationsReadRequest, ConversationsSeenRequest, ConversationsUpdateTitleRequest } from '../requests/ConversationsRequests.js';
 import { BasePayload, DeviceIdPayload } from './BasePayload.js';
 
 export class added_conversation extends BasePayload {
@@ -22,7 +25,7 @@ export class added_conversation extends BasePayload {
 	ringtone?: string;
 	image_uri?: string;
 
-	constructor(r: any) {
+	constructor(r: ConversationsAddItem) {
 		super();
 		this.device_id = Number(r.device_id);
 		this.folder_id = Number(r.folder_id);
@@ -63,7 +66,7 @@ export class updated_conversation extends BasePayload {
 	ringtone?: string | null;
 	image_uri?: string;
 
-	constructor(r: any) {
+	constructor(r: QueryResultRow) {
 		super();
 		this.id = Number(r.id);
 		this.color = Number(r.color);
@@ -89,7 +92,7 @@ export class update_conversation_snippet extends BasePayload {
 	snippet: string;
 	archive: boolean;
 
-	constructor(r: any) {
+	constructor(r: QueryResultRow) {
 		super();
 		this.id = Number(r.id);
 		this.read = Boolean(r.read);
@@ -102,7 +105,7 @@ export class update_conversation_snippet extends BasePayload {
 export class update_conversation_title extends DeviceIdPayload {
 	title: string;
 
-	constructor(r: any) {
+	constructor(r: ConversationsUpdateTitleRequest) {
 		super(r);
 		this.title = String(r.title);
 	}
@@ -111,7 +114,7 @@ export class update_conversation_title extends DeviceIdPayload {
 export class read_conversation extends DeviceIdPayload {
 	android_device?: string;
 
-	constructor(r: any) {
+	constructor(r: ConversationsReadRequest) {
 		super(r);
 		this.setProp('android_device', r, String);
 	}
@@ -120,7 +123,7 @@ export class read_conversation extends DeviceIdPayload {
 export class archive_conversation extends DeviceIdPayload {
 	archive: boolean;
 
-	constructor(r: any, archive: boolean) {
+	constructor(r: DeviceIdRequest, archive: boolean) {
 		super(r);
 		this.archive = Boolean(archive);
 	}
@@ -129,7 +132,7 @@ export class archive_conversation extends DeviceIdPayload {
 export class add_conversation_to_folder extends DeviceIdPayload {
 	folder_id: number;
 
-	constructor(r: any) {
+	constructor(r: ConversationsAddToFolderRequest) {
 		super(r);
 		this.folder_id = Number(r.folder_id);
 	}
@@ -139,7 +142,7 @@ export class cleanup_conversation_messages extends BasePayload {
 	timestamp: number;
 	conversation_id: string;
 
-	constructor(r: any) {
+	constructor(r: ConversationsCleanupMessagesRequest) {
 		super();
 		this.timestamp = Number(r.timestamp);
 		this.conversation_id = String(r.conversation_id);
@@ -151,7 +154,7 @@ export class seen_conversations extends BasePayload { }
 export class seen_conversation extends BasePayload {
 	id: number;
 
-	constructor (r: any) {
+	constructor (r: ConversationsSeenRequest) {
 		super();
 		this.id = Number(r.device_conversation_id);
 	}

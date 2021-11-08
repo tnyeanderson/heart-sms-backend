@@ -1,4 +1,6 @@
+import { QueryResultRow } from 'pg';
 import { util } from '../../utils/util.js';
+import { ContactsAddItem, ContactsRemoveDeviceIdRequest, ContactsRemoveIdsRequest } from '../requests/ContactsRequests.js';
 import { BasePayload } from './BasePayload.js';
 
 export class added_contact extends BasePayload {
@@ -10,7 +12,7 @@ export class added_contact extends BasePayload {
 	color_accent: number;
 	type: number;
 
-	constructor(r: any) {
+	constructor(r: ContactsAddItem | QueryResultRow) {
 		super();
 		this.phone_number = util.smartToString(r.phone_number);
 		this.name = util.smartToString(r.name);
@@ -25,7 +27,7 @@ export class added_contact extends BasePayload {
 export class updated_contact extends added_contact {
 	device_id: number;
 
-	constructor(r: any) {
+	constructor(r: QueryResultRow) {
 		super(r);
 		this.device_id = Number(r.device_id);
 
@@ -38,7 +40,7 @@ export class removed_contact extends BasePayload {
 	device_id: number;
 	phone_number: string;
 
-	constructor(r: any) {
+	constructor(r: ContactsRemoveDeviceIdRequest) {
 		super();
 		this.device_id = r.device_id;
 		this.phone_number = r.phone_number;
@@ -48,7 +50,7 @@ export class removed_contact extends BasePayload {
 export class removed_contact_by_id extends BasePayload {
 	id: string;
 
-	constructor(r: any) {
+	constructor(r: ContactsRemoveIdsRequest) {
 		super();
 		this.id = r.ids;
 	}
