@@ -29,5 +29,15 @@ module.exports = {
 		"prefer-template": 1,
 		"spaced-comment": 1,
 		"indent": ["error", "tab"]
-	}
+	},
+	"ignorePatterns": [
+		// don't ever lint node_modules
+		"node_modules",
+		// don't lint build output (make sure it's set to your correct build folder name)
+		"dist",
+		// don't lint nyc coverage output
+		"coverage",
+		// for now, don't lint test files
+		"test"
+	]
 };
