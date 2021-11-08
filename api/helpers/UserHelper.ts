@@ -3,8 +3,8 @@ class UserHelper {
 	allowAll = false;
 
 	/**
-     * Initialize the UserHelper values
-     */
+	 * Initialize the UserHelper values
+	 */
 	constructor () {
 		// The comma delimited string of allowed users from the environment variable
 		const allowedStr = process.env.HEART_ALLOWED_USERS || null;
@@ -21,9 +21,9 @@ class UserHelper {
 	}
 
 	/**
-     * Determine whether a given username is allowed to sign up
-     * @param username
-     */
+	 * Determine whether a given username is allowed to sign up
+	 * @param username
+	 */
 	isAllowed (username: string) {
 		// All signups are allowed, always return true
 		if (this.allowAll) return true;
