@@ -1,4 +1,4 @@
-import { DismissedNotificationRequest } from '../requests/AccountsRequests.js';
+import { DismissedNotificationRequest, UpdateSettingRequest } from '../requests/AccountsRequests.js';
 import { AccountIdRequest } from '../requests/BaseRequests.js';
 import { BasePayload } from './BasePayload.js';
 
@@ -27,7 +27,7 @@ export class update_setting extends BasePayload {
 	type: string;
 	value: unknown;
 
-	constructor(r: any) {
+	constructor(r: UpdateSettingRequest) {
 		super();
 		this.pref = String(r.pref);
 		this.type = String(r.type);

@@ -144,8 +144,8 @@ Content:
 ```
 {
     "id": INT,
-    "type": INT,
-    "timestamp": TIMESTAMP,
+    "type": INT?,
+    "timestamp": TIMESTAMP?,
     "read": BOOL?,
     "seen": BOOL?
 }

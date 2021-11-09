@@ -1,4 +1,4 @@
-import { MessagesAddItem, MessagesCleanupRequest, MessagesForwardToPhoneRequest, MessagesUpdateTypeRequest } from '../requests/MessagesRequests.js';
+import { MessagesAddItem, MessagesCleanupRequest, MessagesForwardToPhoneRequest, MessagesUpdateRequest, MessagesUpdateTypeRequest } from '../requests/MessagesRequests.js';
 import { BasePayload, DeviceIdPayload } from './BasePayload.js';
 
 export class added_message extends DeviceIdPayload {
@@ -32,18 +32,18 @@ export class added_message extends DeviceIdPayload {
 
 export class updated_message extends BasePayload {
 	id: number;
-	type: number;
-	timestamp: number;
+	type?: number;
+	timestamp?: number;
 	read?: boolean;
 	seen?: boolean;
 
-	constructor(r: any) {
+	constructor(r: MessagesUpdateRequest) {
 		super();
-		this.id = Number(r.id);
-		this.type = Number(r.type);
-		this.timestamp = Number(r.timestamp);
-		this.setProp('read', r, Boolean);
-		this.setProp('seen', r, Boolean);
+		this.id = Number(r.device_id);
+		this.setPropOrNull({target: 'type', source: 'message_type'}, r, Number);
+		this.setPropOrNull('timestamp', r, Number);
+		this.setPropOrNull('read', r, Boolean);
+		this.setPropOrNull('seen', r, Boolean);
 	}
 }
 

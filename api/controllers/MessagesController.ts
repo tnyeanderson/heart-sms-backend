@@ -81,18 +81,18 @@ router.route('/update/:device_id').post(
 	asyncHandler(async (req, res) => {
 		const r: MessagesUpdateRequest = res.locals.request;
 
-		const payloadFields = ['device_id AS id', 'message_type AS type', 'timestamp'];
+		const payloadFields = ['device_id AS id', 'message_type AS type', 'timestamp', 'read', 'seen'];
 
 		const sql = `UPDATE ${table} SET ${r.updateStr()}
 			WHERE device_id = ${db.escape(Number(r.device_id))} AND ${r.whereAccount()}
 			RETURNING ${db.selectFields(payloadFields)}`;
 
-		const result = await db.query(sql);
+		await db.query(sql);
 
 		res.json(new BaseResponse);
 
 		// Send websocket message
-		const payload = new MessagesPayloads.updated_message(Object.assign({}, result[0], r));
+		const payload = new MessagesPayloads.updated_message(r);
 		payload.send(r.account_id);
 	}));
 

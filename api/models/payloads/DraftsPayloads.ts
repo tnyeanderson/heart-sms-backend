@@ -25,11 +25,4 @@ export class removed_drafts extends BasePayload {
 	}
 }
 
-export class replaced_drafts extends added_draft {
-	constructor(r: any) {
-		super(r);
-		// This can be called with id/conversation_id as well
-		this.id = this.id || Number(r.id);
-		this.conversation_id = this.conversation_id || Number(r.conversation_id);
-	}
-}
+export class replaced_drafts extends added_draft { }

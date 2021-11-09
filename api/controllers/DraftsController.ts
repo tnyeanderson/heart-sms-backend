@@ -3,7 +3,7 @@ import db from '../db/query.js';
 import { asyncHandler } from '../helpers/AsyncHandler.js';
 import * as DraftsPayloads from '../models/payloads/DraftsPayloads.js';
 import { AccountIdRequest } from '../models/requests/BaseRequests.js';
-import { DraftsAddRequest, DraftsGetDraftRequest, DraftsRemoveRequest, DraftsReplaceRequest, DraftsUpdateRequest } from '../models/requests/DraftsRequests.js';
+import { DraftsAddItem, DraftsAddRequest, DraftsGetDraftRequest, DraftsRemoveRequest, DraftsReplaceRequest, DraftsUpdateRequest } from '../models/requests/DraftsRequests.js';
 import { BaseResponse } from '../models/responses/BaseResponse.js';
 import { DraftsListResponse } from '../models/responses/DraftsResponses.js';
 
@@ -90,7 +90,7 @@ router.route('/update/:device_id').post(
 
 		console.log("*************** /drafts/update called!!!!!! **********************");
 
-		const payloadFields = ["device_id AS id", "device_conversation_id AS conversation_id", "data", "mime_type"];
+		const payloadFields = ["device_id", "device_conversation_id", "data", "mime_type"];
 
 		const sql = `UPDATE ${table} SET ${r.updateStr()}
 			WHERE device_id = ${db.escape(Number(r.device_id))} AND ${r.whereAccount()}
@@ -99,7 +99,7 @@ router.route('/update/:device_id').post(
 		const result = await db.query(sql);
 		res.json(new BaseResponse);
 
-		const payload = new DraftsPayloads.replaced_drafts(result[0]);
+		const payload = new DraftsPayloads.replaced_drafts(result[0] as DraftsAddItem);
 		payload.send(r.account_id);
 	}));
 

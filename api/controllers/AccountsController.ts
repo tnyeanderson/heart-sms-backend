@@ -185,32 +185,13 @@ router.route('/update_setting').post(
 	asyncHandler(async (req, res) => {
 		const r: UpdateSettingRequest = res.locals.request;
 
-		let castedValue: number | string | boolean;
-
-		// Use the "type" property in the request to cast the "value"
-		switch(r.type) {
-		case 'int':
-		case 'long':
-			castedValue = Number(r.value);
-			break;
-		case 'boolean':
-			// It might be an actual boolean or a string
-			castedValue = (r.value === 'true' || r.value === true) ? true : false;
-			break;
-		default:
-			castedValue = String(r.value);
-			break;
-		}
+		const castedValue = r.value as string | number | boolean | string[];
 
 		const sql = `UPDATE Settings SET ${db.escapeId(r.pref)} = ${db.escape(castedValue)} WHERE ${r.whereAccount()}`;
 
 		await db.query(sql);
 
-		const payload = new AccountsPayloads.update_setting({
-			pref: r.pref,
-			type: r.type,
-			value: castedValue
-		});
+		const payload = new AccountsPayloads.update_setting(r);
 
 		payload.send(r.account_id);
 
