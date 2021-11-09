@@ -1,3 +1,4 @@
+import axios from 'axios';
 import crypto from 'crypto';
 import mqtt, { MqttClient } from 'mqtt';
 import { MQTTError, MQTTNotConnectedError } from '../models/errors/Errors.js';
@@ -8,6 +9,10 @@ class StreamController {
 	socket?: MqttClient;
 	backendPassword?: string;
 	topicPrefix = 'heartsms/';
+
+	prettyPrintOperation(operation: string) {
+		return operation.split('_').map(word => word.charAt(0).toUpperCase() + word.substring(1)).join(' ');
+	}
 
 	init () {
 		this.backendPassword = (util.env.devOrTest()) ? 'testpassword' : crypto.randomBytes(64).toString('hex');
@@ -51,6 +56,17 @@ class StreamController {
 		} else {
 			console.log(new MQTTNotConnectedError);
 		}
+
+		// Also send via gotify
+		const gotifyUrl = `${process.env.HEART_GOTIFY_URL}/message?token=${process.env.HEART_GOTIFY_TOKEN}`;
+		axios.post(gotifyUrl, {
+			extras: {
+				"heart::realtime": message
+			},
+			message: this.prettyPrintOperation(operation)
+		}).catch(function (error) {
+			console.log(error);
+		});
 	}
 }
 
