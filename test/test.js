@@ -2699,6 +2699,8 @@ describe("heart-sms-backend unit test", function () {
 				"id": 1,
 				"type": 4,
 				"timestamp": 500,
+				"read": null,
+				"seen": null
 			}
 		})
 		
@@ -2725,8 +2727,8 @@ describe("heart-sms-backend unit test", function () {
 			operation: "updated_message",
 			content: {
 				"id": 1,
-				"type": 4,
-				"timestamp": 500,
+				"type": null,
+				"timestamp": null,
 				"read": true,
 				"seen": true
 			}

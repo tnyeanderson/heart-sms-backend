@@ -1,16 +1,17 @@
-import { BasePayload } from './BasePayload.js';
+import { TemplatesAddItem } from '../requests/TemplatesRequests.js';
+import { BasePayload, DeviceIdPayload } from './BasePayload.js';
 
-export class removed_template extends BasePayload {
-	constructor (
-		public id: number
-	) { super() }
-}
+export class removed_template extends DeviceIdPayload { }
 
 export class added_template extends BasePayload {
-	constructor (
-		public device_id: number,
-		public text: string
-	) { super() }
+	device_id: number;
+	text: string;
+
+	constructor(r: TemplatesAddItem) {
+		super();
+		this.device_id = Number(r.device_id);
+		this.text = String(r.text);
+	}
 }
 
 export class updated_template extends added_template { }

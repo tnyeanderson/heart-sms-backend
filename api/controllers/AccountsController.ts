@@ -9,7 +9,7 @@ import { AccountIdRequest } from '../models/requests/BaseRequests.js';
 import * as AccountsResponses from '../models/responses/AccountsResponses.js';
 import { BaseResponse } from '../models/responses/BaseResponse.js';
 import { AuthError, ErrorResponse, NotImplementedError } from '../models/responses/ErrorResponses.js';
-import util from '../utils/util.js';
+import { util } from '../utils/util.js';
 
 const router = express.Router();
 
@@ -94,9 +94,7 @@ router.route('/remove_account').post(
 
 		await db.query(sql);
 
-		const payload = new AccountsPayloads.removed_account(
-			r.account_id
-		);
+		const payload = new AccountsPayloads.removed_account(r);
 
 		// Send websocket message
 		payload.send(r.account_id);
@@ -136,9 +134,7 @@ router.route('/clean_account').post(
 
 		await db.query(sql);
 
-		const payload = new AccountsPayloads.cleaned_account(
-			r.account_id
-		);
+		const payload = new AccountsPayloads.cleaned_account(r);
 
 		// Send websocket message
 		payload.send(r.account_id);
@@ -169,10 +165,7 @@ router.route('/dismissed_notification').post(
 	function (req, res) {
 		const r: DismissedNotificationRequest = res.locals.request;
 
-		const payload = new AccountsPayloads.dismissed_notification(
-			r.id,
-			r.device_id
-		);
+		const payload = new AccountsPayloads.dismissed_notification(r);
 
 		payload.send(r.account_id);
 
@@ -192,32 +185,13 @@ router.route('/update_setting').post(
 	asyncHandler(async (req, res) => {
 		const r: UpdateSettingRequest = res.locals.request;
 
-		let castedValue: number | string | boolean;
-
-		// Use the "type" property in the request to cast the "value"
-		switch(r.type) {
-		case 'int':
-		case 'long':
-			castedValue = Number(r.value);
-			break;
-		case 'boolean':
-			// It might be an actual boolean or a string
-			castedValue = (r.value === 'true' || r.value === true) ? true : false;
-			break;
-		default:
-			castedValue = String(r.value);
-			break;
-		}
+		const castedValue = r.value as string | number | boolean | string[];
 
 		const sql = `UPDATE Settings SET ${db.escapeId(r.pref)} = ${db.escape(castedValue)} WHERE ${r.whereAccount()}`;
 
 		await db.query(sql);
 
-		const payload = new AccountsPayloads.update_setting(
-			r.pref,
-			r.type,
-			castedValue
-		);
+		const payload = new AccountsPayloads.update_setting(r);
 
 		payload.send(r.account_id);
 

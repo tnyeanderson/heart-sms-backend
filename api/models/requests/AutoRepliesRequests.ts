@@ -21,7 +21,7 @@ export class AutoRepliesUpdateRequest extends UpdateDeviceIdRequest {
 /**
  * auto_replies/add
  */
-class AutoRepliesAddItem extends BaseRequest {
+export class AutoRepliesAddItem extends BaseRequest {
 	@Required device_id: number;
 	@Required reply_type: string;
 	@Required pattern: string;

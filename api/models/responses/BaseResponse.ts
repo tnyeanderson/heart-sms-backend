@@ -1,10 +1,6 @@
 import { FieldInfo } from "mysql";
 import { QueryResult } from "pg";
-
-type OptionalName = {
-	target: string;
-	source: string;
-}
+import { OptionalName } from "../../types/OptionalName";
 
 export class BaseResponse {
 	/**

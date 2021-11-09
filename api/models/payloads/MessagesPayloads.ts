@@ -1,57 +1,87 @@
-import { BasePayload } from './BasePayload.js';
+import { MessagesAddItem, MessagesCleanupRequest, MessagesForwardToPhoneRequest, MessagesUpdateRequest, MessagesUpdateTypeRequest } from '../requests/MessagesRequests.js';
+import { BasePayload, DeviceIdPayload } from './BasePayload.js';
 
-export class added_message extends BasePayload {
-	constructor (
-		public id: number,
-		public conversation_id: number,
-		public type: number,
-		public data: string,
-		public timestamp: number,
-		public mime_type: string,
-		public read: boolean,
-		public seen: boolean,
-		public from: string,
-		public color: number,
-		public sent_device: number,
-		public sim_stamp: number
-	) { super() }
+export class added_message extends DeviceIdPayload {
+	conversation_id: number;
+	type: number;
+	data: string;
+	timestamp: number;
+	mime_type: string;
+	read: boolean;
+	seen: boolean;
+	sent_device: number;
+	from?: string;
+	color?: number;
+	sim_stamp?: string;
+
+	constructor(r: MessagesAddItem) {
+		super(r);
+		this.conversation_id = Number(r.device_conversation_id);
+		this.type = Number(r.message_type);
+		this.data = String(r.data);
+		this.timestamp = Number(r.timestamp);
+		this.mime_type = String(r.mime_type);
+		this.read = Boolean(r.read);
+		this.seen = Boolean(r.seen);
+		this.sent_device = Number(r.sent_device);
+		this.setProp({source: 'message_from', target: 'from'}, r, String);
+		this.setProp('color', r, Number);
+		this.setProp('sim_stamp', r, String);
+	}
 }
 
 export class updated_message extends BasePayload {
-	constructor (
-		public id: number,
-		public type: number,
-		public timestamp: number,
-		public read?: boolean,
-		public seen?: boolean,
-	) { super() }
+	id: number;
+	type?: number;
+	timestamp?: number;
+	read?: boolean;
+	seen?: boolean;
+
+	constructor(r: MessagesUpdateRequest) {
+		super();
+		this.id = Number(r.device_id);
+		this.setPropOrNull({target: 'type', source: 'message_type'}, r, Number);
+		this.setPropOrNull('timestamp', r, Number);
+		this.setPropOrNull('read', r, Boolean);
+		this.setPropOrNull('seen', r, Boolean);
+	}
 }
 
 export class update_message_type extends BasePayload {
-	constructor (
-		public id: string,
-		public message_type: string
-	) { super() }
+	id: string;
+	message_type: string;
+
+	constructor(r: MessagesUpdateTypeRequest) {
+		super();
+		this.id = String(r.device_id);
+		this.message_type = String(r.message_type);
+	}
 }
 
-export class removed_message extends BasePayload {
-	constructor (
-		public id: number
-	) { super() }
-}
+export class removed_message extends DeviceIdPayload { }
 
 export class cleanup_messages extends BasePayload {
-	constructor (
-		public timestamp: number
-	) { super() }
+	timestamp: number;
+
+	constructor(r: MessagesCleanupRequest) {
+		super();
+		this.timestamp = Number(r.timestamp);
+	}
 }
 
 export class forward_to_phone extends BasePayload {
-	constructor (
-		public to: string,
-		public message: string,
-		public sent_device: number,
-		public mime_type?: string,
-		public message_id?: number
-	) { super() }
+	to: string;
+	message: string;
+	sent_device: number;
+	mime_type?: string;
+	message_id?: number;
+
+	constructor(r: MessagesForwardToPhoneRequest) {
+		super();
+		this.to = String(r.to)
+		this.message = String(r.message);
+		this.sent_device = Number(r.sent_device);
+		this.setProp('mime_type', r, String);
+		this.setProp('message_id', r, Number);
+	}
 }

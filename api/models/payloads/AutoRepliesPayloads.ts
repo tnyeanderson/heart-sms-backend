@@ -1,18 +1,21 @@
-import { BasePayload } from './BasePayload.js';
+import { AutoRepliesAddItem } from '../requests/AutoRepliesRequests.js';
+import { BasePayload, DeviceIdPayload } from './BasePayload.js';
 
-export class removed_auto_reply extends BasePayload {
-	constructor (
-		public id: number
-	) { super() }
-}
+export class removed_auto_reply extends DeviceIdPayload {}
 
 export class added_auto_reply extends BasePayload {
-	constructor (
-		public device_id: number,
-		public type: string,
-		public pattern: string,
-		public response: string
-	) { super() }
+	device_id: number;
+	type: string;
+	pattern: string;
+	response: string;
+
+	constructor(r: AutoRepliesAddItem) {
+		super();
+		this.device_id = Number(r.device_id);
+		this.type = String(r.reply_type);
+		this.pattern = String(r.pattern);
+		this.response = String(r.response);
+	}
 }
 
 export class updated_auto_reply extends added_auto_reply {}

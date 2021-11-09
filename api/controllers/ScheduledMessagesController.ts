@@ -46,16 +46,7 @@ router.route('/add').post(
 
 		// Send websocket message
 		items.forEach(function (item) {
-			const payload = new ScheduledMessagesPayloads.added_scheduled_message(
-				item.device_id,
-				item.to,
-				item.data,
-				item.mime_type,
-				item.timestamp,
-				item.title,
-				item.repeat
-			);
-
+			const payload = new ScheduledMessagesPayloads.added_scheduled_message(item);
 			payload.send(r.account_id);
 		});
 	}));
@@ -72,10 +63,7 @@ router.route('/remove/:device_id').post(
 		res.json(new BaseResponse);
 
 		// Send websocket message
-		const payload = new ScheduledMessagesPayloads.removed_scheduled_message(
-			Number(r.device_id)
-		);
-
+		const payload = new ScheduledMessagesPayloads.removed_scheduled_message(r);
 		payload.send(r.account_id);
 	}));
 
@@ -94,16 +82,7 @@ router.route('/update/:device_id').post(
 
 		res.json(new BaseResponse);
 
-		const payload = new ScheduledMessagesPayloads.updated_scheduled_message(
-			result[0].id,
-			result[0].to,
-			result[0].data,
-			result[0].mime_type,
-			result[0].timestamp,
-			result[0].title,
-			result[0].repeat
-		);
-
+		const payload = new ScheduledMessagesPayloads.updated_scheduled_message(result[0]);
 		payload.send(r.account_id);
 	}));
 

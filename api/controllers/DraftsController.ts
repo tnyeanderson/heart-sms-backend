@@ -3,7 +3,7 @@ import db from '../db/query.js';
 import { asyncHandler } from '../helpers/AsyncHandler.js';
 import * as DraftsPayloads from '../models/payloads/DraftsPayloads.js';
 import { AccountIdRequest } from '../models/requests/BaseRequests.js';
-import { DraftsAddRequest, DraftsGetDraftRequest, DraftsRemoveRequest, DraftsReplaceRequest, DraftsUpdateRequest } from '../models/requests/DraftsRequests.js';
+import { DraftsAddItem, DraftsAddRequest, DraftsGetDraftRequest, DraftsRemoveRequest, DraftsReplaceRequest, DraftsUpdateRequest } from '../models/requests/DraftsRequests.js';
 import { BaseResponse } from '../models/responses/BaseResponse.js';
 import { DraftsListResponse } from '../models/responses/DraftsResponses.js';
 
@@ -61,13 +61,7 @@ router.route('/add').post(
 
 		// Send websocket message
 		items.forEach(item => {
-			const payload = new DraftsPayloads.added_draft(
-				item.device_id,
-				item.device_conversation_id,
-				item.data,
-				item.mime_type
-			)
-
+			const payload = new DraftsPayloads.added_draft(item);
 			payload.send(r.account_id);
 		});
 	}));
@@ -85,11 +79,7 @@ router.route('/remove/:device_conversation_id').post(
 		res.json(new BaseResponse);
 
 		// Send websocket message
-		const payload = new DraftsPayloads.removed_drafts(
-			Number(r.device_conversation_id),
-			String(r.android_device)
-		);
-
+		const payload = new DraftsPayloads.removed_drafts(r);
 		payload.send(r.account_id);
 	}));
 
@@ -100,7 +90,7 @@ router.route('/update/:device_id').post(
 
 		console.log("*************** /drafts/update called!!!!!! **********************");
 
-		const payloadFields = ["device_id AS id", "device_conversation_id AS conversation_id", "data", "mime_type"];
+		const payloadFields = ["device_id", "device_conversation_id", "data", "mime_type"];
 
 		const sql = `UPDATE ${table} SET ${r.updateStr()}
 			WHERE device_id = ${db.escape(Number(r.device_id))} AND ${r.whereAccount()}
@@ -109,13 +99,7 @@ router.route('/update/:device_id').post(
 		const result = await db.query(sql);
 		res.json(new BaseResponse);
 
-		const payload = new DraftsPayloads.replaced_drafts(
-			result[0].id,
-			result[0].conversation_id,
-			result[0].data,
-			result[0].mime_type
-		);
-
+		const payload = new DraftsPayloads.replaced_drafts(result[0] as DraftsAddItem);
 		payload.send(r.account_id);
 	}));
 
@@ -135,13 +119,7 @@ router.route('/replace/:device_conversation_id').post(
 
 		// Send websocket message
 		r.drafts.forEach(item => {
-			const payload = new DraftsPayloads.replaced_drafts(
-				item.device_id,
-				item.device_conversation_id,
-				item.data,
-				item.mime_type
-			);
-
+			const payload = new DraftsPayloads.replaced_drafts(item);
 			payload.send(r.account_id);
 		});
 	}));

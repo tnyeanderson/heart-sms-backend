@@ -45,12 +45,7 @@ router.route('/add').post(
 
 		// Send websocket message
 		items.forEach(item => {
-			const payload = new BlacklistsPayloads.added_blacklist(
-				item.device_id,
-				item.phone_number,
-				item.phrase
-			);
-
+			const payload = new BlacklistsPayloads.added_blacklist(item);
 			payload.send(r.account_id);
 		});
 	}));
@@ -67,9 +62,7 @@ router.route('/remove/:device_id').post(
 		res.json(new BaseResponse);
 
 		// Send websocket message
-		const payload = new BlacklistsPayloads.removed_blacklist(
-			Number(r.device_id)
-		);
+		const payload = new BlacklistsPayloads.removed_blacklist(r);
 
 		payload.send(r.account_id);
 	}));

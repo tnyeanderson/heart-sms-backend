@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import db from '../../db/query.js';
 import { Optional, Required } from "../../utils/decorators.js";
-import util from "../../utils/util.js";
+import { util } from "../../utils/util.js";
 import { MissingParamError } from "../responses/ErrorResponses.js";
 
 /**

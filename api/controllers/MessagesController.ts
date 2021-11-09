@@ -48,11 +48,8 @@ router.route('/remove/:device_id').post(
 
 		res.json(new BaseResponse);
 
-		const payload = new MessagesPayloads.removed_message(
-			Number(r.device_id)
-		);
-
 		// Send websocket message
+		const payload = new MessagesPayloads.removed_message(r);
 		payload.send(r.account_id);
 	}));
 
@@ -73,23 +70,8 @@ router.route('/add').post(
 		res.json(new BaseResponse);
 
 		// Send websocket message
-		// TODO: Fix linting
-		items.forEach((item: any) => {
-			const payload = new MessagesPayloads.added_message(
-				item.device_id,
-				item.device_conversation_id,
-				item.message_type,
-				item.data,
-				item.timestamp,
-				item.mime_type,
-				item.read,
-				item.seen,
-				item.message_from,
-				item.color,
-				item.sent_device,
-				item.sim_stamp
-			);
-
+		items.forEach((item) => {
+			const payload = new MessagesPayloads.added_message(item);
 			payload.send(r.account_id);
 		});
 	}));
@@ -99,25 +81,18 @@ router.route('/update/:device_id').post(
 	asyncHandler(async (req, res) => {
 		const r: MessagesUpdateRequest = res.locals.request;
 
-		const payloadFields = ['device_id AS id', 'message_type AS type', 'timestamp'];
+		const payloadFields = ['device_id AS id', 'message_type AS type', 'timestamp', 'read', 'seen'];
 
 		const sql = `UPDATE ${table} SET ${r.updateStr()}
 			WHERE device_id = ${db.escape(Number(r.device_id))} AND ${r.whereAccount()}
 			RETURNING ${db.selectFields(payloadFields)}`;
 
-		const result = await db.query(sql);
+		await db.query(sql);
 
 		res.json(new BaseResponse);
 
 		// Send websocket message
-		const payload = new MessagesPayloads.updated_message(
-			result[0].id,
-			result[0].type,
-			result[0].timestamp,
-			r.read,
-			r.seen
-		);
-
+		const payload = new MessagesPayloads.updated_message(r);
 		payload.send(r.account_id);
 	}));
 
@@ -132,12 +107,8 @@ router.route('/update_type/:device_id').post(
 
 		res.json(new BaseResponse);
 
-		const payload = new MessagesPayloads.update_message_type(
-			String(r.device_id),
-			String(r.message_type)
-		)
-
 		// Send websocket message
+		const payload = new MessagesPayloads.update_message_type(r);
 		payload.send(r.account_id);
 	}));
 
@@ -152,11 +123,8 @@ router.route('/cleanup').post(
 
 		res.json(new BaseResponse);
 
-		const payload = new MessagesPayloads.cleanup_messages(
-			Number(r.timestamp)
-		)
-
 		// Send websocket message
+		const payload = new MessagesPayloads.cleanup_messages(r);
 		payload.send(r.account_id);
 	}));
 
@@ -165,15 +133,8 @@ router.route('/forward_to_phone').post(
 	function (req, res) {
 		const r: MessagesForwardToPhoneRequest = res.locals.request;
 
-		const payload = new MessagesPayloads.forward_to_phone(
-			String(r.to),
-			String(r.message),
-			Number(r.sent_device),
-			String(r.mime_type),
-			Number(r.message_id)
-		);
-
 		// Send websocket message
+		const payload = new MessagesPayloads.forward_to_phone(r);
 		payload.send(r.account_id);
 
 		res.json(new BaseResponse);

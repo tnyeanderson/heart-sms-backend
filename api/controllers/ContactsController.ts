@@ -61,15 +61,7 @@ router.route('/add').post(
 
 		// Send websocket message
 		items.forEach(item => {
-			const payload = new ContactsPayloads.added_contact(
-				item.phone_number,
-				item.name,
-				item.color,
-				item.color_dark,
-				item.color_light,
-				item.color_accent,
-				item.contact_type
-			);
+			const payload = new ContactsPayloads.added_contact(item);
 
 			payload.send(r.account_id);
 		});
@@ -103,16 +95,7 @@ router.route('/update_device_id').post(
 		res.json(new BaseResponse);
 
 		if (result[0]) {
-			const payload = new ContactsPayloads.updated_contact(
-				result[0].device_id,
-				result[0].phone_number,
-				result[0].name,
-				result[0].color,
-				result[0].color_dark,
-				result[0].color_light,
-				result[0].color_accent,
-				result[0].type
-			);
+			const payload = new ContactsPayloads.updated_contact(result[0]);
 
 			payload.send(r.account_id);
 		}
@@ -128,10 +111,7 @@ router.route('/remove_device_id').post(
 		await db.query(sql);
 		res.json(new BaseResponse);
 
-		const payload = new ContactsPayloads.removed_contact(
-			Number(r.device_id),
-			String(r.phone_number)
-		);
+		const payload = new ContactsPayloads.removed_contact(r);
 
 		payload.send(r.account_id);
 	}));
@@ -152,9 +132,7 @@ router.route('/remove_ids/:ids').post(
 		await db.query(sql);
 		res.json(new BaseResponse);
 
-		const payload = new ContactsPayloads.removed_contact_by_id(
-			r.ids
-		);
+		const payload = new ContactsPayloads.removed_contact_by_id(r);
 
 		// Send websocket message
 		payload.send(r.account_id);

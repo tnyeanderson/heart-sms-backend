@@ -2,7 +2,7 @@ import pg, { QueryResultRow } from 'pg';
 import format from 'pg-format';
 import connection from '../db/connect.js';
 import { DatabaseError } from '../models/responses/ErrorResponses.js';
-import util from '../utils/util.js';
+import { util } from '../utils/util.js';
 
 // Set to true to debug SQL queries during development
 const log_queries = false;

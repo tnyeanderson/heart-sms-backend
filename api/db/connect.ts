@@ -1,6 +1,6 @@
 import pg from 'pg';
 import { DefaultDatabasePasswordError } from '../models/errors/Errors.js';
-import util from '../utils/util.js';
+import { util } from '../utils/util.js';
 
 // Cast bigints to numbers instead of strings
 pg.types.setTypeParser(20, Number);
