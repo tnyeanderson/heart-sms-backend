@@ -1,6 +1,7 @@
 import axios from 'axios';
 import crypto from 'crypto';
 import mqtt, { MqttClient } from 'mqtt';
+import unifiedPushHelper from '../helpers/UnifiedPushHelper.js';
 import { MQTTError, MQTTNotConnectedError } from '../models/errors/Errors.js';
 import { BasePayload } from '../models/payloads/BasePayload.js';
 import { util } from '../utils/util.js';
@@ -43,7 +44,7 @@ class StreamController {
 		console.log(new MQTTError(err));
 	}
 
-	sendMessage (accountId: string, operation: string, content: BasePayload) {
+	async sendMessage (accountId: string, operation: string, content: BasePayload) {
 		const message = {
 			operation: operation,
 			content: content
@@ -58,7 +59,7 @@ class StreamController {
 		}
 
 		// Also send via gotify
-		const gotifyUrl = `${process.env.HEART_GOTIFY_URL}/message?token=${process.env.HEART_GOTIFY_TOKEN}`;
+		const gotifyUrl = await unifiedPushHelper.getMessagePushUrl(accountId);
 		axios.post(gotifyUrl, {
 			extras: {
 				"heart::realtime": message

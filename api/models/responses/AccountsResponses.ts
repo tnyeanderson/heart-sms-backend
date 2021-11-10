@@ -94,6 +94,7 @@ export class LoginResponse extends BaseResponse {
 	passcode?: string;
 	message_timestamp?: boolean;
 	conversation_categories?: boolean;
+	push_url?: string;
 	push_client_token?: string;
 
 	constructor(r: LoginResponse) {
@@ -117,6 +118,7 @@ export class LoginResponse extends BaseResponse {
 		this.setProp('passcode', r, String);
 		this.setProp('message_timestamp', r, Boolean);
 		this.setProp('conversation_categories', r, Boolean);
+		this.setProp('push_url', r, String);
 		this.setProp('push_client_token', r, String);
 	}
 }
