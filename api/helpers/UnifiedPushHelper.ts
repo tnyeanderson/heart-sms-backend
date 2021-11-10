@@ -8,8 +8,6 @@ class UnifiedPushHelper {
 
 		const result = await db.query(sql);
 
-		console.log(JSON.stringify(result));
-
 		return `https://${result[0].push_url}/message?token=${result[0].push_app_token}`
 	}
 }

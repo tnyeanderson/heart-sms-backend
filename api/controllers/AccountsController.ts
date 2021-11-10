@@ -70,7 +70,8 @@ router.route('/signup').post(
 			salt1,
 			salt2,
 			r.real_name,
-			r.phone_number
+			r.phone_number,
+			r.push_url
 		];
 
 		const sql = `CALL CreateAccount( ${db.escapeAll(values)} )`;

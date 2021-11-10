@@ -48,7 +48,8 @@ describe("heart-sms-backend unit test", function () {
 			// Password is 'tester', this is the SHA256 hash
 			"password": testAccountPassword,
 			"phone_number": "5555555555",
-			"real_name": "testname"
+			"real_name": "testname",
+			"push_url": "gotify1.unifiedpush.org"
 		})
 		.expect("Content-type",/json/)
 		.expect(200)
@@ -68,7 +69,8 @@ describe("heart-sms-backend unit test", function () {
 			"name": "usernamenotallowed",
 			"password": "shouldfail",
 			"phone_number": "shouldfail",
-			"real_name": "shouldfail"
+			"real_name": "shouldfail",
+			"push_url": "gotify1.unifiedpush.org"
 		})
 		.expect("Content-type",/json/)
 		.expect(200)
@@ -89,7 +91,8 @@ describe("heart-sms-backend unit test", function () {
 			// Password is 'tester', this is the SHA256 hash
 			"password": testAccountPassword,
 			"phone_number": "5555555555",
-			"real_name": "testname"
+			"real_name": "testname",
+			"push_url": "gotify1.unifiedpush.org"
 		})
 		.expect("Content-type",/json/)
 		.expect(200)
@@ -139,7 +142,8 @@ describe("heart-sms-backend unit test", function () {
 				"apply_primary_color_toolbar": true,
 				"passcode": null,
 				"message_timestamp": false,
-				"conversation_categories": true
+				"conversation_categories": true,
+				"push_url": "gotify1.unifiedpush.org"
 			  });
 			console.log('\n', "Account ID: ", res.body.account_id, '\n');
 			done();
