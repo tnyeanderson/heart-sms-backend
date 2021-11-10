@@ -102,6 +102,16 @@ CREATE TABLE IF NOT EXISTS SessionMap (
     CONSTRAINT FK_SessionMap_Accounts_account_id FOREIGN KEY (account_id) REFERENCES Accounts (account_id) ON DELETE CASCADE
 ) ;
 
+CREATE TABLE IF NOT EXISTS UnifiedPushTokens (
+    "id" BIGSERIAL PRIMARY KEY,
+    "account_id" INTEGER NOT NULL,
+    "push_app_token" TEXT NULL,
+    "push_client_token" TEXT NULL,
+    "created_at" TIMESTAMP DEFAULT NOW(),
+    "updated_at" TIMESTAMP DEFAULT NOW(),
+    CONSTRAINT FK_UnifiedPushTokens_Accounts_account_id FOREIGN KEY (account_id) REFERENCES Accounts (account_id) ON DELETE CASCADE
+) ;
+
 CREATE TABLE IF NOT EXISTS AutoReplies (
     "id" BIGSERIAL PRIMARY KEY,
     "device_id" BIGINT NOT NULL,
@@ -322,6 +332,7 @@ natural left join
 
 
 CREATE INDEX IX_SessionMap_session_id ON SessionMap (session_id) ;
+CREATE INDEX IX_UnifiedPushTokens_session_id ON UnifiedPushTokens (account_id) ;
 CREATE INDEX IX_AutoReplies_account_id ON AutoReplies (account_id) ;
 CREATE INDEX IX_Blacklists_account_id ON Blacklists (account_id) ;
 CREATE INDEX IX_Contacts_account_id ON Contacts (account_id) ;
@@ -470,6 +481,7 @@ CREATE TRIGGER set_Messages_updated_at          BEFORE UPDATE ON Messages       
 CREATE TRIGGER set_ScheduledMessages_updated_at BEFORE UPDATE ON ScheduledMessages FOR EACH ROW EXECUTE PROCEDURE set_updated_at_func();
 CREATE TRIGGER set_SessionMap_updated_at        BEFORE UPDATE ON SessionMap        FOR EACH ROW EXECUTE PROCEDURE set_updated_at_func();
 CREATE TRIGGER set_Templates_updated_at         BEFORE UPDATE ON Templates         FOR EACH ROW EXECUTE PROCEDURE set_updated_at_func();
+CREATE TRIGGER set_UnifiedPushTokens_updated_at BEFORE UPDATE ON UnifiedPushTokens FOR EACH ROW EXECUTE PROCEDURE set_updated_at_func();
 
 
 -- ---------------------------
@@ -530,6 +542,7 @@ DECLARE
 BEGIN
     INSERT INTO Accounts  ("username", "password_hash", "salt1", "salt2", "real_name", "phone_number") VALUES (username, passwordHash, salt1, salt2, realName, phoneNumber) RETURNING account_id INTO accountId;
     INSERT INTO SessionMap ("session_id", "account_id") VALUES (sessionId, accountId);
+    INSERT INTO UnifiedPushTokens ("push_client_token", "account_id") VALUES ('testtoken', accountId);
     INSERT INTO Settings ("account_id") VALUES (accountId);
 END;
 $$;

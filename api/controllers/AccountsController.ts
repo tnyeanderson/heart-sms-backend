@@ -25,10 +25,12 @@ router.route('/login').post(
 		const fields = ['account_id', 'session_id', 'password_hash', 'real_name AS name', 'salt1', 'salt2', 'phone_number',
 			'base_theme', 'passcode', 'rounder_bubbles', 'use_global_theme', 'apply_primary_color_toolbar',
 			'conversation_categories', 'color', 'color_dark', 'color_light', 'color_accent', 'global_color_theme',
-			'message_timestamp', 'subscription_type', 'subscription_expiration'];
+			'message_timestamp', 'subscription_type', 'subscription_expiration', 'push_client_token'];
 
 		const sql = `SELECT ${db.selectFields(fields)} FROM Accounts
-			INNER JOIN SessionMap USING (account_id) INNER JOIN Settings USING (account_id)
+			INNER JOIN SessionMap USING (account_id)
+			INNER JOIN Settings USING (account_id)
+			LEFT JOIN UnifiedPushTokens USING (account_id)
 			WHERE username = ${db.escape(r.username)} LIMIT 1`;
 
 		const result = await db.query(sql);
