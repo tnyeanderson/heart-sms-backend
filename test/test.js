@@ -1,10 +1,13 @@
 import { agent } from 'supertest';
 import * as assert from 'assert';
 import { expectMsg, msgCount, msgTested, close as mqttTestClose } from './mqtt-test.js';
-import { deleteDummyAccount, postDeleteDummyCounts } from './add_dummy_account.js';
+import { deleteDummyAccount, postDeleteDummyCounts, deleteUnifiedPushApp } from './add_dummy_account.js';
 
 // This agent refers to PORT where program is runninng.
 const api = agent("http://localhost:5000/api/v1");
+
+const pushUrl = 'gotify1.unifiedpush.org';
+const pushClientToken = process.env.PUSH_CLIENT_TOKEN;
 
 let accountId = '';
 let contactsToRemove = [];
@@ -49,7 +52,8 @@ describe("heart-sms-backend unit test", function () {
 			"password": testAccountPassword,
 			"phone_number": "5555555555",
 			"real_name": "testname",
-			"push_url": "gotify1.unifiedpush.org"
+			"push_url": pushUrl,
+			"push_client_token": pushClientToken
 		})
 		.expect("Content-type",/json/)
 		.expect(200)
@@ -70,7 +74,8 @@ describe("heart-sms-backend unit test", function () {
 			"password": "shouldfail",
 			"phone_number": "shouldfail",
 			"real_name": "shouldfail",
-			"push_url": "gotify1.unifiedpush.org"
+			"push_url": pushUrl,
+			"push_client_token": pushClientToken
 		})
 		.expect("Content-type",/json/)
 		.expect(200)
@@ -92,7 +97,8 @@ describe("heart-sms-backend unit test", function () {
 			"password": testAccountPassword,
 			"phone_number": "5555555555",
 			"real_name": "testname",
-			"push_url": "gotify1.unifiedpush.org"
+			"push_url": pushUrl,
+			"push_client_token": pushClientToken
 		})
 		.expect("Content-type",/json/)
 		.expect(200)
@@ -143,7 +149,8 @@ describe("heart-sms-backend unit test", function () {
 				"passcode": null,
 				"message_timestamp": false,
 				"conversation_categories": true,
-				"push_url": "gotify1.unifiedpush.org"
+				"push_url": pushUrl,
+				"push_client_token": pushClientToken
 			  });
 			console.log('\n', "Account ID: ", res.body.account_id, '\n');
 			done();
@@ -3861,4 +3868,9 @@ describe("heart-sms-backend unit test", function () {
 	 * All counts should be zero for dummy account after deletion
 	 */
 	postDeleteDummyCounts();
+
+	/**
+	 * Delete the gotify test application
+	 */
+	deleteUnifiedPushApp();
 }); 

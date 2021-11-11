@@ -536,7 +536,9 @@ CREATE PROCEDURE CreateAccount(
     salt2 TEXT, 
     realName TEXT, 
     phoneNumber TEXT,
-    pushUrl TEXT)
+    pushUrl TEXT,
+    pushClientToken TEXT,
+    pushAppToken TEXT)
 LANGUAGE plpgsql
 AS $$
 DECLARE
@@ -544,7 +546,7 @@ DECLARE
 BEGIN
     INSERT INTO Accounts  ("username", "password_hash", "salt1", "salt2", "real_name", "phone_number") VALUES (username, passwordHash, salt1, salt2, realName, phoneNumber) RETURNING account_id INTO accountId;
     INSERT INTO SessionMap ("session_id", "account_id") VALUES (sessionId, accountId);
-    INSERT INTO UnifiedPush ("account_id", "push_url", "push_app_token") VALUES (accountId, pushUrl, 'testtoken');
+    INSERT INTO UnifiedPush ("account_id", "push_url", "push_client_token", "push_app_token") VALUES (accountId, pushUrl, pushClientToken, pushAppToken);
     INSERT INTO Settings ("account_id") VALUES (accountId);
 END;
 $$;

@@ -1,8 +1,10 @@
+import axios from 'axios';
 import crypto from 'crypto';
 import express from 'express';
 import db from '../db/query.js';
 import { asyncHandler } from '../helpers/AsyncHandler.js';
 import { hashPassword } from '../helpers/CryptoHelper.js';
+import { InvalidPushClientTokenError } from '../models/errors/Errors.js';
 import * as AccountsPayloads from '../models/payloads/AccountsPayloads.js';
 import { DismissedNotificationRequest, LoginRequest, SignupRequest, UpdateSettingRequest } from '../models/requests/AccountsRequests.js';
 import { AccountIdRequest } from '../models/requests/BaseRequests.js';
@@ -55,6 +57,26 @@ router.route('/signup').post(
 	asyncHandler(SignupRequest.checkDuplicateUser),
 	asyncHandler(async (req, res, next) => {
 		const r: SignupRequest = res.locals.request;
+		const pushAppUrl = `https://${r.push_url}/application?token=${r.push_client_token}`;
+		let pushAppToken;
+
+		try {
+			const checkResponse = await axios.get(pushAppUrl);
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			let pushApp = checkResponse.data.find((a: any) => a.name === 'HeartSMS');
+			if (!pushApp) {
+				console.log(`Creating HeartSMS app at ${r.push_url}...`);
+				const createResponse = await axios.post(pushAppUrl, {
+					name: 'HeartSMS',
+					description: 'Self-hosted cross-platform SMS'
+				});
+				pushApp = createResponse.data;
+			}
+			pushAppToken = pushApp.token;
+		} catch (error) {
+			console.log(error);
+			throw new InvalidPushClientTokenError();
+		}
 
 		// Generate 64-character account id and salts
 		const account_id = util.createAccountId();
@@ -71,7 +93,9 @@ router.route('/signup').post(
 			salt2,
 			r.real_name,
 			r.phone_number,
-			r.push_url
+			r.push_url,
+			r.push_client_token,
+			pushAppToken
 		];
 
 		const sql = `CALL CreateAccount( ${db.escapeAll(values)} )`;

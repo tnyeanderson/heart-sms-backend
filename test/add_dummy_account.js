@@ -1,6 +1,7 @@
 import { agent } from 'supertest';
 import * as assert from 'assert';
 import { init as mqttTestInit, expectMsg } from './mqtt-test.js'
+import axios from 'axios';
 
 
 /**
@@ -14,6 +15,10 @@ import { init as mqttTestInit, expectMsg } from './mqtt-test.js'
 // This agent refers to PORT where program is runninng.
 const api = agent("http://localhost:5000/api/v1");
 
+const pushUrl = 'gotify1.unifiedpush.org';
+const pushClientToken = process.env.PUSH_CLIENT_TOKEN;
+const pushAppUrl = `https://${pushUrl}/application?token=${pushClientToken}`;
+
 let accountId = '';
 
 let testAccountUsername = 'test2@email.com'
@@ -21,7 +26,6 @@ let testAccountUsername = 'test2@email.com'
 // Password is 'tester', this is the SHA256 hash
 // The password is hashed on the client and again on the server to maintain perfect secrecy
 let testAccountPassword = '9bba5c53a0545e0c80184b946153c9f58387e3bd1d4ee35740f29ac2e718b019'
-
 
 export function deleteDummyAccount () {
 	it("Delete dummy account", function (done) {
@@ -65,6 +69,25 @@ export function postDeleteDummyCounts () {
 	});
 }
 
+export function deleteUnifiedPushApp() {
+	it("Delete HeartSMS app from UnifiedPush (gotify)", async function () {
+		// Delete the application if it exists to make sure it gets created
+		try {
+			const checkResponse = await axios.get(pushAppUrl);
+			let pushApp = checkResponse.data.find((a) => a.name === 'HeartSMS');
+			if (pushApp) {
+				console.log(`Deleting HeartSMS app at ${pushUrl}...`);
+				await axios.delete(pushAppUrl.replace('/application', `/application/${pushApp.id}`))
+			}
+		} catch (error) {
+			console.log(error);
+			throw new InvalidPushClientTokenError();
+		}
+	});
+}
+
+// Actually start by deleting the account
+deleteUnifiedPushApp();
 
 function delay(msg = 'should delay', interval = 3000) {
 	return it(`should delay ${interval/1000}s`, done =>
@@ -90,7 +113,8 @@ describe("heart-sms-backend unit test", function () {
 			"password": testAccountPassword,
 			"phone_number": "5555555555",
 			"real_name": "testname",
-			"push_url": "gotify1.unifiedpush.org"
+			"push_url": pushUrl,
+			"push_client_token": pushClientToken
 		})
 		.expect("Content-type",/json/)
 		.expect(200)
@@ -141,7 +165,8 @@ describe("heart-sms-backend unit test", function () {
 				"passcode": null,
 				"message_timestamp": false,
 				"conversation_categories": true,
-				"push_url": "gotify1.unifiedpush.org"
+				"push_url": pushUrl,
+				"push_client_token": pushClientToken
 			  });
 			console.log('\n', "Account ID: ", res.body.account_id, '\n');
 			done();
