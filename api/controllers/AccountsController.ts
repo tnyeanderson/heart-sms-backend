@@ -4,6 +4,7 @@ import express from 'express';
 import db from '../db/query.js';
 import { asyncHandler } from '../helpers/AsyncHandler.js';
 import { hashPassword } from '../helpers/CryptoHelper.js';
+import unifiedPushHelper from '../helpers/UnifiedPushHelper.js';
 import { InvalidPushClientTokenError } from '../models/errors/Errors.js';
 import * as AccountsPayloads from '../models/payloads/AccountsPayloads.js';
 import { DismissedNotificationRequest, LoginRequest, SignupRequest, UpdateSettingRequest } from '../models/requests/AccountsRequests.js';
@@ -57,7 +58,8 @@ router.route('/signup').post(
 	asyncHandler(SignupRequest.checkDuplicateUser),
 	asyncHandler(async (req, res, next) => {
 		const r: SignupRequest = res.locals.request;
-		const pushAppUrl = `https://${r.push_url}/application?token=${r.push_client_token}`;
+		const pushProtocol = unifiedPushHelper.getPushProtocol();
+		const pushAppUrl = `${pushProtocol}://${r.push_url}/application?token=${r.push_client_token}`;
 		let pushAppToken;
 
 		try {

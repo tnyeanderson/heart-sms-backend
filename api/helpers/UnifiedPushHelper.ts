@@ -1,4 +1,5 @@
 import db from '../db/query.js';
+import { util } from '../utils/util.js';
 
 class TokenCacheItem {
 	constructor(
@@ -30,7 +31,11 @@ class UnifiedPushHelper {
 			this.tokenCache.set(config.account_id, config);
 		}
 
-		return `https://${config.push_url}/message?token=${config.push_app_token}`;
+		return `${this.getPushProtocol()}://${config.push_url}/message?token=${config.push_app_token}`;
+	}
+
+	getPushProtocol() {
+		return (util.env.devOrTest()) ? 'http' : 'https';
 	}
 }
 

@@ -3,7 +3,6 @@ import * as assert from 'assert';
 import { init as mqttTestInit, expectMsg } from './mqtt-test.js'
 import axios from 'axios';
 
-
 /**
  *
  * The point of this is to add data from a second dummy account.
@@ -15,7 +14,8 @@ import axios from 'axios';
 // This agent refers to PORT where program is runninng.
 const api = agent("http://localhost:5000/api/v1");
 
-const pushUrl = 'gotify1.unifiedpush.org';
+const pushUrl = 'push.heart.lan';
+const internalPushUrl = 'heart-sms-push:80';
 const pushClientToken = process.env.PUSH_CLIENT_TOKEN;
 const pushAppUrl = `https://${pushUrl}/application?token=${pushClientToken}`;
 
@@ -113,7 +113,7 @@ describe("heart-sms-backend unit test", function () {
 			"password": testAccountPassword,
 			"phone_number": "5555555555",
 			"real_name": "testname",
-			"push_url": pushUrl,
+			"push_url": internalPushUrl,
 			"push_client_token": pushClientToken
 		})
 		.expect("Content-type",/json/)
@@ -165,7 +165,7 @@ describe("heart-sms-backend unit test", function () {
 				"passcode": null,
 				"message_timestamp": false,
 				"conversation_categories": true,
-				"push_url": pushUrl,
+				"push_url": internalPushUrl,
 				"push_client_token": pushClientToken
 			  });
 			console.log('\n', "Account ID: ", res.body.account_id, '\n');

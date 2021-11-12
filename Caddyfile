@@ -28,4 +28,12 @@ web.heart.lan {
 
   import tls
 }
- 
+
+
+push.heart.lan {
+  # Set the port to the one you are using in gotify
+  # Websocket support, proxy headers, etc. are enabled by default
+  reverse_proxy localhost:8080
+
+  import tls
+}

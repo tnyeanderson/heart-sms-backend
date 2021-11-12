@@ -7,7 +7,7 @@
   "scripts": {
     "compile": "tsc",
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
-    "test": "NODE_ENV=test env-cmd -f ./.db.env.example mocha --exit",
+    "test": "NODE_ENV=test NODE_TLS_REJECT_UNAUTHORIZED='0' env-cmd -f ./.db.env.example mocha --exit",
     "push-all": "npm run docker:push ; npm run db:push ; npm run mqtt:push",
     "start": "cd dist && NODE_ENV=production node server.js",
     "start-dev": "cd dist && NODE_ENV=dev node server.js",

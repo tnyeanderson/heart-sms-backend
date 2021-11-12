@@ -3,6 +3,7 @@
 .api.env
 heart-web-config/
 certs/
+gotify_data/
 
 # Kate
 *.kate-swp

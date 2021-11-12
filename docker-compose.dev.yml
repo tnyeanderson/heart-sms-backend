@@ -63,6 +63,17 @@ services:
       #- .api.env
     #volumes:
       #- ./certs:/etc/certs
+
+  heart-sms-push:
+    container_name: heart-sms-push
+    image: gotify/server
+    ports:
+      - 8080:80
+    environment:
+      - GOTIFY_DEFAULTUSER_PASS=custom
+    volumes:
+      - "./gotify_data:/app/data"
+
       
 volumes:
   db-dev:

@@ -6,7 +6,7 @@ import { deleteDummyAccount, postDeleteDummyCounts, deleteUnifiedPushApp } from 
 // This agent refers to PORT where program is runninng.
 const api = agent("http://localhost:5000/api/v1");
 
-const pushUrl = 'gotify1.unifiedpush.org';
+const internalPushUrl = 'heart-sms-push:80';
 const pushClientToken = process.env.PUSH_CLIENT_TOKEN;
 
 let accountId = '';
@@ -52,7 +52,7 @@ describe("heart-sms-backend unit test", function () {
 			"password": testAccountPassword,
 			"phone_number": "5555555555",
 			"real_name": "testname",
-			"push_url": pushUrl,
+			"push_url": internalPushUrl,
 			"push_client_token": pushClientToken
 		})
 		.expect("Content-type",/json/)
@@ -74,7 +74,7 @@ describe("heart-sms-backend unit test", function () {
 			"password": "shouldfail",
 			"phone_number": "shouldfail",
 			"real_name": "shouldfail",
-			"push_url": pushUrl,
+			"push_url": internalPushUrl,
 			"push_client_token": pushClientToken
 		})
 		.expect("Content-type",/json/)
@@ -97,7 +97,7 @@ describe("heart-sms-backend unit test", function () {
 			"password": testAccountPassword,
 			"phone_number": "5555555555",
 			"real_name": "testname",
-			"push_url": pushUrl,
+			"push_url": internalPushUrl,
 			"push_client_token": pushClientToken
 		})
 		.expect("Content-type",/json/)
@@ -149,7 +149,7 @@ describe("heart-sms-backend unit test", function () {
 				"passcode": null,
 				"message_timestamp": false,
 				"conversation_categories": true,
-				"push_url": pushUrl,
+				"push_url": internalPushUrl,
 				"push_client_token": pushClientToken
 			  });
 			console.log('\n', "Account ID: ", res.body.account_id, '\n');
@@ -305,7 +305,7 @@ describe("heart-sms-backend unit test", function () {
 		});
 	});
 
-	//delay("Waiting to give you time to log in, etc...");
+	delay("Waiting to give you time to log in, etc...");
 
 	it("Update account base_theme string setting", function (done) {
 		expectMsg(accountId, {
