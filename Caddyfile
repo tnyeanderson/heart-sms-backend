@@ -8,22 +8,15 @@
 
 # CHANGEME: Use your own api URL
 api.heart.lan {
+  reverse_proxy http://heart-sms-backend:5000
 
-  route /api/v1/stream {
-    reverse_proxy http://localhost:5050
-  }
-
-  route /* {
-    reverse_proxy http://localhost:5000
-  }
- 
   import tls 
 }
 
 # CHANGEME: Use your own web URL
 web.heart.lan {
   route /* {
-    reverse_proxy http://localhost:8081
+    reverse_proxy http://heart-sms-web:80
   }
 
   import tls
@@ -33,7 +26,7 @@ web.heart.lan {
 push.heart.lan {
   # Set the port to the one you are using in gotify
   # Websocket support, proxy headers, etc. are enabled by default
-  reverse_proxy localhost:8080
+  reverse_proxy http://heart-sms-push:80
 
   import tls
 }

@@ -62,7 +62,7 @@ class StreamController {
 		const gotifyUrl = await unifiedPushHelper.getMessagePushUrl(accountId);
 		axios.post(gotifyUrl, {
 			extras: {
-				"heart::realtime": message
+				"heartsms::realtime": message
 			},
 			message: this.prettyPrintOperation(operation)
 		}).catch(function (error) {
