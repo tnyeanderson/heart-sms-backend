@@ -1,22 +1,11 @@
 # TODO
 ## pulse-sms-backend
 
-- [x] Fix .insertStr() to work when object at i>1 has more columns than i=0
-- [ ] Don't send mqtt message if db operation failed (need to write a test?)
-- [ ] Clean up payloads (stop using constructors?)
-- [x] Postgres root password?
-- [x] Check whether database was set up successfully
-- [x] Update docs for database init
-- [x] async/await db query
-- [x] Fix database error response delay
-- [x] Fix database NOT NULL DEFAULTs
-- [x] Add method docs
-- [x] Better test coverage
-  - [x] Request validation
-  - [x] Full response valdation
-  - [x] All permutations of optional parameters
-  - [x] MQTT messages testing
-- [x] Less console logs of text, switch to Errors
+- [ ] Don't send push message if db operation failed (need to write a test?)
+- [ ] Fix all documentation to reflect new push strategy replacing mqtt
+- [ ] Remove all references to MQTT/Pure Websockets
+- [ ] Use encryption in tests
+- [ ] Use TypeORM for db operations
 
 ### Security
 
@@ -25,7 +14,7 @@ There are some rather large security issues with the original pulse app and API.
 A "check" means that this security issue has been resolved
 
 - [x] Passwords were sent in plain text, meaning the server has everything it needs (password + Salt2) to get the encryption key and decrypt all message data. We should hash before AND after sending (`/signup` and `/login`)
-- [ ] There is no authentication/sessions of any kind for the API. It is all based on knowledge of the account ID, which is returned during login but never changes (and can't be changed by the user). One could copy, clear out, and even delete an account if they know the account ID. ID length has been increased to 64 characters for Heart, but some sort of session key should be implemented instead.
+- [x] There is no authentication/sessions of any kind for the API. It is all based on knowledge of the account ID, which is returned during login but never changes (and can't be changed by the user). One could copy, clear out, and even delete an account if they know the account ID. ID length has been increased to 64 characters for Heart, but some sort of session key should be implemented instead.
   - The `SessionMap` table was created to improve query time and prepare for using session keys in the future
 - [x] When creating a new conversation/thread, the message metadata and contents are sent *unencrypted* in PLAIN TEXT!
 - [x] For a self-hosted solution, we should have a whitelist of allowed accounts to prevent third-party use of a private server
