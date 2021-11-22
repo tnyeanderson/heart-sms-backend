@@ -1,23 +1,20 @@
 import { agent } from 'supertest';
 import * as assert from 'assert';
-import { init as mqttTestInit, expectMsg } from './mqtt-test.js'
+import { init as pushTestInit, expectMsg, dummyClient, internalPushUrl, pushUrl } from './10-push-test.js'
 import axios from 'axios';
 
 /**
  *
  * The point of this is to add data from a second dummy account.
  * When we run the gets for the real account, we shouldn't see any data from this one.
- * At the end, we initialize the mqtt tester. Messages sent as a result of this file are ignored.
+ * At the end, we initialize the push tester. Messages sent as a result of this file are ignored.
  */
 
 
 // This agent refers to PORT where program is runninng.
 const api = agent("http://localhost:5000/api/v1");
 
-const pushUrl = 'push.heart.lan';
-const internalPushUrl = 'heart-sms-push:80';
-const pushClientToken = process.env.PUSH_CLIENT_TOKEN;
-const pushAppUrl = `https://${pushUrl}/application?token=${pushClientToken}`;
+const pushAppUrl = `https://${pushUrl}/application?token=${dummyClient.data.token}`;
 
 let accountId = '';
 
@@ -69,26 +66,6 @@ export function postDeleteDummyCounts () {
 	});
 }
 
-export function deleteUnifiedPushApp() {
-	it("Delete HeartSMS app from UnifiedPush (gotify)", async function () {
-		// Delete the application if it exists to make sure it gets created
-		try {
-			const checkResponse = await axios.get(pushAppUrl);
-			let pushApp = checkResponse.data.find((a) => a.name === 'HeartSMS');
-			if (pushApp) {
-				console.log(`Deleting HeartSMS app at ${pushUrl}...`);
-				await axios.delete(pushAppUrl.replace('/application', `/application/${pushApp.id}`))
-			}
-		} catch (error) {
-			console.log(error);
-			throw new InvalidPushClientTokenError();
-		}
-	});
-}
-
-// Actually start by deleting the account
-deleteUnifiedPushApp();
-
 function delay(msg = 'should delay', interval = 3000) {
 	return it(`should delay ${interval/1000}s`, done =>
 	{
@@ -102,7 +79,7 @@ function delay(msg = 'should delay', interval = 3000) {
 
 // UNIT test begin
 
-describe("heart-sms-backend unit test", function () {
+describe("heart-sms-backend dummy account unit test", function () {
 
 	it("Create new user", function (done) {
 		api
@@ -114,7 +91,7 @@ describe("heart-sms-backend unit test", function () {
 			"phone_number": "5555555555",
 			"real_name": "testname",
 			"push_url": internalPushUrl,
-			"push_client_token": pushClientToken
+			"push_client_token": dummyClient.data.token
 		})
 		.expect("Content-type",/json/)
 		.expect(200)
@@ -166,7 +143,7 @@ describe("heart-sms-backend unit test", function () {
 				"message_timestamp": false,
 				"conversation_categories": true,
 				"push_url": internalPushUrl,
-				"push_client_token": pushClientToken
+				"push_client_token": dummyClient.data.token
 			  });
 			console.log('\n', "Account ID: ", res.body.account_id, '\n');
 			done();
@@ -671,8 +648,8 @@ describe("heart-sms-backend unit test", function () {
 		});
 	});
 
-	it("Initialize mqtt tester", function (done) {
-		mqttTestInit((successful) => {
+	it("Initialize push tester", function (done) {
+		pushTestInit((successful) => {
 			successful.should.equal(true);
 			done()
 		});

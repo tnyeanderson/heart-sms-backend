@@ -42,10 +42,11 @@ router.route('/add').post(
 		res.json(new BaseResponse);
 
 		// Send websocket message
-		items.forEach(function (item) {
+		for (const item of items) {
 			const payload = new TemplatesPayloads.added_template(item);
-			payload.send(r.account_id);
-		});
+			console.log('TEMPLATE ADD: ', payload)
+			await payload.send(r.account_id);
+		}
 	}));
 
 router.route('/remove/:device_id').post(

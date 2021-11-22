@@ -73,7 +73,8 @@ services:
     ports:
       - 8080:80
     environment:
-      - GOTIFY_DEFAULTUSER_PASS=custom
+      - GOTIFY_DEFAULTUSER_PASS=onlyfortesting
+      - GOTIFY_REGISTRATION=true
     volumes:
       - "./gotify/data:/app/data"
       - "./gotify/config.yml:/app/config.yml"

@@ -151,14 +151,6 @@ let requiredPropEndpoints = [
 		props: ['account_id', 'to', 'message', 'sent_device']
 	},
 	{
-		path: '/mqtt/login',
-		props: ['username', 'password']
-	},
-	{
-		path: '/mqtt/acl',
-		props: ['username', 'topic']
-	},
-	{
 		path: '/scheduled_messages/update/1',
 		props: ['account_id'],
 		atLeastOneOther: 'to'

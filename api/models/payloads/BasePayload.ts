@@ -11,8 +11,8 @@ export class BasePayload {
 	 * Since payload classes are named after their "operation", we use this.constructor.name
 	 * @param accountId
 	 */
-	send(accountId: string) {
-		streamController.sendMessage(accountId, this.constructor.name, this)
+	async send(accountId: string) {
+		await streamController.sendMessage(accountId, this.constructor.name, this)
 	}
 
 	/**

@@ -60,10 +60,10 @@ router.route('/add').post(
 		res.json(new BaseResponse);
 
 		// Send websocket message
-		items.forEach(item => {
+		for (const item of items) {
 			const payload = new DraftsPayloads.added_draft(item);
-			payload.send(r.account_id);
-		});
+			await payload.send(r.account_id);
+		}
 	}));
 
 router.route('/remove/:device_conversation_id').post(
