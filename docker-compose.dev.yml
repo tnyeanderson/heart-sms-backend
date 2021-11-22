@@ -8,7 +8,6 @@ services:
     restart: always
     depends_on: 
       - heart-sms-db
-      - heart-sms-mqtt
     ports:
       # In dev we open this up so the android app (emulator) can get here easily
       - "5000:5000"
@@ -45,35 +44,14 @@ services:
     volumes:
       - db-dev:/var/lib/postgresql/data
 
-  heart-sms-mqtt:
-    container_name: heart-sms-mqtt
-    image: heartsms/heart-sms-mqtt:dev
-    init: true
-    restart: always
-    environment: 
-      # This skips setting up SSL on the broker. Uncomment if you've generated your own certificates
-      - DEV_NO_SSL=true
-    ports:
-      # Uncomment this line for debugging from the host (unencrypted)
-      - "127.0.0.1:1883:1883"
-      # SSL endpoint is exposed directly
-      - "8883:8883"
-      # Unsecured websockets will always be local only
-      - "127.0.0.1:5050:5050"
-    #env_file: 
-      # /etc/mosquitto/conf.d/go-auth.conf is derived from .api.env
-      # Comment this out during development to allow unencrypted connection between containers on :5000
-      #- .api.env
-    #volumes:
-      #- ./certs:/etc/certs
-
   heart-sms-push:
     container_name: heart-sms-push
     image: gotify/server
     ports:
       - 8080:80
+    env_file:
+      - .api.env.example
     environment:
-      - GOTIFY_DEFAULTUSER_PASS=onlyfortesting
       - GOTIFY_REGISTRATION=true
     volumes:
       - "./gotify/data:/app/data"

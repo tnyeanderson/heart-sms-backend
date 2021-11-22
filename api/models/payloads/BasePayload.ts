@@ -7,7 +7,7 @@ import { ScheduledMessagesAddItem } from "../requests/ScheduledMessagesRequests.
 
 export class BasePayload {
 	/**
-	 * Publishes an MQTT message
+	 * Publishes a push message
 	 * Since payload classes are named after their "operation", we use this.constructor.name
 	 * @param accountId
 	 */
