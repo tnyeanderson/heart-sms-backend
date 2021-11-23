@@ -65,7 +65,9 @@ Response:
     "apply_primary_color_toolbar": BOOL,
     "passcode": STRING,
     "message_timestamp": BOOL,
-    "conversation_categories": BOOL
+    "conversation_categories": BOOL,
+    "push_url": STRING,
+    "push_client_token": STRING
 } 
 ```
 
@@ -92,7 +94,9 @@ Request body:
 	"name": STRING,
 	"password": STRING,
 	"phone_number": STRING,
-	"real_name": STRING
+	"real_name": STRING,
+    "push_url": STRING,
+    "push_client_token": STRING
 }
 ```
 
