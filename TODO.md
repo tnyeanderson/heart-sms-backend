@@ -2,8 +2,6 @@
 ## pulse-sms-backend
 
 - [ ] Don't send push message if db operation failed (need to write a test?)
-- [ ] Fix all documentation to reflect new push strategy replacing mqtt
-- [ ] Remove all references to MQTT/Pure Websockets
 - [ ] Use encryption in tests
 - [ ] Use TypeORM for db operations
 
