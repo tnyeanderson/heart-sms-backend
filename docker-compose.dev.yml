@@ -16,20 +16,20 @@ services:
       - .api.env.example
   
 
-  # We usually test using heart-sms-web without docker (npm run start-dev)
-  heart-sms-web:
-   container_name: heart-sms-web
-   image: heartsms/heart-sms-web:dev
-   init: true
-   restart: always
-   environment:
-     - HEART_API_URL=api.heart.lan
-     - HEART_USE_SSL=true
-   ports:
-     - "127.0.0.1:8081:80"
-   env_file: 
-     # /config/web-config.json is derived from .api.env
-     - .api.env.example
+  # Uncomment this block if you have built heart-sms-web:dev and want to test it
+  # heart-sms-web:
+  #  container_name: heart-sms-web
+  #  image: heartsms/heart-sms-web:dev
+  #  init: true
+  #  restart: always
+  #  environment:
+  #    - HEART_API_URL=api.heart.lan
+  #    - HEART_USE_SSL=true
+  #  ports:
+  #    - "127.0.0.1:8081:80"
+  #  env_file: 
+  #    # /config/web-config.json is derived from .api.env
+  #    - .api.env.example
 
  
   heart-sms-db:
@@ -65,9 +65,10 @@ services:
       - "80:80"
       - "443:443"
     volumes:
-      - ./Caddyfile:/etc/caddy/Caddyfile
+      - ./Caddyfile.example:/etc/caddy/Caddyfile
       - ./caddy/data:/data
       - ./caddy/config:/config
+
       
 volumes:
   db-dev:

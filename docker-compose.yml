@@ -60,6 +60,8 @@ services:
       - ./Caddyfile:/etc/caddy/Caddyfile
       - ./caddy/data:/data
       - ./caddy/config:/config
+      # Path to certs directory (uncomment for production certs)
+      # - /path/to/certs:/etc/ssl/certs
       
 volumes:
   db:

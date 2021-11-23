@@ -20,7 +20,7 @@ A "check" means that this security issue has been resolved
 - [x] For a self-hosted solution, we should have a whitelist of allowed accounts to prevent third-party use of a private server
 
 ### API Endpoints
-Checked means "test written and passing", tilde means the endpoint sends an MQTT message (untested)
+Checked means "test written and passing", tilde means the endpoint sends a push message (untested)
 
 - [x] accounts/login
 - [x] accounts/signup
@@ -112,7 +112,7 @@ Checked means "test written and passing", tilde means the endpoint sends an MQTT
 
 ## Firebase
 
-Firebase should be discarded for MQTT.
+Firebase should be discarded for Gotify.
 
 The `/media/{id}` endpoint was used to query Firebase for the image stored by ID. Media was actually stored on Firebase.
 
@@ -133,14 +133,13 @@ We should:
 - [x] Change `uploadFileToFirebase()` or equivalent functions in all clients to be queries to `/media`
   - [x] Web client (happens in `media.send()` in `messages.js`)
   - [x] Android app
-- [ ] Change firebase cloud messaging to MQTT
+- [ ] Change firebase cloud messaging to Gotify
   - [ ] Android app
   - [x] Backend
   - [x] Web client
-- [ ] Return username (email) with /account/login
 
-## MQTT
-Firebase messages are being scrapped for MQTT. Here are the firebase actions from the Android app, and their typescript implementation status (untested):
+## Websockets/Gotify
+Firebase messages are being scrapped for Gotify. Here are the firebase actions from the Android app, and their typescript implementation status (untested):
 
 - [x] removed_account
 - [ ] ? updated_account

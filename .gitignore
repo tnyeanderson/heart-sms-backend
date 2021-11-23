@@ -1,4 +1,5 @@
 # Heart specific
+Caddyfile
 .db.env
 .api.env
 heart-web-config/
