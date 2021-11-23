@@ -15,7 +15,7 @@ Contributions and pull requests are welcome! Read [Getting Started](docs/getting
 
 ## Building the development environment
 
-This environment should NOT be used for production. It also does not include the web interface as that should be tested separately, locally with npm.
+This environment should NOT be used for production.
 
 This repo makes liberal use of `npm run $SCRIPT` commands for flexibility. These are derived from `package.json`, if you are curious.
 
@@ -38,6 +38,8 @@ Run the following command to build all needed images with the `dev` tag (`heart-
 ```
 npm run build-dev
 ```
+
+> NOTE: You may also want to build the `heart-sms-web` image from its respective repo. If needed for testing, please build it locally and uncomment its block in `docker-compose.dev.yml` before continuing.
 
 
 ## Running the development environment
