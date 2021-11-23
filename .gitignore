@@ -1,8 +1,11 @@
 # Heart specific
+Caddyfile
 .db.env
 .api.env
 heart-web-config/
 certs/
+caddy/
+gotify/data/
 
 # Kate
 *.kate-swp

@@ -44,10 +44,10 @@ router.route('/add').post(
 		res.json(new BaseResponse);
 
 		// Send websocket message
-		items.forEach(item => {
+		for (const item of items) {
 			const payload = new BlacklistsPayloads.added_blacklist(item);
-			payload.send(r.account_id);
-		});
+			await payload.send(r.account_id);
+		}
 	}));
 
 router.route('/remove/:device_id').post(

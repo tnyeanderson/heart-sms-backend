@@ -1,18 +1,20 @@
 import { agent } from 'supertest';
 import * as assert from 'assert';
-import { init as mqttTestInit, expectMsg } from './mqtt-test.js'
-
+import { init as pushTestInit, expectMsg, dummyClient, internalPushUrl, pushUrl } from './10-push-test.js'
+import axios from 'axios';
 
 /**
  *
  * The point of this is to add data from a second dummy account.
  * When we run the gets for the real account, we shouldn't see any data from this one.
- * At the end, we initialize the mqtt tester. Messages sent as a result of this file are ignored.
+ * At the end, we initialize the push tester. Messages sent as a result of this file are ignored.
  */
 
 
 // This agent refers to PORT where program is runninng.
 const api = agent("http://localhost:5000/api/v1");
+
+const pushAppUrl = `https://${pushUrl}/application?token=${dummyClient.data.token}`;
 
 let accountId = '';
 
@@ -21,7 +23,6 @@ let testAccountUsername = 'test2@email.com'
 // Password is 'tester', this is the SHA256 hash
 // The password is hashed on the client and again on the server to maintain perfect secrecy
 let testAccountPassword = '9bba5c53a0545e0c80184b946153c9f58387e3bd1d4ee35740f29ac2e718b019'
-
 
 export function deleteDummyAccount () {
 	it("Delete dummy account", function (done) {
@@ -65,7 +66,6 @@ export function postDeleteDummyCounts () {
 	});
 }
 
-
 function delay(msg = 'should delay', interval = 3000) {
 	return it(`should delay ${interval/1000}s`, done =>
 	{
@@ -79,7 +79,7 @@ function delay(msg = 'should delay', interval = 3000) {
 
 // UNIT test begin
 
-describe("heart-sms-backend unit test", function () {
+describe("heart-sms-backend dummy account unit test", function () {
 
 	it("Create new user", function (done) {
 		api
@@ -89,7 +89,9 @@ describe("heart-sms-backend unit test", function () {
 			// Password is 'tester', this is the SHA256 hash
 			"password": testAccountPassword,
 			"phone_number": "5555555555",
-			"real_name": "testname"
+			"real_name": "testname",
+			"push_url": internalPushUrl,
+			"push_client_token": dummyClient.data.token
 		})
 		.expect("Content-type",/json/)
 		.expect(200)
@@ -139,7 +141,9 @@ describe("heart-sms-backend unit test", function () {
 				"apply_primary_color_toolbar": true,
 				"passcode": null,
 				"message_timestamp": false,
-				"conversation_categories": true
+				"conversation_categories": true,
+				"push_url": internalPushUrl,
+				"push_client_token": dummyClient.data.token
 			  });
 			console.log('\n', "Account ID: ", res.body.account_id, '\n');
 			done();
@@ -644,8 +648,8 @@ describe("heart-sms-backend unit test", function () {
 		});
 	});
 
-	it("Initialize mqtt tester", function (done) {
-		mqttTestInit((successful) => {
+	it("Initialize push tester", function (done) {
+		pushTestInit((successful) => {
 			successful.should.equal(true);
 			done()
 		});

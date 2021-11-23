@@ -1,0 +1,7 @@
+server:
+  cors: # Sets cors headers only when needed and provides support for multiple allowed origins. Overrides Access-Control-* Headers in response headers.
+    alloworigins:
+      - ".*" 
+  stream: # Sets cors headers only when needed and provides support for multiple allowed origins. Overrides Access-Control-* Headers in response headers.
+    allowedorigins:
+      - ".*"

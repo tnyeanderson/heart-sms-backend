@@ -1,22 +1,9 @@
 # TODO
 ## pulse-sms-backend
 
-- [x] Fix .insertStr() to work when object at i>1 has more columns than i=0
-- [ ] Don't send mqtt message if db operation failed (need to write a test?)
-- [ ] Clean up payloads (stop using constructors?)
-- [x] Postgres root password?
-- [x] Check whether database was set up successfully
-- [x] Update docs for database init
-- [x] async/await db query
-- [x] Fix database error response delay
-- [x] Fix database NOT NULL DEFAULTs
-- [x] Add method docs
-- [x] Better test coverage
-  - [x] Request validation
-  - [x] Full response valdation
-  - [x] All permutations of optional parameters
-  - [x] MQTT messages testing
-- [x] Less console logs of text, switch to Errors
+- [ ] Don't send push message if db operation failed (need to write a test?)
+- [ ] Use encryption in tests
+- [ ] Use TypeORM for db operations
 
 ### Security
 
@@ -25,13 +12,13 @@ There are some rather large security issues with the original pulse app and API.
 A "check" means that this security issue has been resolved
 
 - [x] Passwords were sent in plain text, meaning the server has everything it needs (password + Salt2) to get the encryption key and decrypt all message data. We should hash before AND after sending (`/signup` and `/login`)
-- [ ] There is no authentication/sessions of any kind for the API. It is all based on knowledge of the account ID, which is returned during login but never changes (and can't be changed by the user). One could copy, clear out, and even delete an account if they know the account ID. ID length has been increased to 64 characters for Heart, but some sort of session key should be implemented instead.
+- [x] There is no authentication/sessions of any kind for the API. It is all based on knowledge of the account ID, which is returned during login but never changes (and can't be changed by the user). One could copy, clear out, and even delete an account if they know the account ID. ID length has been increased to 64 characters for Heart, but some sort of session key should be implemented instead.
   - The `SessionMap` table was created to improve query time and prepare for using session keys in the future
 - [x] When creating a new conversation/thread, the message metadata and contents are sent *unencrypted* in PLAIN TEXT!
 - [x] For a self-hosted solution, we should have a whitelist of allowed accounts to prevent third-party use of a private server
 
 ### API Endpoints
-Checked means "test written and passing", tilde means the endpoint sends an MQTT message (untested)
+Checked means "test written and passing", tilde means the endpoint sends a push message (untested)
 
 - [x] accounts/login
 - [x] accounts/signup
@@ -123,7 +110,7 @@ Checked means "test written and passing", tilde means the endpoint sends an MQTT
 
 ## Firebase
 
-Firebase should be discarded for MQTT.
+Firebase should be discarded for Gotify.
 
 The `/media/{id}` endpoint was used to query Firebase for the image stored by ID. Media was actually stored on Firebase.
 
@@ -144,14 +131,13 @@ We should:
 - [x] Change `uploadFileToFirebase()` or equivalent functions in all clients to be queries to `/media`
   - [x] Web client (happens in `media.send()` in `messages.js`)
   - [x] Android app
-- [ ] Change firebase cloud messaging to MQTT
+- [ ] Change firebase cloud messaging to Gotify
   - [ ] Android app
   - [x] Backend
   - [x] Web client
-- [ ] Return username (email) with /account/login
 
-## MQTT
-Firebase messages are being scrapped for MQTT. Here are the firebase actions from the Android app, and their typescript implementation status (untested):
+## Websockets/Gotify
+Firebase messages are being scrapped for Gotify. Here are the firebase actions from the Android app, and their typescript implementation status (untested):
 
 - [x] removed_account
 - [ ] ? updated_account

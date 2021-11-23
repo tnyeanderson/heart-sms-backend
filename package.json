@@ -7,24 +7,20 @@
   "scripts": {
     "compile": "tsc",
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
-    "test": "NODE_ENV=test env-cmd -f ./.db.env.example mocha --exit",
-    "push-all": "npm run docker:push ; npm run db:push ; npm run mqtt:push",
+    "test": "NODE_ENV=test NODE_TLS_REJECT_UNAUTHORIZED='0' env-cmd -f ./.db.env.example mocha --exit",
+    "push-all": "npm run docker:push ; npm run db:push",
     "start": "cd dist && NODE_ENV=production node server.js",
     "start-dev": "cd dist && NODE_ENV=dev node server.js",
-    "build-dev": "npm run docker:build && npm run db:build && npm run mqtt:build",
+    "build-dev": "npm run docker:build && npm run db:build",
     "docker:start-dev": "sudo docker-compose -f docker-compose.dev.yml up -d",
     "docker:build": "sudo docker build -t heartsms/heart-sms-backend:dev .",
     "docker:build-latest": "sudo docker build -t heartsms/heart-sms-backend:latest .",
     "docker:push": "npm run docker:build-latest && sudo docker push heartsms/heart-sms-backend:latest",
-    "docker:start": "sudo docker-compose up -d heart-sms-backend heart-sms-db heart-sms-mqtt",
+    "docker:start": "sudo docker-compose up -d heart-sms-backend heart-sms-db",
     "db:build": "cd db && sudo docker build -t heartsms/heart-sms-db:dev .",
     "db:build-latest": "cd db && sudo docker build -t heartsms/heart-sms-db:latest .",
     "db:push": "npm run db:build-latest && sudo docker push heartsms/heart-sms-db:latest",
-    "db:start": "sudo docker-compose up -d heart-sms-db",
-    "mqtt:build": "cd mqtt && sudo docker build -t heartsms/heart-sms-mqtt:dev .",
-    "mqtt:build-latest": "cd mqtt && sudo docker build -t heartsms/heart-sms-mqtt:latest .",
-    "mqtt:push": "npm run mqtt:build-latest && sudo docker push heartsms/heart-sms-mqtt:latest",
-    "mqtt:start": "sudo docker-compose up -d heart-sms-mqtt"
+    "db:start": "sudo docker-compose up -d heart-sms-db"
   },
   "repository": {
     "type": "git",
@@ -38,9 +34,9 @@
   "homepage": "https://github.com/tnyeanderson/heart-sms-backend#readme",
   "dependencies": {
     "@postlight/mercury-parser": "^2.2.1",
+    "axios": "^0.24.0",
     "cors": "^2.8.5",
     "express": "^4.17.1",
-    "mqtt": "^4.2.8",
     "npm": "^8.1.2",
     "pg": "^8.5.1",
     "pg-format": "^1.0.4",
@@ -65,6 +61,7 @@
     "mocha": "^9.1.3",
     "should": "^13.2.3",
     "supertest": "^6.1.3",
-    "typescript": "^4.4.4"
+    "typescript": "^4.4.4",
+    "ws": "^8.2.3"
   }
 }

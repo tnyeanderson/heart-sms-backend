@@ -2,7 +2,7 @@
 
 This project provides a database and API backend for HeartSMS, a fork of PulseSMS. Written with NodeJS.
 
-**Heart** is a text messaging app for android that lets you text from your browser on any computer. Whenever you receive or send a text on your phone, it is encrypted (along with certain metadata) on the client, sent to the backend (this repo), and stored in a database. The web client can use this database via its associated API (plus MQTT messaging) to read and respond to SMS messages in real time from any modern browser. When you hit send in the browser, it sends a request to your android phone to actually send the message. This means that you keep your phone number.
+**Heart** is a text messaging app for android that lets you text from your browser on any computer. Whenever you receive or send a text on your phone, it is encrypted (along with certain metadata) on the client, sent to the backend (this repo), and stored in a database. The web client can use this database via its associated API (plus websockets via Gotify) to read and respond to SMS messages in real time from any modern browser. When you hit send in the browser, it sends a request (via Gotify/UnifiedPush) to your android phone to actually send the message. This means that you keep your phone number.
 
 Your messages are yours. Heart does not collect any analytics data (or any data whatsoever), and the backend is meant to be self hosted.
 
@@ -16,7 +16,7 @@ Eventually the rebranded Heart SMS app will be released on F-Droid, etc.
 
 The end goal is a docker-compose file that can be initialized with environment variables, including the web client. Native clients will have preferences added to set the base url of the API.
 
-Heart does not use Firebase Messaging. Instead, it has an MQTT broker (mosquitto) included, which is accessible on websockets for the web client.
+Heart does not use Firebase Messaging. Instead, it uses Gotify/UnifiedPush, which is accessible via websockets for the web client.
 
 ---
 
@@ -30,9 +30,7 @@ Here's the short version:
 2. Quickly create your `api` and `db` env files
 3. Generate certificates using certbot (or your own CA for testing)
 4. Update URLs and cert paths in Caddyfile
-5. Mount the certs to the `heart-sms-mqtt` container
 6. `docker-compose up -d`
-7. `caddy run`
 
 
 ## Development server
@@ -42,13 +40,13 @@ Follow the steps in [Contributing to HeartSMS](CONTRIBUTING.md) to set up a deve
 
 ## Docker
 
-This project uses 4 bespoke containers to make configuration easy. Just create/edit the `.db.env` and `.api.env` files, add the certs and you're ready to go!
+This project uses 3 bespoke containers (plus a Gotify container and a Caddy container) to make configuration easy. Just create/edit the `.db.env` and `.api.env` files, add the certs and you're ready to go!
 
 If you want to build the production containers yourself (might be a good idea if you are testing certain things because I don't have CI/CD in place... yet), you can do so in the following way:
 
-### Build backend, mqtt, and database
+### Build backend and database simultaneously
 
-Creates all containers with tag `:dev`
+Builds both images at once with tag `:dev`
 ```
 npm run build-dev
 ```
@@ -60,7 +58,7 @@ From project root, run:
 npm run docker:build
 ```
 
-This will create a container tagged `heartsms/heart-sms-backend:dev`.
+This will create an image tagged `heartsms/heart-sms-backend:dev`.
 
 ### heart-sms-web
 
@@ -69,21 +67,14 @@ Clone the `heart-sms-web` repo, then run from web project root:
 npm run docker:build
 ```
 
-This will create a container tagged `heartsms/heart-sms-web:dev`.
+This will create an image tagged `heartsms/heart-sms-web:dev`.
 
 ### heart-sms-db
 ```
 npm run db:build
 ```
 
-This will create a container tagged `heartsms/heart-sms-db:dev`.
-
-### heart-sms-mqtt
-```
-npm run mqtt:build
-```
-
-This will create a container tagged `heartsms/heart-sms-mqtt:dev`.
+This will create an image tagged `heartsms/heart-sms-db:dev`.
 
 
 ## The following is from TChilderhose (edited)

@@ -1,10 +1,13 @@
 import { agent } from 'supertest';
 import * as assert from 'assert';
-import { expectMsg, msgCount, msgTested, close as mqttTestClose } from './mqtt-test.js';
-import { deleteDummyAccount, postDeleteDummyCounts } from './add_dummy_account.js';
+import { expectMsg, msgCount, msgTested, close as pushTestClose, internalPushUrl, pushUrl, testClient, cleanAllFromGotify } from './10-push-test.js';
+import { deleteDummyAccount, postDeleteDummyCounts } from './30-add_dummy_account.js';
 
 // This agent refers to PORT where program is runninng.
 const api = agent("http://localhost:5000/api/v1");
+
+const pushAppUrl = `https://${pushUrl}/application?token=${testClient.data.token}`;
+
 
 let accountId = '';
 let contactsToRemove = [];
@@ -32,9 +35,9 @@ function delay(msg = 'should delay', interval = 3000) {
 describe("heart-sms-backend unit test", function () {
 
 	beforeEach(function (done) {
-		let delay = 50;
+		let delay = 100;
 
-		// Wait between api requests so mqtt testing works
+		// Wait between api requests so push testing works
 		setTimeout(() => {
 			done();
 		}, delay)
@@ -48,7 +51,9 @@ describe("heart-sms-backend unit test", function () {
 			// Password is 'tester', this is the SHA256 hash
 			"password": testAccountPassword,
 			"phone_number": "5555555555",
-			"real_name": "testname"
+			"real_name": "testname",
+			"push_url": internalPushUrl,
+			"push_client_token": testClient.data.token
 		})
 		.expect("Content-type",/json/)
 		.expect(200)
@@ -68,7 +73,9 @@ describe("heart-sms-backend unit test", function () {
 			"name": "usernamenotallowed",
 			"password": "shouldfail",
 			"phone_number": "shouldfail",
-			"real_name": "shouldfail"
+			"real_name": "shouldfail",
+			"push_url": internalPushUrl,
+			"push_client_token": testClient.data.token
 		})
 		.expect("Content-type",/json/)
 		.expect(200)
@@ -89,7 +96,9 @@ describe("heart-sms-backend unit test", function () {
 			// Password is 'tester', this is the SHA256 hash
 			"password": testAccountPassword,
 			"phone_number": "5555555555",
-			"real_name": "testname"
+			"real_name": "testname",
+			"push_url": internalPushUrl,
+			"push_client_token": testClient.data.token
 		})
 		.expect("Content-type",/json/)
 		.expect(200)
@@ -139,7 +148,9 @@ describe("heart-sms-backend unit test", function () {
 				"apply_primary_color_toolbar": true,
 				"passcode": null,
 				"message_timestamp": false,
-				"conversation_categories": true
+				"conversation_categories": true,
+				"push_url": internalPushUrl,
+				"push_client_token": testClient.data.token
 			  });
 			console.log('\n', "Account ID: ", res.body.account_id, '\n');
 			done();
@@ -181,120 +192,8 @@ describe("heart-sms-backend unit test", function () {
 			done();
 		});
 	});
-	
-	it("MQTT log in", function (done) {
-		api
-		.post('/mqtt/login')
-		.send({
-			"username": testAccountUsername,
-			"password": accountId
-		})
-		.expect("Content-type",/json/)
-		.expect(200)
-		.end(function (err,res) {
-			res.status.should.equal(200);
-			assert.deepStrictEqual(res.body, {
-				Ok: true
-			});
-			done();
-		});
-	});
 
-	it("MQTT fail log in (bad username)", function (done) {
-		api
-		.post('/mqtt/login')
-		.send({
-			"username": "bad",
-			"password": accountId
-		})
-		.expect("Content-type",/json/)
-		.expect(200)
-		.end(function (err,res) {
-			res.status.should.equal(401);
-			assert.deepStrictEqual(res.body, {
-				Ok: false,
-				Error: 'username or password incorrect'
-			});
-			done();
-		});
-	});
-
-	it("MQTT fail log in (bad password)", function (done) {
-		api
-		.post('/mqtt/login')
-		.send({
-			"username": testAccountUsername,
-			"password": "bad"
-		})
-		.expect("Content-type",/json/)
-		.expect(200)
-		.end(function (err,res) {
-			res.status.should.equal(401);
-			assert.deepStrictEqual(res.body, {
-				Ok: false,
-				Error: 'username or password incorrect'
-			});
-			done();
-		});
-	});
-
-	it("MQTT acl", function (done) {
-		api
-		.post('/mqtt/acl')
-		.send({
-			"username": testAccountUsername,
-			"topic": 'heartsms/' + accountId
-		})
-		.expect("Content-type",/json/)
-		.expect(200)
-		.end(function (err,res) {
-			res.status.should.equal(200);
-			assert.deepStrictEqual(res.body, {
-				Ok: true
-			});
-			done();
-		});
-	});
-
-	it("MQTT fail acl (bad username)", function (done) {
-		api
-		.post('/mqtt/acl')
-		.send({
-			"username": "bad",
-			"topic": 'heartsms/' + accountId
-		})
-		.expect("Content-type",/json/)
-		.expect(200)
-		.end(function (err,res) {
-			res.status.should.equal(401);
-			assert.deepStrictEqual(res.body, {
-				Ok: false,
-				Error: 'username or password incorrect'
-			});
-			done();
-		});
-	});
-
-	it("MQTT fail acl (bad topic)", function (done) {
-		api
-		.post('/mqtt/acl')
-		.send({
-			"username": testAccountUsername,
-			"topic": "bad"
-		})
-		.expect("Content-type",/json/)
-		.expect(200)
-		.end(function (err,res) {
-			res.status.should.equal(401);
-			assert.deepStrictEqual(res.body, {
-				Ok: false,
-				Error: 'username or password incorrect'
-			});
-			done();
-		});
-	});
-
-	//delay("Waiting to give you time to log in, etc...");
+	delay("Waiting to give you time to log in, etc...");
 
 	it("Update account base_theme string setting", function (done) {
 		expectMsg(accountId, {
@@ -3829,20 +3728,20 @@ describe("heart-sms-backend unit test", function () {
 		});
 	});
 
-	it("All mqtt messages received",function(done){
+	it("All push messages received",function(done){
 		// All messages received
 		msgCount.should.equal(75);
 		done();
 	});
 
-	it("All mqtt messages tested",function(done){
+	it("All push messages tested",function(done){
 		// All messages tested
 		msgTested.should.equal(msgCount);
 		done();
 	});
 
-	it("should close mqtt socket",function(done){
-		mqttTestClose(function (successful) {
+	it("should close socket",function(done){
+		pushTestClose(function (successful) {
 			successful.should.equal(true);
 			done();
 		})
@@ -3857,4 +3756,11 @@ describe("heart-sms-backend unit test", function () {
 	 * All counts should be zero for dummy account after deletion
 	 */
 	postDeleteDummyCounts();
+
+	/**
+	 * Delete the gotify dummy and test users
+	 */
+	it('delete test accounts', async function () {
+		await cleanAllFromGotify();
+	});
 }); 

@@ -6,13 +6,12 @@
   - [URLs](#urls)
       - [api.heart.lan](#apiheartlan)
       - [web.heart.lan](#webheartlan)
-      - [mqtt.heart.lan](#mqttheartlan)
+      - [push.heart.lan](#pushheartlan)
   - [Prerequisites](#prerequisites)
   - [Step-by-step](#step-by-step)
     - [Configure](#configure)
     - [Certificates](#certificates)
     - [Start the containers](#start-the-containers)
-    - [Create the reverse proxy and bring it online](#create-the-reverse-proxy-and-bring-it-online)
 
 
 **HeartSMS is a work in progress. It hasn't even been alpha tested yet and should NOT be used in production. This guide exists for developer reference and future releases**
@@ -24,27 +23,27 @@ In this guide, you should be replacing the example URLs, `api.heart.lan` and `we
 
 ## System description
 
-The system is made up of four docker containers, configured using docker-compose. The "backend" consists of the API (`heart-sms-backend`), the database (`heart-sms-db`), and the Mosquitto MQTT broker (`heart-sms-mqtt`). The frontend is `heart-sms-web`.
+The system is made up of five docker containers, configured using docker-compose. The "backend" consists of the API (`heart-sms-backend`), the database (`heart-sms-db`), and a Gotify server (`heart-sms-push`). The frontend is `heart-sms-web`. A `caddy` container is used to reverse proxy connections to these containers and provide SSL.
 
-In general, all four containers will run on the same server.
+In general, all five containers will run on the same server.
 
-The API container (`heart-sms-backend`) is used by clients (phones, web clients, etc) to query the database. Each time certain database operations are made, the API also publishes a relevant message to the MQTT server, which delivers the message to all subscribed clients (phones, web clients, etc). For more information on the structure and content of MQTT messages in Heart, see `docs/mqtt.md`.
+The API container (`heart-sms-backend`) is used by clients (phones, web clients, etc) to query the database. Each time certain database operations are made, the API also publishes a relevant message to the Gotify server, which pushes the message to all subscribed clients (phones, web clients, etc). For more information on the structure and content of push messages in Heart, see `docs/push.md`.
 
-The web client also makes calls to the API, but since browsers can't use MQTT directly, a websocket endpoint is included in `heart-sms-mqtt` for web clients to connect to.
+The web client also makes calls to the API, and connects to the websocket endpoint included in `heart-sms-push`.
 
 Finally, there is an `/article` endpoint which uses `@postlight/mercury-parser`. This is called from the android app in lieu of Klinker's article api, and aims to make articles more readable when viewed in the app. 
 
 ## Services, endpoints, and ports
 
-| Description | External Port | Internal port | Reverse Proxy Endpoints           | Container         |
-|-------------|---------------|---------------|-----------------------------------|-------------------|
-| HTTPS API   | 443           | 5000          | api.heart.lan                     | heart-sms-backend |
-| Websockets  | 443           | 5050          | api.heart.lan/api/v1/stream       | heart-sms-mqtt    |
-| MQTT / TLS  | 8883          | 8883          | api.heart.lan *OR* mqtt.heart.lan | heart-sms-mqtt    |
-| Web client  | 443           | 8081          | web.heart.lan                     | heart-sms-web     |
-| MYSQL       | INTERNAL ONLY | 3306          | INTERNAL ONLY                     | heart-sms-db      |
+| Description | External Port | Internal port | Reverse Proxy Endpoints | Container         |
+|-------------|---------------|---------------|-------------------------|-------------------|
+| HTTPS API   | 443           | 5000          | api.heart.lan           | heart-sms-backend |
+| Gotify      | 443           | 8080          | push.heart.lan          | heart-sms-push    |
+| Web client  | 443           | 8081          | web.heart.lan           | heart-sms-web     |
+| MYSQL       | INTERNAL ONLY | 3306          | INTERNAL ONLY           | heart-sms-db      |
+| Caddy       | 443 / 80      | -             | -                       | caddy             |
 
-*Note: the reverse proxy listens on port 80 and 443, but only uses 80 to upgrade to HTTPS*
+*Note: the reverse proxy (Caddy) listens on port 80 and 443, but only uses 80 to upgrade to HTTPS*
 
 ## URLs
 Heart uses the following URLs in the following way (example urls are given, you will have your own, but they will probably be similar). Keep in mind that all URLs will lead to the same IP address (the containers are all running on the same server).
@@ -54,9 +53,6 @@ Heart uses the following URLs in the following way (example urls are given, you 
 Open ports: 
   - 80 (optional, should always redirect to HTTPS API)
   - 443 (HTTPS API)
-  - 8883 (Mosquitto MQTT/TLS)
-
-*NOTE: For more flexibility or clarity, you can also use mqtt.heart.lan:8883 assuming you direct all subdomains to the same server or have explicitly set the mqtt.heart.lan DNS record*
 
 
 #### web.heart.lan
@@ -66,19 +62,18 @@ Open ports:
   - 443 (HTTPS)
 
 
-#### mqtt.heart.lan
+#### push.heart.lan
 
-*Optional, but for more flexibility or clarity, you can use mqtt.heart.lan:8883 assuming you direct all subdomains (wildcard) to the same server or have explicitly set the mqtt.heart.lan DNS record. You can technically get to MQTT from any subdomain if you have a wildcard DNS record*
-
-Open ports: 
-  - 8883 (Mosquitto MQTT/TLS)
+Open ports:
+  - 80 (optional, should always redirect to HTTPS)
+  - 443 (HTTPS)
 
 
 ## Prerequisites
 
-1. Please make sure you have git, caddy, docker, and docker-compose installed.
+1. Please make sure you have git, docker, and docker-compose installed.
 2. You must have a domain name.
-3. You must generate a wildcard certificate signed by a CA for your domain (so it works for the web.* , api.* , and (optional) mqtt.* subdomains). You can use certbot for this.
+3. You must generate a wildcard certificate signed by a CA for your domain (so it works for the web.* , api.* , and push.* subdomains). You can use certbot for this.
 
 
 Example certbot command for production certs (follow the certbot documentation for automatic renewal, etc):
@@ -126,14 +121,15 @@ POSTGRES_PASSWORD=MyNewSuperSecurePassword
 In `.api.env`, you will need to set all of the URLs to be the same (your API url), and set `HEART_USE_SSL` to `true`:
 ```
 HEART_API_URL=api.heart.lan
-HEART_WEBSOCKETS_URL=api.heart.lan
-HEART_MQTT_URL=api.heart.lan   # OR mqtt.heart.lan
 HEART_USE_SSL=true
 
 # Limit user signups
 # Wildcard (allow all users): *
-# Or specify each user separated commas (no spaces)
+# Or specify each user separated by commas (no spaces)
 HEART_ALLOWED_USERS=*
+
+# Gotify admin password
+GOTIFY_DEFAULTUSER_PASS=MyNewSecureGotifyPassword
 ```
 
 You can limit which usernames can be used to sign up to HeartSMS. For instance:
@@ -147,27 +143,9 @@ HEART_ALLOWED_USERS=test@email.com,user2,alphatester@email.com
 
 **Caddy**
 
-Update the `Caddyfile` with your own URLs (no need to add a block for `mqtt.heart.lan`). Then, change the `tls internal` line to read:
+Copy `Caddyfile.example` to `Caddyfile` and update the resulting `Caddyfile` with your own URLs. Then, change the `tls internal` line to read:
 ```
-tls /path/to/cert.crt /path/to/key.key
-```
-
-**Mosquitto**
-
-Finally, mosquitto requires the certificates (including CA public key) to be mounted to the container. Edit the volume mounts in `docker-compose.yml` to reflect the location of the certificates on your host (see [MQTTS - SSL/TLS Setup](mqtt.md)):
-```
-heart-sms-mqtt:
-    container_name: heart-sms-mqtt
-    image: heartsms/heart-sms-mqtt
-    ...
-    env_file: 
-      # /etc/mosquitto/conf.d/go-auth.conf is derived from .api.env
-      # Comment this out during development to allow unencrypted connection between containers on :5000
-      - .api.env
-    volumes:
-      - /path/to/cert.crt:/etc/certs/cert.pem
-      - /path/to/key.key:/etc/certs/key.pem
-      - /path/to/ca/publickey.pem:/etc/certs/ca.pem
+tls /etc/ssl/certs/cert.crt /etc/ssl/certs/key.key
 ```
 
 **Make sure the permissions for your .env and certificate files are appropriate on the host!**
@@ -183,16 +161,6 @@ docker-compose up -d
 
 This will create the entire stack with all the containers for you, ready to go.
 
-
-### Create the reverse proxy and bring it online
-
-The last step is setting up HTTPS and routing with caddy as a reverse proxy. Once you're sure you've set your urls and cert paths in the Caddyfile, run:
-
-```
-caddy start
-```
-
-The encrypted API, MQTT, web client, and websocket endpoints are now available on the internet. You may want to [run caddy as a service](https://caddyserver.com/docs/install#linux-service) to survive restarts :)
-
+The encrypted API, Gotify/UnifiedPush server, web client, and websocket endpoints are now available on the internet!
 
 Unfortunately, that is it for now; the Android app is not yet fully functional. See the `heart-sms-android` repo for build instructions.

@@ -1,0 +1,32 @@
+(tls) {
+  # CHANGEME: Uncomment the following line and add your cert paths. Comment `tls internal`
+  #tls /etc/ssl/certs/cert.crt /etc/ssl/certs/key.key
+
+  # CHANGEME: Comment this line after adding your own cert
+  tls internal
+}
+
+# CHANGEME: Use your own api URL
+api.heart.lan {
+  reverse_proxy http://heart-sms-backend:5000
+
+  import tls 
+}
+
+# CHANGEME: Use your own web URL
+web.heart.lan {
+  route /* {
+    reverse_proxy http://heart-sms-web:80
+  }
+
+  import tls
+}
+
+
+push.heart.lan {
+  # Set the port to the one you are using in gotify
+  # Websocket support, proxy headers, etc. are enabled by default
+  reverse_proxy http://heart-sms-push:80
+
+  import tls
+}

@@ -70,10 +70,10 @@ router.route('/add').post(
 		res.json(new BaseResponse);
 
 		// Send websocket message
-		items.forEach((item) => {
+		for (const item of items) {
 			const payload = new MessagesPayloads.added_message(item);
-			payload.send(r.account_id);
-		});
+			await payload.send(r.account_id);
+		}
 	}));
 
 router.route('/update/:device_id').post(

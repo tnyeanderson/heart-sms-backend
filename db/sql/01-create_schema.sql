@@ -102,6 +102,17 @@ CREATE TABLE IF NOT EXISTS SessionMap (
     CONSTRAINT FK_SessionMap_Accounts_account_id FOREIGN KEY (account_id) REFERENCES Accounts (account_id) ON DELETE CASCADE
 ) ;
 
+CREATE TABLE IF NOT EXISTS UnifiedPush (
+    "id" BIGSERIAL PRIMARY KEY,
+    "account_id" INTEGER NOT NULL,
+    "push_url" TEXT NULL,
+    "push_app_token" TEXT NULL,
+    "push_client_token" TEXT NULL,
+    "created_at" TIMESTAMP DEFAULT NOW(),
+    "updated_at" TIMESTAMP DEFAULT NOW(),
+    CONSTRAINT FK_UnifiedPush_Accounts_account_id FOREIGN KEY (account_id) REFERENCES Accounts (account_id) ON DELETE CASCADE
+) ;
+
 CREATE TABLE IF NOT EXISTS AutoReplies (
     "id" BIGSERIAL PRIMARY KEY,
     "device_id" BIGINT NOT NULL,
@@ -322,6 +333,7 @@ natural left join
 
 
 CREATE INDEX IX_SessionMap_session_id ON SessionMap (session_id) ;
+CREATE INDEX IX_UnifiedPush_session_id ON UnifiedPush (account_id) ;
 CREATE INDEX IX_AutoReplies_account_id ON AutoReplies (account_id) ;
 CREATE INDEX IX_Blacklists_account_id ON Blacklists (account_id) ;
 CREATE INDEX IX_Contacts_account_id ON Contacts (account_id) ;
@@ -470,6 +482,7 @@ CREATE TRIGGER set_Messages_updated_at          BEFORE UPDATE ON Messages       
 CREATE TRIGGER set_ScheduledMessages_updated_at BEFORE UPDATE ON ScheduledMessages FOR EACH ROW EXECUTE PROCEDURE set_updated_at_func();
 CREATE TRIGGER set_SessionMap_updated_at        BEFORE UPDATE ON SessionMap        FOR EACH ROW EXECUTE PROCEDURE set_updated_at_func();
 CREATE TRIGGER set_Templates_updated_at         BEFORE UPDATE ON Templates         FOR EACH ROW EXECUTE PROCEDURE set_updated_at_func();
+CREATE TRIGGER set_UnifiedPush_updated_at BEFORE UPDATE ON UnifiedPush FOR EACH ROW EXECUTE PROCEDURE set_updated_at_func();
 
 
 -- ---------------------------
@@ -522,7 +535,10 @@ CREATE PROCEDURE CreateAccount(
     salt1 TEXT, 
     salt2 TEXT, 
     realName TEXT, 
-    phoneNumber TEXT)
+    phoneNumber TEXT,
+    pushUrl TEXT,
+    pushClientToken TEXT,
+    pushAppToken TEXT)
 LANGUAGE plpgsql
 AS $$
 DECLARE
@@ -530,6 +546,7 @@ DECLARE
 BEGIN
     INSERT INTO Accounts  ("username", "password_hash", "salt1", "salt2", "real_name", "phone_number") VALUES (username, passwordHash, salt1, salt2, realName, phoneNumber) RETURNING account_id INTO accountId;
     INSERT INTO SessionMap ("session_id", "account_id") VALUES (sessionId, accountId);
+    INSERT INTO UnifiedPush ("account_id", "push_url", "push_client_token", "push_app_token") VALUES (accountId, pushUrl, pushClientToken, pushAppToken);
     INSERT INTO Settings ("account_id") VALUES (accountId);
 END;
 $$;

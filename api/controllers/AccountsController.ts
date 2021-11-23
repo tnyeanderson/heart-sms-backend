@@ -1,8 +1,11 @@
+import axios from 'axios';
 import crypto from 'crypto';
 import express from 'express';
 import db from '../db/query.js';
 import { asyncHandler } from '../helpers/AsyncHandler.js';
 import { hashPassword } from '../helpers/CryptoHelper.js';
+import unifiedPushHelper from '../helpers/UnifiedPushHelper.js';
+import { InvalidPushClientTokenError } from '../models/errors/Errors.js';
 import * as AccountsPayloads from '../models/payloads/AccountsPayloads.js';
 import { DismissedNotificationRequest, LoginRequest, SignupRequest, UpdateSettingRequest } from '../models/requests/AccountsRequests.js';
 import { AccountIdRequest } from '../models/requests/BaseRequests.js';
@@ -25,10 +28,12 @@ router.route('/login').post(
 		const fields = ['account_id', 'session_id', 'password_hash', 'real_name AS name', 'salt1', 'salt2', 'phone_number',
 			'base_theme', 'passcode', 'rounder_bubbles', 'use_global_theme', 'apply_primary_color_toolbar',
 			'conversation_categories', 'color', 'color_dark', 'color_light', 'color_accent', 'global_color_theme',
-			'message_timestamp', 'subscription_type', 'subscription_expiration'];
+			'message_timestamp', 'subscription_type', 'subscription_expiration', 'push_url', 'push_client_token'];
 
 		const sql = `SELECT ${db.selectFields(fields)} FROM Accounts
-			INNER JOIN SessionMap USING (account_id) INNER JOIN Settings USING (account_id)
+			INNER JOIN SessionMap USING (account_id)
+			INNER JOIN Settings USING (account_id)
+			LEFT JOIN UnifiedPush USING (account_id)
 			WHERE username = ${db.escape(r.username)} LIMIT 1`;
 
 		const result = await db.query(sql);
@@ -53,6 +58,27 @@ router.route('/signup').post(
 	asyncHandler(SignupRequest.checkDuplicateUser),
 	asyncHandler(async (req, res, next) => {
 		const r: SignupRequest = res.locals.request;
+		const pushProtocol = unifiedPushHelper.getPushProtocol();
+		const pushAppUrl = `${pushProtocol}://${r.push_url}/application?token=${r.push_client_token}`;
+		let pushAppToken;
+
+		try {
+			const checkResponse = await axios.get(pushAppUrl);
+			// eslint-disable-next-line @typescript-eslint/no-explicit-any
+			let pushApp = checkResponse.data.find((a: any) => a.name === 'HeartSMS');
+			if (!pushApp) {
+				console.log(`Creating HeartSMS app at ${r.push_url}...`);
+				const createResponse = await axios.post(pushAppUrl, {
+					name: 'HeartSMS',
+					description: 'Self-hosted cross-platform SMS'
+				});
+				pushApp = createResponse.data;
+			}
+			pushAppToken = pushApp.token;
+		} catch (error) {
+			console.log(error);
+			throw new InvalidPushClientTokenError();
+		}
 
 		// Generate 64-character account id and salts
 		const account_id = util.createAccountId();
@@ -68,7 +94,10 @@ router.route('/signup').post(
 			salt1,
 			salt2,
 			r.real_name,
-			r.phone_number
+			r.phone_number,
+			r.push_url,
+			r.push_client_token,
+			pushAppToken
 		];
 
 		const sql = `CALL CreateAccount( ${db.escapeAll(values)} )`;

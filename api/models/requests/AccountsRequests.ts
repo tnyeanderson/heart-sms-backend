@@ -14,6 +14,8 @@ export class SignupRequest extends BaseRequest {
 	@Required password: string;
 	@Required phone_number: string;
 	@Required real_name: string;
+	@Required push_url: string;
+	@Required push_client_token: string;
 
 	constructor(r: SignupRequest) {
 		super();
@@ -21,6 +23,8 @@ export class SignupRequest extends BaseRequest {
 		this.password = String(r.password);
 		this.phone_number = String(r.phone_number);
 		this.real_name = String(r.real_name);
+		this.push_url = String(r.push_url);
+		this.push_client_token = String(r.push_client_token);
 	}
 
 	/**

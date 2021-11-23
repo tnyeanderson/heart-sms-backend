@@ -7,9 +7,6 @@ services:
     restart: always
     depends_on: 
       - heart-sms-db
-      - heart-sms-mqtt
-    ports:
-      - "127.0.0.1:5000:5000"
     env_file:
       - .db.env
       - .api.env
@@ -20,8 +17,6 @@ services:
     image: heartsms/heart-sms-web
     init: true
     restart: always
-    ports:
-      - "127.0.0.1:8081:80"
     env_file: 
       # /config/web-config.json is derived from .api.env
       - .api.env
@@ -39,24 +34,34 @@ services:
     volumes:
       - db:/var/lib/postgresql/data
 
-  heart-sms-mqtt:
-    container_name: heart-sms-mqtt
-    image: heartsms/heart-sms-mqtt
-    init: true
-    restart: always
-    ports:
-      # Uncomment this line for debugging from the host (unencrypted)
-      #- "127.0.0.1:1883:1883"
-      # SSL endpoint is exposed directly
-      - "8883:8883"
-      # Unsecured websockets will always be local only
-      - "127.0.0.1:5050:5050"
-    env_file: 
-      # /etc/mosquitto/conf.d/go-auth.conf is derived from .api.env
-      # Comment this out during development to allow unencrypted connection between containers on :5000
+
+  heart-sms-push:
+    container_name: heart-sms-push
+    image: gotify/server
+    env_file:
       - .api.env
+    environment:
+      # Uncomment the below line to allow anyone to make a gotify account on this server
+      # You probably don't want this. Create accounts using the admin account above
+      # - GOTIFY_REGISTRATION=true
     volumes:
-      - ./certs:/etc/certs
+      - "./gotify/data:/app/data"
+      - "./gotify/config.yml:/app/config.yml"
+
+
+  caddy:
+    image: caddy
+    container_name: caddy
+    restart: always 
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile
+      - ./caddy/data:/data
+      - ./caddy/config:/config
+      # Path to certs directory (uncomment for production certs)
+      # - /path/to/certs:/etc/ssl/certs
       
 volumes:
   db:

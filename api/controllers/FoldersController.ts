@@ -44,10 +44,10 @@ router.route('/add').post(
 		res.json(new BaseResponse);
 
 		// Send websocket message
-		items.forEach(function (item) {
+		for (const item of items) {
 			const payload = new FoldersPayloads.added_folder(item);
-			payload.send(r.account_id);
-		});
+			await payload.send(r.account_id);
+		}
 
 	}));
 
